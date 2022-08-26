@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    if: github.repository == 'Azure/aks-engine'
+    if: github.repository == 'Azure/aks-engine-azurestack'
     name: build
     runs-on: ubuntu-latest
     steps:

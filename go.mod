@@ -1,4 +1,4 @@
-module github.com/Azure/aks-engine
+module github.com/Azure/aks-engine-azurestack
 
 go 1.16
 

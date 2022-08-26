@@ -1,4 +1,6 @@
-//+build test
+//go:build test
+// +build test
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -18,14 +20,14 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/to"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/test/e2e/azure"
-	"github.com/Azure/aks-engine/test/e2e/config"
-	"github.com/Azure/aks-engine/test/e2e/engine"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/node"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/util"
-	"github.com/Azure/aks-engine/test/e2e/metrics"
-	"github.com/Azure/aks-engine/test/e2e/remote"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/azure"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/node"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/metrics"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 )

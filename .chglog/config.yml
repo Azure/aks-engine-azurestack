@@ -2,7 +2,7 @@ style: github
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://github.com/Azure/aks-engine
+  repository_url: https://github.com/Azure/aks-engine-azurestack
 options:
   commits:
     filters:

@@ -16,8 +16,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/engine"
-	"github.com/Azure/aks-engine/pkg/kubernetes"
+	"github.com/Azure/aks-engine-azurestack/pkg/engine"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/Azure/azure-sdk-for-go/services/apimanagement/mgmt/2017-03-01/apimanagement"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"

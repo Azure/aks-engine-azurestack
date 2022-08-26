@@ -10,9 +10,9 @@ import (
 	"testing"
 	"text/template"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/telemetry"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/go-autorest/autorest/azure"

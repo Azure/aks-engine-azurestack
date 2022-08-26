@@ -6,7 +6,7 @@ package operations
 import (
 	"container/list"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	log "github.com/sirupsen/logrus"
 )
 

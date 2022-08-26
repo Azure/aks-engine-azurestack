@@ -41,7 +41,7 @@ For help and questions about using this project, please:
 Support for this project is limited to the resources listed above.
 
 [aks-engine-users-slack]: https://kubernetes.slack.com/archives/CU3N85WJK
-[docs]: https://github.com/Azure/aks-engine/tree/master/docs
-[faq]: https://github.com/Azure/aks-engine/blob/master/docs/faq.md
-[github-issues]: https://github.com/Azure/aks-engine/issues
-[project-status]: https://github.com/Azure/aks-engine/#project-status
+[docs]: https://github.com/Azure/aks-engine-azurestack/tree/master/docs
+[faq]: https://github.com/Azure/aks-engine-azurestack/blob/master/docs/faq.md
+[github-issues]: https://github.com/Azure/aks-engine-azurestack/issues
+[project-status]: https://github.com/Azure/aks-engine-azurestack/#project-status

@@ -19,7 +19,7 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/to"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 )
 
 func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {

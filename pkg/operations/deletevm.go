@@ -7,8 +7,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
-	"github.com/Azure/aks-engine/pkg/armhelpers/utils"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

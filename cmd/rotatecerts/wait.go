@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/Azure/aks-engine/cmd/rotatecerts/internal"
-	"github.com/Azure/aks-engine/pkg/helpers/ssh"
-	"github.com/Azure/aks-engine/pkg/kubernetes"
+	"github.com/Azure/aks-engine-azurestack/cmd/rotatecerts/internal"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/ssh"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/pkg/errors"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
