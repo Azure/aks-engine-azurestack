@@ -6,7 +6,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

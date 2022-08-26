@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
 	azcompute "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 	"github.com/pkg/errors"

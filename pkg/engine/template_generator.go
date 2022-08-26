@@ -16,11 +16,11 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/to"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/helpers"
-	"github.com/Azure/aks-engine/pkg/i18n"
-	"github.com/Azure/aks-engine/pkg/telemetry"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"

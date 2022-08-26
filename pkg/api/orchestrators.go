@@ -7,8 +7,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/blang/semver"
 	"github.com/pkg/errors"
 )

@@ -8,7 +8,7 @@
 {{ end }}
 {{ end -}}
 
-#### Please report any issues here: https://github.com/Azure/aks-engine/issues/new
+#### Please report any issues here: https://github.com/Azure/aks-engine-azurestack/issues/new
 
 {{- if .NoteGroups -}}
 {{ range .NoteGroups -}}

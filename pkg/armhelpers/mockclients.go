@@ -12,8 +12,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/kubernetes"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"

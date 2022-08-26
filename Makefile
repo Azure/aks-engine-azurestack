@@ -36,7 +36,7 @@ DEV_CMD_RUN := docker run $(DEV_ENV_OPTS)
 ifdef DEBUG
 LDFLAGS := -X main.version=$(VERSION)
 else
-LDFLAGS := -s -X main.version=$(VERSION) -X github.com/Azure/$(PROJECT)/pkg/telemetry.AKSEngineAppInsightsKey=$(AIKey)
+LDFLAGS := -s -X main.version=$(VERSION) -X github.com/Azure/aks-engine-azurestack/pkg/telemetry.AKSEngineAppInsightsKey=$(AIKey)
 endif
 BINARY_DEST_DIR ?= bin
 
@@ -145,7 +145,7 @@ clean: tools-clean
 
 GIT_BASEDIR    = $(shell git rev-parse --show-toplevel 2>/dev/null)
 ifneq ($(GIT_BASEDIR),)
-	LDFLAGS += -X github.com/Azure/aks-engine/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
+	LDFLAGS += -X github.com/Azure/aks-engine-azurestack/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
 endif
 
 ginkgoBuild: generate

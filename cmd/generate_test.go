@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 )
 
 func TestNewGenerateCmd(t *testing.T) {

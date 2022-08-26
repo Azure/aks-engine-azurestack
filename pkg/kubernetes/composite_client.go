@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/kubernetes/internal"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes/internal"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"

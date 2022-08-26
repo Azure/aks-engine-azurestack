@@ -20,7 +20,7 @@ elegant and high-quality open source code so that our users will benefit.
 
 Make sure you have read and understood the main CONTRIBUTING guide:
 
-https://github.com/Azure/aks-engine/blob/master/CONTRIBUTING.md
+https://github.com/Azure/aks-engine-azurestack/blob/master/CONTRIBUTING.md
 
 ## Build AKS Engine from Source
 
@@ -108,7 +108,7 @@ Setup steps:
   1. Type `cd %GOPATH%`
   1. Type `mkdir -p src\github.com\Azure` to create the gopath to aks-engine
   1. Type `cd src\github.com\Azure`
-  1. Type `git clone https://github.com/Azure/aks-engine` to download aks-engine from GitHub
+  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine from GitHub
   1. Type `cd aks-engine`
   1. Type `make bootstrap` to get the supporting components
   1. Type `make` to build the project
@@ -131,7 +131,7 @@ Build aks-engine:
 
   1. Type `mkdir -p $HOME/go/src/github.com/Azure` to create your gopath
   1. Type `cd $_` to switch directories to that same path
-  1. Type `git clone https://github.com/Azure/aks-engine` to download aks-engine from GitHub
+  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine from GitHub
   1. Type `cd aks-engine` to change to the source directory
   1. Type `make bootstrap` to install supporting components
   1. Type `make` to build the project
@@ -160,9 +160,9 @@ home of the current development candidate. Releases are tagged.
 We accept changes to the code via GitHub Pull Requests (PRs). One
 workflow for doing this is as follows:
 
-1. Use `go get` to clone the aks-engine repository: `go get github.com/Azure/aks-engine`
+1. Use `go get` to clone the aks-engine repository: `go get github.com/Azure/aks-engine-azurestack`
 2. Fork that repository into your GitHub account
-3. Add your repository as a remote for `$GOPATH/github.com/Azure/aks-engine`
+3. Add your repository as a remote for `$GOPATH/github.com/Azure/aks-engine-azurestack`
 4. Create a new working branch (`git checkout -b feat/my-feature`) and
    do your work on that branch.
 5. When you are ready for us to review, push your branch to GitHub, and
@@ -170,9 +170,9 @@ workflow for doing this is as follows:
 
 ### Third Party Dependencies
 
-Third party dependencies reside locally inside the repository under the `vendor/` directory. We use [dep](https://github.com/golang/dep) to enforce our dependency graph, declared in [Gopkg.toml](https://github.com/Azure/aks-engine/blob/master/CONTRIBUTING.md) in the project root.
+Third party dependencies reside locally inside the repository under the `vendor/` directory. We use [dep](https://github.com/golang/dep) to enforce our dependency graph, declared in [Gopkg.toml](https://github.com/Azure/aks-engine-azurestack/blob/master/CONTRIBUTING.md) in the project root.
 
-If you wish to introduce a new third party dependency into `aks-engine`, please file an [issue](https://github.com/Azure/aks-engine/issues), and include the canonical VCS path (e.g., `github.com/Azure/azure-sdk-for-go`) along with either the desired release string expression to depend on (e.g., `~8.1.0`), or the commit hash to pin to a static commit (e.g., `4cdb38c072b86bf795d2c81de50784d9fdd6eb77`). A project maintainer will then own the effort to update the codebase with that dependency, including relevant updates to `Gopkg.toml` and `vendor/`.
+If you wish to introduce a new third party dependency into `aks-engine`, please file an [issue](https://github.com/Azure/aks-engine-azurestack/issues), and include the canonical VCS path (e.g., `github.com/Azure/azure-sdk-for-go`) along with either the desired release string expression to depend on (e.g., `~8.1.0`), or the commit hash to pin to a static commit (e.g., `4cdb38c072b86bf795d2c81de50784d9fdd6eb77`). A project maintainer will then own the effort to update the codebase with that dependency, including relevant updates to `Gopkg.toml` and `vendor/`.
 
 As a rule we want to distinguish dependency update PRs from feature/bug PRs; we may ask that feature/bug PRs which include updates to `vendor/` and/or contain any other dependency-related overhead to be triaged into separate PRs that can be managed independently, pre-requisite dependency changes in one, and features/bugs in another. The objective of enforcing these distinctions is to help focus the PR review process, and to make manageable the difficult task of rationalizing a multitude of parallel PRs in flight, many of which which may carry hard-to-reconcile dependency side-effects when aggressively updated with a fresh dependency graph as part of the PR payload.
 
@@ -305,14 +305,14 @@ This just scratches the surface. Please
 To debug `aks-engine generate` from the command line:
 
 ```shell
-dlv debug github.com/Azure/aks-engine -- generate ~/Documents/azure/kubernetes.json
+dlv debug github.com/Azure/aks-engine-azurestack -- generate ~/Documents/azure/kubernetes.json
 ```
 
 To test an individual package or a single test:
 
 ```shell
-dlv test github.com/Azure/aks-engine/pkg/engine
-dlv test github.com/Azure/aks-engine/pkg/engine -- -test.run ^TestNetworkPolicyDefaults$
+dlv test github.com/Azure/aks-engine-azurestack/pkg/engine
+dlv test github.com/Azure/aks-engine-azurestack/pkg/engine -- -test.run ^TestNetworkPolicyDefaults$
 ```
 
 ## Test pipeline
@@ -333,7 +333,7 @@ The following steps constitute the AKS Engine CI pipeline:
 
 ## Pull Requests and Generated Code
 
-To make it easier use AKS Engine source code as a library and to `go get github.com/Azure/aks-engine`, some
+To make it easier use AKS Engine source code as a library and to `go get github.com/Azure/aks-engine-azurestack`, some
 generated Go code is committed to the repository. Your pull request may need to regenerate those
 files before it will pass the required `make ensure-generated` step.
 

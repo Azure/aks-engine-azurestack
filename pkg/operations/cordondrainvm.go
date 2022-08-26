@@ -8,8 +8,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
-	"github.com/Azure/aks-engine/pkg/kubernetes"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"

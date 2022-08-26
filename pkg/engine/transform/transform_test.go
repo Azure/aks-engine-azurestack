@@ -10,8 +10,8 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/helpers"
-	"github.com/Azure/aks-engine/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	. "github.com/onsi/gomega"
 	"github.com/sirupsen/logrus"
 )

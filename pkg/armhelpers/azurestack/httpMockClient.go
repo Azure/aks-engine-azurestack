@@ -8,7 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers/azurestack/testserver"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/azurestack/testserver"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
 	"github.com/Azure/go-autorest/autorest/azure"
 )

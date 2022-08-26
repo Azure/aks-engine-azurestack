@@ -8,11 +8,11 @@ The Azure Cosmos etcd API allows you to use Azure Cosmos as the backing store fo
 
 ## Prerequisites
 1.	Install the [Azure CLI](https://docs.microsoft.com/cli/azure/install-azure-cli?view=azure-cli-latest)
-2.	Install [AKS Engine](https://github.com/Azure/aks-engine/blob/master/docs/tutorials/quickstart.md)
+2.	Install [AKS Engine](https://github.com/Azure/aks-engine-azurestack/blob/master/docs/tutorials/quickstart.md)
 3.	Enable your subscription for the Azure Cosmos etcd API. Follow instructions at https://aka.ms/cosmosetcdapi-signup to enroll in the private preview.
 
 ## Steps
-Follow the instructions [here](https://github.com/Azure/aks-engine/blob/master/docs/tutorials/quickstart.md#deploy-your-first-cluster) to deploy your first Kubernetes cluster.
+Follow the instructions [here](https://github.com/Azure/aks-engine-azurestack/blob/master/docs/tutorials/quickstart.md#deploy-your-first-cluster) to deploy your first Kubernetes cluster.
 
 Here is an example `aks-engine` command:
 
@@ -25,7 +25,7 @@ $ aks-engine deploy --subscription-id <SubscriptionId> \
 
 In the API model JSON (the cluster definition file), specify ```"cosmosEtcd" : true``` in the ```masterProfile``` properties to use Azure Cosmos etcd API instead of regular etcd.
 
-A sample cluster definition file using Azure Cosmos is available [here](https://github.com/Azure/aks-engine/blob/master/examples/cosmos-etcd/kubernetes-3-masters-cosmos.json).
+A sample cluster definition file using Azure Cosmos is available [here](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/cosmos-etcd/kubernetes-3-masters-cosmos.json).
 
 ## Verifying the deployment
 After the deployment is successfully completed, you will see a new Azure Cosmos account created in your resource group. This account name will match your specified DNS prefix appended with k8s.

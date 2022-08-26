@@ -301,7 +301,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
   if [ "${UPGRADE_CLUSTER}" = "true" ]; then
     git reset --hard
     git remote rm $UPGRADE_FORK
-    git remote add $UPGRADE_FORK https://github.com/$UPGRADE_FORK/aks-engine.git
+    git remote add $UPGRADE_FORK https://github.com/$UPGRADE_FORK/aks-engine-azurestack.git
     git fetch --prune $UPGRADE_FORK
     git branch -D $UPGRADE_FORK/$UPGRADE_BRANCH
     git checkout -b $UPGRADE_FORK/$UPGRADE_BRANCH --track $UPGRADE_FORK/$UPGRADE_BRANCH

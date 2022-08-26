@@ -11,7 +11,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"k8s.io/apimachinery/pkg/api/equality"
 
-	"github.com/Azure/aks-engine/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )

@@ -8,7 +8,7 @@ import (
 	"encoding/json"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 // PrettyPrintArmTemplate will pretty print the arm template ensuring ordered by params, vars, resources, and outputs

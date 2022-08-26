@@ -16,8 +16,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 )
 
 const ExampleAPIModel = `{

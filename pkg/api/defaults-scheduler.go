@@ -3,7 +3,7 @@
 
 package api
 
-import "github.com/Azure/aks-engine/pkg/api/common"
+import "github.com/Azure/aks-engine-azurestack/pkg/api/common"
 
 // staticSchedulerConfig is not user-overridable
 var staticSchedulerConfig = map[string]string{

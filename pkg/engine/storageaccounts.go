@@ -6,7 +6,7 @@ package engine
 import (
 	"fmt"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2018-02-01/storage"
 	"github.com/Azure/go-autorest/autorest/to"
 )

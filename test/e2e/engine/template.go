@@ -1,4 +1,6 @@
-//+build test
+//go:build test
+// +build test
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -18,12 +20,12 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/api/vlabs"
-	"github.com/Azure/aks-engine/pkg/helpers"
-	"github.com/Azure/aks-engine/pkg/i18n"
-	"github.com/Azure/aks-engine/test/e2e/config"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 )
 
 // Config represents the configuration values of a template stored as env vars

@@ -56,7 +56,7 @@ For a minor release, we will release from master. For a patch, we will create a 
 
 Once your source branch is prepared for a release, we run the "Create Release Branch" GitHub Action to automatically validate and create the destination release branch:
 
-- https://github.com/Azure/aks-engine/actions/workflows/create-release-branch.yaml
+- https://github.com/Azure/aks-engine-azurestack/actions/workflows/create-release-branch.yaml
 
 Use the full "v"-prefixed semver release string in the field with the description "Which version are we creating a release branch for?", for example `v0.65.0`.
 
@@ -72,7 +72,7 @@ Click "Run Workflow" to initiate the process of validating and creating our rele
 
 ### Review Release Notes
 
-If the "Create Release Branch" GitHub Action ran successfully, there will be a new PR in the `Azure/aks-engine` queue named "release: <release version> CHANGELOG", for example `release: v0.65.0 CHANGELOG` for the `v0.65.0` release.
+If the "Create Release Branch" GitHub Action ran successfully, there will be a new PR in the `Azure/aks-engine-azurestack` queue named "release: <release version> CHANGELOG", for example `release: v0.65.0 CHANGELOG` for the `v0.65.0` release.
 
 At this time project maintainers should review the CHANGELOG PR for the following:
 
@@ -118,7 +118,7 @@ The [gofish][] package manager has automation in place to create an update when 
 Adding new versions to [choco][] is automated, but you can check the status of package approval and publishing at the [aks-engine chocolatey page][choco-status].
 
 
-[aks-engine]: https://github.com/Azure/aks-engine/releases
+[aks-engine]: https://github.com/Azure/aks-engine-azurestack/releases
 [brew]: https://brew.sh/
 [brew-pr]: https://github.com/Azure/homebrew-aks-engine/pull/34
 [brew-tap]: https://github.com/Azure/homebrew-aks-engine/
@@ -129,6 +129,6 @@ Adding new versions to [choco][] is automated, but you can check the status of p
 [gofish]: https://github.com/fishworks/gofish
 [gofish-food]: https://github.com/fishworks/fish-food/
 [gofish-pr]: https://github.com/fishworks/fish-food/pull/141
-[new-release]: https://github.com/Azure/aks-engine/releases/new
+[new-release]: https://github.com/Azure/aks-engine-azurestack/releases/new
 [continuous delivery]: https://en.wikipedia.org/wiki/Continuous_delivery
 [semantic version]: http://semver.org
