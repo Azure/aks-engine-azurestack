@@ -6,7 +6,7 @@ package azurestack
 import (
 	"context"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 )
 
 // DeleteManagedDisk deletes a managed disk.

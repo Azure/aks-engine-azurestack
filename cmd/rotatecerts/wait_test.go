@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	mock "github.com/Azure/aks-engine/cmd/rotatecerts/internal/mock_internal"
+	mock "github.com/Azure/aks-engine-azurestack/cmd/rotatecerts/internal/mock_internal"
 	gomock "github.com/golang/mock/gomock"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"

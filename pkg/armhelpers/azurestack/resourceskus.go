@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 )
 
 // ListResourceSkus lists Microsoft.Compute SKUs available for a subscription

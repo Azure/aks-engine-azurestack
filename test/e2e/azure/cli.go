@@ -1,4 +1,6 @@
-//+build test
+//go:build test
+// +build test
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -14,8 +16,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/Azure/aks-engine/test/e2e/engine"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/util"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
 
 	"github.com/kelseyhightower/envconfig"

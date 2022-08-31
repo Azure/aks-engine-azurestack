@@ -5,7 +5,7 @@
 
 set -eo pipefail
 
-PROJECT_NAME="aks-engine"
+PROJECT_NAME="aks-engine-azurestack"
 
 if [ -n "$ACC_CLOUD" ]; then
   # Cloud Shell doesn't have sudo and prefers a different directory.
@@ -59,7 +59,7 @@ verifySupported() {
   local supported="darwin-386\ndarwin-amd64\nlinux-386\nlinux-amd64\nlinux-arm\nlinux-arm64\nlinux-ppc64le\nwindows-386\nwindows-amd64"
   if ! echo "${supported}" | grep -q "${OS}-${ARCH}"; then
     echo "No prebuilt binary for ${OS}-${ARCH}."
-    echo "To build from source, go to https://github.com/Azure/aks-engine"
+    echo "To build from source, go to https://github.com/Azure/aks-engine-azurestack"
     exit 1
   fi
 
@@ -79,9 +79,9 @@ checkDesiredVersion() {
   # Use the GitHub releases API for the project to find the desired version for this project.
   local release_url
   if [[ -z "${DESIRED_VERSION}" ]]; then
-    release_url="https://api.github.com/repos/Azure/aks-engine/releases/latest"
+    release_url="https://api.github.com/repos/Azure/aks-engine-azurestack/releases/latest"
   else
-    release_url="https://api.github.com/repos/Azure/aks-engine/releases/tags/${DESIRED_VERSION}"
+    release_url="https://api.github.com/repos/Azure/aks-engine-azurestack/releases/tags/${DESIRED_VERSION}"
   fi
 
   # shellcheck disable=SC2086
@@ -135,7 +135,7 @@ checkAKSEInstalledVersion() {
 # for that binary.
 downloadFile() {
   AKSE_DIST="aks-engine-$TAG-$OS-$ARCH.tar.gz"
-  DOWNLOAD_URL="https://github.com/Azure/aks-engine/releases/download/$TAG/$AKSE_DIST"
+  DOWNLOAD_URL="https://github.com/Azure/aks-engine-azurestack/releases/download/$TAG/$AKSE_DIST"
   AKSE_TMP_ROOT="$(mktemp -dt akse-installer-XXXXXX)"
   AKSE_TMP_FILE="$AKSE_TMP_ROOT/$AKSE_DIST"
   echo "Downloading $DOWNLOAD_URL"
@@ -168,7 +168,7 @@ fail_trap() {
     else
       echo "Failed to install $PROJECT_NAME"
     fi
-    echo -e "\tFor support, go to https://github.com/Azure/aks-engine."
+    echo -e "\tFor support, go to https://github.com/Azure/aks-engine-azurestack."
   fi
   cleanup
   exit $result

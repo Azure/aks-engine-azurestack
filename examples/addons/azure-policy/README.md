@@ -117,6 +117,6 @@ Kubernetes
 
 ## Contact
 
-- If you have any questions or feedback regarding Azure Policy addon, please file an issue at https://github.com/Azure/aks-engine/issues and tag with `azure-policy`
+- If you have any questions or feedback regarding Azure Policy addon, please file an issue at https://github.com/Azure/aks-engine-azurestack/issues and tag with `azure-policy`
 
 - If you have any questions or feedback regarding Gatekeeper, please file an issue at https://github.com/open-policy-agent/gatekeeper/issues

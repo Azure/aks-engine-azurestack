@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 )
 
 func (cs *ContainerService) setCloudControllerManagerConfig() {

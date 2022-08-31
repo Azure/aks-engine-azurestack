@@ -38,7 +38,7 @@ Note: See scripts referenced below to for further details
 ### Testing Private Fixes
 
 Occasionally it may be necessary to validate private fixes provided by the Windows team. This can be done without providing public access to the fixes by following these steps:
-- Fork Azure/aks-engine into a private git repo hosted in [Azure DevOps](http://dev.azure.com)
+- Fork Azure/aks-engine-azurestack into a private git repo hosted in [Azure DevOps](http://dev.azure.com)
 - Configure a private build pipeline using [.pipelines/vhd-builder-windows.yaml](../../.pipelines/vhd-builder-windows.yaml) as the pipeline definition
 - Set up the build pipeline variables to point to private Azure subscriptions
   - Pipeline variables are documented in the yaml file

@@ -9,7 +9,7 @@ import (
 
 	. "github.com/onsi/gomega"
 
-	"github.com/Azure/aks-engine/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 func TestVersionCommand_ShouldCreateCommand(t *testing.T) {

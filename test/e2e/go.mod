@@ -1,4 +1,4 @@
-module github.com/Azure/aks-engine/test/e2e
+module github.com/Azure/aks-engine-azurestack/test/e2e
 
 go 1.16
 

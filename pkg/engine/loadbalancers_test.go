@@ -6,7 +6,7 @@ package engine
 import (
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 
 	"github.com/google/go-cmp/cmp"
 

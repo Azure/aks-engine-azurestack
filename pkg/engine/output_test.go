@@ -11,9 +11,9 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/azure"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/helpers"
-	"github.com/Azure/aks-engine/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 )
 
 func TestWriteTLSArtifacts(t *testing.T) {

@@ -35,7 +35,7 @@
   "microsoft-azure-corevm.mediumLogo": "https://azcupublogos.blob.core.windows.net/publishing-logos/medium.png",
   "microsoft-azure-corevm.largeLogo": "https://azcupublogos.blob.core.windows.net/publishing-logos/large.png",
   "microsoft-azure-corevm.wideLogo": "https://azcupublogos.blob.core.windows.net/publishing-logos/large.png",
-  "microsoft-azure-corevm.privacyURL": "https://github.com/Azure/aks-engine/blob/master/LICENSE",
-  "microsoft-azure-corevm.termsOfUseURL": "https://github.com/Azure/aks-engine/blob/master/LICENSE",
+  "microsoft-azure-corevm.privacyURL": "https://github.com/Azure/aks-engine-azurestack/blob/master/LICENSE",
+  "microsoft-azure-corevm.termsOfUseURL": "https://github.com/Azure/aks-engine-azurestack/blob/master/LICENSE",
   "microsoft-azure-corevm.migratedOffer": false
 }

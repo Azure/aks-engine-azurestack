@@ -291,7 +291,7 @@ Global Flags:
 The `aks-engine` codebase contains a working log retrieval script in `scripts/collect-logs.sh`, so you can use it to quickly gather logs from your node VMs:
 
 ```sh
-$ git clone https://github.com/Azure/aks-engine.git && cd aks-engine
+$ git clone https://github.com/Azure/aks-engine-azurestack.git && cd aks-engine
 Cloning into 'aks-engine'...
 remote: Enumerating objects: 44, done.
 remote: Counting objects: 100% (44/44), done.

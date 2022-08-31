@@ -6,7 +6,7 @@ package api
 import (
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 )
 
 func TestCloudControllerManagerConfig(t *testing.T) {
