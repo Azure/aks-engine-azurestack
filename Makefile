@@ -22,7 +22,6 @@ VERSION_SHORT   ?= $(shell git rev-parse --short HEAD)
 GITTAG          := $(shell git describe --exact-match --tags $(shell git log -n1 --pretty='%h') 2> /dev/null)
 GOBIN           ?= $(shell $(GO) env GOPATH)/bin
 TOOLSBIN        := $(CURDIR)/hack/tools/bin
-AIKey           ?= c92d8284-b550-4b06-b7ba-e80fd7178faa
 ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif
@@ -36,7 +35,7 @@ DEV_CMD_RUN := docker run $(DEV_ENV_OPTS)
 ifdef DEBUG
 LDFLAGS := -X main.version=$(VERSION)
 else
-LDFLAGS := -s -X main.version=$(VERSION) -X github.com/Azure/aks-engine-azurestack/pkg/telemetry.AKSEngineAppInsightsKey=$(AIKey)
+LDFLAGS := -s -X main.version=$(VERSION)
 endif
 BINARY_DEST_DIR ?= bin
 
