@@ -30,36 +30,6 @@ jobs:
       ${DEIS_GO_DEV_IMAGE} make run-packer-windows
     displayName: Building windows VHD
 
-  - script: |
-      docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine \
-      -w /go/src/github.com/Azure/aks-engine \
-      ${DEIS_GO_DEV_IMAGE} make build
-    displayName: build aks-engine-test - make build
-    condition: and(succeeded(), eq(variables.COPY_VHD, 'False'))
-
-  - script: |
-      OS_DISK_URI="$(cat packer-output | grep "OSDiskUri:" | cut -d " " -f 2)" && \
-      IMAGE_NAME="$(echo $OS_DISK_URI | cut -d "/" -f 3 | cut -d "." -f 1)" && \
-      docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine \
-      -w /go/src/github.com/Azure/aks-engine \
-      -e CLEANUP_ON_EXIT="true" \
-      -e CLIENT_ID=${CLIENT_ID} \
-      -e CLIENT_SECRET="$(CLIENT_SECRET)" \
-      -e CLUSTER_DEFINITION="examples/e2e-tests/kubernetes/windows/hybrid/definition.json" \
-      -e LOCATION=${AZURE_LOCATION} \
-      -e ORCHESTRATOR_RELEASE="1.23" \
-      -e SUBSCRIPTION_ID=${SUBSCRIPTION_ID} \
-      -e TENANT_ID=${TENANT_ID} \
-      -e WINDOWS_NODE_VHD_URL=${OS_DISK_URI} \
-      -e USE_MANAGED_IDENTITY="false" \
-      -e CONTAINER_RUNTIME=${{ parameters.containerRuntime }} \
-      -e AZURE_CORE_ONLY_SHOW_ERRORS="True" \
-      ${DEIS_GO_DEV_IMAGE} make test-kubernetes
-    displayName: run e2e tests
-    condition: and(succeeded(), eq(variables.COPY_VHD, 'False'))
-
   - task: PublishPipelineArtifact@1
     inputs:
       artifact: '${{ parameters.windowsServerVersion }}-${{ parameters.containerRuntime }}-vhd-release-notes'

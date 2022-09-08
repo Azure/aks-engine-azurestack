@@ -345,6 +345,5 @@ switch ($env:ProvisioningPhase) {
     }
     default {
         Write-Log "Unable to determine provisiong phase... exiting"
-        exit 1
     }
 }
