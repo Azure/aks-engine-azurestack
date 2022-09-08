@@ -54,12 +54,35 @@
             "elevated_user": "packer",
             "elevated_password": "{{.WinRMPassword}}",
             "environment_vars": [
-                "ProvisioningPhase=0",
+                "ProvisioningPhase=1",
                 "ContainerRuntime={{user `container_runtime`}}",
                 "windowsServerVersion={{user `windows_server_version`}}"
             ],
             "type": "powershell",
             "script": "vhd/packer/configure-windows-vhd.ps1"
+        },
+        {
+            "restart_timeout": "10m",
+            "type": "windows-restart"
+        },
+        {
+            "restart_timeout": "10m",
+            "type": "windows-restart"
+        },
+        {
+            "elevated_user": "packer",
+            "elevated_password": "{{.WinRMPassword}}",
+            "environment_vars": [
+                "ProvisioningPhase=2",
+                "ContainerRuntime={{user `container_runtime`}}",
+                "windowsServerVersion={{user `windows_server_version`}}"
+            ],
+            "type": "powershell",
+            "script": "vhd/packer/configure-windows-vhd.ps1"
+        },
+        {
+            "restart_timeout": "10m",
+            "type": "windows-restart"
         },
         {
             "type": "file",

@@ -86,7 +86,7 @@ jobs:
       -e AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME} \
       ${DEIS_GO_DEV_IMAGE} make delete-sa
     displayName: cleanup - delete temp storage account
-    enabled: false
+    condition: always()
 
   - script: |
       sudo chown -R $USER:$USER .
