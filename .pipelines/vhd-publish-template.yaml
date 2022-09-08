@@ -6,7 +6,7 @@ parameters:
 jobs:
 - job: add_image_to_sku_${{ parameters.windowsServerVersion }}_${{ parameters.containerRuntime }}
   pool:
-    name: $(BUILD_POOL)
+    vmImage: $(BUILD_POOL)
   steps:
   - task: DownloadPipelineArtifact@2
     inputs:

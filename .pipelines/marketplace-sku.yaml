@@ -4,7 +4,7 @@ pr: none
 jobs:
 - job: create_marketplace_sku
   pool:
-    name: $(BUILD_POOL)
+    vmImage: $(BUILD_POOL)
   steps:
   - script: |
       docker run --rm \

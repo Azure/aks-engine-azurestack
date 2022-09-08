@@ -8,7 +8,7 @@ jobs:
   strategy:
     maxParallel: 0
   pool:
-    name: $(BUILD_POOL)
+    vmImage: $(BUILD_POOL)
   steps:
   - script: |
       docker run --rm \
