@@ -345,5 +345,6 @@ switch ($env:ProvisioningPhase) {
     }
     default {
         Write-Log "Unable to determine provisiong phase... exiting"
+        (New-Guid).Guid | Out-File -FilePath 'c:\vhd-id.txt'
     }
 }
