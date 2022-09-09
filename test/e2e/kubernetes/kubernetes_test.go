@@ -1141,7 +1141,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			timeout := cfg.Timeout
 			for _, addonName := range []string{common.CoreDNSAddonName, common.TillerAddonName, common.AADPodIdentityAddonName,
 				common.AzureDiskCSIDriverAddonName, common.AzureFileCSIDriverAddonName, common.CloudNodeManagerAddonName, common.ClusterAutoscalerAddonName,
-				common.BlobfuseFlexVolumeAddonName, common.SMBFlexVolumeAddonName, common.KeyVaultFlexVolumeAddonName, common.DashboardAddonName,
+				common.BlobfuseFlexVolumeAddonName, common.SMBFlexVolumeAddonName, common.DashboardAddonName,
 				common.MetricsServerAddonName, common.NVIDIADevicePluginAddonName, common.ContainerMonitoringAddonName,
 				common.CalicoAddonName, common.AzureNetworkPolicyAddonName, common.IPMASQAgentAddonName,
 				common.AzurePolicyAddonName, common.NodeProblemDetectorAddonName, common.AntreaAddonName, common.FlannelAddonName,

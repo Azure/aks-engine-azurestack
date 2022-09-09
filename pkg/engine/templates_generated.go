@@ -22,7 +22,6 @@
 // ../../parts/k8s/addons/coredns.yaml
 // ../../parts/k8s/addons/flannel.yaml
 // ../../parts/k8s/addons/ip-masq-agent.yaml
-// ../../parts/k8s/addons/keyvault-flexvolume.yaml
 // ../../parts/k8s/addons/kube-dns.yaml
 // ../../parts/k8s/addons/kube-proxy.yaml
 // ../../parts/k8s/addons/kubernetes-dashboard.yaml
@@ -13540,85 +13539,6 @@ func k8sAddonsIpMasqAgentYaml() (*asset, error) {
 	return a, nil
 }
 
-var _k8sAddonsKeyvaultFlexvolumeYaml = []byte(`apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  labels:
-    app: keyvault-flexvolume
-    kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: Reconcile
-  name: keyvault-flexvolume
-  namespace: kube-system
-spec:
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 50%
-  selector:
-    matchLabels:
-      app: keyvault-flexvolume
-  template:
-    metadata:
-      labels:
-        app: keyvault-flexvolume
-        kubernetes.io/cluster-service: "true"
-        addonmanager.kubernetes.io/mode: Reconcile
-{{- if IsKubernetesVersionGe "1.17.0"}}
-      annotations:
-        cluster-autoscaler.kubernetes.io/daemonset-pod: "true"
-{{- end}}
-    spec:
-      priorityClassName: system-cluster-critical
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: agentpool
-                operator: NotIn
-                values:
-                - flatcar
-      tolerations:
-      containers:
-      - name: keyvault-flexvolume
-        image: {{ContainerImage "keyvault-flexvolume"}}
-        imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            cpu: {{ContainerCPUReqs "keyvault-flexvolume"}}
-            memory: {{ContainerMemReqs "keyvault-flexvolume"}}
-          limits:
-            cpu: {{ContainerCPULimits "keyvault-flexvolume"}}
-            memory: {{ContainerMemLimits "keyvault-flexvolume"}}
-        env:
-        - name: TARGET_DIR
-          value: /etc/kubernetes/volumeplugins
-        volumeMounts:
-        - mountPath: /etc/kubernetes/volumeplugins
-          name: volplugins
-      volumes:
-      - hostPath:
-          path: /etc/kubernetes/volumeplugins
-        name: volplugins
-      nodeSelector:
-        kubernetes.io/os: linux
-`)
-
-func k8sAddonsKeyvaultFlexvolumeYamlBytes() ([]byte, error) {
-	return _k8sAddonsKeyvaultFlexvolumeYaml, nil
-}
-
-func k8sAddonsKeyvaultFlexvolumeYaml() (*asset, error) {
-	bytes, err := k8sAddonsKeyvaultFlexvolumeYamlBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "k8s/addons/keyvault-flexvolume.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 var _k8sAddonsKubeDnsYaml = []byte(`{{- /* Copyright 2016 The Kubernetes Authors.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -24797,7 +24717,6 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/addons/coredns.yaml":                                            k8sAddonsCorednsYaml,
 	"k8s/addons/flannel.yaml":                                            k8sAddonsFlannelYaml,
 	"k8s/addons/ip-masq-agent.yaml":                                      k8sAddonsIpMasqAgentYaml,
-	"k8s/addons/keyvault-flexvolume.yaml":                                k8sAddonsKeyvaultFlexvolumeYaml,
 	"k8s/addons/kube-dns.yaml":                                           k8sAddonsKubeDnsYaml,
 	"k8s/addons/kube-proxy.yaml":                                         k8sAddonsKubeProxyYaml,
 	"k8s/addons/kubernetes-dashboard.yaml":                               k8sAddonsKubernetesDashboardYaml,
@@ -24946,7 +24865,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"coredns.yaml":                          {k8sAddonsCorednsYaml, map[string]*bintree{}},
 			"flannel.yaml":                          {k8sAddonsFlannelYaml, map[string]*bintree{}},
 			"ip-masq-agent.yaml":                    {k8sAddonsIpMasqAgentYaml, map[string]*bintree{}},
-			"keyvault-flexvolume.yaml":              {k8sAddonsKeyvaultFlexvolumeYaml, map[string]*bintree{}},
 			"kube-dns.yaml":                         {k8sAddonsKubeDnsYaml, map[string]*bintree{}},
 			"kube-proxy.yaml":                       {k8sAddonsKubeProxyYaml, map[string]*bintree{}},
 			"kubernetes-dashboard.yaml":             {k8sAddonsKubernetesDashboardYaml, map[string]*bintree{}},

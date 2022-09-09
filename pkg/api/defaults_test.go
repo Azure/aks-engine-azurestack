@@ -240,7 +240,6 @@ func TestAssignDefaultAddonImages(t *testing.T) {
 		common.ClusterAutoscalerAddonName:   specConfig.MCRKubernetesImageBase + k8sComponents[common.ClusterAutoscalerAddonName],
 		common.BlobfuseFlexVolumeAddonName:  k8sComponents[common.BlobfuseFlexVolumeAddonName],
 		common.SMBFlexVolumeAddonName:       k8sComponents[common.SMBFlexVolumeAddonName],
-		common.KeyVaultFlexVolumeAddonName:  k8sComponents[common.KeyVaultFlexVolumeAddonName],
 		common.DashboardAddonName:           k8sComponents[common.DashboardAddonName],
 		common.MetricsServerAddonName:       specConfig.MCRKubernetesImageBase + k8sComponents[common.MetricsServerAddonName],
 		common.NVIDIADevicePluginAddonName:  specConfig.NVIDIAImageBase + k8sComponents[common.NVIDIADevicePluginAddonName],

@@ -83,8 +83,6 @@ const (
 	BlobfuseFlexVolumeAddonName = "blobfuse-flexvolume"
 	// SMBFlexVolumeAddonName is the name of the smb flexvolume addon
 	SMBFlexVolumeAddonName = "smb-flexvolume"
-	// KeyVaultFlexVolumeAddonName is the name of the key vault flexvolume addon deployment
-	KeyVaultFlexVolumeAddonName = "keyvault-flexvolume"
 	// DashboardAddonName // Deprecated
 	DashboardAddonName = "kubernetes-dashboard" // Deprecated
 	// DashboardMetricsScraperContainerName is the name of the metrics-scraper container in the kubernetes-dashboard addon

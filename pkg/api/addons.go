@@ -151,23 +151,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		},
 	}
 
-	defaultKeyVaultFlexVolumeAddonsConfig := KubernetesAddon{
-		Name: common.KeyVaultFlexVolumeAddonName,
-		// keyvault-flexvolume solution is deprecated in favor of secrets-store-csi-driver for 1.16+
-		Enabled: to.BoolPtr(DefaultKeyVaultFlexVolumeAddonEnabled && !cs.Properties.IsAzureStackCloud() &&
-			!common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.16.0")),
-		Containers: []KubernetesContainerSpec{
-			{
-				Name:           common.KeyVaultFlexVolumeAddonName,
-				CPURequests:    "50m",
-				MemoryRequests: "100Mi",
-				CPULimits:      "50m",
-				MemoryLimits:   "100Mi",
-				Image:          k8sComponents[common.KeyVaultFlexVolumeAddonName],
-			},
-		},
-	}
-
 	defaultDashboardAddonsConfig := KubernetesAddon{
 		Name:    common.DashboardAddonName,
 		Enabled: to.BoolPtr(DefaultDashboardAddonEnabled),
@@ -810,8 +793,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 			"enableSecretRotation": "false",
 			"rotationPollInterval": "2m",
 		},
-		Enabled: to.BoolPtr(!o.KubernetesConfig.IsAddonEnabled(common.KeyVaultFlexVolumeAddonName) && DefaultSecretStoreCSIDriverAddonEnabled &&
-			common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.16.0")),
+		Enabled: to.BoolPtr(DefaultSecretStoreCSIDriverAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.16.0")),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.CSILivenessProbeContainerName,
@@ -869,7 +851,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		defaultClusterAutoscalerAddonsConfig,
 		defaultBlobfuseFlexVolumeAddonsConfig,
 		defaultSMBFlexVolumeAddonsConfig,
-		defaultKeyVaultFlexVolumeAddonsConfig,
 		defaultDashboardAddonsConfig,
 		defaultMetricsServerAddonsConfig,
 		defaultNVIDIADevicePluginAddonsConfig,

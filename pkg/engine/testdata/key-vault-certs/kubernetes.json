@@ -88,20 +88,6 @@
             ]
           },
           {
-            "name": "keyvault-flexvolume",
-            "enabled": true,
-            "containers": [
-              {
-                "name": "keyvault-flexvolume",
-                "image": "mcr.microsoft.com/k8s/flexvolume/keyvault-flexvolume:v0.0.7",
-                "cpuRequests": "50m",
-                "memoryRequests": "10Mi",
-                "cpuLimits": "50m",
-                "memoryLimits": "10Mi"
-              }
-            ]
-          },
-          {
             "name": "metrics-server",
             "enabled": true,
             "containers": [
