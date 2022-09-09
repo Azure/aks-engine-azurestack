@@ -115,11 +115,6 @@ func kubernetesAddonSettingsInit(p *api.Properties) map[string]kubernetesCompone
 			base64Data:      k.GetAddonScript(common.SMBFlexVolumeAddonName),
 			destinationFile: smbFlexVolumeAddonDestinationFilename,
 		},
-		common.KeyVaultFlexVolumeAddonName: {
-			sourceFile:      keyvaultFlexVolumeAddonSourceFilename,
-			base64Data:      k.GetAddonScript(common.KeyVaultFlexVolumeAddonName),
-			destinationFile: keyvaultFlexVolumeAddonDestinationFilename,
-		},
 		common.DashboardAddonName: {
 			sourceFile:      dashboardAddonSourceFilename,
 			base64Data:      k.GetAddonScript(common.DashboardAddonName),

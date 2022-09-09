@@ -4532,7 +4532,6 @@ func TestSetAddonsConfig(t *testing.T) {
 				common.ClusterAutoscalerAddonName,
 				common.BlobfuseFlexVolumeAddonName,
 				common.SMBFlexVolumeAddonName,
-				common.KeyVaultFlexVolumeAddonName,
 				common.DashboardAddonName,
 				common.MetricsServerAddonName,
 				common.NVIDIADevicePluginAddonName,

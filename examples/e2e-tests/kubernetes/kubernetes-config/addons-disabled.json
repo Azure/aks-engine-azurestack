@@ -17,10 +17,6 @@
             "enabled": false
           },
           {
-            "name": "keyvault-flexvolume",
-            "enabled": false
-          },
-          {
             "name": "nvidia-device-plugin",
             "enabled": false
           },
