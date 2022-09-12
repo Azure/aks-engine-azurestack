@@ -8,8 +8,8 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/Azure/aks-engine/cmd/rotatecerts/internal"
-	"github.com/Azure/aks-engine/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/cmd/rotatecerts/internal"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"

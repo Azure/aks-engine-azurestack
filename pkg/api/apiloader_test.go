@@ -4,8 +4,8 @@
 package api
 
 import (
-	"github.com/Azure/aks-engine/pkg/api/vlabs"
-	"github.com/Azure/aks-engine/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/leonelquinteros/gotext"
 
 	"io/ioutil"

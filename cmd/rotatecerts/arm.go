@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/util/retry"

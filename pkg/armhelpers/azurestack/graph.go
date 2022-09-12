@@ -6,7 +6,7 @@ package azurestack
 import (
 	"context"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
 	"github.com/Azure/go-autorest/autorest"

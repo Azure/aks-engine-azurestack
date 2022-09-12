@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	mock "github.com/Azure/aks-engine/pkg/kubernetes/internal/mock_internal"
+	mock "github.com/Azure/aks-engine-azurestack/pkg/kubernetes/internal/mock_internal"
 	gomock "github.com/golang/mock/gomock"
 	. "github.com/onsi/gomega"
 	appsv1 "k8s.io/api/apps/v1"

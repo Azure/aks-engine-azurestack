@@ -11,8 +11,8 @@ import (
 	"strings"
 	"text/tabwriter"
 
-	"github.com/Azure/aks-engine/pkg/armhelpers"
-	"github.com/Azure/aks-engine/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"

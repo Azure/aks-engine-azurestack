@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 )
 
 type SubTestProfile struct {

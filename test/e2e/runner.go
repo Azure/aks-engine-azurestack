@@ -12,12 +12,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/test/e2e/azure"
-	"github.com/Azure/aks-engine/test/e2e/config"
-	"github.com/Azure/aks-engine/test/e2e/engine"
-	"github.com/Azure/aks-engine/test/e2e/metrics"
-	"github.com/Azure/aks-engine/test/e2e/runner"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/azure"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/metrics"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/runner"
 	"github.com/Azure/go-autorest/autorest/to"
 )
 

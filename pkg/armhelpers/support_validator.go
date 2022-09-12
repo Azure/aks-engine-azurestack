@@ -6,7 +6,7 @@ package armhelpers
 import (
 	"context"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )

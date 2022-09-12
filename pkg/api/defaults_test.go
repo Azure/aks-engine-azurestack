@@ -21,9 +21,9 @@ import (
 	"github.com/jarcoal/httpmock"
 	"github.com/pkg/errors"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/helpers"
-	"github.com/Azure/aks-engine/pkg/versions"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/versions"
 	log "github.com/sirupsen/logrus"
 )
 

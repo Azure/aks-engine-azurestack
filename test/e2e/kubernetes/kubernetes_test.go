@@ -1,4 +1,6 @@
-//+build test
+//go:build test
+// +build test
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -28,26 +30,26 @@ import (
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/api/common"
-	"github.com/Azure/aks-engine/pkg/armhelpers"
-	"github.com/Azure/aks-engine/test/e2e/config"
-	"github.com/Azure/aks-engine/test/e2e/engine"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/daemonset"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/deployment"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/event"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/hpa"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/job"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/namespace"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/networkpolicy"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/node"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/persistentvolume"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/persistentvolumeclaims"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/pod"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/service"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/storageclass"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/util"
-	"github.com/Azure/aks-engine/test/e2e/remote"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/daemonset"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/deployment"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/event"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/hpa"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/job"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/namespace"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/networkpolicy"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/node"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/persistentvolume"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/persistentvolumeclaims"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/pod"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/service"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/storageclass"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 
 	. "github.com/onsi/ginkgo"
