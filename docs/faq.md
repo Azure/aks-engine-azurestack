@@ -34,9 +34,9 @@ Yes. `aks-engine` released [v0.27.0][] as a continuation of the ACS-Engine proje
 
 
 [AKS]: https://azure.microsoft.com/en-us/services/kubernetes-service/
-[AKS Engine]: https://github.com/Azure/aks-engine
+[AKS Engine]: https://github.com/Azure/aks-engine-azurestack
 [Azure command-line tool]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
 [Kubernetes]: https://kubernetes.io/
-[v0.27.0]: https://github.com/Azure/aks-engine/releases/tag/v0.27.0
+[v0.27.0]: https://github.com/Azure/aks-engine-azurestack/releases/tag/v0.27.0
 [v0.26.2]: https://github.com/Azure/acs-engine/releases/tag/v0.26.2
-[project-status]: https://github.com/Azure/aks-engine/#project-status
+[project-status]: https://github.com/Azure/aks-engine-azurestack/#project-status

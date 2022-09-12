@@ -157,7 +157,7 @@ When using Azure integrated networking the maxPods setting will be set to 30 by 
 
 Using the default configuration, Kubernetes allows communication between all
 Pods within a cluster. To ensure that Pods can only be accessed by authorized
-Pods, a policy enforcement is needed. To enable policy enforcement using Calico refer to the [cluster definitions](clusterdefinitions.md#kubernetesconfig) document under networkPolicy. There is also a reference cluster definition available [here](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy/kubernetes-calico-azure.json).
+Pods, a policy enforcement is needed. To enable policy enforcement using Calico refer to the [cluster definitions](clusterdefinitions.md#kubernetesconfig) document under networkPolicy. There is also a reference cluster definition available [here](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy/kubernetes-calico-azure.json).
 
 This will deploy a Calico node controller to every instance of the cluster
 using a Kubernetes DaemonSet. After a successful deployment you should be able
@@ -175,13 +175,13 @@ Per default Calico still allows all communication within the cluster. Using Kube
 
 - [NetworkPolicy User Guide](https://kubernetes.io/docs/user-guide/networkpolicies/)
 - [NetworkPolicy Example Walkthrough](https://kubernetes.io/docs/getting-started-guides/network-policy/walkthrough/)
-- [Calico Kubernetes](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy)
+- [Calico Kubernetes](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy)
 
 ### Calico 3.3 cleanup after upgrading to 3.5 or greater
 
 Because Calico 3.3 is using Calico CNI, while Calico 3.5 or greater moves to Azure CNI, if the cluster is upgraded from calico 3.3 to 3.5 or greater, then some manual cluster resource cleanup will be required to successfully complete the upgrade. We've provided a sample resource spec here that can be used as an example:
 
-https://github.com/Azure/aks-engine/raw/master/docs/topics/calico-3.3.1-cleanup-after-upgrade.yaml
+https://github.com/Azure/aks-engine-azurestack/raw/master/docs/topics/calico-3.3.1-cleanup-after-upgrade.yaml
 
 There are some placeholder tokens in the above `yaml` file, so please reconcile those with the actual values in your cluster. Look for these placeholder strings in the spec, then compare with the running spec of the comparable pre-3.5 resource in your cluster, and modify the cleanup spec accordingly:
 
@@ -205,7 +205,7 @@ Pods within a cluster. To ensure that Pods can only be accessed by authorized
 Pods, a policy enforcement is needed. To enable policy enforcement using Cilium refer to the
 [cluster definitions](clusterdefinitions.md#kubernetesconfig)
 document under networkPolicy. There is also a reference cluster definition available
-[here](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy/kubernetes-cilium.json).
+[here](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy/kubernetes-cilium.json).
 
 This will deploy a Cilium agent to every instance of the cluster
 using a Kubernetes DaemonSet. After a successful deployment you should be able
@@ -225,7 +225,7 @@ you can define stricter policies. Good resources to get information about that a
 - [Cilum Network Policy Docs](https://cilium.readthedocs.io/en/latest/kubernetes/policy/#k8s-policy)
 - [NetworkPolicy User Guide](https://kubernetes.io/docs/user-guide/networkpolicies/)
 - [NetworkPolicy Example Walkthrough](https://kubernetes.io/docs/getting-started-guides/network-policy/walkthrough/)
-- [Cilium Kubernetes](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy)
+- [Cilium Kubernetes](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy)
 
 <a name="feat-antrea"></a>
 
@@ -236,7 +236,7 @@ Pods within a cluster. To ensure that Pods can only be accessed by authorized
 Pods, a policy enforcement is needed. To enable policy enforcement using Antrea refer to the
 [cluster definitions](clusterdefinitions.md#kubernetesconfig)
 document under networkPolicy. There is also a reference cluster definition available
-[here](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy/kubernetes-antrea.json).
+[here](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy/kubernetes-antrea.json).
 
 This will deploy single replica of Antrea controller and Antrea agent to every
 instance of the cluster using a Kubernetes DaemonSet. After a successful deployment
@@ -258,7 +258,7 @@ you can define stricter policies. Good resources to get information about that a
 - [Antrea Architecture Docs](https://github.com/vmware-tanzu/antrea/blob/master/docs/architecture.md)
 - [NetworkPolicy User Guide](https://kubernetes.io/docs/user-guide/networkpolicies/)
 - [NetworkPolicy Example Walkthrough](https://kubernetes.io/docs/getting-started-guides/network-policy/walkthrough/)
-- [Antrea Kubernetes](https://github.com/Azure/aks-engine/blob/master/examples/networkpolicy)
+- [Antrea Kubernetes](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/networkpolicy)
 
 <a name="feat-custom-vnet"></a>
 

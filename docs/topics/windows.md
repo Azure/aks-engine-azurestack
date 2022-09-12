@@ -62,7 +62,7 @@ Once it's installed, make sure you can connect to Azure with it. Open a new Powe
 
 Windows support is evolving rapidly, so be sure to use the latest AKS Engine  version (v0.20 or later).
 
-1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine/releases) on GitHub.
+1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine-azurestack/releases) on GitHub.
 
 2. Find the latest version, and download the file ending in `-windows-amd64.zip`.
 
@@ -148,7 +148,7 @@ Once you have those installed, make sure you can log into Azure. Open a new Term
 
 Windows support is evolving rapidly, so be sure to use the latest AKS Engine version (v0.20 or later).
 
-1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine/releases) on GitHub.
+1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine-azurestack/releases) on GitHub.
 
 2. Find the latest version, and download the file ending in `-darwin-amd64.zip`.
 
@@ -200,7 +200,7 @@ Now, make sure you can log into Azure. Open a new Terminal window, then run `az 
 
 Windows support is evolving rapidly, so be sure to use the latest AKS Engine version (v0.20 or later).
 
-1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine/releases) on GitHub.
+1. Browse to the AKS Engine [releases page](https://github.com/Azure/aks-engine-azurestack/releases) on GitHub.
 
 2. Find the latest version, and download the file ending in `-linux-amd64.zip`.
 
@@ -326,7 +326,7 @@ $windowsUser = "winuser"
 $windowsPassword = "Cr4shOverride!"
 
 # Download template
-Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Azure/aks-engine/master/examples/windows/kubernetes.json -OutFile kubernetes-windows.json
+Invoke-WebRequest -UseBasicParsing https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/examples/windows/kubernetes.json -OutFile kubernetes-windows.json
 
 # Load template
 $inJson = Get-Content .\kubernetes-windows.json | ConvertFrom-Json
@@ -357,7 +357,7 @@ Using the same terminal as before, you can use this script to download the templ
 $ export DNSPREFIX="wink8s1"
 $ export WINDOWSUSER="winuser"
 $ export WINDOWSPASSWORD="Cr4shOverride!"
-$ curl -L https://raw.githubusercontent.com/Azure/aks-engine/master/examples/windows/kubernetes.json -o kubernetes.json
+$ curl -L https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/examples/windows/kubernetes.json -o kubernetes.json
 $ cat kubernetes.json | \
   jq ".properties.masterProfile.dnsPrefix = \"$DNSPREFIX\"" | \
   jq ".properties.linuxProfile.ssh.publicKeys[0].keyData = \"`cat ~/.ssh/id_rsa.pub`\"" | \

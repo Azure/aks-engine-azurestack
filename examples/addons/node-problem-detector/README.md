@@ -81,4 +81,4 @@ Kubernetes
 
 ## Contact
 
-- If you have any questions or feedback regarding the node-problem-detector addon, please file an issue at https://github.com/Azure/aks-engine/issues
+- If you have any questions or feedback regarding the node-problem-detector addon, please file an issue at https://github.com/Azure/aks-engine-azurestack/issues
