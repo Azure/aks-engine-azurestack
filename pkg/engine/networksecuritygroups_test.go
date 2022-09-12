@@ -10,7 +10,7 @@ import (
 
 	"testing"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 )
 
 func TestCreateNetworkSecurityGroup(t *testing.T) {

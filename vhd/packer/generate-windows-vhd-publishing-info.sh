@@ -16,7 +16,7 @@ done
 
 start_date=$(date +"%Y-%m-%dT00:00Z" -d "-1 day")
 expiry_date=$(date +"%Y-%m-%dT00:00Z" -d "+1 year")
-sas_token=$(az storage container generate-sas --name vhds --permissions lr --connection-string ${CLASSIC_SA_CONNECTION_STRING} --start ${start_date} --expiry ${expiry_date} | tr -d '"')
+sas_token=$(az storage container generate-sas --name windows --permissions lr --connection-string ${CLASSIC_SA_CONNECTION_STRING} --start ${start_date} --expiry ${expiry_date} | tr -d '"')
 vhd_url="${STORAGE_ACCT_BLOB_URL}/${VHD_NAME}?$sas_token"
 
 # Get verion info from release notes

@@ -8,7 +8,7 @@ import (
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/uuid"
 
-	"github.com/Azure/aks-engine/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 )
 
 // CreateMockContainerService returns a mock container service for testing purposes

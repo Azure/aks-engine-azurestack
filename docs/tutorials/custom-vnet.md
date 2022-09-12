@@ -1,6 +1,6 @@
 # Using a custom virtual network with AKS Engine
 
-In this tutorial you are going to learn how to use [AKS Engine](https://github.com/Azure/aks-engine) to deploy a brand new cluster into an existing or pre-created virtual network.
+In this tutorial you are going to learn how to use [AKS Engine](https://github.com/Azure/aks-engine-azurestack) to deploy a brand new cluster into an existing or pre-created virtual network.
 By doing this, you will be able to control the properties of the virtual network or integrate a new cluster into your existing infrastructure.
 
 _The Kubernetes cluster should be deployed in the same resource group as the virtual network and the service principal you use for the cluster needs permissions on the VNET resource's group too._
@@ -90,7 +90,7 @@ AKS Engine uses a JSON template in input and generates the ARM template and ARM 
 
 Depending on the orchestrator you want to deploy, the number of agent pools, the machine size you want (etc.) this input template could differ from the one we are going to detail here.
 
-There are a lot of examples available on the [AKS Engine GitHub](https://github.com/Azure/aks-engine/tree/master/examples) and you can find [one dedicated for virtual network](https://github.com/Azure/aks-engine/blob/master/examples/vnet/README.md).
+There are a lot of examples available on the [AKS Engine GitHub](https://github.com/Azure/aks-engine-azurestack/tree/master/examples) and you can find [one dedicated for virtual network](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/vnet/README.md).
 
 In this case, we are going to use the following template (this creates a cluster with the Azure CNI network plugin):
 

@@ -12,11 +12,11 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/Azure/aks-engine/pkg/api"
-	"github.com/Azure/aks-engine/pkg/armhelpers"
-	"github.com/Azure/aks-engine/pkg/i18n"
-	"github.com/Azure/aks-engine/pkg/kubernetes"
-	"github.com/Azure/aks-engine/pkg/operations"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
+	"github.com/Azure/aks-engine-azurestack/pkg/operations"
 	"github.com/sirupsen/logrus"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"

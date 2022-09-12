@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 	"github.com/sirupsen/logrus"
 )

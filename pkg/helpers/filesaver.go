@@ -8,7 +8,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/Azure/aks-engine/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	log "github.com/sirupsen/logrus"
 )
 

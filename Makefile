@@ -22,7 +22,6 @@ VERSION_SHORT   ?= $(shell git rev-parse --short HEAD)
 GITTAG          := $(shell git describe --exact-match --tags $(shell git log -n1 --pretty='%h') 2> /dev/null)
 GOBIN           ?= $(shell $(GO) env GOPATH)/bin
 TOOLSBIN        := $(CURDIR)/hack/tools/bin
-AIKey           ?= c92d8284-b550-4b06-b7ba-e80fd7178faa
 ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif
@@ -36,7 +35,7 @@ DEV_CMD_RUN := docker run $(DEV_ENV_OPTS)
 ifdef DEBUG
 LDFLAGS := -X main.version=$(VERSION)
 else
-LDFLAGS := -s -X main.version=$(VERSION) -X github.com/Azure/$(PROJECT)/pkg/telemetry.AKSEngineAppInsightsKey=$(AIKey)
+LDFLAGS := -s -X main.version=$(VERSION)
 endif
 BINARY_DEST_DIR ?= bin
 
@@ -132,20 +131,13 @@ checksum:
 		shasum -a 256 "$${f}"  | awk '{print $$1}' > "$${f}.sha256" ; \
 	done
 
-.PHONY: build-container
-build-container:
-	docker build --no-cache --build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
-		--build-arg AKSENGINE_VERSION="$(VERSION)" -t microsoft/aks-engine:$(VERSION) \
-		--file ./releases/Dockerfile.linux ./releases || \
-	echo 'This target works only for published releases. For example, "VERSION=0.32.0 make build-container".'
-
 .PHONY: clean
 clean: tools-clean
 	@rm -rf $(BINDIR) ./_dist ./pkg/helpers/unit_tests
 
 GIT_BASEDIR    = $(shell git rev-parse --show-toplevel 2>/dev/null)
 ifneq ($(GIT_BASEDIR),)
-	LDFLAGS += -X github.com/Azure/aks-engine/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
+	LDFLAGS += -X github.com/Azure/aks-engine-azurestack/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
 endif
 
 ginkgoBuild: generate

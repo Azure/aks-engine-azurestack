@@ -10,7 +10,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Azure/aks-engine/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
 )
 
 // CustomFileReader takes represents the source text of a file as an io.Reader and

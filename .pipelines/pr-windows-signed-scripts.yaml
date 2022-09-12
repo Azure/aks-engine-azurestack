@@ -16,7 +16,7 @@ jobs:
 - job: test_staged_windows_provisioning_scripts
   timeoutInMinutes: 150
   pool:
-    name: $(BUILD_POOL)
+    vmImage: $(BUILD_POOL)
   steps:
   - script: |
       echo -n 'aksengineci' > sa_name && \
@@ -27,8 +27,8 @@ jobs:
   - script: |
       SA_NAME="$(cat sa_name)" && \
       docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine \
-      -w /go/src/github.com/Azure/aks-engine \
+      -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
+      -w /go/src/github.com/Azure/aks-engine-azurestack \
       -e CLIENT_ID=${CLIENT_ID} \
       -e CLIENT_SECRET="$(CLIENT_SECRET)" \
       -e LOCATION=${LOCATION} \
@@ -42,18 +42,18 @@ jobs:
 
   - script: |
       docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine \
-      -w /go/src/github.com/Azure/aks-engine \
+      -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
+      -w /go/src/github.com/Azure/aks-engine-azurestack \
       ${DEIS_GO_DEV_IMAGE} make build
-    displayName: Build aks-engine-test - make build
+    displayName: Build aks-engine-azurestack-test - make build
     condition: succeeded()
 
   - script: |
       SCRIPT_PACKAGE_URL="$(cat output.log | grep https.*zip)" && \
       echo ${SCRIPT_PACKAGE_URL} && \
       docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine \
-      -w /go/src/github.com/Azure/aks-engine \
+      -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
+      -w /go/src/github.com/Azure/aks-engine-azurestack \
       -e CLEANUP_ON_EXIT="true" \
       -e CLIENT_ID=${CLIENT_ID} \
       -e CLIENT_SECRET="$(CLIENT_SECRET)" \

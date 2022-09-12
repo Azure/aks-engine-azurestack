@@ -1,4 +1,6 @@
-//+build test
+//go:build test
+// +build test
+
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -10,9 +12,9 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/Azure/aks-engine/test/e2e/config"
-	"github.com/Azure/aks-engine/test/e2e/kubernetes/util"
-	"github.com/Azure/aks-engine/test/e2e/metrics"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
+	"github.com/Azure/aks-engine-azurestack/test/e2e/metrics"
 	"github.com/kelseyhightower/envconfig"
 )
 

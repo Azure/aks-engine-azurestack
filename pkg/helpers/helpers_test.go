@@ -16,7 +16,7 @@ import (
 
 	"github.com/Azure/go-autorest/autorest/to"
 
-	"github.com/Azure/aks-engine/pkg/i18n"
+	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/pkg/errors"
 )
 
