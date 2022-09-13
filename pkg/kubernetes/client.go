@@ -4,6 +4,7 @@
 package kubernetes
 
 import (
+	"context"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -60,7 +61,7 @@ func (c *ClientSetClient) ListAllPods() (*v1.PodList, error) {
 
 // ListPodsByOptions returns Pods based on the passed in list options.
 func (c *ClientSetClient) ListPodsByOptions(namespace string, opts metav1.ListOptions) (*v1.PodList, error) {
-	return c.clientset.CoreV1().Pods(namespace).List(opts)
+	return c.clientset.CoreV1().Pods(namespace).List(context.TODO(), opts)
 }
 
 // ListNodes returns a list of Nodes registered in the api server.
@@ -70,7 +71,7 @@ func (c *ClientSetClient) ListNodes() (*v1.NodeList, error) {
 
 // ListNodesByOptions returns a list of Nodes registered in the api server.
 func (c *ClientSetClient) ListNodesByOptions(opts metav1.ListOptions) (*v1.NodeList, error) {
-	return c.clientset.CoreV1().Nodes().List(opts)
+	return c.clientset.CoreV1().Nodes().List(context.TODO(), opts)
 }
 
 // ListServiceAccounts returns a list of Service Accounts in the provided namespace.
@@ -80,52 +81,55 @@ func (c *ClientSetClient) ListServiceAccounts(namespace string) (*v1.ServiceAcco
 
 // ListServiceAccountsByOptions returns a list of Service Accounts in the provided namespace.
 func (c *ClientSetClient) ListServiceAccountsByOptions(namespace string, opts metav1.ListOptions) (*v1.ServiceAccountList, error) {
-	return c.clientset.CoreV1().ServiceAccounts(namespace).List(opts)
+	return c.clientset.CoreV1().ServiceAccounts(namespace).List(context.TODO(), opts)
 }
 
 // ListDeployments returns a list of deployments in the provided namespace.
 func (c *ClientSetClient) ListDeployments(namespace string, opts metav1.ListOptions) (*appsv1.DeploymentList, error) {
-	return c.clientset.AppsV1().Deployments(namespace).List(opts)
+	return c.clientset.AppsV1().Deployments(namespace).List(context.TODO(), opts)
 }
 
 // ListDaemonSets returns a list of daemonsets in the provided namespace.
 func (c *ClientSetClient) ListDaemonSets(namespace string, opts metav1.ListOptions) (*appsv1.DaemonSetList, error) {
-	return c.clientset.AppsV1().DaemonSets(namespace).List(opts)
+	return c.clientset.AppsV1().DaemonSets(namespace).List(context.TODO(), opts)
 }
 
 // ListSecrets returns a list of secrets in the provided namespace.
 func (c *ClientSetClient) ListSecrets(namespace string, opts metav1.ListOptions) (*v1.SecretList, error) {
-	return c.clientset.CoreV1().Secrets(namespace).List(opts)
+	return c.clientset.CoreV1().Secrets(namespace).List(context.TODO(), opts)
 }
 
 // PatchDeployment applies a JSON patch to a deployment in the provided namespace.
 func (c *ClientSetClient) PatchDeployment(namespace, name, jsonPatch string) (*appsv1.Deployment, error) {
-	return c.clientset.AppsV1().Deployments(namespace).Patch(name, types.StrategicMergePatchType, []byte(jsonPatch))
+	opts := metav1.PatchOptions{}
+	return c.clientset.AppsV1().Deployments(namespace).Patch(context.TODO(), name, types.StrategicMergePatchType, []byte(jsonPatch), opts)
 }
 
 // PatchDaemonSet applies a JSON patch to a daemonset in the provided namespace.
 func (c *ClientSetClient) PatchDaemonSet(namespace, name, jsonPatch string) (*appsv1.DaemonSet, error) {
-	return c.clientset.AppsV1().DaemonSets(namespace).Patch(name, types.StrategicMergePatchType, []byte(jsonPatch))
+	opts := metav1.PatchOptions{}
+	return c.clientset.AppsV1().DaemonSets(namespace).Patch(context.TODO(), name, types.StrategicMergePatchType, []byte(jsonPatch), opts)
 }
 
 // GetNode returns details about node with passed in name.
 func (c *ClientSetClient) GetNode(name string) (*v1.Node, error) {
-	return c.clientset.CoreV1().Nodes().Get(name, metav1.GetOptions{})
+	return c.clientset.CoreV1().Nodes().Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 // UpdateNode updates the node in the api server with the passed in info.
 func (c *ClientSetClient) UpdateNode(node *v1.Node) (*v1.Node, error) {
-	return c.clientset.CoreV1().Nodes().Update(node)
+	opts := metav1.UpdateOptions{}
+	return c.clientset.CoreV1().Nodes().Update(context.TODO(), node, opts)
 }
 
 // DeleteNode deregisters the node in the api server.
 func (c *ClientSetClient) DeleteNode(name string) error {
-	return c.clientset.CoreV1().Nodes().Delete(name, &metav1.DeleteOptions{})
+	return c.clientset.CoreV1().Nodes().Delete(context.TODO(), name, metav1.DeleteOptions{})
 }
 
 // DeleteServiceAccount deletes the passed in service account.
 func (c *ClientSetClient) DeleteServiceAccount(sa *v1.ServiceAccount) error {
-	return c.clientset.CoreV1().ServiceAccounts(sa.Namespace).Delete(sa.Name, &metav1.DeleteOptions{})
+	return c.clientset.CoreV1().ServiceAccounts(sa.Namespace).Delete(context.TODO(), sa.Name, metav1.DeleteOptions{})
 }
 
 // SupportEviction queries the api server to discover if it supports eviction, and returns supported type if it is supported.
@@ -161,32 +165,32 @@ func (c *ClientSetClient) SupportEviction() (string, error) {
 
 // DeleteClusterRole deletes the passed in cluster role.
 func (c *ClientSetClient) DeleteClusterRole(role *rbacv1.ClusterRole) error {
-	return c.clientset.RbacV1().ClusterRoles().Delete(role.Name, &metav1.DeleteOptions{})
+	return c.clientset.RbacV1().ClusterRoles().Delete(context.TODO(), role.Name, metav1.DeleteOptions{})
 }
 
 // DeleteDaemonSet deletes the passed in daemonset.
 func (c *ClientSetClient) DeleteDaemonSet(daemonset *appsv1.DaemonSet) error {
-	return c.clientset.AppsV1().DaemonSets(daemonset.Namespace).Delete(daemonset.Name, &metav1.DeleteOptions{})
+	return c.clientset.AppsV1().DaemonSets(daemonset.Namespace).Delete(context.TODO(), daemonset.Name, metav1.DeleteOptions{})
 }
 
 // DeleteDeployment deletes the passed in daemonset.
 func (c *ClientSetClient) DeleteDeployment(deployment *appsv1.Deployment) error {
-	return c.clientset.AppsV1().Deployments(deployment.Namespace).Delete(deployment.Name, &metav1.DeleteOptions{})
+	return c.clientset.AppsV1().Deployments(deployment.Namespace).Delete(context.TODO(), deployment.Name, metav1.DeleteOptions{})
 }
 
 // DeletePod deletes the passed in pod.
 func (c *ClientSetClient) DeletePod(pod *v1.Pod) error {
-	return c.clientset.CoreV1().Pods(pod.Namespace).Delete(pod.Name, &metav1.DeleteOptions{})
+	return c.clientset.CoreV1().Pods(pod.Namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 }
 
 // DeletePods deletes all pods in a namespace that match the option filters.
 func (c *ClientSetClient) DeletePods(namespace string, opts metav1.ListOptions) error {
-	return c.clientset.CoreV1().Pods(namespace).DeleteCollection(&metav1.DeleteOptions{}, opts)
+	return c.clientset.CoreV1().Pods(namespace).DeleteCollection(context.TODO(), metav1.DeleteOptions{}, opts)
 }
 
 // DeleteSecret deletes the passed in secret.
 func (c *ClientSetClient) DeleteSecret(secret *v1.Secret) error {
-	return c.clientset.CoreV1().Secrets(secret.Namespace).Delete(secret.Name, &metav1.DeleteOptions{})
+	return c.clientset.CoreV1().Secrets(secret.Namespace).Delete(context.TODO(), secret.Name, metav1.DeleteOptions{})
 }
 
 // EvictPod evicts the passed in pod using the passed in api version.
@@ -201,12 +205,12 @@ func (c *ClientSetClient) EvictPod(pod *v1.Pod, policyGroupVersion string) error
 			Namespace: pod.Namespace,
 		},
 	}
-	return c.clientset.PolicyV1beta1().Evictions(eviction.Namespace).Evict(eviction)
+	return c.clientset.PolicyV1beta1().Evictions(eviction.Namespace).Evict(context.TODO(), eviction)
 }
 
 // GetPod returns the pod.
 func (c *ClientSetClient) getPod(namespace, name string) (*v1.Pod, error) {
-	return c.clientset.CoreV1().Pods(namespace).Get(name, metav1.GetOptions{})
+	return c.clientset.CoreV1().Pods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 // WaitForDelete waits until all pods are deleted. Returns all pods not deleted and an error on failure.
@@ -239,15 +243,16 @@ func (c *ClientSetClient) WaitForDelete(logger *log.Entry, pods []v1.Pod, usingE
 
 // GetDaemonSet returns a given daemonset in a namespace.
 func (c *ClientSetClient) GetDaemonSet(namespace, name string) (*appsv1.DaemonSet, error) {
-	return c.clientset.AppsV1().DaemonSets(namespace).Get(name, metav1.GetOptions{})
+	return c.clientset.AppsV1().DaemonSets(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 // GetDeployment returns a given deployment in a namespace.
 func (c *ClientSetClient) GetDeployment(namespace, name string) (*appsv1.Deployment, error) {
-	return c.clientset.AppsV1().Deployments(namespace).Get(name, metav1.GetOptions{})
+	return c.clientset.AppsV1().Deployments(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 }
 
 // UpdateDeployment updates a deployment to match the given specification.
 func (c *ClientSetClient) UpdateDeployment(namespace string, deployment *appsv1.Deployment) (*appsv1.Deployment, error) {
-	return c.clientset.AppsV1().Deployments(namespace).Update(deployment)
+	opts := metav1.UpdateOptions{}
+	return c.clientset.AppsV1().Deployments(namespace).Update(context.TODO(), deployment, opts)
 }
