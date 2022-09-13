@@ -370,11 +370,6 @@ for CLUSTER_PROPORTIONAL_AUTOSCALER_VERSION in ${CLUSTER_PROPORTIONAL_AUTOSCALER
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
-# This is to accommodate air-gapped environments, e.g., Azure Stack
-CONTAINER_IMAGE="registry:2.7.1"
-loadContainerImage ${CONTAINER_IMAGE}
-echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-
 df -h
 
 # warn at 75% space taken
