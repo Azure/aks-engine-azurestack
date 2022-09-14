@@ -23,13 +23,24 @@ run-packer-windows: az-login
 	@packer version && set -o pipefail && ($(MAKE) init-packer | tee packer-output) && ($(MAKE) build-packer-windows | tee -a packer-output)
 
 az-copy: az-login
-	azcopy-preview copy "${OS_DISK_SAS}" "${CLASSIC_BLOB}${CLASSIC_SAS_TOKEN}"
+	azcopy-preview copy "${OS_DISK_SAS}" "${SA_CONTAINER_URL}${SA_TOKEN}"
 
 delete-sa: az-login
-	az storage account delete -n ${SA_NAME} -g ${AZURE_RESOURCE_GROUP_NAME} --yes
+	az storage account delete -n ${PACKER_TEMP_SA} -g ${PACKER_TEMP_GROUP} --yes
 
 generate-sas: az-login
 	az storage container generate-sas --name ubuntu --permissions lr --connection-string "${CLASSIC_SA_CONNECTION_STRING}" --start ${START_DATE} --expiry ${EXPIRY_DATE} | tr -d '"' | tee -a vhd-sas && cat vhd-sas
 
 windows-vhd-publishing-info: az-login
 	@./vhd/packer/generate-windows-vhd-publishing-info.sh
+
+sig-image-version: az-login
+	az sig image-version create \
+		--resource-group ${SIG_GROUP} \
+		--gallery-name ${SIG_NAME} \
+		--gallery-image-definition ${SIG_IMG_DEF} \
+		--gallery-image-version ${VHD_VERSION} \
+		--target-regions ${SIG_LOCATION} \
+		--replica-count 1 \
+		--os-vhd-uri ${SA_CONTAINER_URL}/${VHD_NAME} \
+		--os-vhd-storage-account ${VHD_SA}

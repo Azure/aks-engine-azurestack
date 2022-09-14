@@ -1,13 +1,8 @@
+name: $(Year:yyyy).$(DayOfYear).$(Rev:r)_Ubuntu_$(UBUNTU_SKU)
 trigger: none
 
-# steps:
-# - create an VHD in Packer to normal storage account
-# - copy from Packer storage account to classic storage account using AzCopy
-# - generate SAS link from azure CLI
-# - POST a new SKU to azure marketplace
-
 variables:
-  CONTAINER_IMAGE:  'mcr.microsoft.com/oss/azcu/go-dev:v1.32.3'
+  CONTAINER_IMAGE: 'mcr.microsoft.com/oss/azcu/go-dev:v1.32.3'
 
 pool:
   vmImage: 'Ubuntu 18.04'
@@ -20,15 +15,15 @@ steps:
     -e CLIENT_SECRET="$(CLIENT_SECRET)" \
     -e TENANT_ID=${TENANT_ID} \
     -e AZURE_VM_SIZE=${AZURE_VM_SIZE} \
-    -e AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME} \
+    -e PACKER_TEMP_GROUP=${PACKER_TEMP_GROUP} \
     -e AZURE_LOCATION=${AZURE_LOCATION} \
     -e FEATURE_FLAGS=${FEATURE_FLAGS} \
     -e GIT_VERSION=$(Build.SourceVersion) \
     -e BUILD_ID=$(Build.BuildId) \
     -e BUILD_NUMBER=$(Build.BuildNumber) \
-    -e UBUNTU_SKU=18.04 \
+    -e UBUNTU_SKU=${UBUNTU_SKU} \
     ${CONTAINER_IMAGE} make run-packer
-  displayName: Building VHD
+  displayName: Build VHD
 - task: PublishPipelineArtifact@0
   inputs:
     artifactName: 'vhd-release-notes'
@@ -36,32 +31,53 @@ steps:
 - script: |
     OS_DISK_SAS="$(cat packer-output | grep "OSDiskUriReadOnlySas:" | cut -d " " -f 2)" && \
     VHD_NAME="$(echo $OS_DISK_SAS | cut -d "/" -f 8 | cut -d "?" -f 1)" && \
-    printf "COPY ME ----> ${CLASSIC_BLOB}/${VHD_NAME}?" | tee -a vhd-sas && \
+    printf "COPY ME ----> ${SA_CONTAINER_URL}/${VHD_NAME}?" | tee -a vhd-sas && \
     docker run --rm \
     -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
     -w /go/src/github.com/Azure/aks-engine-azurestack \
     -e CLIENT_ID=${CLIENT_ID} \
     -e CLIENT_SECRET="$(CLIENT_SECRET)" \
     -e TENANT_ID=${TENANT_ID} \
-    -e CLASSIC_BLOB=${CLASSIC_BLOB} \
-    -e CLASSIC_SAS_TOKEN="$(SAS_TOKEN)" \
+    -e SA_CONTAINER_URL=${SA_CONTAINER_URL} \
+    -e SA_TOKEN="$(SAS_TOKEN)" \
     -e OS_DISK_SAS=${OS_DISK_SAS} \
-    -e VHD_NAME=${VHD_NAME} \
     ${CONTAINER_IMAGE} make az-copy
-  displayName: Copying resource to Classic Storage Account
+  displayName: Copy VHD to Storage Account
   condition: eq(variables.DRY_RUN, 'False')
 - script: |
-    SA_NAME="$(cat packer-output | grep "storage name:" | cut -d " " -f 3)" && \
+    OS_DISK_URI="$(cat packer-output | grep "OSDiskUri:" | cut -d " " -f 2)" && \
+    VHD_SA="/subscriptions/${SUBSCRIPTION_ID}/resourceGroups/${SA_GROUP}/providers/Microsoft.Storage/storageAccounts/${SA_NAME}" && \
+    VHD_NAME="$(echo $OS_DISK_URI | cut -d "/" -f 8 | cut -d "?" -f 1)" && \
+    VHD_VERSION="$(echo $(Build.BuildNumber) | cut -d '_' -f 1)" && \
     docker run --rm \
     -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
     -w /go/src/github.com/Azure/aks-engine-azurestack \
     -e CLIENT_ID=${CLIENT_ID} \
     -e CLIENT_SECRET="$(CLIENT_SECRET)" \
     -e TENANT_ID=${TENANT_ID} \
-    -e SA_NAME=${SA_NAME} \
-    -e AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME} \
+    -e VHD_SA=${VHD_SA} \
+    -e VHD_NAME=${VHD_NAME} \
+    -e VHD_VERSION=${VHD_VERSION} \
+    -e SA_CONTAINER_URL=${SA_CONTAINER_URL} \
+    -e SIG_LOCATION=${SIG_LOCATION} \
+    -e SIG_GROUP=${SIG_GROUP} \
+    -e SIG_NAME=${SIG_NAME} \
+    -e SIG_IMG_DEF=ubuntu-${UBUNTU_SKU} \
+    ${CONTAINER_IMAGE} make sig-image-version
+  displayName: Create SIG Image Version
+  condition: eq(variables.DRY_RUN, 'False')
+- script: |
+    PACKER_TEMP_SA="$(cat packer-output | grep "storage name:" | cut -d " " -f 3)" && \
+    docker run --rm \
+    -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
+    -w /go/src/github.com/Azure/aks-engine-azurestack \
+    -e CLIENT_ID=${CLIENT_ID} \
+    -e CLIENT_SECRET="$(CLIENT_SECRET)" \
+    -e TENANT_ID=${TENANT_ID} \
+    -e PACKER_TEMP_SA=${PACKER_TEMP_SA} \
+    -e PACKER_TEMP_GROUP=${PACKER_TEMP_GROUP} \
     ${CONTAINER_IMAGE} make delete-sa
-  displayName: Clean-up Storage Account
+  displayName: Delete Packer Temp SA
   condition: always()
 - script: |
     docker run --rm \
@@ -74,4 +90,4 @@ steps:
     -e START_DATE=${START_DATE} \
     -e EXPIRY_DATE=${EXPIRY_DATE} \
     ${CONTAINER_IMAGE} make generate-sas
-  displayName: Getting Shared Access Signature URI
+  displayName: Generate Shared Access Signature URI
