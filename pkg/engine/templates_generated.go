@@ -16164,10 +16164,9 @@ var _k8sCloudInitArtifactsCisSh = []byte(`#!/bin/bash
 
 assignRootPW() {
   if grep '^root:[!*]:' /etc/shadow; then
-    SALT=$(openssl rand -base64 5)
     SECRET=$(openssl rand -base64 37)
-    CMD="import crypt, getpass, pwd; print crypt.crypt('$SECRET', '\$6\$$SALT\$')"
-    HASH=$(python -c "$CMD")
+    CMD="import crypt; print (crypt.crypt('$SECRET', crypt.mksalt()))"
+    HASH=$(python3 -c "$CMD")
 
     echo 'root:'$HASH | /usr/sbin/chpasswd -e || exit 112
   fi
@@ -16370,7 +16369,7 @@ configureChrony() {
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
 }
-disable1804SystemdResolved() {
+disableSystemdResolved() {
   {{/* Ignoring systemd-resolved query service but using its resolv.conf file */}}
   {{/* This is the simplest approach to workaround resolved issues without completely uninstall it */}}
   [ -f /run/systemd/resolve/resolv.conf ] && sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
@@ -16902,7 +16901,7 @@ ensureGPUDrivers() {
 {{end}}
 {{- if HasDCSeriesSKU}}
 installSGXDrivers() {
-  [[ $UBUNTU_RELEASE == "18.04" || $UBUNTU_RELEASE == "16.04" ]] || exit 92
+  [[ $UBUNTU_RELEASE == "18.04" || $UBUNTU_RELEASE == "20.04" ]] || exit 92
 
   local packages="make gcc dkms" oe_dir="/opt/azure/containers/oe"
   wait_for_apt_locks
@@ -17235,6 +17234,8 @@ fi
 DOCKER=/usr/bin/docker
 if [[ $UBUNTU_RELEASE == "18.04" ]]; then
   export GPU_DV=470.103.01
+elif [[ $UBUNTU_RELEASE == "20.04" ]]; then
+  export GPU_DV=470.103.01
 else
   export GPU_DV=418.40.04
 fi
@@ -17550,7 +17551,7 @@ installEtcd() {
   fi
 }
 installDeps() {
-  packages="apache2-utils apt-transport-https blobfuse=1.1.1 ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
+  packages="apache2-utils apt-transport-https blobfuse=1.4.5 ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
@@ -17560,10 +17561,8 @@ installDeps() {
     retrycmd 10 5 10 cp /tmp/microsoft.gpg /etc/apt/trusted.gpg.d/ || exit 26
     aptmarkWALinuxAgent hold
     packages+=" cgroup-lite ceph-common glusterfs-client"
-    if [[ $UBUNTU_RELEASE == "18.04" ]]; then
-      disableTimeSyncd
-      packages+=" ntp ntpstat chrony"
-    fi
+    disableTimeSyncd
+    packages+=" ntp ntpstat chrony"
   elif [[ $OS == $DEBIAN_OS_NAME ]]; then
     packages+=" gpg cgroup-bin"
   fi
@@ -17830,9 +17829,7 @@ wait_for_file 3600 1 {{GetCustomCloudConfigCSEScriptFilepath}} || exit {{GetCSEE
 source {{GetCustomCloudConfigCSEScriptFilepath }}
 {{end}}
 
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-  disable1804SystemdResolved
-fi
+disableSystemdResolved
 
 set +x
 ETCD_PEER_CERT=$(echo ${ETCD_PEER_CERTIFICATES} | cut -d'[' -f 2 | cut -d']' -f 1 | cut -d',' -f $((NODE_INDEX + 1)))
@@ -17868,20 +17865,16 @@ fi
 {{- if not IsVHDDistroForAllNodes}}
 if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
   time_metric "InstallDeps" installDeps
-  if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-    overrideNetworkConfig
-  fi
+  overrideNetworkConfig
   {{- if not IsDockerContainerRuntime}}
   time_metric "InstallImg" installImg
   {{end}}
 fi
 {{end}}
 
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-  if apt list --installed | grep 'chrony'; then
-    time_metric "ConfigureChrony" configureChrony
-    time_metric "EnsureChrony" ensureChrony
-  fi
+if apt list --installed | grep 'chrony'; then
+  time_metric "ConfigureChrony" configureChrony
+  time_metric "EnsureChrony" ensureChrony
 fi
 
 if [[ $OS == $UBUNTU_OS_NAME ]]; then
@@ -19683,7 +19676,7 @@ write_files:
     {{CloudInitData "auditdRules"}}
 {{end}}
 
-{{- if .MasterProfile.IsUbuntu1804}}
+{{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}
 - path: /var/run/reboot-required
   permissions: "0644"
@@ -20302,7 +20295,7 @@ write_files:
     {{CloudInitData "auditdRules"}}
 {{end}}
 
-{{- if .IsUbuntu1804}}
+{{- if not .IsUbuntu1604}}
   {{- if not .IsVHDDistro}}
 - path: /var/run/reboot-required
   permissions: "0644"

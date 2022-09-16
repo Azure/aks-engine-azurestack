@@ -47,6 +47,7 @@ apt packages:
   - libpwquality-tools
   - make
   - mount
+  - net-tools
   - nfs-common
   - pigz
   - socat
@@ -55,20 +56,14 @@ apt packages:
   - util-linux
   - xz-utils
   - zip
+  - ntp
+  - ntpstat
+  - chrony
 EOF
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-{
-  echo "  - ntp"
-  echo "  - ntpstat"
-  echo "  - chrony"
-} >> ${VHD_LOGS_FILEPATH}
-fi
 
 chmod a-x /etc/update-motd.d/??-{motd-news,release-upgrade}
 
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-  overrideNetworkConfig
-fi
+overrideNetworkConfig
 
 cat << EOF >> ${VHD_LOGS_FILEPATH}
 Binaries:

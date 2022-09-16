@@ -114,7 +114,7 @@ configureChrony() {
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
 }
-disable1804SystemdResolved() {
+disableSystemdResolved() {
   {{/* Ignoring systemd-resolved query service but using its resolv.conf file */}}
   {{/* This is the simplest approach to workaround resolved issues without completely uninstall it */}}
   [ -f /run/systemd/resolve/resolv.conf ] && sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
@@ -646,7 +646,7 @@ ensureGPUDrivers() {
 {{end}}
 {{- if HasDCSeriesSKU}}
 installSGXDrivers() {
-  [[ $UBUNTU_RELEASE == "18.04" || $UBUNTU_RELEASE == "16.04" ]] || exit 92
+  [[ $UBUNTU_RELEASE == "18.04" || $UBUNTU_RELEASE == "20.04" ]] || exit 92
 
   local packages="make gcc dkms" oe_dir="/opt/azure/containers/oe"
   wait_for_apt_locks

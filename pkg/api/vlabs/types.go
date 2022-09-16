@@ -744,9 +744,19 @@ func (m *MasterProfile) IsUbuntu1804() bool {
 	}
 }
 
+// IsUbuntu2004 returns true if the agent pool profile distro is based on Ubuntu 16.04
+func (m *MasterProfile) IsUbuntu2004() bool {
+	switch m.Distro {
+	case AKSUbuntu2004, Ubuntu2004:
+		return true
+	default:
+		return false
+	}
+}
+
 // IsUbuntu returns true if the master profile distro is any ubuntu distro
 func (m *MasterProfile) IsUbuntu() bool {
-	return m.IsUbuntu1604() || m.IsUbuntu1804()
+	return m.IsUbuntu1604() || m.IsUbuntu1804() || m.IsUbuntu2004()
 }
 
 // IsVirtualMachineScaleSets returns true if the master availability profile is VMSS
@@ -921,9 +931,22 @@ func (a *AgentPoolProfile) IsUbuntu1804() bool {
 	return false
 }
 
+// IsUbuntu2004 returns true if the agent pool profile distro is based on Ubuntu 16.04
+func (a *AgentPoolProfile) IsUbuntu2004() bool {
+	if a.OSType != Windows {
+		switch a.Distro {
+		case AKSUbuntu2004, Ubuntu2004:
+			return true
+		default:
+			return false
+		}
+	}
+	return false
+}
+
 // IsUbuntu returns true if the master profile distro is any ubuntu distro
 func (a *AgentPoolProfile) IsUbuntu() bool {
-	return a.IsUbuntu1604() || a.IsUbuntu1804()
+	return a.IsUbuntu1604() || a.IsUbuntu1804() || a.IsUbuntu2004()
 }
 
 // HasSearchDomain returns true if the customer specified secrets to install

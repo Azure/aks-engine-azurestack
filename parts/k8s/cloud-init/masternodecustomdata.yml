@@ -47,7 +47,7 @@ write_files:
     {{CloudInitData "auditdRules"}}
 {{end}}
 
-{{- if .MasterProfile.IsUbuntu1804}}
+{{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}
 - path: /var/run/reboot-required
   permissions: "0644"

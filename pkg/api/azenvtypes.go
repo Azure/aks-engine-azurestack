@@ -101,6 +101,14 @@ var (
 		ImageVersion:   "latest",
 	}
 
+	//Ubuntu2004OSImageConfig is the Ubunutu 20.04-LTS Linux distribution.
+	Ubuntu2004OSImageConfig = AzureOSImageConfig{
+		ImageOffer:     "0001-com-ubuntu-server-focal",
+		ImageSku:       "20_04-lts",
+		ImagePublisher: "Canonical",
+		ImageVersion:   "latest",
+	}
+
 	//Ubuntu1804Gen2OSImageConfig is Gen2 flavor the Ubunutu 18.04-LTS Linux distribution.
 	Ubuntu1804Gen2OSImageConfig = AzureOSImageConfig{
 		ImageOffer:     "UbuntuServer",
@@ -133,6 +141,14 @@ var (
 		ImageSku:       "aks-engine-ubuntu-1804-202112",
 		ImagePublisher: "microsoft-aks",
 		ImageVersion:   "2022.08.12",
+	}
+
+	// AKSUbuntu1804OSImageConfig is the AKS image based on Ubuntu 20.04-LTS.
+	AKSUbuntu2004OSImageConfig = AzureOSImageConfig{
+		ImageOffer:     "aks",
+		ImageSku:       "aks-engine-ubuntu-2004",
+		ImagePublisher: "microsoft-aks",
+		ImageVersion:   "0.72.0",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
@@ -182,11 +198,13 @@ var (
 			Ubuntu:            Ubuntu1604OSImageConfig,
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
+			Ubuntu2004:        Ubuntu2004OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
+			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
 			ACC1604:           ACC1604OSImageConfig,
 		},
 	}
@@ -202,11 +220,13 @@ var (
 			Ubuntu:            Ubuntu1604OSImageConfig,
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
+			Ubuntu2004:        Ubuntu2004OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     Ubuntu1604OSImageConfig,
 			AKS1604Deprecated: Ubuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     Ubuntu1604OSImageConfig, // workaround for https://github.com/Azure/aks-engine/issues/761
 			AKS1804Deprecated: Ubuntu1604OSImageConfig, // for back-compat
+			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
 		},
 	}
 
@@ -221,11 +241,13 @@ var (
 			Ubuntu:            Ubuntu1604OSImageConfig,
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
+			Ubuntu2004:        Ubuntu2004OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
+			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
 		},
 	}
 
@@ -261,11 +283,13 @@ var (
 			Ubuntu:            Ubuntu1604OSImageConfig,
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
+			Ubuntu2004:        Ubuntu2004OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
+			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
 		},
 	}
 
