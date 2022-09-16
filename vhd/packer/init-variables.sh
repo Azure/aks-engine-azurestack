@@ -51,6 +51,14 @@ fi
 
 echo "storage name: ${STORAGE_ACCOUNT_NAME}"
 
+echo "UBUNTU_SKU set to ${UBUNTU_SKU}"
+UBUNTU_OFFER="UbuntuServer"
+UBUNTU_VER="18.04"
+if [[ "${UBUNTU_SKU}" == "20.04" ]]; then
+	UBUNTU_OFFER="0001-com-ubuntu-server-focal"
+	UBUNTU_VER="20_04"
+fi
+
 cat <<EOF > vhd/packer/settings.json
 {
   "subscription_id": "${SUBSCRIPTION_ID}",
@@ -61,6 +69,8 @@ cat <<EOF > vhd/packer/settings.json
   "location": "${AZURE_LOCATION}",
   "storage_account_name": "${STORAGE_ACCOUNT_NAME}",
   "vm_size": "${AZURE_VM_SIZE}",
+  "ubuntu_offer": "${UBUNTU_OFFER}",
+  "ubuntu_sku": "${UBUNTU_VER}",
   "create_time": "${CREATE_TIME}"
 }
 EOF
