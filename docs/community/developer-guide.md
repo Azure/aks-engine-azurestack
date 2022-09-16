@@ -53,10 +53,10 @@ make bootstrap
 make build
 ```
 
-The build process leaves the compiled `aks-engine` binary in the `bin` directory. Make sure everything completed successfully by running `bin/aks-engine` without any arguments:
+The build process leaves the compiled `aks-engine` binary in the `bin` directory. Make sure everything completed successfully by running `bin/aks-engine-azurestack` without any arguments:
 
 ```sh
-$ ./bin/aks-engine
+$ ./bin/aks-engine-azurestack
 Usage:
   aks-engine [flags]
   aks-engine [command]
@@ -135,7 +135,7 @@ Build aks-engine:
   1. Type `cd aks-engine` to change to the source directory
   1. Type `make bootstrap` to install supporting components
   1. Type `make` to build the project
-  1. Type `./bin/aks-engine` to see the command line parameters
+  1. Type `./bin/aks-engine-azurestack` to see the command line parameters
 
 ### Structure of the Code
 

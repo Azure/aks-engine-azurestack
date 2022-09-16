@@ -20,7 +20,7 @@ $ timeout 60 az group create --name kubernetes-westus2-13811 --location westus2 
 
 $ timeout 60 az group show -n kubernetes-westus2-13811
 
-$ ./bin/aks-engine generate /aks-engine/_output/kubernetes-westus2-13811.json --output-directory /aks-engine/_output/kubernetes-westus2-13811
+$ ./bin/aks-engine-azurestack generate /aks-engine/_output/kubernetes-westus2-13811.json --output-directory /aks-engine/_output/kubernetes-westus2-13811
 
 $ timeout 60 az group show -n kubernetes-westus2-13811
 2020/04/23 16:59:41

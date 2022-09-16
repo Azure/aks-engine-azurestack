@@ -18,13 +18,13 @@ export password=$(cat ~/.kube/$group-sp.json | jq -r .password)
 sleep 180
 
 # Deploy Cluster
-aks-engine deploy --subscription-id $subscription --resource-group $group --location $location us --api-model apimodel.json --dns-prefix $group
+aks-engine-azurestack deploy --subscription-id $subscription --resource-group $group --location $location us --api-model apimodel.json --dns-prefix $group
 
 cp $(pwd)/_output/$group/kubeconfig/kubeconfig.eastus.json ~/.kube/$group.json
 
 sleep 180
 
-aks-engine addpool --subscription-id $subscription --resource-group $group --location $location us --api-model _output/$group/apimodel.json --agent-pool agentpool.json
+aks-engine-azurestack addpool --subscription-id $subscription --resource-group $group --location $location us --api-model _output/$group/apimodel.json --agent-pool agentpool.json
 
 az vmss list -g $group --subscription $subscription -o table
 

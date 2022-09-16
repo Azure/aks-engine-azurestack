@@ -53,7 +53,7 @@ func PauseClusterAutoscaler(client internal.KubeClient) (func() error, error) {
 	return func() error {
 		c := *deploy.Spec.Replicas
 		err := patch(fmt.Sprintf("Resuming %s, setting replica count to %d", name, c), c)
-		log.Warnln("Run \"aks-engine upgrade\" to refresh the cluster-autoscaler node template")
+		log.Warnln("Run \"aks-engine-azurestack upgrade\" to refresh the cluster-autoscaler node template")
 		if err != nil {
 			return err
 		}

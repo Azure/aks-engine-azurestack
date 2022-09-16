@@ -314,7 +314,7 @@ do so (now or later) by using -b with the checkout command again. Example:
   git checkout -b <new-branch-name>
 
 HEAD is now at 666073d49 chore: updating Windows VHD with new cached artifacts (#3843)
-$ bin/aks-engine get-logs --api-model _output/$CLUSTER_NAME/apimodel.json --location $CLUSTER_NAME --linux-ssh-private-key _output/$CLUSTER_NAME-ssh --linux-script ./scripts/collect-logs.sh --ssh-host $CLUSTER_NAME.$LOCATION.cloudapp.azure.com
+$ bin/aks-engine-azurestack get-logs --api-model _output/$CLUSTER_NAME/apimodel.json --location $CLUSTER_NAME --linux-ssh-private-key _output/$CLUSTER_NAME-ssh --linux-script ./scripts/collect-logs.sh --ssh-host $CLUSTER_NAME.$LOCATION.cloudapp.azure.com
 ...
 INFO[0062] Logs downloaded to _output/<name of cluster>/_logs
 ```

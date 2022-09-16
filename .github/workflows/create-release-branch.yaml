@@ -38,7 +38,7 @@ jobs:
         run: |
           sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
           sudo chmod +x /usr/local/bin/k
-      - name: Build aks-engine binary
+      - name: Build aks-engine-azurestack binary
         run: make build-binary
       - name: Validate 1.21 no-egress scenario
         env:

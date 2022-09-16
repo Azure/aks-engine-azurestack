@@ -183,7 +183,7 @@ $ grep orchestratorVersion _output/kubernetes-westus2-95121/apimodel.json
 Now, let's try that scale operation again!
 
 ```sh
-$ bin/aks-engine scale --api-model _output/$RESOURCE_GROUP/apimodel.json --location westus2 --resource-group $RESOURCE_GROUP --apiserver $RESOURCE_GROUP.westus2.cloudapp.azure.com --node-pool agentpool1 --new-node-count 10
+$ bin/aks-engine-azurestack scale --api-model _output/$RESOURCE_GROUP/apimodel.json --location westus2 --resource-group $RESOURCE_GROUP --apiserver $RESOURCE_GROUP.westus2.cloudapp.azure.com --node-pool agentpool1 --new-node-count 10
 INFO[0004] found VMSS k8s-agentpool1-10367588-vmss in resource group kubernetes-westus2-95121 that correlates with node pool agentpool1
 WARN[0004] Any new nodes will have Moby version 19.03.12
 WARN[0004] containerd will be upgraded to version 1.3.7

@@ -45,7 +45,7 @@ In order to ensure that your `aks-engine rotate-certs` operation runs smoothly, 
 Once you have read all the [requirements](#pre-requirements), run `aks-engine rotate-certs` with the appropriate arguments:
 
 ```bash
-./bin/aks-engine rotate-certs \
+./bin/aks-engine-azurestack rotate-certs \
   --location <resource-group-location> \
   --api-model <generated-apimodel.json> \
   --linux-ssh-private-key <private-SSH-key> \
@@ -60,7 +60,7 @@ Once you have read all the [requirements](#pre-requirements), run `aks-engine ro
 For example,
 
 ```bash
-./bin/aks-engine rotate-certs \
+./bin/aks-engine-azurestack rotate-certs \
   --location "westus2" \
   --api-model "_output/my-cluster/apimodel.json" \
   --linux-ssh-private-key "~/.ssh/id_rsa" \

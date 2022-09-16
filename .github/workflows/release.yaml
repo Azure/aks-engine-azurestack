@@ -45,7 +45,7 @@ jobs:
         run: |
           sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
           sudo chmod +x /usr/local/bin/k
-      - name: Build aks-engine binary
+      - name: Build aks-engine-azurestack binary
         run: make build-binary
       - name: print git status after build
         run: |
@@ -133,15 +133,15 @@ jobs:
       - name: Build Artifacts
         run: |
           docker run --rm \
-          -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine \
-          -w /go/src/github.com/Azure/aks-engine \
+          -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine-azurestack \
+          -w /go/src/github.com/Azure/aks-engine-azurestack \
           mcr.microsoft.com/oss/azcu/go-dev:v1.34.7 make dist
       - name: Remove local tag
         run: git tag -d ${{ env.RELEASE_VERSION }}
       - name: Publish Release
         uses: ncipollo/release-action@v1
         with:
-          artifacts: _dist/aks-engine*-*-*.*
+          artifacts: _dist/aks-engine-azurestack*-*-*.*
           bodyFile: releases/CHANGELOG-${{ env.RELEASE_VERSION }}.md
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_VERSION }}

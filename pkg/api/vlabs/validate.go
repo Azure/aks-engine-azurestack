@@ -248,7 +248,7 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 
 			if to.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
 				if to.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && a.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
-					log.Warnf("Clusters with enableEncryptionWithExternalKms=true and system-assigned identity are not upgradable! You will not be able to upgrade your cluster using `aks-engine upgrade`")
+					log.Warnf("Clusters with enableEncryptionWithExternalKms=true and system-assigned identity are not upgradable! You will not be able to upgrade your cluster using `aks-engine-azurestack upgrade`")
 				}
 			}
 
@@ -373,7 +373,7 @@ func (a *Properties) validateMasterProfile(isUpdate bool) error {
 
 	if m.IsVirtualMachineScaleSets() {
 		if !isUpdate {
-			log.Warnf("Clusters with a VMSS control plane are not upgradable! You will not be able to upgrade your cluster using `aks-engine upgrade`")
+			log.Warnf("Clusters with a VMSS control plane are not upgradable! You will not be able to upgrade your cluster using `aks-engine-azurestack upgrade`")
 		}
 		e := validateVMSS(a.OrchestratorProfile, false, m.StorageProfile, a.HasWindows(), a.IsAzureStackCloud())
 		if e != nil {
@@ -1361,7 +1361,7 @@ func (k *KubernetesConfig) Validate(k8sVersion string, hasWindows, ipv6DualStack
 				ctrlMgrNodeMonitorGracePeriod, _ := time.ParseDuration(k.ControllerManagerConfig["--node-monitor-grace-period"])
 				kubeletRetries := ctrlMgrNodeMonitorGracePeriod.Seconds() / nodeStatusUpdateFrequency.Seconds()
 				if kubeletRetries < minKubeletRetries {
-					return errors.Errorf("aks-engine requires that --node-monitor-grace-period(%f)s be larger than nodeStatusUpdateFrequency(%f)s by at least a factor of %d; ", ctrlMgrNodeMonitorGracePeriod.Seconds(), nodeStatusUpdateFrequency.Seconds(), minKubeletRetries)
+					return errors.Errorf("aks-engine-azurestack requires that --node-monitor-grace-period(%f)s be larger than nodeStatusUpdateFrequency(%f)s by at least a factor of %d; ", ctrlMgrNodeMonitorGracePeriod.Seconds(), nodeStatusUpdateFrequency.Seconds(), minKubeletRetries)
 				}
 			}
 		}

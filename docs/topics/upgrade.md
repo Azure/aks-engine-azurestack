@@ -101,7 +101,7 @@ Agent nodes:
 Once you have read all the [requirements](#pre-requirements), run `aks-engine upgrade` with the appropriate arguments:
 
 ```bash
-./bin/aks-engine upgrade \
+./bin/aks-engine-azurestack upgrade \
   --subscription-id <subscription id> \
   --api-model <generated apimodel.json> \
   --location <resource group location> \
@@ -112,7 +112,7 @@ Once you have read all the [requirements](#pre-requirements), run `aks-engine up
 For example,
 
 ```bash
-./bin/aks-engine upgrade \
+./bin/aks-engine-azurestack upgrade \
   --subscription-id xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
   --api-model _output/mycluster/apimodel.json \
   --location westus \
@@ -125,7 +125,7 @@ For example,
 If you use Key Vault for secrets, you must specify a local [kubeconfig file](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) to connect to the cluster because aks-engine is currently unable to read secrets from a Key Vault during an upgrade.
 
 ```bash
- ./bin/aks-engine upgrade \
+ ./bin/aks-engine-azurestack upgrade \
    --api-model _output/mycluster/apimodel.json \
    --location westus \
    --resource-group test-upgrade \
