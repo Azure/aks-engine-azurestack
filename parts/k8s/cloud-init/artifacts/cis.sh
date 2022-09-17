@@ -2,10 +2,9 @@
 
 assignRootPW() {
   if grep '^root:[!*]:' /etc/shadow; then
-    SALT=$(openssl rand -base64 5)
     SECRET=$(openssl rand -base64 37)
-    CMD="import crypt, getpass, pwd; print crypt.crypt('$SECRET', '\$6\$$SALT\$')"
-    HASH=$(python -c "$CMD")
+    CMD="import crypt; print (crypt.crypt('$SECRET', crypt.mksalt()))"
+    HASH=$(python3 -c "$CMD")
 
     echo 'root:'$HASH | /usr/sbin/chpasswd -e || exit 112
   fi

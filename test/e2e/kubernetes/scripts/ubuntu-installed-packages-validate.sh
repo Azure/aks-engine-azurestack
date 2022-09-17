@@ -43,6 +43,7 @@ ipset
 iptables
 jq
 mount
+net-tools
 nfs-common
 pigz
 socat

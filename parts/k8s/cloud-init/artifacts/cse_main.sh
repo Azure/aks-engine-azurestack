@@ -43,9 +43,7 @@ wait_for_file 3600 1 {{GetCustomCloudConfigCSEScriptFilepath}} || exit {{GetCSEE
 source {{GetCustomCloudConfigCSEScriptFilepath }}
 {{end}}
 
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-  disable1804SystemdResolved
-fi
+disableSystemdResolved
 
 set +x
 ETCD_PEER_CERT=$(echo ${ETCD_PEER_CERTIFICATES} | cut -d'[' -f 2 | cut -d']' -f 1 | cut -d',' -f $((NODE_INDEX + 1)))
@@ -81,20 +79,16 @@ fi
 {{- if not IsVHDDistroForAllNodes}}
 if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
   time_metric "InstallDeps" installDeps
-  if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-    overrideNetworkConfig
-  fi
+  overrideNetworkConfig
   {{- if not IsDockerContainerRuntime}}
   time_metric "InstallImg" installImg
   {{end}}
 fi
 {{end}}
 
-if [[ ${UBUNTU_RELEASE} == "18.04" ]]; then
-  if apt list --installed | grep 'chrony'; then
-    time_metric "ConfigureChrony" configureChrony
-    time_metric "EnsureChrony" ensureChrony
-  fi
+if apt list --installed | grep 'chrony'; then
+  time_metric "ConfigureChrony" configureChrony
+  time_metric "EnsureChrony" ensureChrony
 fi
 
 if [[ $OS == $UBUNTU_OS_NAME ]]; then
