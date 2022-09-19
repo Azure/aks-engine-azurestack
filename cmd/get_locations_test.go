@@ -298,9 +298,7 @@ func ExampleLocationsCmd_run_codeOutput() {
 	// Output:
 	// // Copyright (c) Microsoft Corporation. All rights reserved.
 	// // Licensed under the MIT license.
-
 	// package helpers
-
 	// // GetAzureLocations provides all available Azure cloud locations.
 	// //
 	// // Code generated for package helpers by aks-engine DO NOT EDIT. (@generated)

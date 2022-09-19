@@ -13,10 +13,10 @@ linters:
     - errcheck
     - goimports
     - gosimple
-    - golint
     - govet
     - ineffassign
     - misspell
+    - revive
     - staticcheck
     - unconvert
     - unparam

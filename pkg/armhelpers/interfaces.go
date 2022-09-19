@@ -88,7 +88,7 @@ type DiskListPage interface {
 	Values() []compute.Disk
 }
 
-//VMImageFetcher is an extension of AKSEngine client allows us to operate on the virtual machine images in the environment
+// VMImageFetcher is an extension of AKSEngine client allows us to operate on the virtual machine images in the environment
 type VMImageFetcher interface {
 
 	// ListVirtualMachineImages return a list of images
@@ -179,7 +179,6 @@ type AKSEngineClient interface {
 	// DeleteNetworkInterface deletes the specified network interface.
 	DeleteNetworkInterface(ctx context.Context, resourceGroup, nicName string) error
 
-	//
 	// GRAPH
 
 	// CreateGraphAppliction creates an application via the graphrbac client
@@ -191,7 +190,8 @@ type AKSEngineClient interface {
 	DeleteApp(ctx context.Context, applicationName, applicationObjectID string) (autorest.Response, error)
 
 	// User Assigned MSI
-	//CreateUserAssignedID - Creates a user assigned msi.
+
+	// CreateUserAssignedID - Creates a user assigned msi.
 	CreateUserAssignedID(location string, resourceGroup string, userAssignedID string) (*msi.Identity, error)
 
 	// RBAC

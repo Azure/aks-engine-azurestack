@@ -25,7 +25,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-//mockAuthProvider implements AuthProvider and allows in particular to stub out getClient()
+// mockAuthProvider implements AuthProvider and allows in particular to stub out getClient()
 type mockAuthProvider struct {
 	getClientMock armhelpers.AKSEngineClient
 	*authArgs
