@@ -26,7 +26,6 @@ func TestCustomFilesIntoReadersNonExistingFile(t *testing.T) {
 
 }
 
-//What the output should look like for a file with content "test"
 var testFullStringSlice = []string{
 	fmt.Sprintf("- path: %s", "/tmp/test"),
 	"  permissions: \\\"0644\\\"",
@@ -36,7 +35,6 @@ var testFullStringSlice = []string{
 	fmt.Sprintf("    %s\\n\\n", "H4sIAAAAAAAA/ypJLS4BBAAA//8Mfn/YBAAAAA=="),
 }
 
-//What the output should look like for a file with content "filecontent"
 var fileContentFullStringSlice = []string{
 	fmt.Sprintf("- path: %s", "/tmp/test"),
 	"  permissions: \\\"0644\\\"",

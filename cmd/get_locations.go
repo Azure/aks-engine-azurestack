@@ -109,8 +109,8 @@ func (glc *LocationsCmd) run(cmd *cobra.Command, args []string) error {
 		}
 	}
 	if !outputFlagValid {
-		return errors.New(fmt.Sprintf("invalid output format: \"%s\". Allowed values: %s.\n",
-			glc.output, strings.Join(locationsOutputFormatOptions, ", ")))
+		return errors.Errorf("invalid output format: \"%s\". Allowed values: %s",
+			glc.output, strings.Join(locationsOutputFormatOptions, ", "))
 	}
 
 	if err = glc.getAuthArgs().validateAuthArgs(); err != nil {
