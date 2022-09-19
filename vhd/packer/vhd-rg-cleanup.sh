@@ -56,8 +56,8 @@ fi
 
 # find packer resource groups created before our deadline
 echo "Looking for resource groups created over ${EXPIRATION_IN_HOURS} hours ago..."
-for resourceGroup in $( az group list | jq --arg dl $deadline '.[] | select(.name | contains("packer-Resource-Group") or contains("pkr-Resource-Group")) | select(.tags.now < $dl).name' | tr -d '\"' || ""); do
-    for deployment in $(az deployment group list -g $resourceGroup | jq '.[] | .name' | tr -d '\"' || ""); do
+for resourceGroup in $( az group list | jq --arg dl $deadline '.[] | select(.name | contains("packer-Resource-Group") or contains("pkr-Resource-Group")) | select(.tags.now < $dl).name' | tr -d '\"' || true); do
+    for deployment in $(az deployment group list -g $resourceGroup | jq '.[] | .name' | tr -d '\"' || true); do
         echo "Will delete deployment ${deployment} from resource group ${resourceGroup}..."
         if [[ "${DRY_RUN}" = false ]]; then
             az deployment group delete -n $deployment -g $resourceGroup || echo "unable to delete deployment ${deployment}, will continue..."
@@ -81,7 +81,7 @@ if [ -z "$STORAGE_RG" ]; then
 fi
 
 echo "Looking for storage accounts in ${STORAGE_RG} created over ${EXPIRATION_IN_HOURS} hours ago..."
-for storage_account in $(az storage account list -g $STORAGE_RG | jq --arg dl $deadline '.[] | select(.tags.now < $dl).name' | tr -d '\"' || ""); do
+for storage_account in $(az storage account list -g $STORAGE_RG | jq --arg dl $deadline '.[] | select(.tags.now < $dl).name' | tr -d '\"' || true); do
     echo "Will delete storage account ${storage_account} from resource group ${STORAGE_RG}..."
     if [[ "${DRY_RUN}" = false ]]; then
         az storage account delete -y -n $storage_account -g $STORAGE_RG || echo "unable to delete storage account ${storage_account}, will continue..."

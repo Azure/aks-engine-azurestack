@@ -24,13 +24,13 @@ GENERATED_FILES=(
 T="$(mktemp -d)"
 trap 'rm -rf "${T}"' EXIT
 
-for file in ${GENERATED_FILES[*]}; do
+for file in "${GENERATED_FILES[@]}"; do
 	cp -a "${file}" "${T}/"
 done
 
 make generate
 
-for file in ${GENERATED_FILES[*]}; do
+for file in "${GENERATED_FILES[@]}"; do
 	basefile=$(basename "${file}")
 	if ! diff -r "${T}/${basefile}" "${ROOT}/${file}" 2>&1 ; then
 		echo "go generate produced changes that were not already present."
