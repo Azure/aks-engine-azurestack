@@ -5,12 +5,16 @@ parameters:
 jobs:
 - job: build_vhd_windows_${{ parameters.windowsServerVersion }}_${{ parameters.containerRuntime }}
   timeoutInMinutes: 210
+
   strategy:
     maxParallel: 0
+
   pool:
     vmImage: $(BUILD_POOL)
+
   steps:
-  - script: |
+  - displayName: Building Windows VHD
+    script: |
       docker run --rm \
       -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
       -w /go/src/github.com/Azure/aks-engine-azurestack \
@@ -28,53 +32,9 @@ jobs:
       -e CONTAINER_RUNTIME=${{ parameters.containerRuntime }} \
       -e WINDOWS_SERVER_VERSION=${{ parameters.windowsServerVersion }} \
       ${DEIS_GO_DEV_IMAGE} make run-packer-windows
-    displayName: Building windows VHD
 
-  - task: PublishPipelineArtifact@1
-    inputs:
-      artifact: '${{ parameters.windowsServerVersion }}-${{ parameters.containerRuntime }}-vhd-release-notes'
-      path: 'release-notes.txt'
-
-  - script: |
-      OS_DISK_SAS="$(cat packer-output | grep "OSDiskUriReadOnlySas:" | cut -d " " -f 2)" && \
-      VHD_NAME="$(echo $OS_DISK_SAS | cut -d "/" -f 8 | cut -d "?" -f 1)" && \
-      docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
-      -w /go/src/github.com/Azure/aks-engine-azurestack \
-      -e CLIENT_ID=${CLIENT_ID} \
-      -e CLIENT_SECRET="$(CLIENT_SECRET)" \
-      -e TENANT_ID=${TENANT_ID} \
-      -e CLASSIC_BLOB=${STORAGE_ACCT_BLOB_URL} \
-      -e CLASSIC_SAS_TOKEN="$(STORAGE_ACCT_SAS_TOKEN)" \
-      -e OS_DISK_SAS=${OS_DISK_SAS} \
-      -e VHD_NAME=${VHD_NAME} \
-      ${DEIS_GO_DEV_IMAGE} make az-copy
-    displayName: Copying resource to Classic Storage Account
-    condition: and(succeeded(), eq(variables.COPY_VHD, 'True'))
-
-  - script: |
-      OS_DISK_SAS="$(cat packer-output | grep "OSDiskUriReadOnlySas:" | cut -d " " -f 2)" && \
-      VHD_NAME="$(echo $OS_DISK_SAS | cut -d "/" -f 8 | cut -d "?" -f 1)" && \
-      docker run --rm \
-      -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
-      -w /go/src/github.com/Azure/aks-engine-azurestack \
-      -e CLIENT_ID=${CLIENT_ID} \
-      -e CLIENT_SECRET="$(CLIENT_SECRET)" \
-      -e TENANT_ID=${TENANT_ID} \
-      -e CLASSIC_SA_CONNECTION_STRING="$(CLASSIC_SA_CONNECTION_STRING)" \
-      -e STORAGE_ACCT_BLOB_URL=${STORAGE_ACCT_BLOB_URL} \
-      -e VHD_NAME=${VHD_NAME} \
-      ${DEIS_GO_DEV_IMAGE} make windows-vhd-publishing-info
-    displayName: Generating publishing info for Windows VHD
-    condition: and(succeeded(), eq(variables.COPY_VHD, 'True'))
-
-  - task: PublishPipelineArtifact@1
-    inputs:
-      artifact: 'publishing_info_${{ parameters.windowsServerVersion }}_${{ parameters.containerRuntime }}'
-      path: 'windows-vhd-publishing-info.json'
-    condition: and(succeeded(), eq(variables.COPY_VHD, 'True'))
-
-  - script: |
+  - displayName: Delete Packer Temp SA
+    script: |
       SA_NAME="$(cat packer-output | grep "storage name:" | cut -d " " -f 3)" && \
       docker run --rm \
       -v ${PWD}:/go/src/github.com/Azure/aks-engine-azurestack \
@@ -85,10 +45,4 @@ jobs:
       -e SA_NAME=${SA_NAME} \
       -e AZURE_RESOURCE_GROUP_NAME=${AZURE_RESOURCE_GROUP_NAME} \
       ${DEIS_GO_DEV_IMAGE} make delete-sa
-    displayName: cleanup - delete temp storage account
-    condition: always()
-
-  - script: |
-      sudo chown -R $USER:$USER .
-    displayName: cleanup - chown all files in work directory
     condition: always()
