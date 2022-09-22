@@ -1,9 +1,6 @@
 build-packer:
 	@packer build -var-file=vhd/packer/settings.json vhd/packer/vhd-image-builder.json
 
-build-packer-ubuntu-gen2:
-	@packer build -var-file=vhd/packer/settings.json vhd/packer/vhd-image-builder-ubuntu-gen2.json
-
 build-packer-windows:
 	@packer build -var-file=vhd/packer/settings.json -var-file=vhd/packer/windows-${WINDOWS_SERVER_VERSION}-vars.json vhd/packer/windows-vhd-builder.json
 
@@ -16,14 +13,11 @@ az-login:
 run-packer: az-login
 	@packer version && set -o pipefail && ($(MAKE) init-packer | tee packer-output) && ($(MAKE) build-packer | tee -a packer-output)
 
-run-packer-ubuntu-gen2: az-login
-	@packer version && set -o pipefail && ($(MAKE) init-packer | tee packer-output) && ($(MAKE) build-packer-ubuntu-gen2 | tee -a packer-output)
-
 run-packer-windows: az-login
 	@packer version && set -o pipefail && ($(MAKE) init-packer | tee packer-output) && ($(MAKE) build-packer-windows | tee -a packer-output)
 
 az-copy: az-login
-	azcopy-preview copy "${OS_DISK_SAS}" "${SA_CONTAINER_URL}${SA_TOKEN}"
+	azcopy-preview copy "${OS_DISK_SAS}" "${SA_CONTAINER_URL}?${SA_TOKEN}"
 
 delete-sa: az-login
 	az storage account delete -n ${PACKER_TEMP_SA} -g ${PACKER_TEMP_GROUP} --yes
