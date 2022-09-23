@@ -278,9 +278,7 @@ func (glc *LocationsCmd) run(cmd *cobra.Command, args []string) error {
 		b := strings.Builder{}
 		b.WriteString(`// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
-
 package helpers
-
 // GetAzureLocations provides all available Azure cloud locations.
 //
 // Code generated for package helpers by aks-engine DO NOT EDIT. (@generated)
