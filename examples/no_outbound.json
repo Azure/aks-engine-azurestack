@@ -11,15 +11,17 @@
                 "name": "pool1804vhd",
                 "count": 1,
                 "vmSize": "Standard_D2_v3",
-                "availabilityProfile": "VirtualMachineScaleSets",
-                "distro": "aks-ubuntu-18.04"
+                "availabilityProfile": "AvailabilitySet",
+                "distro": "aks-ubuntu-18.04",
+                "AcceleratedNetworkingEnabled": false
             },
             {
                 "name": "poolwinvhd",
                 "count": 1,
                 "vmSize": "Standard_D2_v3",
-                "availabilityProfile": "VirtualMachineScaleSets",
-                "osType": "Windows"
+                "availabilityProfile": "AvailabilitySet",
+                "osType": "Windows",
+                "AcceleratedNetworkingEnabled": false
             }
         ],
         "linuxProfile": {
