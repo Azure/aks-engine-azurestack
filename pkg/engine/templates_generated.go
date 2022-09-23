@@ -22171,7 +22171,7 @@ try
 
         if (Test-Path $CacheDir)
         {
-            Write-Log "Removing aks-engine bits cache directory"
+            Write-Log "Removing aks-engine-azurestack bits cache directory"
             Remove-Item $CacheDir -Recurse -Force
         }
 

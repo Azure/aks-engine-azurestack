@@ -137,7 +137,7 @@ When you use a system-assigned identity configuration, you will need to submit y
 As mentioned above, `aks-engine generate` expects all cluster definition data to be present in the API model JSON file. You may actually inject data into the API model at runtime by invoking the command and including that data in the `--set` argument interface. For example, this command will produce artifacts that can be used to deploy a fully functional Kubernetes cluster based on the AKS Engine defaults (the `examples/kubernetes.json` file will build a "default" single master, 2 node cluster):
 
 ```sh
-$ bin/aks-engine generate --api-model ./examples/kubernetes.json \
+$ bin/aks-engine-azurestack generate --api-model ./examples/kubernetes.json \
   --output-directory ./cluster_artifacts \
   --set masterProfile.dnsPrefix=my-cluster,linuxProfile.ssh.publicKeys[0].keyData=$(cat ~/.ssh/id_rsa.pub)
 INFO[0000] new API model file has been generated during merge: /var/folders/jq/t_y8l4556rv__mzvjhkd61n00000gp/T/mergedApiModel831700038

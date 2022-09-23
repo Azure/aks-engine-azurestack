@@ -32,9 +32,9 @@ import (
 )
 
 const (
-	rootName             = "aks-engine"
-	rootShortDescription = "AKS Engine deploys and manages Kubernetes clusters in Azure"
-	rootLongDescription  = "AKS Engine deploys and manages Kubernetes clusters in Azure"
+	rootName             = "aks-engine-azurestack"
+	rootShortDescription = "AKS Engine deploys and manages Kubernetes clusters in Azure Stack Hub"
+	rootLongDescription  = "AKS Engine deploys and manages Kubernetes clusters in Azure Stack Hub"
 )
 
 var (
@@ -309,12 +309,12 @@ func getCompletionCmd(root *cobra.Command) *cobra.Command {
 		Short: "Generates bash completion scripts",
 		Long: `To load completion run
 
-	source <(aks-engine completion)
+	source <(aks-engine-azurestack completion)
 
 	To configure your bash shell to load completions for each session, add this to your bashrc
 
 	# ~/.bashrc or ~/.profile
-	source <(aks-engine completion)
+	source <(aks-engine-azurestack completion)
 	`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			return root.GenBashCompletion(os.Stdout)

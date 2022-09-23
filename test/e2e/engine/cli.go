@@ -15,12 +15,12 @@ import (
 
 // Generate will run aks-engine generate on a given cluster definition
 func (e *Engine) Generate() error {
-	cmd := exec.Command("./bin/aks-engine", "generate", e.Config.ClusterDefinitionTemplate, "--output-directory", e.Config.GeneratedDefinitionPath)
+	cmd := exec.Command("./bin/aks-engine-azurestack", "generate", e.Config.ClusterDefinitionTemplate, "--output-directory", e.Config.GeneratedDefinitionPath)
 	util.PrintCommand(cmd)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("Error while trying to generate aks-engine template with cluster definition - %s: %s\n", e.Config.ClusterDefinitionTemplate, err)
-		log.Printf("Command:./bin/aks-engine generate %s --output-directory %s\n", e.Config.ClusterDefinitionTemplate, e.Config.GeneratedDefinitionPath)
+		log.Printf("Command:./bin/aks-engine-azurestack generate %s --output-directory %s\n", e.Config.ClusterDefinitionTemplate, e.Config.GeneratedDefinitionPath)
 		log.Printf("Output:%s\n", out)
 		return err
 	}
@@ -29,7 +29,7 @@ func (e *Engine) Generate() error {
 
 // Deploy will run aks-engine deploy on a given cluster definition
 func (e *Engine) Deploy(location string) error {
-	cmd := exec.Command("./bin/aks-engine", "deploy",
+	cmd := exec.Command("./bin/aks-engine-azurestack", "deploy",
 		"--location", location,
 		"--api-model", e.Config.ClusterDefinitionPath,
 		"--dns-prefix", e.Config.DefinitionName,

@@ -16,13 +16,13 @@ jobs:
       - name: Make releases
         run: |
           docker run --rm \
-          -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine \
-          -w /go/src/github.com/Azure/aks-engine \
+          -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine-azurestack \
+          -w /go/src/github.com/Azure/aks-engine-azurestack \
           mcr.microsoft.com/oss/azcu/go-dev:v1.34.7 make dist
       - name: Rename outputs
         run: |
           mkdir ./outputs
-          cp _dist/aks-engine-*-linux-amd64.tar.gz outputs/aks-engine-nightly-linux-amd64.tar.gz
+          cp _dist/aks-engine-azurestack-*-linux-amd64.tar.gz outputs/aks-engine-azurestack-nightly-linux-amd64.tar.gz
       - name: Update nightly release
         uses: eine/tip@master
         with:

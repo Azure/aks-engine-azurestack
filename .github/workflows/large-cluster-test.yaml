@@ -44,7 +44,7 @@ jobs:
           sudo chmod +x ./sonobuoy
           sudo mv ./sonobuoy /usr/local/bin/sonobuoy
           sudo rm ./sonobuoy_0.53.2_linux_amd64.tar.gz
-      - name: Build aks-engine binary
+      - name: Build aks-engine-azurestack binary
         run: make build-binary
       - name: Validate large cluster scenario
         env:

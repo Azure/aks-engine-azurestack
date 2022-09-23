@@ -216,7 +216,7 @@ func (cli *CLIProvisioner) provision() error {
 		}
 	}
 
-	// Lets modify our template and call aks-engine generate on it
+	// Lets modify our template and call aks-engine-azurestack generate on it
 	var eng *engine.Engine
 
 	if cli.CreateVNET && cli.MasterVMSS {
@@ -281,12 +281,12 @@ func (cli *CLIProvisioner) generateAndDeploy() error {
 		fmt.Printf("Provisionning with the Deploy Command\n")
 		err := cli.Engine.Deploy(cli.Config.Location)
 		if err != nil {
-			return errors.Wrap(err, "Error while trying to deploy aks-engine template")
+			return errors.Wrap(err, "Error while trying to deploy aks-engine-azurestack template")
 		}
 	} else {
 		err := cli.Engine.Generate()
 		if err != nil {
-			return errors.Wrap(err, "Error while trying to generate aks-engine template")
+			return errors.Wrap(err, "Error while trying to generate aks-engine-azurestack template")
 		}
 	}
 

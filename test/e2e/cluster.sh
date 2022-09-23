@@ -5,7 +5,7 @@ set -x
 TMP_DIR=$(mktemp -d "$(pwd)/XXXXXXXXXXXX")
 TMP_BASENAME=$(basename ${TMP_DIR})
 GOPATH="/go"
-WORK_DIR="/aks-engine"
+WORK_DIR="/aks-engine-azurestack"
 MASTER_VM_UPGRADE_SKU="${MASTER_VM_UPGRADE_SKU:-Standard_D4_v3}"
 NODE_VM_UPGRADE_SKU="${NODE_VM_UPGRADE_SKU:-Standard_D4_v3}"
 AZURE_ENV="${AZURE_ENV:-AzurePublicCloud}"
@@ -77,7 +77,7 @@ function rotateCertificates {
     -e REGION=${REGION} \
     -e RESOURCE_GROUP=${RESOURCE_GROUP} \
     ${DEV_IMAGE} \
-    ./bin/aks-engine rotate-certs \
+    ./bin/aks-engine-azurestack rotate-certs \
     --api-model _output/${RESOURCE_GROUP}/apimodel.json \
     --ssh-host ${API_SERVER} \
     --location ${REGION} \
@@ -107,7 +107,7 @@ function rotateCertificates {
       -e REGION=${REGION} \
       -e RESOURCE_GROUP=${RESOURCE_GROUP} \
       ${DEV_IMAGE} \
-      ./bin/aks-engine rotate-certs \
+      ./bin/aks-engine-azurestack rotate-certs \
       --api-model _output/${RESOURCE_GROUP}/apimodel.json \
       --ssh-host ${API_SERVER} \
       --location ${REGION} \
@@ -279,7 +279,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine get-logs \
+      ./bin/aks-engine-azurestack get-logs \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
       --location $REGION \
       --ssh-host $API_SERVER \
@@ -393,7 +393,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine addpool \
+      ./bin/aks-engine-azurestack addpool \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -493,7 +493,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
         -e REGION=$REGION \
         -e UPDATE_POOL_NAME=$UPDATE_POOL_NAME \
         ${DEV_IMAGE} \
-        ./bin/aks-engine update \
+        ./bin/aks-engine-azurestack update \
         --azure-env ${AZURE_ENV} \
         --subscription-id ${AZURE_SUBSCRIPTION_ID} \
         --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -512,7 +512,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine scale \
+      ./bin/aks-engine-azurestack scale \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -606,7 +606,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine upgrade --force \
+      ./bin/aks-engine-azurestack upgrade --force \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -685,7 +685,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     -e RESOURCE_GROUP=$RESOURCE_GROUP \
     -e REGION=$REGION \
     ${DEV_IMAGE} \
-    ./bin/aks-engine scale \
+    ./bin/aks-engine-azurestack scale \
     --azure-env ${AZURE_ENV} \
     --subscription-id ${AZURE_SUBSCRIPTION_ID} \
     --api-model _output/$RESOURCE_GROUP/apimodel.json \
