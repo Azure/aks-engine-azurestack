@@ -16,7 +16,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
       - name: Install dependencies
         run: make bootstrap
       - name: Check generated code
@@ -25,7 +25,67 @@ jobs:
         run: make generate test-style
       - name: Build binary
         run: make build-binary
-      - name: Check go mod 
+      - name: Check go mod
         run: make validate-dependencies
       - name: Run unit tests
         run: make test
+
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: "go.mod"
+      - name: Setup SSH Keys and known_hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+      - name: Install helm
+        run: |
+          curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+          sudo apt-get install apt-transport-https --yes
+          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+          sudo apt-get update
+          sudo apt-get install helm
+      - name: Install k
+        run: |
+          sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
+          sudo chmod +x /usr/local/bin/k
+      - name: Build aks-engine-azurestack binary
+        run: make build-binary
+      - name: Validate 1.22 no-egress scenario
+        env:
+          ORCHESTRATOR_RELEASE: "1.22"
+          CLUSTER_DEFINITION: "examples/no_outbound.json"
+          TENANT_ID: '${{ secrets.TEST_AZURE_TENANT_ID }}'
+          SUBSCRIPTION_ID: '${{ secrets.TEST_AZURE_SUB_ID }}'
+          CLIENT_ID: '${{ secrets.TEST_AZURE_SP_ID }}'
+          CLIENT_SECRET: '${{ secrets.TEST_AZURE_SP_PW }}'
+          LOCATION: "eastus"
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: true
+          SKIP_TEST: true
+          BLOCK_SSH: true
+          SKIP_LOGS_COLLECTION: true
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+        run: make test-kubernetes
+      - name: Validate 1.23 no-egress scenario
+        env:
+          ORCHESTRATOR_RELEASE: "1.23"
+          CLUSTER_DEFINITION: "examples/no_outbound.json"
+          TENANT_ID: '${{ secrets.TEST_AZURE_TENANT_ID }}'
+          SUBSCRIPTION_ID: '${{ secrets.TEST_AZURE_SUB_ID }}'
+          CLIENT_ID: '${{ secrets.TEST_AZURE_SP_ID }}'
+          CLIENT_SECRET: '${{ secrets.TEST_AZURE_SP_PW }}'
+          LOCATION: "eastus"
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: true
+          SKIP_TEST: true
+          BLOCK_SSH: true
+          SKIP_LOGS_COLLECTION: true
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+        run: make test-kubernetes
