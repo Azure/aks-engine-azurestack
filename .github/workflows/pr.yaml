@@ -1,11 +1,12 @@
 name: Pull Request
 
 on:
-  pull_request:
-    branches:
-      - master
-    paths-ignore:
-      - docs/*
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'git ref to checkout (default: master)'
+        required: false
+        default: 'master'
 
 jobs:
   unit-tests:
@@ -13,6 +14,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{github.event.inputs.ref}}
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
