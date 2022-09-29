@@ -17966,6 +17966,13 @@ if [[ -n ${MASTER_NODE} ]]; then
   {{/* this step configures all certs */}}
   {{/* both configs etcd/cosmos */}}
   time_metric "ConfigureSecrets" configureSecrets
+
+  {{/* HACK: in case a control plane node starts with incorrectly defined cloud-init IPs */}}
+  if grep -q -E '^ +addresses:|^ +- ' /etc/netplan/50-cloud-init.yaml; then
+    x=$(grep -v -E '^ +addresses:|^ +- ' /etc/netplan/50-cloud-init.yaml)
+    echo "$x" >/etc/netplan/50-cloud-init.yaml
+    netplan apply
+  fi
 fi
 
 {{/* configure etcd if we are configured for etcd */}}
