@@ -44,6 +44,21 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 		},
 	}
 
+	devOpsRule := network.SecurityRule{
+		Name: to.StringPtr("allow_azure_devops"),
+		SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
+			Access:                   network.SecurityRuleAccessAllow,
+			Description:              to.StringPtr("Allow Azure DevOps traffic to master"),
+			DestinationAddressPrefix: to.StringPtr("*"),
+			DestinationPortRange:     to.StringPtr("22"),
+			Direction:                network.SecurityRuleDirectionInbound,
+			Priority:                 to.Int32Ptr(102),
+			Protocol:                 network.SecurityRuleProtocolTCP,
+			SourceAddressPrefix:      to.StringPtr("AzureDevOps"),
+			SourcePortRange:          to.StringPtr("*"),
+		},
+	}
+
 	if cs.Properties.OrchestratorProfile.IsPrivateCluster() {
 		source := "VirtualNetwork"
 		kubeTLSRule.SourceAddressPrefix = &source
@@ -52,6 +67,7 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 	securityRules := []network.SecurityRule{
 		sshRule,
 		kubeTLSRule,
+		devOpsRule,
 	}
 
 	if cs.Properties.HasWindows() {
