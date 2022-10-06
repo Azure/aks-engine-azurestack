@@ -154,7 +154,7 @@ Windows support is evolving rapidly, so be sure to use the latest AKS Engine ver
 
 3. Extract the `aks-engine...-darwin-amd64.zip` file to a folder in your path such as `/usr/local/bin`
 
-4. Check that it runs with `aks-engine version`
+4. Check that it runs with `aks-engine-azurestack version`
 
 ```console
 $ aks-engine.exe version
@@ -206,7 +206,7 @@ Windows support is evolving rapidly, so be sure to use the latest AKS Engine ver
 
 3. Extract the `aks-engine...-linux-amd64.zip` file to a folder in your path such as `/usr/local/bin`
 
-4. Check that it runs with `aks-engine version`
+4. Check that it runs with `aks-engine-azurestack version`
 
 ```console
 $ aks-engine.exe version
@@ -304,7 +304,7 @@ $ export RESOURCEGROUPID=$(az group show --resource-group $RESOURCEGROUP --query
 $ export SERVICEPRINCIPAL=$(az ad sp create-for-rbac --role="Contributor" --scopes=$RESOURCEGROUPID --output json)
 ```
 
-### Create an aks-engine apimodel
+### Create an aks-engine-azurestack apimodel
 
 Multiple samples are available in this repo under [examples/windows](../../examples/windows/). This guide will use the [windows/kubernetes.json](../../examples/windows/kubernetes.json) sample to deploy 1 Linux VM to run Kubernetes services, and 2 Windows nodes to run your Windows containers.
 
@@ -369,7 +369,7 @@ $ cat kubernetes.json | \
 
 ### Generate Azure Resource Manager template
 
-Now that the AKS Engine cluster definition is complete, generate the Azure templates with `aks-engine generate kubernetes-windows-complete.json`
+Now that the AKS Engine cluster definition is complete, generate the Azure templates with `aks-engine-azurestack generate kubernetes-windows-complete.json`
 
 ```console
 $ aks-engine.exe generate kubernetes-windows-complete.json
@@ -401,7 +401,7 @@ The DNS prefix provided is used to generate the hostname of the cluster (e.g. st
 
 #### Check that the cluster is up
 
-As mentioned earlier, `aks-engine generate` also creates Kubernetes configuration files under `_output/<dnsprefix>/kubeconfig`. There will be one per possible region, so find the one matching the region you deployed in.
+As mentioned earlier, `aks-engine-azurestack generate` also creates Kubernetes configuration files under `_output/<dnsprefix>/kubeconfig`. There will be one per possible region, so find the one matching the region you deployed in.
 
 In the example above with `dnsprefix`=`wink8s1` and the `westus2` region, the filename would be `_output/wink8s1/kubeconfig/kubeconfig.westus2.json`.
 

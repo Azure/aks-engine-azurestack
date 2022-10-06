@@ -1,7 +1,7 @@
 # prometheus-grafana Extension
 
 
-This is the prometheus-grafana extension.  Add this extension to the API model you pass as input into aks-engine as shown below to automatically enable prometheus and grafana in your new Kubernetes cluster.
+This is the prometheus-grafana extension.  Add this extension to the API model you pass as input into aks-engine-azurestack as shown below to automatically enable prometheus and grafana in your new Kubernetes cluster.
 
 ```
 {
@@ -39,7 +39,7 @@ This is the prometheus-grafana extension.  Add this extension to the API model y
       {
         "name": "prometheus-grafana-k8s",
         "version": "v1",
-        "rootURL": "https://raw.githubusercontent.com/Azure/aks-engine/master/"
+        "rootURL": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/"
       }
     ]
   }

@@ -2,13 +2,13 @@
 
 ## Prerequisites
 
-All documentation in these guides assumes you have already downloaded both the Azure CLI and `aks-engine`. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing.
+All documentation in these guides assumes you have already downloaded both the Azure CLI and `aks-engine-azurestack`. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing.
 
-This guide assumes you already have deployed a cluster using `aks-engine`. For more details on how to do that see [deploy](../tutorials/quickstart.md#deploy).
+This guide assumes you already have deployed a cluster using `aks-engine-azurestack`. For more details on how to do that see [deploy](../tutorials/quickstart.md#deploy).
 
 ## Retrieving Logs
 
-The `aks-engine get-logs` command can be useful to troubleshoot issues with your cluster. It will produce, collect and download to your workstation a set of files that include node configuration, cluster state and configuration, and provision log files.
+The `aks-engine-azurestack get-logs` command can be useful to troubleshoot issues with your cluster. It will produce, collect and download to your workstation a set of files that include node configuration, cluster state and configuration, and provision log files.
 
 At a high level, it works by establishing a SSH session into each node, executing a [log collection](#log-collection-scripts) script that collects and zips relevant files, and downloading the zip file to your local computer.
 
@@ -32,7 +32,7 @@ Once the cluster logs were successfully retrieved, AKS Engine can persist them t
 
 ### Nodes unable to join the cluster
 
-By default, `aks-engine get-logs` collects logs from nodes that succesfully joined the cluster. To collect logs from VMs that were not able to join the cluster, set flag `--vm-names`:
+By default, `aks-engine-azurestack get-logs` collects logs from nodes that succesfully joined the cluster. To collect logs from VMs that were not able to join the cluster, set flag `--vm-names`:
 
 ```console
 --vm-name k8s-pool-01,k8s-pool-02
@@ -43,7 +43,7 @@ By default, `aks-engine get-logs` collects logs from nodes that succesfully join
 Assuming that you have a cluster deployed and the API model originally used to deploy that cluster is stored at `_output/<dnsPrefix>/apimodel.json`, then you can collect logs running a command like:
 
 ```console
-$ aks-engine get-logs \
+$ aks-engine-azurestack get-logs \
     --location <location> \
     --api-model _output/<dnsPrefix>/apimodel.json \
     --ssh-host <dnsPrefix>.<location>.cloudapp.azure.com \

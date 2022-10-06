@@ -31,7 +31,7 @@ See "[Creating a New Release](#creating-a-new-release)" for more detail.
 
 ## Semantic Versioning
 
-Releases of the `aks-engine` binary comply with [semantic versioning][semantic version], with the "public API" broadly
+Releases of the `aks-engine-azurestack` binary comply with [semantic versioning][semantic version], with the "public API" broadly
 defined as:
 
 - REST, gRPC, or other API that is network-accessible
@@ -41,7 +41,7 @@ defined as:
 - Integration with Azure public APIs such as ARM
 
 In general, changes to anything a user might reasonably link to, customize, or integrate with should
-be backward-compatible, or else require a major release. `aks-engine` users can be confident that upgrading
+be backward-compatible, or else require a major release. `aks-engine-azurestack` users can be confident that upgrading
 to a patch or to a minor release will not break anything.
 
 ## Creating a New Release
@@ -97,7 +97,7 @@ Note: because the test validations above may be subject to environmental failure
 
 ### Update Package Managers
 
-Finally, let's make the new aks-engine release easy to install.
+Finally, let's make the new aks-engine-azurestack release easy to install.
 
 #### The `brew` package manager
 
@@ -115,7 +115,7 @@ The [gofish][] package manager has automation in place to create an update when 
 
 #### The `choco` package manager
 
-Adding new versions to [choco][] is automated, but you can check the status of package approval and publishing at the [aks-engine chocolatey page][choco-status].
+Adding new versions to [choco][] is automated, but you can check the status of package approval and publishing at the [aks-engine-azurestack chocolatey page][choco-status].
 
 
 [aks-engine]: https://github.com/Azure/aks-engine-azurestack/releases

@@ -144,7 +144,7 @@ Once you are ready with the cluster definition file, you can either use AKS engi
 Once your are ready with the cluster definition file, you can use AKS Engine to generate the ARM template that will be used to deploy the cluster on Azure:
 
 ```bash
-aks-engine generate --api-model clusterdefinition.json
+aks-engine-azurestack generate --api-model clusterdefinition.json
 ```
 
 This command will output the following files in `_output/test`:

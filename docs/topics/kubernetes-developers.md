@@ -54,7 +54,7 @@ For `VERSION` environment variable, we recommend that you provide a value which 
 }
 ```
 
-* Run `aks-engine deploy` [as normal](../tutorials/quickstart.md#deploy).
+* Run `aks-engine-azurestack deploy` [as normal](../tutorials/quickstart.md#deploy).
 
 ## Kubernetes 1.17+
 
@@ -103,4 +103,4 @@ If the container registry is private, for example Azure Container Registry, then
 }
 ```
 
-> NOTE: Make sure the service principal provided to run `aks-engine deploy` has access to pull images from this private registry. https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#use-an-existing-service-principal
+> NOTE: Make sure the service principal provided to run `aks-engine-azurestack deploy` has access to pull images from this private registry. https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal#use-an-existing-service-principal

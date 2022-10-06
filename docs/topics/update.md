@@ -2,15 +2,15 @@
 
 ## Prerequisites
 
-All documentation in these guides assumes you have already downloaded both the Azure `az` CLI tool and the `aks-engine` binary tool. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing if you're creating a Kubernetes cluster using AKS Engine for the first time.
+All documentation in these guides assumes you have already downloaded both the Azure `az` CLI tool and the `aks-engine-azurestack` binary tool. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing if you're creating a Kubernetes cluster using AKS Engine for the first time.
 
-This guide assumes you already have a running cluster deployed using the `aks-engine` CLI. For more details on how to do that see [deploy](creating_new_clusters.md#deploy) or [generate](generate.md).
+This guide assumes you already have a running cluster deployed using the `aks-engine-azurestack` CLI. For more details on how to do that see [deploy](creating_new_clusters.md#deploy) or [generate](generate.md).
 
 ## Update
 
-The `aks-engine update` command can update the VMSS model of a node pool according to a modified configuration of the aks-engine-generated `apimodel.json`. When used in combination with a newer version of the `aks-engine` CLI compared to the version used to build the cluster originally, node pools can be regularly refreshed so that as they scale over time, new nodes always run the latest, validated bits, using your latest, validated node configuration.
+The `aks-engine-azurestack update` command can update the VMSS model of a node pool according to a modified configuration of the aks-engine-generated `apimodel.json`. When used in combination with a newer version of the `aks-engine-azurestack` CLI compared to the version used to build the cluster originally, node pools can be regularly refreshed so that as they scale over time, new nodes always run the latest, validated bits, using your latest, validated node configuration.
 
-Note: `aks-engine update` **can not** be used to update the control plane! To update control plane VM configuration, see [`aks-engine upgrade --control-plane-only` documentation here](upgrade.md#when-should-i-use-aks-engine-upgrade---control-plane-only).
+Note: `aks-engine-azurestack update` **can not** be used to update the control plane! To update control plane VM configuration, see [`aks-engine-azurestack upgrade --control-plane-only` documentation here](upgrade.md#when-should-i-use-aks-engine-upgrade---control-plane-only).
 
 This command can *only* be used with VMSS-backed node pools (the default AKS Engine node pool type is VMSS).
 
@@ -19,7 +19,7 @@ The example below will assume you have a cluster deployed, and that the API mode
 To update the cluster you will run a command like:
 
 ```sh
-$ aks-engine update --subscription-id <subscription_id> \
+$ aks-engine-azurestack update --subscription-id <subscription_id> \
     --resource-group mycluster --location <location> \
     --api-model _output/mycluster/apimodel.json \
     --node-pool agentpool1
@@ -46,16 +46,16 @@ The above operation will complete rather quickly, as it is only updating the VMS
 
 ### Why would I use update instead of upgrade to upgrade a VMSS node pool?
 
-The `aks-engine upgrade` command actually replaces existing nodes with new nodes, one-at-a-time. Such an approach is appropriate if you are  confident that the outcome of such an operation will be successful. We recommend to attain that confidence by staging a series of full end-to-end operations simulating the series of operations in your production environment. In other words:
+The `aks-engine-azurestack upgrade` command actually replaces existing nodes with new nodes, one-at-a-time. Such an approach is appropriate if you are  confident that the outcome of such an operation will be successful. We recommend to attain that confidence by staging a series of full end-to-end operations simulating the series of operations in your production environment. In other words:
 
-1. Create a cluster with a specific configuration in a specific cloud environment + region using a specific version of `aks-engine`.
-  - All of the above must exactly match the original configuration + `aks-engine` version used to create your cluster initially.
-2. Do something like the above for every `aks-engine` operation performed the time when your cluster was originally created and now
-3. Run `aks-engine upgrade` with your desired upgrade configuration.
+1. Create a cluster with a specific configuration in a specific cloud environment + region using a specific version of `aks-engine-azurestack`.
+  - All of the above must exactly match the original configuration + `aks-engine-azurestack` version used to create your cluster initially.
+2. Do something like the above for every `aks-engine-azurestack` operation performed the time when your cluster was originally created and now
+3. Run `aks-engine-azurestack upgrade` with your desired upgrade configuration.
 
-Because `aks-engine upgrade` is a destructive operation, and there is no definitive "undo" or "rollback", then if #3 above fails for any reason, in order to continue experimenting in your staging environment, you will have to re-stage the entire cluster + set of operations each time, until you land upon a repeatedly working `aks-engine upgrade` scenario that you confidently apply against your production scenario.
+Because `aks-engine-azurestack upgrade` is a destructive operation, and there is no definitive "undo" or "rollback", then if #3 above fails for any reason, in order to continue experimenting in your staging environment, you will have to re-stage the entire cluster + set of operations each time, until you land upon a repeatedly working `aks-engine-azurestack upgrade` scenario that you confidently apply against your production scenario.
 
-The above is a time consuming and imperfect workflow, and so `aks-engine update` is an alternative approach that allows more flexibility. For example:
+The above is a time consuming and imperfect workflow, and so `aks-engine-azurestack update` is an alternative approach that allows more flexibility. For example:
 
-- Because `aks-engine update` is merely a VMSS model update against a single node pool and not a "whole cluster", destructive operation, the viability of an updated node pool can be tested piecemeal, without affecting existing production traffic.
-- In the event that the updated VMSS model produces undesirable new nodes, you may "undo" or "roll back" this model update change to the last known good VMSS model by running an `aks-engine update` operation using an older, known-working version of AKS Engine (for example, if you've never run `aks-engine update` before, you would use the version of AKS Engine you used to deploy your cluster originally) with an API model specification that has been tested as working.
+- Because `aks-engine-azurestack update` is merely a VMSS model update against a single node pool and not a "whole cluster", destructive operation, the viability of an updated node pool can be tested piecemeal, without affecting existing production traffic.
+- In the event that the updated VMSS model produces undesirable new nodes, you may "undo" or "roll back" this model update change to the last known good VMSS model by running an `aks-engine-azurestack update` operation using an older, known-working version of AKS Engine (for example, if you've never run `aks-engine-azurestack update` before, you would use the version of AKS Engine you used to deploy your cluster originally) with an API model specification that has been tested as working.
