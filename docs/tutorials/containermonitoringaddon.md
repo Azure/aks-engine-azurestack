@@ -21,7 +21,7 @@ The agent is automatically deployed and registered with the specified or default
 Container Monitoring can be onboarded either through the monitoring add-on or the Helm chart.
 Following are supported options to enable container-monitoring add-on during the cluster creation or post cluster creation.
 
-> Note: option 1) and 2) are supported only through `aks-engine deploy` command.
+> Note: option 1) and 2) are supported only through `aks-engine-azurestack deploy` command.
 > Note: For Azure stack cloud environments, only option 3) and 4) are supported.
 
 ### 1. Using Default Log Analytics Workspace

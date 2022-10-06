@@ -73,7 +73,7 @@ Please reach out with any questions or feedback by sending an email to [Azure Mo
 
 ## Monitoring extension
 
-A quick way to scaffold out cloud-native and open source monitoring components is to use the [aks-engine monitoring extension](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). For details on how to use the monitoring extension, please refer to the [extension documentation](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). By embedding the extension in your apimodel, the extension will do much of the work to create a monitoring solution in your cluster, which includes the following:
+A quick way to scaffold out cloud-native and open source monitoring components is to use the [aks-engine-azurestack monitoring extension](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). For details on how to use the monitoring extension, please refer to the [extension documentation](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). By embedding the extension in your apimodel, the extension will do much of the work to create a monitoring solution in your cluster, which includes the following:
 
 - [cAdvisor](https://github.com/google/cadvisor) daemon set to publish container metrics
 - [Prometheus](https://prometheus.io/) for metrics collection and storage

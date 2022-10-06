@@ -14,10 +14,10 @@ The Azure Cosmos etcd API allows you to use Azure Cosmos as the backing store fo
 ## Steps
 Follow the instructions [here](https://github.com/Azure/aks-engine-azurestack/blob/master/docs/tutorials/quickstart.md#deploy-your-first-cluster) to deploy your first Kubernetes cluster.
 
-Here is an example `aks-engine` command:
+Here is an example `aks-engine-azurestack` command:
 
 ```console
-$ aks-engine deploy --subscription-id <SubscriptionId> \
+$ aks-engine-azurestack deploy --subscription-id <SubscriptionId> \
     --dns-prefix <YourDNSPrefix> \
     --location centralus \
     --api-model <apiModel>.json

@@ -17,21 +17,21 @@ A python script will regenerate some, but not all of the data structures.
 
 ## Non-goals
 
-## Proposal: scriptable aks-engine commands
+## Proposal: scriptable aks-engine-azurestack commands
 
-New developer-only commands in the `aks-engine` binary generate the necessary Go source code. The commands replace the existing python script and extend it to cover the accelerated networking capability list.
+New developer-only commands in the `aks-engine-azurestack` binary generate the necessary Go source code. The commands replace the existing python script and extend it to cover the accelerated networking capability list.
 
 ### Example locations output
 
 ```shell
-$ aks-engine get-locations --client-id=${AZURE_CLIENT_ID} --client-secret=${AZURE_CLIENT_SECRET}
+$ aks-engine-azurestack get-locations --client-id=${AZURE_CLIENT_ID} --client-secret=${AZURE_CLIENT_SECRET}
 Location            Name                      Latitude    Longitude
 australiacentral    Australia Central         -35.3075    149.1244
 australiacentral2   Australia Central 2       -35.3075    149.1244
 centraluseuap       Central US EUAP (Canary)  N/A         N/A
 chinaeast           China East                N/A         N/A
 ...
-$ aks-engine get-locations -o code
+$ aks-engine-azurestack get-locations -o code
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -55,14 +55,14 @@ func GetAzureLocations() []string {
 ### Example SKUs output
 
 ```shell
-$ aks-engine get-skus -o human
+$ aks-engine-azurestack get-skus -o human
 Name                 Storage Account Type  Accelerated Networking Support
 Standard_A0          Standard_LRS          true
 Standard_A1          Standard_LRS          true
 Standard_D8s_v3      Premium_LRS           true
 Standard_DC1s_v2     Premium_LRS           false
 ...
-$ aks-engine get-skus -o code
+$ aks-engine-azurestack get-skus -o code
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
@@ -80,7 +80,7 @@ func GetKubernetesAllowedVMSKUs() string {
 ...
 ```
 
-First we refactor the code so the data structures are in separate files. Then each file can be overwritten by redirecting the output of an `aks-engine` command.
+First we refactor the code so the data structures are in separate files. Then each file can be overwritten by redirecting the output of an `aks-engine-azurestack` command.
 
 ### Pros
 
@@ -97,7 +97,7 @@ First we refactor the code so the data structures are in separate files. Then ea
 
 ### Dynamic API lookups
 
-Instead of consulting a lookup table in code, AKS Engine could make Azure API calls just-in-time. The location and SKU-related details of a cluster could be validated in real time by `aks-engine generate` or `aks-engine deploy` against current Azure information.
+Instead of consulting a lookup table in code, AKS Engine could make Azure API calls just-in-time. The location and SKU-related details of a cluster could be validated in real time by `aks-engine-azurestack generate` or `aks-engine-azurestack deploy` against current Azure information.
 
 #### Pros
 
@@ -107,7 +107,7 @@ Instead of consulting a lookup table in code, AKS Engine could make Azure API ca
 #### Cons
 
 - Requires significant refactoring and implementation effort
-- Making API calls during `aks-engine generate` may be unwanted behavior
+- Making API calls during `aks-engine-azurestack generate` may be unwanted behavior
 - Somewhat slower and less reliable than using the data in code
 - Requires implementing most of the main proposal above (as a starting point)
 

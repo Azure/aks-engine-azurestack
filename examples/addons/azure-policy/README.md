@@ -103,7 +103,7 @@ kubectl get pods -n kube-system
 ### Option 1
 
 - Update `apimodel.json` and set `azure-policy` addon `enabled` to `false`.
-- Run `aks-engine upgrade` with the updated `apimodel.json`
+- Run `aks-engine-azurestack upgrade` with the updated `apimodel.json`
 - Run `kubectl delete deployments.apps -n kube-system gatekeeper-controller-manager azure-policy` to remove running deployments and pods
 
 ### Option 2

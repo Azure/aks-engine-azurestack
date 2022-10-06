@@ -6,7 +6,7 @@ This design document provides a brief and high-level overview of what AKS Engine
 
 ## Architecture Diagram
 
-![Alt text](../static/img/proposed-template-refactor.jpg "aks-engine architecture diagram")
+![Alt text](../static/img/proposed-template-refactor.jpg "aks-engine-azurestack architecture diagram")
 
 ## Components
 
@@ -188,7 +188,7 @@ AKS Engine interfaces with Azure Resource Manager (ARM) through the Azure Go SDK
 
 ### Kubernetes Client API
 
-AKS Engine also performs Kubernetes cluster management operations through the imported Kubernetes API libraries. The Client API calls are made during `aks-engine scale` and `aks-engine upgrade` command operations.
+AKS Engine also performs Kubernetes cluster management operations through the imported Kubernetes API libraries. The Client API calls are made during `aks-engine-azurestack scale` and `aks-engine-azurestack upgrade` command operations.
 
 
 Design challenges and proposals

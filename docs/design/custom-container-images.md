@@ -156,7 +156,7 @@ The per-component/addon container image configuration work will allow the Azure 
     - The relative urgency with which we want to unblock the MCR effort precludes the time required to do the a full refactor without significant risk of introducing platform regressions.
 2. "Rev a new API". We could produce a new data model with a new api version, and new business logic that acts upon it, but that would entail breaking the "mutable vlabs version" pattern we've been adhering to since the beginning of acs-engine.
   - Downsides
-    - Such a transition, given the requirements to maintain backwards compatibility with existing the "vlabs" spec (with respect to cluster upgrade and scale especially against pre-existing clusters built using an aks-engine toolchain) will, similar to point 1 above, require non-trivial investigation and purposeful design.
+    - Such a transition, given the requirements to maintain backwards compatibility with existing the "vlabs" spec (with respect to cluster upgrade and scale especially against pre-existing clusters built using an aks-engine-azurestack toolchain) will, similar to point 1 above, require non-trivial investigation and purposeful design.
     - Ditto not practical within the time constraints that this refactor work is meant to unblock.
 
 In conclusion: This effort will need to be iterative and practical: we will have to inherit the existing patterns and evolve them in a way that meets the requirements w/ the minimal amount of code refactor side-effects. The above proposed path forward assumes those constraints.

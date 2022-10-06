@@ -1,16 +1,16 @@
 # AKS Engine CLI Overview
 
-AKS Engine is designed to be used as a CLI tool (`aks-engine`). This document outlines the functionality that `aks-engine` provides to create and maintain a Kubernetes cluster on Azure.
+AKS Engine is designed to be used as a CLI tool (`aks-engine-azurestack`). This document outlines the functionality that `aks-engine-azurestack` provides to create and maintain a Kubernetes cluster on Azure.
 
-## `aks-engine` commands
+## `aks-engine-azurestack` commands
 
-To get a quick overview of the commands available via the `aks-engine` CLI tool, just run `aks-engine` with no arguments (or include the `--help` argument):
+To get a quick overview of the commands available via the `aks-engine-azurestack` CLI tool, just run `aks-engine-azurestack` with no arguments (or include the `--help` argument):
 
 ```sh
 $ aks-engine
 Usage:
-  aks-engine [flags]
-  aks-engine [command]
+  aks-engine-azurestack [flags]
+  aks-engine-azurestack [command]
 
 Available Commands:
   addpool       Add a node pool to an existing AKS Engine-created Kubernetes cluster
@@ -31,23 +31,23 @@ Flags:
   -h, --help                 help for aks-engine
       --show-default-model   Dump the default API model to stdout
 
-Use "aks-engine [command] --help" for more information about a command.
+Use "aks-engine-azurestack [command] --help" for more information about a command.
 ```
 
 ## Operational Cluster Commands
 
-These commands are provided by AKS Engine in order to create and maintain Kubernetes clusters. Note: there is no `aks-engine` command to delete a cluster; to delete a Kubernetes cluster created by AKS Engine, you must delete the resource group that contains cluster resources. If the resource group can't be deleted because it contains other, non-Kubernetes-relate Azure resources, then you must manually delete the Virtual Machine and/or Virtual Machine Scale Set (VMSS), Disk, Network Interface, Network Security Group, Public IP Address, Virtual Network, Load Balancer, and all other resources specified in the aks-engine-generated ARM template. Because manually deleting resources is tedious and requires following serial dependencies in the correct order, it is recommended that you dedicate a resource group for the Azure resources that AKS Engine will create to run your Kubernetes cluster. If you're running more than one cluster, we recommend a dedicated resource group per cluster.
+These commands are provided by AKS Engine in order to create and maintain Kubernetes clusters. Note: there is no `aks-engine-azurestack` command to delete a cluster; to delete a Kubernetes cluster created by AKS Engine, you must delete the resource group that contains cluster resources. If the resource group can't be deleted because it contains other, non-Kubernetes-relate Azure resources, then you must manually delete the Virtual Machine and/or Virtual Machine Scale Set (VMSS), Disk, Network Interface, Network Security Group, Public IP Address, Virtual Network, Load Balancer, and all other resources specified in the aks-engine-generated ARM template. Because manually deleting resources is tedious and requires following serial dependencies in the correct order, it is recommended that you dedicate a resource group for the Azure resources that AKS Engine will create to run your Kubernetes cluster. If you're running more than one cluster, we recommend a dedicated resource group per cluster.
 
-### `aks-engine deploy`
+### `aks-engine-azurestack deploy`
 
-The `aks-engine deploy` command will create a new cluster from scratch, using an API model (cluster definition) file as input to define the desired cluster configuration and shape, in the subscription, region, and resource group you provide, using credentials that you provide. Use this command to create a new cluster.
+The `aks-engine-azurestack deploy` command will create a new cluster from scratch, using an API model (cluster definition) file as input to define the desired cluster configuration and shape, in the subscription, region, and resource group you provide, using credentials that you provide. Use this command to create a new cluster.
 
 ```sh
-$ aks-engine deploy --help
+$ aks-engine-azurestack deploy --help
 Deploy an Azure Resource Manager template, parameters file and other assets for a cluster
 
 Usage:
-  aks-engine deploy [flags]
+  aks-engine-azurestack deploy [flags]
 
 Flags:
   -m, --api-model string             path to your cluster definition file
@@ -75,18 +75,18 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-Detailed documentation on `aks-engine deploy` can be found [here](../topics/creating_new_clusters.md#deploy).
+Detailed documentation on `aks-engine-azurestack deploy` can be found [here](../topics/creating_new_clusters.md#deploy).
 
-### `aks-engine scale`
+### `aks-engine-azurestack scale`
 
-The `aks-engine scale` command will scale (in or out) a specific node pool participating in a Kubernetes cluster created by AKS Engine. Use this command to manually scale a node pool to a specific number of nodes.
+The `aks-engine-azurestack scale` command will scale (in or out) a specific node pool participating in a Kubernetes cluster created by AKS Engine. Use this command to manually scale a node pool to a specific number of nodes.
 
 ```sh
-$ aks-engine scale --help
+$ aks-engine-azurestack scale --help
 Scale an existing AKS Engine-created Kubernetes cluster by specifying a new desired number of nodes in a node pool
 
 Usage:
-  aks-engine scale [flags]
+  aks-engine-azurestack scale [flags]
 
 Flags:
   -m, --api-model string            path to the generated apimodel.json file
@@ -117,21 +117,21 @@ The `scale` command has limitations for scaling in (reducing the number of nodes
 
 We generally recommend that you manage node pool scaling dynamically using the `cluster-autoscaler` project. More documentation about `cluster-autoscaler` is [here](../../examples/addons/cluster-autoscaler/README.md), including how to automatically install and configure it at cluster creation time as an AKS Engine addon.
 
-Detailed documentation on `aks-engine scale` can be found [here](../topics/scale.md).
+Detailed documentation on `aks-engine-azurestack scale` can be found [here](../topics/scale.md).
 
-### `aks-engine update`
+### `aks-engine-azurestack update`
 
-The `aks-engine update` command will update the VMSS model of a node pool according to a modified configuration of the aks-engine-generated `apimodel.json`. The updated node configuration will not take affect on any existing nodes, but will be applied to all future, new nodes created by VMSS scale out operations. Use this command to update the node configuration (such as the OS configuration, VM SKU, or Kubernetes kubelet configuration) of an existing VMSS node pool.
+The `aks-engine-azurestack update` command will update the VMSS model of a node pool according to a modified configuration of the aks-engine-generated `apimodel.json`. The updated node configuration will not take affect on any existing nodes, but will be applied to all future, new nodes created by VMSS scale out operations. Use this command to update the node configuration (such as the OS configuration, VM SKU, or Kubernetes kubelet configuration) of an existing VMSS node pool.
 
-Note: `aks-engine update` **can not** be used to update the control plane! To update control plane VM configuration, see [`aks-engine upgrade --control-plane-only` documentation here](../topics/upgrade.md#when-should-i-use-aks-engine-upgrade---control-plane-only).
+Note: `aks-engine-azurestack update` **can not** be used to update the control plane! To update control plane VM configuration, see [`aks-engine-azurestack upgrade --control-plane-only` documentation here](../topics/upgrade.md#when-should-i-use-aks-engine-upgrade---control-plane-only).
 
 
 ```sh
-$ aks-engine update --help
+$ aks-engine-azurestack update --help
 Update an existing AKS Engine-created VMSS node pool in a Kubernetes cluster by updating its VMSS model
 
 Usage:
-  aks-engine update [flags]
+  aks-engine-azurestack update [flags]
 
 Flags:
   -m, --api-model string            path to the generated apimodel.json file
@@ -153,18 +153,18 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-Detailed documentation on `aks-engine update` can be found [here](../topics/update.md).
+Detailed documentation on `aks-engine-azurestack update` can be found [here](../topics/update.md).
 
-### `aks-engine addpool`
+### `aks-engine-azurestack addpool`
 
-The `aks-engine addpool` command will add a new node pool to an existing AKS Engine-created cluster. Using a JSON file to define a the new node pool's configuration, and referencing the aks-engine-generated `apimodel.json`, you can add new nodes to your cluster. Use this command to add a specific number of new nodes using a discrete configuration compared to existing nodes participating in your cluster.
+The `aks-engine-azurestack addpool` command will add a new node pool to an existing AKS Engine-created cluster. Using a JSON file to define a the new node pool's configuration, and referencing the aks-engine-generated `apimodel.json`, you can add new nodes to your cluster. Use this command to add a specific number of new nodes using a discrete configuration compared to existing nodes participating in your cluster.
 
 ```sh
-$ aks-engine addpool --help
+$ aks-engine-azurestack addpool --help
 Add a node pool to an existing AKS Engine-created Kubernetes cluster by referencing a new agentpoolProfile spec
 
 Usage:
-  aks-engine addpool [flags]
+  aks-engine-azurestack addpool [flags]
 
 Flags:
   -m, --api-model string            path to the generated apimodel.json file
@@ -186,18 +186,18 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-Detailed documentation on `aks-engine addpool` can be found [here](../topics/addpool.md).
+Detailed documentation on `aks-engine-azurestack addpool` can be found [here](../topics/addpool.md).
 
-### `aks-engine upgrade`
+### `aks-engine-azurestack upgrade`
 
-The `aks-engine upgrade` command orchestrates a Kubernetes version upgrade across your existing cluster nodes. Use this command to upgrade the Kubernetes version running your control plane, and optionally on all your nodes as well.
+The `aks-engine-azurestack upgrade` command orchestrates a Kubernetes version upgrade across your existing cluster nodes. Use this command to upgrade the Kubernetes version running your control plane, and optionally on all your nodes as well.
 
 ```sh
-$ aks-engine upgrade --help
+$ aks-engine-azurestack upgrade --help
 Upgrade an existing AKS Engine-created Kubernetes cluster, one node at a time
 
 Usage:
-  aks-engine upgrade [flags]
+  aks-engine-azurestack upgrade [flags]
 
 Flags:
   -m, --api-model string            path to the generated apimodel.json file
@@ -225,22 +225,22 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-Detailed documentation on `aks-engine upgrade` can be found [here](../topics/upgrade.md).
+Detailed documentation on `aks-engine-azurestack upgrade` can be found [here](../topics/upgrade.md).
 
 ## Generate an ARM Template
 
 AKS Engine also provides a command to generate a reusable ARM template only, without creating any actual Azure resources.
 
-### `aks-engine generate`
+### `aks-engine-azurestack generate`
 
-The `aks-engine generate` command is similar to `aks-engine deploy`: it uses an API model (cluster definition) file as input to define the desired cluster configuration and shape of a new Kubernetes cluster. Unlike `deploy`, `aks-engine generate` does not actually submit any operational requests to Azure, but is instead used to generate a reusable ARM template which may be deployed at a later time. Use this command as a part of a workflow that creates one or more Kubernetes clusters via an ARM group deployment that takes an ARM template as input (e.g., `az deployment group create` using the standard `az` Azure CLI).
+The `aks-engine-azurestack generate` command is similar to `aks-engine-azurestack deploy`: it uses an API model (cluster definition) file as input to define the desired cluster configuration and shape of a new Kubernetes cluster. Unlike `deploy`, `aks-engine-azurestack generate` does not actually submit any operational requests to Azure, but is instead used to generate a reusable ARM template which may be deployed at a later time. Use this command as a part of a workflow that creates one or more Kubernetes clusters via an ARM group deployment that takes an ARM template as input (e.g., `az deployment group create` using the standard `az` Azure CLI).
 
 ```sh
-$ aks-engine generate --help
+$ aks-engine-azurestack generate --help
 Generates an Azure Resource Manager template, parameters file and other assets for a cluster
 
 Usage:
-  aks-engine generate [flags]
+  aks-engine-azurestack generate [flags]
 
 Flags:
   -m, --api-model string             path to your cluster definition file
@@ -258,21 +258,21 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-Detailed documentation on `aks-engine generate` can be found [here](../topics/creating_new_clusters.md#generate).
+Detailed documentation on `aks-engine-azurestack generate` can be found [here](../topics/creating_new_clusters.md#generate).
 
-### `aks-engine rotate-certs`
+### `aks-engine-azurestack rotate-certs`
 
-The `aks-engine rotate-certs` command is currently experimental and not recommended for use on production clusters.
+The `aks-engine-azurestack rotate-certs` command is currently experimental and not recommended for use on production clusters.
 
-### `aks-engine get-logs`
+### `aks-engine-azurestack get-logs`
 
-The `aks-engine get-logs` can conveniently collect host VM logs from your Linux node VMs for local troubleshooting. *This command does not support Windows nodes*. The command assumes that your node VMs have an SSH daemon listening on port 22, that all nodes share a common SSH keypair for interactive login, and that a public endpoint exists on one of the control plane VMs for accommodating SSH agent key forwarding.
+The `aks-engine-azurestack get-logs` can conveniently collect host VM logs from your Linux node VMs for local troubleshooting. *This command does not support Windows nodes*. The command assumes that your node VMs have an SSH daemon listening on port 22, that all nodes share a common SSH keypair for interactive login, and that a public endpoint exists on one of the control plane VMs for accommodating SSH agent key forwarding.
 
 
 ```sh
-$ aks-engine get-logs --help
+$ aks-engine-azurestack get-logs --help
 Usage:
-  aks-engine get-logs [flags]
+  aks-engine-azurestack get-logs [flags]
 
 Flags:
   -m, --api-model string               path to the generated apimodel.json file (required)
@@ -288,7 +288,7 @@ Global Flags:
       --debug   enable verbose debug logs
 ```
 
-The `aks-engine` codebase contains a working log retrieval script in `scripts/collect-logs.sh`, so you can use it to quickly gather logs from your node VMs:
+The `aks-engine-azurestack` codebase contains a working log retrieval script in `scripts/collect-logs.sh`, so you can use it to quickly gather logs from your node VMs:
 
 ```sh
 $ git clone https://github.com/Azure/aks-engine-azurestack.git && cd aks-engine

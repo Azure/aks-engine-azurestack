@@ -12,9 +12,9 @@ AKS Engine is an ARM template-driven way to provision a self-managed Kubernetes 
 
 ## Getting started
 
-- Read the [CLI Overview](docs/tutorials/cli-overview.md) for a list of features provided by the `aks-engine` command line tool.
+- Read the [CLI Overview](docs/tutorials/cli-overview.md) for a list of features provided by the `aks-engine-azurestack` command line tool.
 
-- The [Quickstart Guide](docs/tutorials/quickstart.md) describes how to download the latest release of `aks-engine` for your environment, and demonstrates how to use `aks-engine` to create a Kubernetes cluster on Azure that you will manage and customize.
+- The [Quickstart Guide](docs/tutorials/quickstart.md) describes how to download the latest release of `aks-engine-azurestack` for your environment, and demonstrates how to use `aks-engine-azurestack` to create a Kubernetes cluster on Azure that you will manage and customize.
 
 - The [complete body of documentation can be found here][docs].
 

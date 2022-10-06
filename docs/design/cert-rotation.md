@@ -48,9 +48,9 @@ Cons:
 - Requires more manual steps from the user. For example, they would have to set environemnent variables for their SSH key, KUBECONFIG, _output directory, etc.
 - Not Windows friendly: would require running the script in a container, unless we provide a Powershell equivalent.
 
-### New aks-engine binary command
+### New aks-engine-azurestack binary command
 
-What: New `aks-engine rotate-certs` command that uses a combination of Kubernetes client-go and SSH commands to access the cluster and rotate certificates.
+What: New `aks-engine-azurestack rotate-certs` command that uses a combination of Kubernetes client-go and SSH commands to access the cluster and rotate certificates.
 
 Pros:
 

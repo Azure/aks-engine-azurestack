@@ -2,20 +2,20 @@
 
 ## Prerequisites
 
-All documentation in these guides assumes you have already downloaded both the Azure `az` CLI tool and the `aks-engine` binary tool. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing if you're creating a Kubernetes cluster using AKS Engine for the first time.
+All documentation in these guides assumes you have already downloaded both the Azure `az` CLI tool and the `aks-engine-azurestack` binary tool. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing if you're creating a Kubernetes cluster using AKS Engine for the first time.
 
-This guide assumes you already have a running cluster deployed using the `aks-engine` CLI. For more details on how to do that see [deploy](creating_new_clusters.md#deploy) or [generate](generate.md).
+This guide assumes you already have a running cluster deployed using the `aks-engine-azurestack` CLI. For more details on how to do that see [deploy](creating_new_clusters.md#deploy) or [generate](generate.md).
 
 ## Addpool
 
-The `aks-engine addpool` command can add a new node pool to an existing cluster. By specifing a new `agentPoolProfile` configuration as a JSON file, `aks-engine addpool` will add a node pool according to that configuration, and merge it into the pre-existing aks-engine-generated `apimodel.json`. When used in combination with a newer version of the `aks-engine` CLI compared to the version used to build the cluster originally, new node pools can be regularly added with the latest bits.
+The `aks-engine-azurestack addpool` command can add a new node pool to an existing cluster. By specifing a new `agentPoolProfile` configuration as a JSON file, `aks-engine-azurestack addpool` will add a node pool according to that configuration, and merge it into the pre-existing aks-engine-generated `apimodel.json`. When used in combination with a newer version of the `aks-engine-azurestack` CLI compared to the version used to build the cluster originally, new node pools can be regularly added with the latest bits.
 
 The example below will assume you have a cluster deployed, and that the API model originally used to deploy that cluster is stored at `_output/<dnsPrefix>/apimodel.json`.
 
 To add a new pool to the cluster you will run a command like:
 
 ```sh
-$ aks-engine addpool --subscription-id <subscription_id> \
+$ aks-engine-azurestack addpool --subscription-id <subscription_id> \
     --resource-group mycluster --location <location> \
     --api-model _output/mycluster/apimodel.json \
     --node-pool ./pool.json
@@ -67,14 +67,14 @@ Some important considerations:
 
 ### Why would I use addpool instead of update to upgrade a VMSS node pool?
 
-Similar to `aks-engine update`, you may use the `addpool` command to try out a new node configuration in your cluster without affecting existing nodes or production workloads (although if your new configuration is risky in any way you will want to taint those nodes so that no production workloads are scheduled, until you can validate the new configuration). The primary differences are:
+Similar to `aks-engine-azurestack update`, you may use the `addpool` command to try out a new node configuration in your cluster without affecting existing nodes or production workloads (although if your new configuration is risky in any way you will want to taint those nodes so that no production workloads are scheduled, until you can validate the new configuration). The primary differences are:
 
 - Use `addpool` when the configuration delta compared to an existing node pool is significant enough where it makes sense to organize that new configuration discretely in its own pool. Especially if the new pool will only serve a particular type of traffic (e.g., GPU or confidential compute), a dedicated pool should be used for easy, discrete scaling in response to the specific load requirements of the specific workloads it will run.
 - Use `addpool` when you want to run operational tests immediately, and also especially if you know the specific number of net new nodes to add, and you need them immediately. The primary operational difference between `addpool` and `update` is that `addpool` actually adds new operational capacity to your cluster immediately, whereas `update` merely changes the VMSS model, so that *the next* scale out operation renders a node with the new configuration.
 
 ### Why would I use addpool instead of upgrade to install a newer version of Kubernetes on my cluster?
 
-If you're running a very large Kubernetes cluster, the one-node-at-a-time operation of `aks-engine upgrade` will take many hours, even days, depending on the size of the cluster. Each one of those node deletions + node additions is subject to environmental failures, and so a deterministic upgrade can indeed take many days. Depending on your tolerance for temporary additional quota, you can upgrade your nodes more quickly, one pool at a time, and use your own validation criteria to inform the progression velocity through an entire cluster upgrade workflow. Let's demonstrate how that might work using a cluster with 3 node pools:
+If you're running a very large Kubernetes cluster, the one-node-at-a-time operation of `aks-engine-azurestack upgrade` will take many hours, even days, depending on the size of the cluster. Each one of those node deletions + node additions is subject to environmental failures, and so a deterministic upgrade can indeed take many days. Depending on your tolerance for temporary additional quota, you can upgrade your nodes more quickly, one pool at a time, and use your own validation criteria to inform the progression velocity through an entire cluster upgrade workflow. Let's demonstrate how that might work using a cluster with 3 node pools:
 
 ```sh
 $ kubectl get nodes -o wide
@@ -102,7 +102,7 @@ Above we have a `pool1` with 3 nodes, a `pool2` with 3 nodes, and a `pool3` with
 
 Before we do that, though, let's upgrade the control plane first! [You should always upgrade the control plane before your nodes](upgrade.md#what-should-i-upgrade-first-my-control-plane-nodes-or-my-worker-nodes). See the full upgrade docs [here](upgrade.md).
 
-After our control plane has been updated to v1.19.1, we can proceed with a rolling upgrade of our nodes by gradually adding and validating new node pool. We'll use the command line `jq` tool to create three new JSON files that we'll use to initiate 3 new `aks-engine addpool` operations, derived from the original `agentPoolProfile` specifications in the API model generated during cluster deployment:
+After our control plane has been updated to v1.19.1, we can proceed with a rolling upgrade of our nodes by gradually adding and validating new node pool. We'll use the command line `jq` tool to create three new JSON files that we'll use to initiate 3 new `aks-engine-azurestack addpool` operations, derived from the original `agentPoolProfile` specifications in the API model generated during cluster deployment:
 
 ```sh
 $ jq -r '.properties.agentPoolProfiles[0] | .name = "newpool1"' < _output/kubernetes-westus2-1838/apimodel.json > newpool1.json
@@ -118,11 +118,11 @@ $ jq -r '.count = 1' < newpool2.json > newpool2-1node.json && mv newpool2-1node.
 $ jq -r '.count = 1' < newpool3.json > newpool3-1node.json && mv newpool3-1node.json newpool3.json
 ```
 
-Our final configuration change before running `aks-engine addpool` is updating the Kubernetes in the API model
+Our final configuration change before running `aks-engine-azurestack addpool` is updating the Kubernetes in the API model
 
 ```sh
 $ jq -r '. | .properties.orchestratorProfile.orchestratorRelease = "1.19"' < _output/kubernetes-westus2-1838/apimodel.json > apimodel-1dot19.json
-FrancisBookMS:aks-engine jackfrancis$ jq -r '. | .properties.orchestratorProfile.orchestratorVersion = "1.19.1"' < apimodel-1dot19.json > _output/kubernetes-westus2-1838/apimodel.json
+FrancisBookMS:aks-engine-azurestack jackfrancis$ jq -r '. | .properties.orchestratorProfile.orchestratorVersion = "1.19.1"' < apimodel-1dot19.json > _output/kubernetes-westus2-1838/apimodel.json
 $ grep orchestratorRelease -A 1 _output/kubernetes-westus2-1838/apimodel.json
       "orchestratorRelease": "1.19",
       "orchestratorVersion": "1.19.1",
@@ -131,15 +131,15 @@ $ grep orchestratorRelease -A 1 _output/kubernetes-westus2-1838/apimodel.json
 We can now run addpool once per new pool to begin the process of validating v1.19.1 across our existing v1.18.8 cluster:
 
 ```sh
-$ aks-engine addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool1.json --location westus2 --resource-group kubernetes-westus2-1838
+$ aks-engine-azurestack addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool1.json --location westus2 --resource-group kubernetes-westus2-1838
 WARN[0003] Any new nodes will have containerd version 1.3.7
 INFO[0003] Starting ARM Deployment kubernetes-westus2-1838-1942811440 in resource group kubernetes-westus2-1838. This will take some time...
 INFO[0158] Finished ARM Deployment (kubernetes-westus2-1838-1942811440). Succeeded
-$ aks-engine addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool2.json --location westus2 --resource-group kubernetes-westus2-1838
+$ aks-engine-azurestack addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool2.json --location westus2 --resource-group kubernetes-westus2-1838
 WARN[0008] Any new nodes will have containerd version 1.3.7
 INFO[0008] Starting ARM Deployment kubernetes-westus2-1838-25937475 in resource group kubernetes-westus2-1838. This will take some time...
 INFO[0163] Finished ARM Deployment (kubernetes-westus2-1838-25937475). Succeeded
-$ aks-engine addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool3.json --location westus2 --resource-group kubernetes-westus2-1838
+$ aks-engine-azurestack addpool --subscription-id $TEST_AZURE_SUB_ID --api-model _output/kubernetes-westus2-1838/apimodel.json --node-pool newpool3.json --location westus2 --resource-group kubernetes-westus2-1838
 WARN[0004] Any new nodes will have containerd version 1.3.7
 INFO[0004] Starting ARM Deployment kubernetes-westus2-1838-1370618455 in resource group kubernetes-westus2-1838. This will take some time...
 INFO[0174] Finished ARM Deployment (kubernetes-westus2-1838-1370618455). Succeeded
@@ -186,7 +186,7 @@ node/k8s-newpool3-26196714-vmss000000 tainted
 Let's say we've validated the "pool1" replacement, which we've called "newpool1". Let's scale that pool out to match the original "pool1":
 
 ```sh
-$ aks-engine scale --api-model _output/kubernetes-westus2-1838/apimodel.json --location westus2 --resource-group kubernetes-westus2-1838 --apiserver kubernetes-westus2-1838.westus2.cloudapp.azure.com --node-pool newpool1 --new-node-count 3
+$ aks-engine-azurestack scale --api-model _output/kubernetes-westus2-1838/apimodel.json --location westus2 --resource-group kubernetes-westus2-1838 --apiserver kubernetes-westus2-1838.westus2.cloudapp.azure.com --node-pool newpool1 --new-node-count 3
 INFO[0003] found VMSS k8s-newpool1-26196714-vmss in resource group kubernetes-westus2-1838 that correlates with node pool newpool1
 WARN[0003] Any new nodes will have containerd version 1.3.7
 INFO[0003] Removing singlePlacementGroup property from [variables('newpool1VMNamePrefix')]
@@ -202,7 +202,7 @@ k8s-newpool1-26196714-vmss000001    Ready       v1.19.1    Ubuntu 18.04.5 LTS   
 k8s-newpool1-26196714-vmss000002    NotReady    v1.19.1    Ubuntu 18.04.5 LTS    5.4.0-1025-azure
 ```
 
-Note: you may also use the VMSS API directly (either via the `az` CLI or the Azure portal web UI) to scale out the new pools. The advantage of using `aks-engine scale` to do so is that you will get immediate signal if, for any reason, the new VMs did not come online successfully as Kubernetes nodes.
+Note: you may also use the VMSS API directly (either via the `az` CLI or the Azure portal web UI) to scale out the new pools. The advantage of using `aks-engine-azurestack scale` to do so is that you will get immediate signal if, for any reason, the new VMs did not come online successfully as Kubernetes nodes.
 
 Now that we have equivalent node capacity for our new pool compared to our original pool (note: "capacity equivalence" may be a little more complicated if, as part of a process like this one, you change the VM SKU of the new pool as compared to the original pool; YMMV.) we can cordon + drain the original nodes and rely upon the Kubernetes layer to re-schedule workloads to the new nodes (note: this will require you to really ensure your workload scheduling configuration as pertains to the way your nodes are labeled, tainted, etc, makes sense and that your production workload specifications adhere to that configuration schema).
 

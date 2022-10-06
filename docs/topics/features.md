@@ -17,9 +17,9 @@
 
 ## Managed Identity
 
-Enabling Managed Identity configures aks-engine to include and use MSI identities for all interactions with the Azure Resource Manager (ARM) API.
+Enabling Managed Identity configures aks-engine-azurestack to include and use MSI identities for all interactions with the Azure Resource Manager (ARM) API.
 
-Instead of using a static service principal written to `/etc/kubernetes/azure.json`, Kubernetes will use a dynamic, time-limited token fetched from the MSI extension running on master and agent nodes. This is currently the default cluster configuration. Because the managed identity requires role assignment resources in order to grant the proper privileges to the control plane VMs to allow the Azure Kubernetes cloud provider to create Azure resources, you will need to create your cluster (`aks-engine deploy` or `az group deployment create` [or equivalent] using the `aks-engine generate`-created ARM template) using a service principal that can create role assignment resources in the resource group.
+Instead of using a static service principal written to `/etc/kubernetes/azure.json`, Kubernetes will use a dynamic, time-limited token fetched from the MSI extension running on master and agent nodes. This is currently the default cluster configuration. Because the managed identity requires role assignment resources in order to grant the proper privileges to the control plane VMs to allow the Azure Kubernetes cloud provider to create Azure resources, you will need to create your cluster (`aks-engine-azurestack deploy` or `az group deployment create` [or equivalent] using the `aks-engine-azurestack generate`-created ARM template) using a service principal that can create role assignment resources in the resource group.
 
 You may disable Managed Identity and instead delegate the use of a service principal to the Azure cloud provider (this service principal will need Contributor privileges to the resource group):
 
@@ -113,7 +113,7 @@ spec:
 
 ## Using Azure integrated networking (CNI)
 
-Kubernetes clusters are configured by default to use the [Azure CNI plugin](https://github.com/Azure/azure-container-networking) which provides an Azure native networking experience. Pods will receive IP addresses directly from the vnet subnet on which they're hosted. If the API model doesn't specify explicitly, aks-engine will automatically provide the following `networkPlugin` configuration in `kubernetesConfig`:
+Kubernetes clusters are configured by default to use the [Azure CNI plugin](https://github.com/Azure/azure-container-networking) which provides an Azure native networking experience. Pods will receive IP addresses directly from the vnet subnet on which they're hosted. If the API model doesn't specify explicitly, aks-engine-azurestack will automatically provide the following `networkPlugin` configuration in `kubernetesConfig`:
 
 ```json
 "kubernetesConfig": {
@@ -376,7 +376,7 @@ You can build a private Kubernetes cluster with no public IP addresses assigned 
 }
 ```
 
-In order to access this cluster using kubectl commands, you will need a jumpbox in the same VNET (or onto a peer VNET that routes to the VNET). If you do not already have a jumpbox, you can use aks-engine to provision your jumpbox (see below) or create it manually. You can create a new jumpbox manually in the Azure Portal under "Create a resource > Compute > Ubuntu Server 16.04 LTS VM" or using the [az cli](https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_create). You will then be able to:
+In order to access this cluster using kubectl commands, you will need a jumpbox in the same VNET (or onto a peer VNET that routes to the VNET). If you do not already have a jumpbox, you can use aks-engine-azurestack to provision your jumpbox (see below) or create it manually. You can create a new jumpbox manually in the Azure Portal under "Create a resource > Compute > Ubuntu Server 16.04 LTS VM" or using the [az cli](https://docs.microsoft.com/en-us/cli/azure/vm?view=azure-cli-latest#az_vm_create). You will then be able to:
 
 - install [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) on the jumpbox
 - copy the kubeconfig artifact for the right region from the deployment directory to the jumpbox
@@ -385,7 +385,7 @@ In order to access this cluster using kubectl commands, you will need a jumpbox 
 
 Alternatively, you may also ssh into your nodes (given that your ssh key is on the jumpbox) and use the admin user kubeconfig on the cluster to run `kubectl` commands directly on the cluster. However, in the case of a multi-master private cluster, the connection will be refused when running commands on a master every time that master gets picked by the load balancer as it will be routing to itself (1 in 3 times for a 3 master cluster, 1 in 5 for 5 masters). This is expected behavior and therefore the method aforementioned of accessing nodes on the jumpbox using the `_output` directory kubeconfig is preferred.
 
-To auto-provision a jumpbox with your aks-engine deployment use:
+To auto-provision a jumpbox with your aks-engine-azurestack deployment use:
 
 ```json
 "kubernetesConfig": {
@@ -405,7 +405,7 @@ To auto-provision a jumpbox with your aks-engine deployment use:
 
 ## Azure Key Vault Data Encryption
 
-Enabling Azure Key Vault Encryption configures aks-engine to create an Azure Key Vault in the same resource group as the Kubernetes cluster and configures Kubernetes to use a key from this Key Vault to encrypt and decrypt etcd data for the Kubernetes cluster.
+Enabling Azure Key Vault Encryption configures aks-engine-azurestack to create an Azure Key Vault in the same resource group as the Kubernetes cluster and configures Kubernetes to use a key from this Key Vault to encrypt and decrypt etcd data for the Kubernetes cluster.
 
 To enable this feature, add `"enableEncryptionWithExternalKms": true` in `kubernetesConfig` and `objectId` in `servicePrincipalProfile`. Optional, if you want to create Hardware Security Modules (HSM) type keys, then add `"keyVaultSku": "Premium"` to enable creation of Premium SKU Key Vault and RSA-HSM type key. Otherwise, by default `keyVaultSku` can be omitted and a Standard SKU Key Vault and a RSA type key will be created.
 

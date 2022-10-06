@@ -2,19 +2,19 @@
 
 ## Deploy
 
-The `aks-engine deploy` command will create a new Kubernetes cluster from scratch into a pre-existing Azure resource group. You define an API model (cluster definition) as a JSON file, and then pass in a reference to it, as well as appropriate Azure credentials, to a command statement like this:
+The `aks-engine-azurestack deploy` command will create a new Kubernetes cluster from scratch into a pre-existing Azure resource group. You define an API model (cluster definition) as a JSON file, and then pass in a reference to it, as well as appropriate Azure credentials, to a command statement like this:
 
 ```sh
-$ aks-engine deploy --subscription-id $SUBSCRIPTION_ID \
+$ aks-engine-azurestack deploy --subscription-id $SUBSCRIPTION_ID \
     --dns-prefix $CLUSTER_NAME \
     --resource-group $RESOURCE_GROUP \
     --location $LOCATION \
     --api-model examples/kubernetes.json
 ```
 
-`aks-engine deploy` is a long-running operation that creates Azure resources (e.g., Virtual Machine and/or Virtual Machine Scale Set [VMSS], Disk, Network Interface, Network Security Group, Public IP Address, Virtual Network, Load Balancer, and others) that will underly a Kubernetes cluster. All deployed VMs will be configured to run Kubernetes bootstrap scripts appropriate for the desired cluster configuration. The outcome of a successful `aks-engine deploy` operation is a fully operational Kubernetes cluster, ready for use immediately.
+`aks-engine-azurestack deploy` is a long-running operation that creates Azure resources (e.g., Virtual Machine and/or Virtual Machine Scale Set [VMSS], Disk, Network Interface, Network Security Group, Public IP Address, Virtual Network, Load Balancer, and others) that will underly a Kubernetes cluster. All deployed VMs will be configured to run Kubernetes bootstrap scripts appropriate for the desired cluster configuration. The outcome of a successful `aks-engine-azurestack deploy` operation is a fully operational Kubernetes cluster, ready for use immediately.
 
-A more detailed walk-through of `aks-engine deploy` is in the [quickstart guide](../tutorials/quickstart.md#deploy)
+A more detailed walk-through of `aks-engine-azurestack deploy` is in the [quickstart guide](../tutorials/quickstart.md#deploy)
 
 ### Parameters
 
@@ -42,10 +42,10 @@ A more detailed walk-through of `aks-engine deploy` is in the [quickstart guide]
 
 ## Generate
 
-The `aks-engine generate` command will generate artifacts that you can use to implement your own cluster create workflows. Like `aks-engine deploy`, you define an API model (cluster definition) as a JSON file, and then pass in a reference to it, as well as appropriate Azure credentials, to a command statement like this:
+The `aks-engine-azurestack generate` command will generate artifacts that you can use to implement your own cluster create workflows. Like `aks-engine-azurestack deploy`, you define an API model (cluster definition) as a JSON file, and then pass in a reference to it, as well as appropriate Azure credentials, to a command statement like this:
 
 ```sh
-$ aks-engine generate --api-model ./my-cluster-definition.json  \
+$ aks-engine-azurestack generate --api-model ./my-cluster-definition.json  \
     --output-directory ./cluster_artifacts
 ```
 
@@ -84,7 +84,7 @@ Or, system-assigned identity enabled:
 }
 ```
 
-When you use a system-assigned identity configuration, you will need to submit your `aks-engine generate`-built ARM template as an ARM deployment with a service principal that can create role assignment resources in the resource group.
+When you use a system-assigned identity configuration, you will need to submit your `aks-engine-azurestack generate`-built ARM template as an ARM deployment with a service principal that can create role assignment resources in the resource group.
 
 2. To uniquely identify the cluster, you need a cluster name:
 ```json
@@ -134,7 +134,7 @@ When you use a system-assigned identity configuration, you will need to submit y
 |--parameters-only|no|Only output parameters files.|
 |--no-pretty-print|no|Skip pretty printing the output.|
 
-As mentioned above, `aks-engine generate` expects all cluster definition data to be present in the API model JSON file. You may actually inject data into the API model at runtime by invoking the command and including that data in the `--set` argument interface. For example, this command will produce artifacts that can be used to deploy a fully functional Kubernetes cluster based on the AKS Engine defaults (the `examples/kubernetes.json` file will build a "default" single master, 2 node cluster):
+As mentioned above, `aks-engine-azurestack generate` expects all cluster definition data to be present in the API model JSON file. You may actually inject data into the API model at runtime by invoking the command and including that data in the `--set` argument interface. For example, this command will produce artifacts that can be used to deploy a fully functional Kubernetes cluster based on the AKS Engine defaults (the `examples/kubernetes.json` file will build a "default" single master, 2 node cluster):
 
 ```sh
 $ bin/aks-engine-azurestack generate --api-model ./examples/kubernetes.json \
@@ -148,19 +148,19 @@ WARN[0000] containerd will be upgraded to version 1.3.7
 
 ## Frequently Asked Questions
 
-### Why would I run `aks-engine generate` vs `aks-engine deploy`?
+### Why would I run `aks-engine-azurestack generate` vs `aks-engine-azurestack deploy`?
 
-Depending on any customization you want to do either (1) the AKS Engine-generated ARM template, or (2) the particular way that the ARM template is deployed to Azure, you may want to use `aks-engine generate` to produce an ARM template specification, and then implement your own `az deployment group create`-equivalent workflow to actually bootstrap the cluster. Especially if you plan to bootstrap multiple clusters in multiple regions from a common cluster configuration, it may make sense to re-use a single ARM template across a set of ARM deployments. `aks-engine deploy` is only able to build one cluster at a time, so especially if you're bootstrapping multiple clusters in parallel using a common config, a workflow like this is probably optimal:
+Depending on any customization you want to do either (1) the AKS Engine-generated ARM template, or (2) the particular way that the ARM template is deployed to Azure, you may want to use `aks-engine-azurestack generate` to produce an ARM template specification, and then implement your own `az deployment group create`-equivalent workflow to actually bootstrap the cluster. Especially if you plan to bootstrap multiple clusters in multiple regions from a common cluster configuration, it may make sense to re-use a single ARM template across a set of ARM deployments. `aks-engine-azurestack deploy` is only able to build one cluster at a time, so especially if you're bootstrapping multiple clusters in parallel using a common config, a workflow like this is probably optimal:
 
-1. `aks-engine generate --api-model ./common-cluster-definition.json --output-directory /path/to/re-usable-arm-template-directory`
+1. `aks-engine-azurestack generate --api-model ./common-cluster-definition.json --output-directory /path/to/re-usable-arm-template-directory`
 2. For every desired cluster+location, execute in parallel:
   1. `az group create -n $RESOURCE_GROUP -l $LOCATION`; then
   2. `az deployment group create --name $RESOURCE_GROUP --resource-group $RESOURCE_GROUP --template-file /path/to/re-usable-arm-template-directory/azuredeploy.json --parameters /path/to/re-usable-arm-template-directory/azuredeploy.parameters.json`
 
 In the above example we use name of the resource group as the name of the ARM deployment, following the guidance that only one cluster be built per resource group.
 
-In summary, when creating single clusters, and especially when maintaining Kubernetes environments distinctly (i.e., not maintaining a fleet of clusters running a common config), relying upon `aks-engine deploy` as a full end-to-end convenience to bootstrap your clusters is appropriate. For more sophisticated cluster configuration re-use scenarios, and/or more sophisticated ARM deployment reconciliation (i.e., retry logic for certain failures), `aks-engine generate` + `az deployment group create` is the more appropriate choice.
+In summary, when creating single clusters, and especially when maintaining Kubernetes environments distinctly (i.e., not maintaining a fleet of clusters running a common config), relying upon `aks-engine-azurestack deploy` as a full end-to-end convenience to bootstrap your clusters is appropriate. For more sophisticated cluster configuration re-use scenarios, and/or more sophisticated ARM deployment reconciliation (i.e., retry logic for certain failures), `aks-engine-azurestack generate` + `az deployment group create` is the more appropriate choice.
 
-### Can I re-run `aks-engine deploy` on an existing cluster to update the cluster configuration?
+### Can I re-run `aks-engine-azurestack deploy` on an existing cluster to update the cluster configuration?
 
 No. See [addpool](addpool.md), [update](update.md), [scale](scale.md), and [upgrade](upgrade.md) for documentation describing how to continue to use AKS Engine to maintain your cluster configuration over time.

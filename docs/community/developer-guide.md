@@ -42,24 +42,24 @@ This make target mounts the AKS Engine source directory as a volume into the Doc
 
 When `make dev` completes, you will be left at a command prompt inside a Docker container.
 
-Run the following commands to pull the latest dependencies and build the `aks-engine` tool.
+Run the following commands to pull the latest dependencies and build the `aks-engine-azurestack` tool.
 
 ```sh
 # set up the hack/tools directory for your platform
 make -C hack/tools clean install
 # install and download build dependencies
 make bootstrap
-# build the `aks-engine` binary
+# build the `aks-engine-azurestack` binary
 make build
 ```
 
-The build process leaves the compiled `aks-engine` binary in the `bin` directory. Make sure everything completed successfully by running `bin/aks-engine-azurestack` without any arguments:
+The build process leaves the compiled `aks-engine-azurestack` binary in the `bin` directory. Make sure everything completed successfully by running `bin/aks-engine-azurestack` without any arguments:
 
 ```sh
 $ ./bin/aks-engine-azurestack
 Usage:
-  aks-engine [flags]
-  aks-engine [command]
+  aks-engine-azurestack [flags]
+  aks-engine-azurestack [command]
 
 Available Commands:
   addpool       Add a node pool to an existing AKS Engine-created Kubernetes cluster
@@ -80,16 +80,16 @@ Flags:
   -h, --help                 help for aks-engine
       --show-default-model   Dump the default API model to stdout
 
-Use "aks-engine [command] --help" for more information about a command.
+Use "aks-engine-azurestack [command] --help" for more information about a command.
 ```
 
 [Here's a quick demo video showing the dev/build/test cycle with this setup.](https://www.youtube.com/watch?v=lc6UZmqxQMs)
 
 ### Building on Windows, OSX, and Linux
 
-If the above docker container conveniences don't work for your developer environment, below is per-platform guidance to help you set up your local dev environment manually to build an `aks-engine` binary from source.
+If the above docker container conveniences don't work for your developer environment, below is per-platform guidance to help you set up your local dev environment manually to build an `aks-engine-azurestack` binary from source.
 
-Building an `aks-engine` binary from source has a few requirements for each of the platforms. Download and install the prerequisites for your platform: Windows, Linux, or Mac:
+Building an `aks-engine-azurestack` binary from source has a few requirements for each of the platforms. Download and install the prerequisites for your platform: Windows, Linux, or Mac:
 
 #### Windows
 
@@ -108,7 +108,7 @@ Setup steps:
   1. Type `cd %GOPATH%`
   1. Type `mkdir -p src\github.com\Azure` to create the gopath to aks-engine
   1. Type `cd src\github.com\Azure`
-  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine from GitHub
+  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine-azurestack from GitHub
   1. Type `cd aks-engine`
   1. Type `make bootstrap` to get the supporting components
   1. Type `make` to build the project
@@ -131,7 +131,7 @@ Build aks-engine:
 
   1. Type `mkdir -p $HOME/go/src/github.com/Azure` to create your gopath
   1. Type `cd $_` to switch directories to that same path
-  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine from GitHub
+  1. Type `git clone https://github.com/Azure/aks-engine-azurestack` to download aks-engine-azurestack from GitHub
   1. Type `cd aks-engine` to change to the source directory
   1. Type `make bootstrap` to install supporting components
   1. Type `make` to build the project
@@ -160,7 +160,7 @@ home of the current development candidate. Releases are tagged.
 We accept changes to the code via GitHub Pull Requests (PRs). One
 workflow for doing this is as follows:
 
-1. Use `go get` to clone the aks-engine repository: `go get github.com/Azure/aks-engine-azurestack`
+1. Use `go get` to clone the aks-engine-azurestack repository: `go get github.com/Azure/aks-engine-azurestack`
 2. Fork that repository into your GitHub account
 3. Add your repository as a remote for `$GOPATH/github.com/Azure/aks-engine-azurestack`
 4. Create a new working branch (`git checkout -b feat/my-feature`) and
@@ -172,7 +172,7 @@ workflow for doing this is as follows:
 
 Third party dependencies reside locally inside the repository under the `vendor/` directory. We use [dep](https://github.com/golang/dep) to enforce our dependency graph, declared in [Gopkg.toml](https://github.com/Azure/aks-engine-azurestack/blob/master/CONTRIBUTING.md) in the project root.
 
-If you wish to introduce a new third party dependency into `aks-engine`, please file an [issue](https://github.com/Azure/aks-engine-azurestack/issues), and include the canonical VCS path (e.g., `github.com/Azure/azure-sdk-for-go`) along with either the desired release string expression to depend on (e.g., `~8.1.0`), or the commit hash to pin to a static commit (e.g., `4cdb38c072b86bf795d2c81de50784d9fdd6eb77`). A project maintainer will then own the effort to update the codebase with that dependency, including relevant updates to `Gopkg.toml` and `vendor/`.
+If you wish to introduce a new third party dependency into `aks-engine-azurestack`, please file an [issue](https://github.com/Azure/aks-engine-azurestack/issues), and include the canonical VCS path (e.g., `github.com/Azure/azure-sdk-for-go`) along with either the desired release string expression to depend on (e.g., `~8.1.0`), or the commit hash to pin to a static commit (e.g., `4cdb38c072b86bf795d2c81de50784d9fdd6eb77`). A project maintainer will then own the effort to update the codebase with that dependency, including relevant updates to `Gopkg.toml` and `vendor/`.
 
 As a rule we want to distinguish dependency update PRs from feature/bug PRs; we may ask that feature/bug PRs which include updates to `vendor/` and/or contain any other dependency-related overhead to be triaged into separate PRs that can be managed independently, pre-requisite dependency changes in one, and features/bugs in another. The objective of enforcing these distinctions is to help focus the PR review process, and to make manageable the difficult task of rationalizing a multitude of parallel PRs in flight, many of which which may carry hard-to-reconcile dependency side-effects when aggressively updated with a fresh dependency graph as part of the PR payload.
 
@@ -229,7 +229,7 @@ Once installed, the Go extension will `go get` several helper applications, incl
 debugging support. You can read more about VS Code integration with Delve
 [here](https://github.com/Microsoft/vscode-go/wiki/Debugging-Go-code-using-VS-Code).
 
-Open the directory that you checked out the `aks-engine` repo to in VS Code.
+Open the directory that you checked out the `aks-engine-azurestack` repo to in VS Code.
 
 ##### Debugging Tests
 
@@ -248,7 +248,7 @@ to be edited. Open that file (or just click the gear-shaped "Open launch.json" i
 Debug panel open).
 
 Here is an example `launch.json` file that contains a configuration for debugging the
-`aks-engine generate` command using the `examples/kubernetes.json` file for its cluster
+`aks-engine-azurestack generate` command using the `examples/kubernetes.json` file for its cluster
 configuration.
 
 ```json
@@ -256,7 +256,7 @@ configuration.
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "aks-engine generate",
+      "name": "aks-engine-azurestack generate",
       "type": "go",
       "request": "launch",
       "mode": "debug",
@@ -276,7 +276,7 @@ configuration.
 ```
 
 Copy and paste the configuration and change the values in the `--set` arguments to reference your
-details. You can create multiple configurations in `launch.json` to debug `aks-engine upgrade`,
+details. You can create multiple configurations in `launch.json` to debug `aks-engine-azurestack upgrade`,
 `scale`, and other commands.
 
 For a more detailed debugging configuration, check out the [example launch.json](example-launch.json)
@@ -302,7 +302,7 @@ This just scratches the surface. Please
 
 #### CLI
 
-To debug `aks-engine generate` from the command line:
+To debug `aks-engine-azurestack generate` from the command line:
 
 ```shell
 dlv debug github.com/Azure/aks-engine-azurestack -- generate ~/Documents/azure/kubernetes.json

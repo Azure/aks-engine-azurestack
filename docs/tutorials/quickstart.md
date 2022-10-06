@@ -1,6 +1,6 @@
 # Quickstart Guide
 
-AKS Engine (`aks-engine`) generates ARM (Azure Resource Manager) templates, and also deploys them via ARM to Microsoft Azure cloud environments. The input to the `aks-engine` command line tool is a cluster definition JSON file (referred to throughout the docs interchangeably as either "API model", "cluster config", or "cluster definition") which describes the desired cluster configuration, including enabled or disabled features, for both the control plane running on "master" VMs and one or more node pools.
+AKS Engine (`aks-engine-azurestack`) generates ARM (Azure Resource Manager) templates, and also deploys them via ARM to Microsoft Azure cloud environments. The input to the `aks-engine-azurestack` command line tool is a cluster definition JSON file (referred to throughout the docs interchangeably as either "API model", "cluster config", or "cluster definition") which describes the desired cluster configuration, including enabled or disabled features, for both the control plane running on "master" VMs and one or more node pools.
 
 ## Prerequisites
 
@@ -11,40 +11,40 @@ The following prerequisites are required:
 
 <a href="#install-aks-engine"></a>
 
-## Install the `aks-engine` command line tool
+## Install the `aks-engine-azurestack` command line tool
 
-Binary downloads for the latest version of AKS Engine are available [on Github](https://github.com/Azure/aks-engine-azurestack/releases/latest). Download the package for your operating system, and extract the `aks-engine` binary (and optionally integrate it to your `$PATH` for more convenient CLI usage).
+Binary downloads for the latest version of AKS Engine are available [on Github](https://github.com/Azure/aks-engine-azurestack/releases/latest). Download the package for your operating system, and extract the `aks-engine-azurestack` binary (and optionally integrate it to your `$PATH` for more convenient CLI usage).
 
-You can also choose to install `aks-engine` using [gofish][gofish-about]. To do so, execute the command `gofish install aks-engine`. You can install gofish following the [instructions][gofish-install] for your OS.
+You can also choose to install `aks-engine-azurestack` using [gofish][gofish-about]. To do so, execute the command `gofish install aks-engine`. You can install gofish following the [instructions][gofish-install] for your OS.
 
-On macOS, you can install `aks-engine` with [Homebrew][homebrew]. Run the command `brew install Azure/aks-engine-azurestack/aks-engine` to do so. You can install Homebrew following these [instructions][homebrew-install].
+On macOS, you can install `aks-engine-azurestack` with [Homebrew][homebrew]. Run the command `brew install Azure/aks-engine-azurestack/aks-engine` to do so. You can install Homebrew following these [instructions][homebrew-install].
 
 On Windows, you can install `aks-engine.exe` via [Chocolatey][choco] by executing the command `choco install aks-engine`. You can install Chocolatey following these [instructions][choco-install]. You can also install `aks-engine.exe` via [Scoop][scoop] by executing the command `scoop install aks-engine`. You can install Scoop following these [instructions][scoop-install].
 
-On Linux, if you prefer, you can install `aks-engine` via install script doing:
+On Linux, if you prefer, you can install `aks-engine-azurestack` via install script doing:
 ```bash
 $ curl -o get-akse.sh https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/scripts/get-akse.sh
 $ chmod 700 get-akse.sh
 $ ./get-akse.sh
 ```
 
-If you would prefer to build `aks-engine` from source, or if you're interested in contributing to AKS Engine, see [the developer guide][developer-guide] for more information.
+If you would prefer to build `aks-engine-azurestack` from source, or if you're interested in contributing to AKS Engine, see [the developer guide][developer-guide] for more information.
 
 ## Completion
 
-`aks-engine` supports bash completion. To enable this, add the following to your `.bashrc` or `~/.profile`
+`aks-engine-azurestack` supports bash completion. To enable this, add the following to your `.bashrc` or `~/.profile`
 
 ```bash
-source <(aks-engine completion)
+source <(aks-engine-azurestack completion)
 ```
 
 ## Deploy your First Cluster
 
-`aks-engine` reads a cluster definition which describes the size, shape, and configuration of your cluster. This guide takes the default configuration of a control plane configuration with one master VM, and a single node pool with two Linux nodes exemplified [here](/examples/kubernetes.json). If you would like to change the configuration, edit `examples/kubernetes.json` before continuing.
+`aks-engine-azurestack` reads a cluster definition which describes the size, shape, and configuration of your cluster. This guide takes the default configuration of a control plane configuration with one master VM, and a single node pool with two Linux nodes exemplified [here](/examples/kubernetes.json). If you would like to change the configuration, edit `examples/kubernetes.json` before continuing.
 
-The `aks-engine deploy` command automates the creation of an Azure resource group to contain cluster resources, and SSH keypair to connect to a control plane VM on your behalf. If you need more control or are interested in the individual steps see the ["Long Way" section below](#aks-engine-the-long-way).
+The `aks-engine-azurestack deploy` command automates the creation of an Azure resource group to contain cluster resources, and SSH keypair to connect to a control plane VM on your behalf. If you need more control or are interested in the individual steps see the ["Long Way" section below](#aks-engine-the-long-way).
 
-**NOTE:** AKS Engine creates a _cluster_; it _doesn't_ create an Azure Kubernetes Service (AKS) resource. Clusters that you create using the `aks-engine` command (or ARM templates generated by the `aks-engine` command) won't show up as AKS resources, for example when you run `az aks list`. The resultant resource group + IaaS will be entirely under your own control and management, and unknown to AKS or any other Azure service.
+**NOTE:** AKS Engine creates a _cluster_; it _doesn't_ create an Azure Kubernetes Service (AKS) resource. Clusters that you create using the `aks-engine-azurestack` command (or ARM templates generated by the `aks-engine-azurestack` command) won't show up as AKS resources, for example when you run `az aks list`. The resultant resource group + IaaS will be entirely under your own control and management, and unknown to AKS or any other Azure service.
 
 After the cluster is deployed, the [scale][], [addpool][], [update][], and [upgrade][] commands may be used to make updates to your cluster, with some conditions (the [scale][], [addpool][], [update][], and [upgrade][] docs will enumerate these conditions).
 
@@ -74,10 +74,10 @@ Note, we have launched a browser for you to login. For old experience with devic
 You have logged in. Now let us find all the subscriptions to which you have access...
 ```
 
-Finally, run `aks-engine deploy` with the appropriate arguments:
+Finally, run `aks-engine-azurestack deploy` with the appropriate arguments:
 
 ```console
-$ aks-engine deploy --dns-prefix contoso-apple \
+$ aks-engine-azurestack deploy --dns-prefix contoso-apple \
     --resource-group contoso-apple \
     --location westus2 \
     --api-model examples/kubernetes.json \
@@ -90,9 +90,9 @@ INFO[0011] Starting ARM Deployment contoso-apple-1877721870 in resource group co
 INFO[0273] Finished ARM Deployment (contoso-apple-1877721870). Succeeded
 ```
 
-`aks-engine` creates a new resource group automatically from the `--resource-group` value passed into the `aks-engine deploy` statement, if that resource group doesn't already exist. A resource group is a container that holds related resources for an Azure solution. In Azure, you can organize related resources such as storage accounts, virtual networks, and virtual machines (VMs) into resource groups. AKS Engine takes advantage of that organizational model to place all Kubernetes cluster resources into a dedicated resource group.
+`aks-engine-azurestack` creates a new resource group automatically from the `--resource-group` value passed into the `aks-engine-azurestack deploy` statement, if that resource group doesn't already exist. A resource group is a container that holds related resources for an Azure solution. In Azure, you can organize related resources such as storage accounts, virtual networks, and virtual machines (VMs) into resource groups. AKS Engine takes advantage of that organizational model to place all Kubernetes cluster resources into a dedicated resource group.
 
-`aks-engine` will generate ARM templates, SSH keys, and a kubeconfig (A specification that may be used as input to the `kubectl` command to establish a privileged connection to the Kubernetes apiserver, see [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) for more documentation.), and then persist those as local files under a child directory in the relative path `_output/`. Because we used the `--auto-suffix` option, AKS Engine created the cluster configuration artifacts under the child directory `contoso-apple-5f776b0d`:
+`aks-engine-azurestack` will generate ARM templates, SSH keys, and a kubeconfig (A specification that may be used as input to the `kubectl` command to establish a privileged connection to the Kubernetes apiserver, see [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) for more documentation.), and then persist those as local files under a child directory in the relative path `_output/`. Because we used the `--auto-suffix` option, AKS Engine created the cluster configuration artifacts under the child directory `contoso-apple-5f776b0d`:
 
 ```sh
 $ ls _output/contoso-apple-5f776b0d/
@@ -114,9 +114,9 @@ Metrics-server is running at https://contoso-apple-5f776b0d.westus2.cloudapp.azu
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-The files saved to the `output/contoso-apple-5f776b0d/` directory (using our example) are critical to keep save for any future cluster operations using the `aks-engine` CLI. Store them somewhere safe and reliable!
+The files saved to the `output/contoso-apple-5f776b0d/` directory (using our example) are critical to keep save for any future cluster operations using the `aks-engine-azurestack` CLI. Store them somewhere safe and reliable!
 
-Administrative note: By default, the directory where aks-engine stores cluster configuration (`_output/contoso-apple-5f776b0d` above) won't be overwritten as a result of subsequent attempts to deploy a cluster using the same `--dns-prefix`) To re-use the same resource group name repeatedly, include the `--force-overwrite` command line option with your `aks-engine deploy` command. On a related note, include an `--auto-suffix` option to append a randomly generated suffix to the dns-prefix to form the resource group name, for example if your workflow requires a common prefix across multiple cluster deployments. Using the `--auto-suffix` pattern appends a compressed timestamp to ensure a unique cluster name (and thus ensure that each deployment's configuration artifacts will be stored locally under a discrete `_output/<resource-group-name>/` directory).
+Administrative note: By default, the directory where aks-engine-azurestack stores cluster configuration (`_output/contoso-apple-5f776b0d` above) won't be overwritten as a result of subsequent attempts to deploy a cluster using the same `--dns-prefix`) To re-use the same resource group name repeatedly, include the `--force-overwrite` command line option with your `aks-engine-azurestack deploy` command. On a related note, include an `--auto-suffix` option to append a randomly generated suffix to the dns-prefix to form the resource group name, for example if your workflow requires a common prefix across multiple cluster deployments. Using the `--auto-suffix` pattern appends a compressed timestamp to ensure a unique cluster name (and thus ensure that each deployment's configuration artifacts will be stored locally under a discrete `_output/<resource-group-name>/` directory).
 
 **Note**: If the cluster is using an existing VNET, please see the [Custom VNET][custom-vnet] feature documentation for additional steps that must be completed after cluster provisioning.
 
@@ -178,18 +178,18 @@ Optional: attach to an existing virtual network (VNET). Details [here][custom-vn
 
 The generate command takes a cluster definition and outputs a number of templates which describe your Kubernetes cluster. By default, `generate` will create a new directory named after your cluster nested in the `_output` directory. If your dnsPrefix was `contoso-apple-5eac6ed8`, your cluster templates would be found in `_output/contoso-apple-5eac6ed8-`.
 
-Run `aks-engine generate examples/kubernetes.json`
+Run `aks-engine-azurestack generate examples/kubernetes.json`
 
 The `generate` command lets you override values from the cluster definition file without having to update the file. You can use the `--set` flag to do that:
 
 ```sh
-aks-engine generate --set linuxProfile.adminUsername=myNewUsername,masterProfile.count=3 clusterdefinition.json
+aks-engine-azurestack generate --set linuxProfile.adminUsername=myNewUsername,masterProfile.count=3 clusterdefinition.json
 ```
 
 The `--set` flag only supports JSON properties under `properties`. You can also work with arrays, like the following:
 
 ```sh
-aks-engine generate --set agentPoolProfiles[0].count=5,agentPoolProfiles[1].name=myPoolName clusterdefinition.json
+aks-engine-azurestack generate --set agentPoolProfiles[0].count=5,agentPoolProfiles[1].name=myPoolName clusterdefinition.json
 ```
 
 * To enable the optional network policy enforcement using calico, you have to set the parameter during this step according to this [guide](../topics/features.md#optional-enable-network-policy-enforcement-using-calico)
