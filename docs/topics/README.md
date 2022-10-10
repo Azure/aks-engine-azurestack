@@ -9,7 +9,6 @@ Introductions to all the key parts of AKS Engine you’ll need to know.
 - [Features](features.md)
 - [Using GPUs with Kubernetes](gpu.md)
 - [Running Kubernetes in a hybrid environment](hybrid-environment.md)
-- [For Kubernetes Developers](kubernetes-developers.md)
 - [Service Principals](service-principals.md)
 - [Use Key Vault as the Source of Cluster Configuration Secrets](keyvault-secrets.md)
 - [More on Windows and Kubernetes](windows-and-kubernetes.md)
@@ -30,14 +29,6 @@ Next using AKS Engine in Azure there are some specific considerations for Azure 
 
 - [Azure Stack](azure-stack.md)
 - [Proxy Servers](proxy-servers.md)
-
-## Community Material
-
-This material is external to the core documentation, but provide valuable pieces of information related to AKS Engine thanks to the many community members.
-
-If you're new to AKS Engine, adding snippets from these pieces into the core documentation is a great way to get started... Hint hint. ;)
-
-- [Getting started with the ACS Engine to deploy Kubernetes in Azure](http://starkfell.github.io/getting-started-with-using-the-acs-engine-to-deploy-k8s-in-azure/)
 
 ## Additional Kubernetes Resources
 

@@ -1,14 +1,15 @@
 # Extensions
 
+> The "extensions" feature is deprecated and not supported on Azure Stack Hub clouds.
+
 Extensions in AKS Engine provide an easy way for AKS Engine users to add pre-packaged functionality into their cluster.  For example, an extension could configure a monitoring solution on an AKS cluster.  The user would not need to know the details of how to install the monitoring solution.  Rather, the user would simply add the extension into the extensionProfiles section of the template.
 
 ## extensionProfiles
 
 The extensionProfiles contains the extensions that the cluster will install. The following illustrates a template with a hello-world extension.
 
-``` javascript
+```json
 {
-  ...
   "extensionProfiles": [
     {
         "name": "hello-world",

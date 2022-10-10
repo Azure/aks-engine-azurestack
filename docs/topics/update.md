@@ -1,5 +1,7 @@
 # Updating Kubernetes Node Pools
 
+> The `aks-engine-azurestack update` command is not supported on Azure Stack Hub clouds.
+
 ## Prerequisites
 
 All documentation in these guides assumes you have already downloaded both the Azure `az` CLI tool and the `aks-engine-azurestack` binary tool. Follow the [quickstart guide](../tutorials/quickstart.md) before continuing if you're creating a Kubernetes cluster using AKS Engine for the first time.

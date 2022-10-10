@@ -212,7 +212,7 @@ As a [replacement of the current in-tree volume provisioner](https://kubernetes.
 
 |                       | Azure Disk CSI Driver                                                                                                        | Azure Blob CSI Driver                                                                                                   | NFS CSI Driver                                                           |
 |-----------------------|------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
-| Stage on Azure Stack  | Public Preview                                                                                                               | Private Preview                                                                                                         | Public Preview                                                           |
+| Stage on Azure Stack Hub | Public Preview                                                                                                               | Private Preview                                                                                                         | Public Preview                                                           |
 | Project Repository    | [azuredisk-csi-driver](https://github.com/kubernetes-sigs/azuredisk-csi-driver)                                              | [blob-csi-driver](https://github.com/kubernetes-sigs/blob-csi-driver)                                                   | [csi-driver-nfs](https://github.com/kubernetes-csi/csi-driver-nfs)       |
 | CSI Driver Version    | v1.0.0+                                                                                                                      | v1.0.0+                                                                                                                 | v3.0.0+                                                                  |
 | Access Mode           | ReadWriteOnce                                                                                                                | ReadWriteOnce<br/>ReadOnlyMany<br/>ReadWriteMany                                                                        | ReadWriteOnce<br/>ReadOnlyMany<br/>ReadWriteMany                         |
@@ -225,7 +225,7 @@ As a [replacement of the current in-tree volume provisioner](https://kubernetes.
 
 ### Requirements
 
-- Azure Stack build 2011 and later.
+- Azure Stack Hub build 2011 and later.
 - AKS Engine version v0.60.1 and later.
 - Kubernetes version 1.18 and later.
 - Since the Controller server of CSI Drivers requires 2 replicas, a single node master pool is not recommended.
