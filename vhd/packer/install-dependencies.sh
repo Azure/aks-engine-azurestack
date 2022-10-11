@@ -17,7 +17,6 @@ MS_APT_REPO=packages.microsoft.com
 installDeps
 cat << EOF >> ${VHD_LOGS_FILEPATH}
 apt packages:
-  - apache2-utils
   - apt-transport-https
   - auditd
   - blobfuse

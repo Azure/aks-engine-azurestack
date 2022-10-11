@@ -281,12 +281,6 @@ fi
 rm -f /etc/apt/apt.conf.d/99periodic
 {{- end}}
 
-{{- if not IsAzureStackCloud}}
-if [[ $OS == $UBUNTU_OS_NAME ]]; then
-  time_metric "PurgeApt" apt_get_purge apache2-utils &
-fi
-{{end}}
-
 {{- if not HasBlockOutboundInternet}}
     {{- if RunUnattendedUpgradesOnBootstrap}}
 apt_get_update && unattended_upgrade

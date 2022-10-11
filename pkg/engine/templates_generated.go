@@ -17389,7 +17389,7 @@ installEtcd() {
   fi
 }
 installDeps() {
-  packages="apache2-utils apt-transport-https blobfuse=1.4.5 ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
+  packages="apt-transport-https blobfuse=1.4.5 ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
@@ -17904,12 +17904,6 @@ fi
 {{- if EnableUnattendedUpgrades}}
 rm -f /etc/apt/apt.conf.d/99periodic
 {{- end}}
-
-{{- if not IsAzureStackCloud}}
-if [[ $OS == $UBUNTU_OS_NAME ]]; then
-  time_metric "PurgeApt" apt_get_purge apache2-utils &
-fi
-{{end}}
 
 {{- if not HasBlockOutboundInternet}}
     {{- if RunUnattendedUpgradesOnBootstrap}}
