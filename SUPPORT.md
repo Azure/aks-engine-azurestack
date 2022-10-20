@@ -1,15 +1,12 @@
 # Support
+
 ## How to file issues and get help
 
-This project uses GitHub Issues to track bugs and feature requests. Please search the [existing issues][github-issues] before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new Issue.
+This project uses GitHub Issues to track bugs and feature requests. Please search the [existing issues][github-issues] before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new Issue. The AKS Engine project maintainers will respond to the best of their abilities.
 
-The AKS Engine project maintainers will respond to the best of their abilities.
+Additionally, Azure Stack Hub operators can contact [product support][ash-support].
 
 ## Support FAQ
-
-### Is AKS Engine currently maintained?
-
-See the [AKS Engine project status][project-status] for updates on the maintenance of AKS Engine.
 
 ### How often are new AKS Engine releases published?
 
@@ -20,7 +17,6 @@ There is no definite release cadence. Project maintainers use the following as g
 - Is there a remediated Kubernetes CVE?
 - Has a significant amount of time (say, more than 2 months) transpired since the last released VHD (Ubuntu OS image)?
 - Has a bug with broad impact been fixed?
-- Is there any new Kubernetes + Azure integration present and validated in the main branch, but not yet released?
 - Is the community asking for a new release, for any of the above reasons?
 
 If the answer to one or more of the above is true, then we may consider a release. In the past, the real-world release cadence was approximately once every 3-5 weeks. The community will determine the release cadence going forward.
@@ -33,15 +29,16 @@ No. In general, the most recent release of AKS Engine will include a VHD derived
 
 For help and questions about using this project, please:
 
-  - Check out [Frequently Asked Questions][faq] about the AKS Engine project and tool
-  - Read the [documentation][docs]
-  - Join us on the [#aks-engine-users][aks-engine-users-slack] Slack channel
+- Check out [Frequently Asked Questions][faq] about the AKS Engine project and tool
+- Read the [Support policies for AKS engine on Azure Stack Hub][ash-akse-support]
+- Read the [documentation][docs]
+
 ## Microsoft Support Policy
 
 Support for this project is limited to the resources listed above.
 
-[aks-engine-users-slack]: https://kubernetes.slack.com/archives/CU3N85WJK
 [docs]: https://github.com/Azure/aks-engine-azurestack/tree/master/docs
 [faq]: https://github.com/Azure/aks-engine-azurestack/blob/master/docs/faq.md
 [github-issues]: https://github.com/Azure/aks-engine-azurestack/issues
-[project-status]: https://github.com/Azure/aks-engine-azurestack/#project-status
+[ash-akse-support]: https://learn.microsoft.com/azure-stack/user/azure-stack-kubernetes-aks-engine-support
+[ash-support]: https://learn.microsoft.com/azure-stack/operator/azure-stack-help-and-support-overview

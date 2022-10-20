@@ -2,41 +2,25 @@
 
 This page provides help with the most common questions about AKS Engine.
 
-### Is AKS Engine currently maintained?
+## Is AKS Engine Currently Maintained?
 
-See the [AKS Engine project status][project-status] for updates on the maintenance of AKS Engine.
+This project is stable, meaning the pace of new features is intentionally low. New releases are expected to include support for the latest security updates and Kubernetes versions.
+AKS Engine is maintained by teams who depend on it including [AKS Engine on Azure Stack Hub](https://docs.microsoft.com/en-us/azure-stack/user/azure-stack-kubernetes-aks-engine-overview) and is intended for exclusive use on Azure Stack Hub.
 
-### What's the Difference Between AKS and AKS Engine?
+## What's the Difference Between AKS and AKS Engine?
 
-Azure Kubernetes Service ([AKS][]) is a Microsoft Azure service that supports fully managed Kubernetes clusters. [AKS Engine][] is an Azure open source project that allows you to create your own Kubernetes clusters with lots of user-configurable options, but with no official Azure support.
+Azure Kubernetes Service ([AKS][]) is a Microsoft Azure service that supports fully managed Kubernetes clusters. [AKS Engine][], now only available for use on Azure Stack Hub, is an Azure open source project that allows you to create your own self-managed Kubernetes clusters with lots of user-configurable options.
 
-AKS clusters can be created in the Azure portal or with `az aks create` in the [Azure command-line tool][]. AKS Engine clusters can be created with `aks-engine-azurestack deploy` (`aks-engine-azurestack` is the AKS Engine command-line tool), or by generating ARM templates with `aks-engine-azurestack generate` and deploying them as a separate step using the `az` command-line tool (e.g., `az group deployement create`).
+## What's the Difference Between `Azure/aks-engine` and `Azure/aks-engine-azurestack`?
 
-### Can I Build an AKS Cluster with `aks-engine-azurestack`?
+The deprecated [Azure/aks-engine] project supports ARM-based clouds such as Azure and Azure Stack Hub.
 
-No, the `aks-engine-azurestack` command line tool will not create an AKS cluster. To learn about AKS, you can [read the official docs](https://docs.microsoft.com/en-us/azure/aks/).
+While Azure users are encouraged to migrate to [Cluster API Provider Azure](https://github.com/kubernetes-sigs/cluster-api-provider-azure) to provision sself-managed Kubernetes on Azure, the [Azure/aks-engine-azurestack] project is the path forward for Azure Stack Hub users.
 
-### What's the Difference Between `acs-engine` and `aks-engine-azurestack`?
-
-AKS Engine is the next version of the ACS-Engine project. AKS Engine supports current and future versions of [Kubernetes][], while ACS-Engine also supported the Docker Swarm and Mesos DC/OS container orchestrators.
-
-### Can I Scale or Upgrade an `acs-engine`-created Kubernetes Cluster with `aks-engine-azurestack`?
-
-Yes.
-
-### Is ACS-Engine Still Active?
-
-No further development or releases in ACS-Engine are planned. AKS Engine is a backward-compatible continuation of ACS-Engine, so all fixes and new features will target AKS Engine.
-
-### Should I use the latest `aks-engine-azurestack` release if I was previously using `acs-engine`?
-
-Yes. `aks-engine-azurestack` released [v0.27.0][] as a continuation of the ACS-Engine project ([v0.26.2][] was the final `acs-engine` release) with all the Kubernetes fixes and features included in [v0.26.2][] and more.
-
+Other than the fact that the deliverable included on each `Azure/aks-engine-azurestack` release will be named `aks-engine-azurestack` (instead of `aks-engine`), the user experience for Azure Stack Hub users remains the same.
 
 [AKS]: https://azure.microsoft.com/en-us/services/kubernetes-service/
 [AKS Engine]: https://github.com/Azure/aks-engine-azurestack
 [Azure command-line tool]: https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest
-[Kubernetes]: https://kubernetes.io/
-[v0.27.0]: https://github.com/Azure/aks-engine-azurestack/releases/tag/v0.27.0
-[v0.26.2]: https://github.com/Azure/acs-engine/releases/tag/v0.26.2
-[project-status]: https://github.com/Azure/aks-engine-azurestack/#project-status
+[Azure/aks-engine]: https://github.com/Azure/aks-engine
+[Azure/aks-engine-azurestack]: https://github.com/Azure/aks-engine-azurestack

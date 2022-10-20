@@ -22,7 +22,7 @@ Container Monitoring can be onboarded either through the monitoring add-on or th
 Following are supported options to enable container-monitoring add-on during the cluster creation or post cluster creation.
 
 > Note: option 1) and 2) are supported only through `aks-engine-azurestack deploy` command.
-> Note: For Azure stack cloud environments, only option 3) and 4) are supported.
+> Note: For Azure Stack Hub cloud environments, only option 3) and 4) are supported.
 
 ### 1. Using Default Log Analytics Workspace
 
@@ -36,7 +36,7 @@ With the following definition, container monitoring addon will be onboarded full
 
 Refer to [Sample Kubernetes definition file with monitoringa addon using default log analytics workspace](../../examples/addons/container-monitoring/kubernetes-container-monitoring.json)
 
-###  2. Using existing Log Analytics Workspace
+### 2. Using existing Log Analytics Workspace
 
 If you prefer to use an existing log analytics workspace, then you can set  the fully qualified azure resource id of the existing log analytics workspace as in the below config.
 With this definition, container monitoring addon will be onboarded fully without need of any additional steps such as adding container insights solution and tags etc.
@@ -88,10 +88,10 @@ After successful onboarding, navigating to [Azure Monitor for containers](https:
 
 ## Supported Azure Cloud Environment(s)
 
- -  Azure Public Cloud
- -  Azure China Cloud
- -  Azure US Government Cloud
- -  Azure Stack Cloud
+- Azure Public Cloud
+- Azure China Cloud
+- Azure US Government Cloud
+- Azure Stack Hub Cloud
 
 ### Disable Monitoring
 

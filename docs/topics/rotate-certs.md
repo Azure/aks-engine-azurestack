@@ -129,7 +129,7 @@ The new certificates are securely copied to each cluster node before the certifi
 
 `aks-engine-azurestack rotate-certs` requires the execution of multiple remote commands which are subject to potential failures, mostly if the connection to the cluster nodes is not reliable.
 
-Executing `aks-engine-azurestack rotate-certs` from a VM running on the target cloud (Azure or Azure Stack) can drastically reduce the occurence of transient issues.
+Executing `aks-engine-azurestack rotate-certs` from a VM running on the target cloud can drastically reduce the occurence of transient issues.
 
 ## Known Limitations
 

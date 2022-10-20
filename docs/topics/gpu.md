@@ -1,5 +1,7 @@
 # Using GPUs with Kubernetes
 
+> GPUs are not currently supported on Azure Stack Hub clouds.
+
 If you created a Kubernetes cluster with one or multiple Ubuntu node pools whose VM size is `Standard_NC*` or `Standard_NV*` you can schedule GPU workloads on your cluster.
 
 The NVIDIA drivers are automatically installed on every GPU agent in your cluster, so you don't need to do that manually, unless you require a specific version of the drivers. Currently, the installed driver is version 418.40.04.

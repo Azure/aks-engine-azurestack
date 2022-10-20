@@ -7,9 +7,11 @@ This walkthrough is to help you get start with Azure Active Directory(AAD) integ
 Please also refer to [Azure Active Directory plugin for client authentication](https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/client-go/plugin/pkg/client/auth/azure/README.md) in Kubernetes repo for more details about OpenID Connect and AAD support in upstream.
 
 ## Azure Active Directory and Kubernetes
-AAD on Kubernetes allows administrators to give users access to the cluster by using the Azure active directory. Users with access to the client group or client service principal will be able to login to the cluster using their Azure credentials and gain access to the cluster. Note however that the user privileges are assigned based on Kubernetes cluster roles. This feature works on clusters deployed on both Azure and Azure Stack Hub. 
+
+AAD on Kubernetes allows administrators to give users access to the cluster by using the Azure active directory. Users with access to the client group or client service principal will be able to login to the cluster using their Azure credentials and gain access to the cluster. Note however that the user privileges are assigned based on Kubernetes cluster roles.
 
 ## Prerequisites
+
 1. An Azure Active Directory tenant, referred to as `AAD Tenant`. You can use the tenant for your Azure subscription;
 2. Admin access to the Azure Active Directory Tenant
 

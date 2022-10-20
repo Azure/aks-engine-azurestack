@@ -1,5 +1,7 @@
 # Using SGX with Kubernetes
 
+> `DCv2-series` virtual machines are supported on Azure Stack Hub clouds.
+
 <!-- TOC -->
 - [Using SGX with Kubernetes](#using-sgx-with-kubernetes)
   - [Deploy a Kubernetes Cluster](#deploy-a-kubernetes-cluster)
