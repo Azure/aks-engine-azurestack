@@ -5,22 +5,14 @@
             "count": 5,
             "dnsPrefix": "",
             "vmSize": "Standard_DS2_v2",
-            "availabilityProfile": "AvailabilitySet",
-            "availabilityZones": [
-                "1",
-                "2"
-            ]
+            "availabilityProfile": "AvailabilitySet"
         },
         "agentPoolProfiles": [
             {
                 "name": "agentpool",
                 "count": 4,
                 "vmSize": "Standard_DS2_v2",
-                "availabilityProfile": "AvailabilitySet",
-                "availabilityZones": [
-                    "1",
-                    "2"
-                ]
+                "availabilityProfile": "AvailabilitySet"
             }
         ],
         "linuxProfile": {

@@ -21,11 +21,7 @@
             "count": 3,
             "dnsPrefix": "",
             "vmSize": "Standard_D2_v3",
-            "OSDiskSizeGB": 200,
-            "availabilityZones": [
-                "1",
-                "2"
-            ]
+            "OSDiskSizeGB": 200
         },
         "agentPoolProfiles": [
             {
@@ -39,11 +35,7 @@
                 ],
                 "availabilityProfile": "AvailabilitySet",
                 "osDiskCachingType": "ReadOnly",
-                "dataDiskCachingType": "ReadWrite",
-                "availabilityZones": [
-                    "1",
-                    "2"
-                ]
+                "dataDiskCachingType": "ReadWrite"
             },
             {
                 "name": "poolwin",
@@ -51,11 +43,7 @@
                 "vmSize": "Standard_D2s_v3",
                 "OSDiskSizeGB": 256,
                 "availabilityProfile": "AvailabilitySet",
-                "osType": "Windows",
-                "availabilityZones": [
-                    "1",
-                    "2"
-                ]
+                "osType": "Windows"
             }
         ],
         "linuxProfile": {
