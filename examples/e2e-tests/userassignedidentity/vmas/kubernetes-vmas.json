@@ -3,7 +3,7 @@
   "properties": {
     "orchestratorProfile": {
       "kubernetesConfig": {
-        "useManagedIdentity": true,
+        "useManagedIdentity": false,
         "userAssignedID": "aksenginetestid"
       }
     },
