@@ -41,7 +41,7 @@
         "diskSizesGB": [
           128
         ],
-        "availabilityProfile": "VirtualMachineScaleSets",
+        "availabilityProfile": "AvailabilitySet",
         "vnetSubnetId": "/subscriptions/SUB_ID/resourceGroups/RG_NAME/providers/Microsoft.Network/virtualNetworks/VNET_NAME/subnets/SUBNET_NAME",
         "osDiskCachingType": "ReadOnly",
         "dataDiskCachingType": "ReadWrite",
@@ -55,33 +55,9 @@
         "count": 1,
         "vmSize": "Standard_D2s_v3",
         "OSDiskSizeGB": 256,
-        "availabilityProfile": "VirtualMachineScaleSets",
+        "availabilityProfile": "AvailabilitySet",
         "vnetSubnetId": "/subscriptions/SUB_ID/resourceGroups/RG_NAME/providers/Microsoft.Network/virtualNetworks/VNET_NAME/subnets/SUBNET_NAME",
         "osType": "Windows",
-        "availabilityZones": [
-          "1",
-          "2"
-        ]
-      },
-      {
-        "name": "pool1804",
-        "count": 1,
-        "vmSize": "Standard_D2_v3",
-        "distro": "ubuntu-18.04",
-        "availabilityProfile": "VirtualMachineScaleSets",
-        "vnetSubnetId": "/subscriptions/SUB_ID/resourceGroups/RG_NAME/providers/Microsoft.Network/virtualNetworks/VNET_NAME/subnets/SUBNET_NAME",
-        "availabilityZones": [
-          "1",
-          "2"
-        ]
-      },
-      {
-        "name": "pool1804gen2",
-        "count": 1,
-        "vmSize": "Standard_D2s_v3",
-        "distro": "ubuntu-18.04-gen2",
-        "availabilityProfile": "VirtualMachineScaleSets",
-        "vnetSubnetId": "/subscriptions/SUB_ID/resourceGroups/RG_NAME/providers/Microsoft.Network/virtualNetworks/VNET_NAME/subnets/SUBNET_NAME",
         "availabilityZones": [
           "1",
           "2"

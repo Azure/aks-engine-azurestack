@@ -5,7 +5,7 @@
             "count": 5,
             "dnsPrefix": "",
             "vmSize": "Standard_DS2_v2",
-            "availabilityProfile": "VirtualMachineScaleSets",
+            "availabilityProfile": "AvailabilitySet",
             "availabilityZones": [
                 "1",
                 "2"
@@ -16,7 +16,7 @@
                 "name": "agentpool",
                 "count": 4,
                 "vmSize": "Standard_DS2_v2",
-                "availabilityProfile": "VirtualMachineScaleSets",
+                "availabilityProfile": "AvailabilitySet",
                 "availabilityZones": [
                     "1",
                     "2"
