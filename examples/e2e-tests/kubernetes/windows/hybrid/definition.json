@@ -11,14 +11,14 @@
         "name": "linuxpool1",
         "count": 1,
         "vmSize": "Standard_D2s_v3",
-        "availabilityProfile": "VirtualMachineScaleSets",
+        "availabilityProfile": "AvailabilitySet",
         "storageProfile": "Ephemeral"
       },
       {
         "name": "agentwfast",
         "count": 2,
         "vmSize": "Standard_D2s_v3",
-        "availabilityProfile": "VirtualMachineScaleSets",
+        "availabilityProfile": "AvailabilitySet",
         "osType": "Windows",
         "storageProfile": "Ephemeral"
       }
