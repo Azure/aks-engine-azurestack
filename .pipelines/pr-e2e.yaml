@@ -36,7 +36,6 @@ jobs:
     GOBIN:  '$(GOPATH)/bin' # Go binaries path
     GOROOT: '/usr/local/go' # Go installation path
     GOPATH: '$(Agent.TempDirectory)/go' # Go workspace path
-    MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E: ''
     REGIONS: ''
     SUBSCRIPTION_ID_E2E_KUBERNETES: ''
     TENANT_ID: ''
