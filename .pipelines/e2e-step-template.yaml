@@ -1,5 +1,11 @@
 parameters:
-  job: ''
+  job: ""
+  regions: ""
+  subscriptionId: ""
+  tenantId: ""
+  clientId: ""
+  clientSecret: ""
+  stabilityIterations: 0
 
 steps:
   - script: |
@@ -8,25 +14,36 @@ steps:
       shopt -s extglob
       echo '##vso[task.prependpath]$(GOBIN)'
       echo '##vso[task.prependpath]$(GOROOT)/bin'
-    displayName: 'Set up the Go workspace'
-  - script: make build-binary
-    displayName: compile
-  - script: |
       DATE=$(date +%s)
       echo "##vso[task.setvariable variable=timestamp]$DATE"
-      export CLIENT_ID=$(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
-      export CLIENT_SECRET=$(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
-      export AZURE_CORE_ONLY_SHOW_ERRORS=True
-      export USE_MANAGED_IDENTITY=false
-      make test-kubernetes
+    displayName: "Set up the Go workspace"
+
+  - script: make build-binary
+    displayName: compile
+
+  - task: Bash@3
     displayName: ginkgo k8s e2e tests
+    inputs:
+      targetType: "inline"
+      script: make test-kubernetes
+    env:
+      REGIONS: ${{ parameters.regions }}
+      SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      TENANT_ID: ${{ parameters.tenantId }}
+      CLIENT_ID: ${{ parameters.clientId }}
+      CLIENT_SECRET: '${{ parameters.clientSecret }}'
+      AZURE_CORE_ONLY_SHOW_ERRORS: true
+      USE_MANAGED_IDENTITY: false
+      STABILITY_ITERATIONS: 0
+
   - task: PublishPipelineArtifact@0
     inputs:
-      artifactName: '${{ parameters.job }}-$(timestamp)_logs'
-      targetPath: './_logs'
+      artifactName: "${{ parameters.job }}-$(timestamp)_logs"
+      targetPath: "./_logs"
     condition: false
+
   - task: PublishTestResults@2
     inputs:
       testResultsFormat: JUnit
-      testResultsFiles: '**/junit.xml'
+      testResultsFiles: "**/junit.xml"
     condition: always()
