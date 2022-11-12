@@ -363,11 +363,6 @@ func TestExampleAPIModels(t *testing.T) {
 			setArgs:      defaultSet,
 		},
 		{
-			name:         "keyvault flexvol",
-			apiModelPath: "../examples/addons/keyvault-flexvolume/kubernetes-keyvault-flexvolume.json",
-			setArgs:      defaultSet,
-		},
-		{
 			name:         "nvidia",
 			apiModelPath: "../examples/addons/nvidia-device-plugin/nvidia-device-plugin.json",
 			setArgs:      defaultSet,

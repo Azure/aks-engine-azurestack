@@ -132,8 +132,6 @@ const (
 	DefaultBlobfuseFlexVolumeAddonEnabled = false
 	// DefaultSMBFlexVolumeAddonEnabled determines the aks-engine provided default for enabling smb flexvolume addon
 	DefaultSMBFlexVolumeAddonEnabled = false
-	// DefaultKeyVaultFlexVolumeAddonEnabled determines the aks-engine provided default for enabling key vault flexvolume addon
-	DefaultKeyVaultFlexVolumeAddonEnabled = false
 	// DefaultDashboardAddonEnabled // Deprecated
 	DefaultDashboardAddonEnabled = false // Deprecated
 	// DefaultReschedulerAddonEnabled // Deprecated

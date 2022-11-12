@@ -156,8 +156,6 @@ const (
 	blobfuseFlexVolumeAddonDestinationFilename    string = "blobfuse-flexvolume.yaml"
 	smbFlexVolumeAddonSourceFilename              string = "smb-flexvolume.yaml"
 	smbFlexVolumeAddonDestinationFilename         string = "smb-flexvolume.yaml"
-	keyvaultFlexVolumeAddonSourceFilename         string = "keyvault-flexvolume.yaml"
-	keyvaultFlexVolumeAddonDestinationFilename    string = "keyvault-flexvolume.yaml"
 	dashboardAddonSourceFilename                  string = "kubernetes-dashboard.yaml" // Deprecated
 	dashboardAddonDestinationFilename             string = "kubernetes-dashboard.yaml" // Deprecated
 	nvidiaAddonSourceFilename                     string = "nvidia-device-plugin.yaml"

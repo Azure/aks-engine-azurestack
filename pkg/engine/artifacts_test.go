@@ -27,7 +27,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 		expectedClusterAutoscaler      kubernetesComponentFileSpec
 		expectedBlobFlexVolume         kubernetesComponentFileSpec
 		expectedSMBFlexVolume          kubernetesComponentFileSpec
-		expectedKeyVaultFlexVolume     kubernetesComponentFileSpec
 		expectedDashboard              kubernetesComponentFileSpec
 		expectedNvidia                 kubernetesComponentFileSpec
 		expectedContainerMonitoring    kubernetesComponentFileSpec
@@ -89,10 +88,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 							},
 							{
 								Name: common.SMBFlexVolumeAddonName,
-								Data: base64Data,
-							},
-							{
-								Name: common.KeyVaultFlexVolumeAddonName,
 								Data: base64Data,
 							},
 							{
@@ -218,11 +213,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
 				base64Data:      base64Data,
 				destinationFile: smbFlexVolumeAddonDestinationFilename,
-			},
-			expectedKeyVaultFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      keyvaultFlexVolumeAddonSourceFilename,
-				base64Data:      base64Data,
-				destinationFile: keyvaultFlexVolumeAddonDestinationFilename,
 			},
 			expectedDashboard: kubernetesComponentFileSpec{
 				sourceFile:      dashboardAddonSourceFilename,
@@ -358,9 +348,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 								Name: common.SMBFlexVolumeAddonName,
 							},
 							{
-								Name: common.KeyVaultFlexVolumeAddonName,
-							},
-							{
 								Name: common.DashboardAddonName,
 							},
 							{
@@ -463,11 +450,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: smbFlexVolumeAddonDestinationFilename,
-			},
-			expectedKeyVaultFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      keyvaultFlexVolumeAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: keyvaultFlexVolumeAddonDestinationFilename,
 			},
 			expectedDashboard: kubernetesComponentFileSpec{
 				sourceFile:      dashboardAddonSourceFilename,
@@ -612,11 +594,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: smbFlexVolumeAddonDestinationFilename,
-			},
-			expectedKeyVaultFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      keyvaultFlexVolumeAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: keyvaultFlexVolumeAddonDestinationFilename,
 			},
 			expectedDashboard: kubernetesComponentFileSpec{
 				sourceFile:      dashboardAddonSourceFilename,
@@ -807,16 +784,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 					}
 					if c.expectedSMBFlexVolume.destinationFile != componentFileSpec[addon].destinationFile {
 						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedSMBFlexVolume.destinationFile)
-					}
-				case common.KeyVaultFlexVolumeAddonName:
-					if c.expectedKeyVaultFlexVolume.sourceFile != componentFileSpec[addon].sourceFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].sourceFile, c.expectedKeyVaultFlexVolume.sourceFile)
-					}
-					if c.expectedKeyVaultFlexVolume.base64Data != componentFileSpec[addon].base64Data {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].base64Data, c.expectedKeyVaultFlexVolume.base64Data)
-					}
-					if c.expectedKeyVaultFlexVolume.destinationFile != componentFileSpec[addon].destinationFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedKeyVaultFlexVolume.destinationFile)
 					}
 				case common.DashboardAddonName:
 					if c.expectedDashboard.sourceFile != componentFileSpec[addon].sourceFile {

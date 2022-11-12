@@ -37,10 +37,6 @@
             "enabled": true
           },
           {
-            "name": "keyvault-flexvolume",
-            "enabled": true
-          },
-          {
             "name": "metrics-server",
             "enabled": true,
             "containers": [
