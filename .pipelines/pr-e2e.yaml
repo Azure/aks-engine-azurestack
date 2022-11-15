@@ -70,6 +70,7 @@ jobs:
       tenantId: $(TENANT_ID)
       clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
       clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
   - template: e2e-job-template.yaml
     parameters:
@@ -85,6 +86,7 @@ jobs:
       tenantId: $(TENANT_ID)
       clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
       clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
   - template: e2e-job-template.yaml
     parameters:
@@ -100,6 +102,7 @@ jobs:
       tenantId: $(TENANT_ID)
       clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
       clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
   - template: e2e-job-template.yaml
     parameters:
@@ -115,3 +118,4 @@ jobs:
       tenantId: $(TENANT_ID)
       clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
       clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)

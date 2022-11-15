@@ -9,6 +9,7 @@ parameters:
   tenantId: ""
   clientId: ""
   clientSecret: ""
+  msiId: ""
   stabilityIterations: 0
 
 jobs:
@@ -35,6 +36,7 @@ jobs:
       SKIP_TEST: true
       GINKGO_SKIP: ${{ parameters.skipTests }}
       RETAIN_SSH: false
+      MSI_USER_ASSIGNED_ID: ${{ parameters.msiId }}
       ENABLE_KMS_ENCRYPTION: ${{ parameters.enableKMSEncryption }}
       CONTAINER_RUNTIME: ${{ parameters.containerRuntime }}
       BLOCK_SSH: ${{ parameters.runSSHTests }}
