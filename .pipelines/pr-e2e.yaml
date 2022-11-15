@@ -1,102 +1,117 @@
 trigger:
   branches:
     include:
-    - master
+      - master
   paths:
     exclude:
-    - docs/*
+      - docs/*
 
 pr:
   branches:
     include:
-    - master
+      - master
   paths:
     exclude:
-    - docs/*
+      - docs/*
 
 resources:
   containers:
-  - container: dev1
-    image: mcr.microsoft.com/oss/azcu/go-dev:v1.34.7
+    - container: dev1
+      image: mcr.microsoft.com/oss/azcu/go-dev:v1.34.7
 
 jobs:
-- job: unit_tests
-  timeoutInMinutes: 60
-  cancelTimeoutInMinutes: 5
-  strategy:
-    maxParallel: 0
-  pool:
-      vmImage: 'Ubuntu 20.04'
+  - job: unit_tests
+    timeoutInMinutes: 60
+    cancelTimeoutInMinutes: 5
+    strategy:
+      maxParallel: 0
+    pool:
+      vmImage: "Ubuntu 20.04"
 
-  container: dev1
+    container: dev1
 
-  variables:
-    GOBIN:  '$(GOPATH)/bin' # Go binaries path
-    GOROOT: '/usr/local/go' # Go installation path
-    GOPATH: '$(Agent.TempDirectory)/go' # Go workspace path
-    REGIONS: ''
-    SUBSCRIPTION_ID_E2E_KUBERNETES: ''
-    TENANT_ID: ''
-    SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES: ''
-    SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES: ''
+    variables:
+      GOBIN: "$(GOPATH)/bin" # Go binaries path
+      GOROOT: "/usr/local/go" # Go installation path
+      GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
 
-  steps:
-  - script: |
-      mkdir -p '$(GOBIN)'
-      mkdir -p '$(GOPATH)/pkg'
-      shopt -s extglob
-      echo '##vso[task.prependpath]$(GOBIN)'
-      echo '##vso[task.prependpath]$(GOROOT)/bin'
-    displayName: 'Set up the Go workspace'
-  - script: make bootstrap
-    displayName: Install dependencies
-  - script: make ensure-generated
-    displayName: Check if generated code is up to date
-  - script: make generate test-style
-    displayName: Run linting rules
-  - script: make build-cross
-    displayName: Build cross-architectural binaries
-  - script: make validate-dependencies
-    displayName: Check if go mod is up-to-date
-  - script: make test
-    displayName: Run unit tests
+    steps:
+      - script: |
+          mkdir -p '$(GOBIN)'
+          mkdir -p '$(GOPATH)/pkg'
+          shopt -s extglob
+          echo '##vso[task.prependpath]$(GOBIN)'
+          echo '##vso[task.prependpath]$(GOROOT)/bin'
+        displayName: "Set up the Go workspace"
+      - script: make bootstrap
+        displayName: Install dependencies
+      - script: make ensure-generated
+        displayName: Check if generated code is up to date
+      - script: make generate test-style
+        displayName: Run linting rules
+      - script: make build-cross
+        displayName: Build cross-architectural binaries
+      - script: make validate-dependencies
+        displayName: Check if go mod is up-to-date
+      - script: make test
+        displayName: Run unit tests
 
-- template: e2e-job-template.yaml
-  parameters:
-    name: 'k8s_1_22_docker_e2e'
-    k8sRelease: '1.22'
-    apimodel: 'examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json'
-    createVNET: false
-    enableKMSEncryption: false
-    containerRuntime: 'docker'
-    runSSHTests: true
+  - template: e2e-job-template.yaml
+    parameters:
+      name: "k8s_1_22_docker_e2e"
+      k8sRelease: "1.22"
+      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+      createVNET: false
+      enableKMSEncryption: false
+      containerRuntime: "docker"
+      runSSHTests: true
+      regions: $(REGIONS)
+      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+      tenantId: $(TENANT_ID)
+      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
 
-- template: e2e-job-template.yaml
-  parameters:
-    name: 'k8s_1_23_docker_e2e'
-    k8sRelease: '1.23'
-    apimodel: 'examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json'
-    createVNET: false
-    enableKMSEncryption: false
-    containerRuntime: 'docker'
-    runSSHTests: true
+  - template: e2e-job-template.yaml
+    parameters:
+      name: "k8s_1_23_docker_e2e"
+      k8sRelease: "1.23"
+      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+      createVNET: false
+      enableKMSEncryption: false
+      containerRuntime: "docker"
+      runSSHTests: true
+      regions: $(REGIONS)
+      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+      tenantId: $(TENANT_ID)
+      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
 
-- template: e2e-job-template.yaml
-  parameters:
-    name: 'k8s_1_22_containerd_e2e'
-    k8sRelease: '1.22'
-    apimodel: 'examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json'
-    createVNET: false
-    enableKMSEncryption: false
-    containerRuntime: 'containerd'
-    runSSHTests: true
+  - template: e2e-job-template.yaml
+    parameters:
+      name: "k8s_1_22_containerd_e2e"
+      k8sRelease: "1.22"
+      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+      createVNET: false
+      enableKMSEncryption: false
+      containerRuntime: "containerd"
+      runSSHTests: true
+      regions: $(REGIONS)
+      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+      tenantId: $(TENANT_ID)
+      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
 
-- template: e2e-job-template.yaml
-  parameters:
-    name: 'k8s_1_23_containerd_e2e'
-    k8sRelease: '1.23'
-    apimodel: 'examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json'
-    createVNET: false
-    enableKMSEncryption: false
-    containerRuntime: 'containerd'
-    runSSHTests: true
+  - template: e2e-job-template.yaml
+    parameters:
+      name: "k8s_1_23_containerd_e2e"
+      k8sRelease: "1.23"
+      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+      createVNET: false
+      enableKMSEncryption: false
+      containerRuntime: "containerd"
+      runSSHTests: true
+      regions: $(REGIONS)
+      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+      tenantId: $(TENANT_ID)
+      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
