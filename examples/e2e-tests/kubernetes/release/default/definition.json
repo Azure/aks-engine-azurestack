@@ -4,7 +4,7 @@
     "orchestratorProfile": {
       "kubernetesConfig": {
         "useCloudControllerManager": true,
-        "useManagedIdentity": false,
+        "useManagedIdentity": true,
         "clusterSubnet": "10.239.0.0/16",
         "addons": [
           {
