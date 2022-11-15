@@ -57,7 +57,7 @@ jobs:
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "eastus"
+          LOCATION: "westus2"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
@@ -73,7 +73,7 @@ jobs:
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "eastus"
+          LOCATION: "westus2"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
@@ -132,10 +132,7 @@ jobs:
           git checkout -- .
       - name: Build Artifacts
         run: |
-          docker run --rm \
-          -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine-azurestack \
-          -w /go/src/github.com/Azure/aks-engine-azurestack \
-          mcr.microsoft.com/oss/azcu/go-dev:v1.34.7 make dist
+          make dist
       - name: Remove local tag
         run: git tag -d ${{ env.RELEASE_VERSION }}
       - name: Publish Release
