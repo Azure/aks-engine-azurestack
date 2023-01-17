@@ -186,7 +186,7 @@ for BLOBFUSE_FLEXVOLUME_VERSION in ${BLOBFUSE_FLEXVOLUME_VERSIONS}; do
 done
 
 IP_MASQ_AGENT_VERSIONS="
-2.5.0
+2.8.0
 "
 for IP_MASQ_AGENT_VERSION in ${IP_MASQ_AGENT_VERSIONS}; do
     CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v${IP_MASQ_AGENT_VERSION}"
@@ -205,11 +205,9 @@ loadContainerImage "mcr.microsoft.com/oss/busybox/busybox:1.33.1"
 echo "  - busybox" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
-1.24.7
-1.23.13
-1.23.6
-1.22.15
-1.22.7
+1.24.8
+1.23.14
+1.22.16
 1.21.14
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
