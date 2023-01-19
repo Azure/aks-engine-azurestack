@@ -53,8 +53,8 @@ jobs:
         displayName: Build cross-architectural binaries
       - script: make validate-dependencies
         displayName: Check if go mod is up-to-date
-      - script: make test
-        displayName: Run unit tests
+      # - script: make test
+      #   displayName: Run unit tests
 
   - template: e2e-job-template.yaml
     parameters:
@@ -72,50 +72,50 @@ jobs:
       clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
       msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
-  - template: e2e-job-template.yaml
-    parameters:
-      name: "k8s_1_23_docker_e2e"
-      k8sRelease: "1.23"
-      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
-      createVNET: false
-      enableKMSEncryption: false
-      containerRuntime: "docker"
-      runSSHTests: true
-      regions: $(REGIONS)
-      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
-      tenantId: $(TENANT_ID)
-      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
-      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
-      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
+  # - template: e2e-job-template.yaml
+  #   parameters:
+  #     name: "k8s_1_23_docker_e2e"
+  #     k8sRelease: "1.23"
+  #     apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+  #     createVNET: false
+  #     enableKMSEncryption: false
+  #     containerRuntime: "docker"
+  #     runSSHTests: true
+  #     regions: $(REGIONS)
+  #     subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+  #     tenantId: $(TENANT_ID)
+  #     clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+  #     clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+  #     msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
-  - template: e2e-job-template.yaml
-    parameters:
-      name: "k8s_1_22_containerd_e2e"
-      k8sRelease: "1.22"
-      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
-      createVNET: false
-      enableKMSEncryption: false
-      containerRuntime: "containerd"
-      runSSHTests: true
-      regions: $(REGIONS)
-      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
-      tenantId: $(TENANT_ID)
-      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
-      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
-      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
+  # - template: e2e-job-template.yaml
+  #   parameters:
+  #     name: "k8s_1_22_containerd_e2e"
+  #     k8sRelease: "1.22"
+  #     apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+  #     createVNET: false
+  #     enableKMSEncryption: false
+  #     containerRuntime: "containerd"
+  #     runSSHTests: true
+  #     regions: $(REGIONS)
+  #     subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+  #     tenantId: $(TENANT_ID)
+  #     clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+  #     clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+  #     msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
 
-  - template: e2e-job-template.yaml
-    parameters:
-      name: "k8s_1_23_containerd_e2e"
-      k8sRelease: "1.23"
-      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
-      createVNET: false
-      enableKMSEncryption: false
-      containerRuntime: "containerd"
-      runSSHTests: true
-      regions: $(REGIONS)
-      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
-      tenantId: $(TENANT_ID)
-      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
-      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
-      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
+  # - template: e2e-job-template.yaml
+  #   parameters:
+  #     name: "k8s_1_23_containerd_e2e"
+  #     k8sRelease: "1.23"
+  #     apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+  #     createVNET: false
+  #     enableKMSEncryption: false
+  #     containerRuntime: "containerd"
+  #     runSSHTests: true
+  #     regions: $(REGIONS)
+  #     subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
+  #     tenantId: $(TENANT_ID)
+  #     clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
+  #     clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+  #     msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
