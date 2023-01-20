@@ -49,5 +49,5 @@ jobs:
           subscriptionId: ${{ parameters.subscriptionId }}
           tenantId: ${{ parameters.tenantId }}
           clientId: ${{ parameters.clientId }}
-          clientSecret: ${{ parameters.clientSecret }}
+          clientSecret: '${{ parameters.clientSecret }}'
           stabilityIterations: ${{ parameters.stabilityIterations }}

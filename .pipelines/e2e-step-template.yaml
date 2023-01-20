@@ -31,9 +31,9 @@ steps:
       SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
       TENANT_ID: ${{ parameters.tenantId }}
       CLIENT_ID: ${{ parameters.clientId }}
-      CLIENT_SECRET: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
+      CLIENT_SECRET: '${{ parameters.clientSecret }}'
       AZURE_CORE_ONLY_SHOW_ERRORS: true
-      USE_MANAGED_IDENTITY: true
+      USE_MANAGED_IDENTITY: false
       STABILITY_ITERATIONS: 0
 
   - task: PublishPipelineArtifact@0
