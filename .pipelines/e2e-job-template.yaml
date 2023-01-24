@@ -3,6 +3,8 @@ parameters:
   k8sRelease: ""
   apimodel: "examples/e2e-tests/kubernetes/release/default/definition.json"
   createVNET: false
+  cleanFail: true
+  skipTest: true
   skipTests: ""
   regions: ""
   subscriptionId: ""
@@ -11,6 +13,8 @@ parameters:
   clientSecret: ""
   msiId: ""
   stabilityIterations: 0
+  windowsVHDBuild: ""
+  linuxVHDBuild: ""
 
 jobs:
   - job: ${{ parameters.name }}
@@ -32,14 +36,25 @@ jobs:
       ORCHESTRATOR_RELEASE: ${{ parameters.k8sRelease }}
       CREATE_VNET: ${{ parameters.createVNET }}
       CLEANUP_ON_EXIT: true
-      CLEANUP_IF_FAIL: true
-      SKIP_TEST: true
+      CLEANUP_IF_FAIL: ${{ parameters.cleanFail }}
+      SKIP_TEST: ${{ parameters.skipTest }}
       GINKGO_SKIP: ${{ parameters.skipTests }}
       RETAIN_SSH: false
       MSI_USER_ASSIGNED_ID: ${{ parameters.msiId }}
       ENABLE_KMS_ENCRYPTION: ${{ parameters.enableKMSEncryption }}
       CONTAINER_RUNTIME: ${{ parameters.containerRuntime }}
       BLOCK_SSH: ${{ parameters.runSSHTests }}
+      DISTRO: ${{ parameters.distro }}
+      WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+      WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+      WINDOWS_NODE_IMAGE_NAME: windows2019${{ parameters.containerRuntime }}
+      WINDOWS_NODE_IMAGE_VERSION: ${{ parameters.windowsVHDBuild }}
+      LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
+      LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+      LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+      LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+      LINUX_NODE_IMAGE_VERSION: ${{ parameters.linuxVHDBuild }}
 
     steps:
       - template: e2e-step-template.yaml
