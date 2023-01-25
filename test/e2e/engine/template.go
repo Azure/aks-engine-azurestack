@@ -233,15 +233,18 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 		prop.MasterProfile.ImageRef.Gallery = config.LinuxNodeImageGallery
 		prop.MasterProfile.ImageRef.SubscriptionID = config.LinuxNodeImageSubscriptionID
 		prop.MasterProfile.ImageRef.Version = config.LinuxNodeImageVersion
-		if len(prop.AgentPoolProfiles) == 1 {
-			prop.AgentPoolProfiles[0].ImageRef = &vlabs.ImageReference{
+		for i, _ := range prop.AgentPoolProfiles {
+			if prop.AgentPoolProfiles[i].OSType == vlabs.Windows {
+				continue
+			}
+			prop.AgentPoolProfiles[i].ImageRef = &vlabs.ImageReference{
 				Name:          config.LinuxNodeImageName,
 				ResourceGroup: config.LinuxNodeImageResourceGroup,
 			}
 			if config.LinuxNodeImageGallery != "" && config.LinuxNodeImageSubscriptionID != "" && config.LinuxNodeImageVersion != "" {
-				prop.AgentPoolProfiles[0].ImageRef.Gallery = config.LinuxNodeImageGallery
-				prop.AgentPoolProfiles[0].ImageRef.SubscriptionID = config.LinuxNodeImageSubscriptionID
-				prop.AgentPoolProfiles[0].ImageRef.Version = config.LinuxNodeImageVersion
+				prop.AgentPoolProfiles[i].ImageRef.Gallery = config.LinuxNodeImageGallery
+				prop.AgentPoolProfiles[i].ImageRef.SubscriptionID = config.LinuxNodeImageSubscriptionID
+				prop.AgentPoolProfiles[i].ImageRef.Version = config.LinuxNodeImageVersion
 			}
 		}
 	}
