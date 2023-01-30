@@ -4,7 +4,7 @@ parameters:
   apimodel: "examples/e2e-tests/kubernetes/release/default/definition.json"
   createVNET: false
   cleanFail: true
-  skipTest: true
+  skipTest: false
   skipTests: ""
   regions: ""
   subscriptionId: ""
