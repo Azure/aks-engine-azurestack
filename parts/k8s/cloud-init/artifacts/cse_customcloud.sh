@@ -108,34 +108,26 @@ configureK8sCustomCloud() {
 
 {{- if IsAzureStackCloud}}
 ensureAzureStackCertificates() {
-  AZURESTACK_ENVIRONMENT_JSON_PATH="/etc/kubernetes/azurestackcloud.json"
-  AZURESTACK_RESOURCE_MANAGER_ENDPOINT=$(jq .resourceManagerEndpoint $AZURESTACK_ENVIRONMENT_JSON_PATH | tr -d '"')
-  AZURESTACK_RESOURCE_METADATA_ENDPOINT="$AZURESTACK_RESOURCE_MANAGER_ENDPOINT/metadata/endpoints?api-version=2015-01-01"
-  curl $AZURESTACK_RESOURCE_METADATA_ENDPOINT
-  CURL_RETURNCODE=$?
-  KUBE_CONTROLLER_MANAGER_FILE=/etc/kubernetes/manifests/kube-controller-manager.yaml
-  if [ $CURL_RETURNCODE != 0 ]; then
-    # Replace placeholder for ssl binding
-    if [ -f $KUBE_CONTROLLER_MANAGER_FILE ]; then
-      sed -i "s|<volumessl>|- name: ssl\n      hostPath:\n        path: \\/etc\\/ssl\\/certs|g" $KUBE_CONTROLLER_MANAGER_FILE
-      sed -i "s|<volumeMountssl>|- name: ssl\n          mountPath: \\/etc\\/ssl\\/certs\n          readOnly: true|g" $KUBE_CONTROLLER_MANAGER_FILE
+  ENV_JSON="/etc/kubernetes/azurestackcloud.json"
+  ARM_EP=$(jq .resourceManagerEndpoint $ENV_JSON | tr -d '"')
+  META_EP="$ARM_EP/metadata/endpoints?api-version=2015-01-01"
+  curl $META_EP
+  RET=$?
+  KCM_FILE=/etc/kubernetes/manifests/kube-controller-manager.yaml
+  if [ $RET != 0 ]; then
+    if [ -f $KCM_FILE ]; then
+      sed -i "s|<volumessl>|- name: ssl\n      hostPath:\n        path: \\/etc\\/ssl\\/certs|g" $KCM_FILE
+      sed -i "s|<volumeMountssl>|- name: ssl\n          mountPath: \\/etc\\/ssl\\/certs\n          readOnly: true|g" $KCM_FILE
     fi
-
-    # Copying the AzureStack root certificate to the appropriate store to be updated.
-    AZURESTACK_ROOT_CERTIFICATE_SOURCE_PATH="/var/lib/waagent/Certificates.pem"
-    AZURESTACK_ROOT_CERTIFICATE__DEST_PATH="/usr/local/share/ca-certificates/azsCertificate.crt"
-    cp $AZURESTACK_ROOT_CERTIFICATE_SOURCE_PATH $AZURESTACK_ROOT_CERTIFICATE__DEST_PATH
+    cp /var/lib/waagent/Certificates.pem /usr/local/share/ca-certificates/azsCertificate.crt
     update-ca-certificates
   else
-    if [ -f $KUBE_CONTROLLER_MANAGER_FILE ]; then
-      # the ARM resource manager endpoint binding certificate is trusted, remove the placeholder for ssl binding
-      sed -i "/<volumessl>/d" $KUBE_CONTROLLER_MANAGER_FILE
-      sed -i "/<volumeMountssl>/d" $KUBE_CONTROLLER_MANAGER_FILE
+    if [ -f $KCM_FILE ]; then
+      sed -i "/<volumessl>/d" $KCM_FILE
+      sed -i "/<volumeMountssl>/d" $KCM_FILE
     fi
   fi
-
-  # ensureAzureStackCertificates will be retried if the exit code is not 0
-  curl $AZURESTACK_RESOURCE_METADATA_ENDPOINT
+  curl $META_EP
   exit $?
 }
 {{end}}

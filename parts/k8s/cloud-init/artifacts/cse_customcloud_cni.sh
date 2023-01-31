@@ -1,6 +1,5 @@
 #!/bin/bash
 
-{{- if IsAzureStackCloud}}
 configureAzureStackInterfaces() {
   NETWORK_INTERFACES_FILE="/etc/kubernetes/network_interfaces.json"
   AZURE_CNI_CONFIG_FILE="/etc/kubernetes/interfaces.json"
@@ -76,5 +75,4 @@ configureAzureStackInterfaces() {
 
   set -x
 }
-{{end}}
 #EOF
