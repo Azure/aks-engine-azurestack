@@ -210,14 +210,20 @@ func (uc *upgradeCmd) loadCluster() error {
 	// Update the masterProfile and agentPoolProfiles distro for AzureStackCloud to use aks-ubuntu-18.04 instead of aks-ubuntu-16.04
 	if uc.containerService.Properties.IsAzureStackCloud() {
 		if uc.containerService.Properties.MasterProfile.Distro == api.AKSUbuntu1604 {
-			log.Infoln("Distro 'aks-ubuntu-16.04' is not longer supported on Azure Stack Hub, overwriting master profile distro to 'aks-ubuntu-18.04'")
-			uc.containerService.Properties.MasterProfile.Distro = api.AKSUbuntu1804
+			log.Infoln("Distro 'aks-ubuntu-16.04' is not longer supported on Azure Stack Hub, overwriting master profile distro to 'aks-ubuntu-20.04'")
+			uc.containerService.Properties.MasterProfile.Distro = api.AKSUbuntu2004
+		} else if uc.containerService.Properties.MasterProfile.Distro == api.AKSUbuntu1804 {
+			log.Infoln("Distro 'aks-ubuntu-18.04' is not longer supported on Azure Stack Hub, overwriting master profile distro to 'aks-ubuntu-20.04'")
+			uc.containerService.Properties.MasterProfile.Distro = api.AKSUbuntu2004
 		}
 
 		for _, app := range uc.containerService.Properties.AgentPoolProfiles {
 			if app.Distro == api.AKSUbuntu1604 {
-				log.Infoln(fmt.Sprintf("Distro 'aks-ubuntu-16.04' is not longer supported on Azure Stack Hub, overwriting agent pool profile %s distro to 'aks-ubuntu-18.04'", app.Name))
-				app.Distro = api.AKSUbuntu1804
+				log.Infoln(fmt.Sprintf("Distro 'aks-ubuntu-16.04' is not longer supported on Azure Stack Hub, overwriting agent pool profile %s distro to 'aks-ubuntu-20.04'", app.Name))
+				app.Distro = api.AKSUbuntu2004
+			} else if app.Distro == api.AKSUbuntu1804 {
+				log.Infoln(fmt.Sprintf("Distro 'aks-ubuntu-18.04' is not longer supported on Azure Stack Hub, overwriting agent pool profile %s distro to 'aks-ubuntu-20.04'", app.Name))
+				app.Distro = api.AKSUbuntu2004
 			}
 		}
 	}
@@ -226,6 +232,12 @@ func (uc *upgradeCmd) loadCluster() error {
 	if uc.containerService.Properties.IsAzureStackCloud() && common.IsKubernetesVersionGe(uc.upgradeVersion, "1.21.0") {
 		log.Infoln("The in-tree cloud provider is not longer supported on Azure Stack Hub for v1.21+ clusters, overwriting UseCloudControllerManager to 'true'")
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(true)
+	}
+
+	// Only containerd runtime is allowed for Kubernetes 1.24+ on Azure Stack cloud
+	if uc.containerService.Properties.IsAzureStackCloud() && strings.EqualFold(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ContainerRuntime, "docker") && common.IsKubernetesVersionGe(uc.upgradeVersion, "1.24.0") {
+		log.Infoln("The docker runtime is no longer supported for v1.24+ clusters, overwriting ContainerRuntime to 'containerd'")
+		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ContainerRuntime = "containerd"
 	}
 
 	// The cluster-init component is a cluster create-only feature, temporarily disable if enabled
