@@ -40,7 +40,6 @@
 // ../../parts/k8s/cloud-init/artifacts/cis.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_config.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_customcloud.sh
-// ../../parts/k8s/cloud-init/artifacts/cse_customcloud_cni.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_helpers.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_install.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_main.sh
@@ -17055,101 +17054,6 @@ func k8sCloudInitArtifactsCse_customcloudSh() (*asset, error) {
 	return a, nil
 }
 
-var _k8sCloudInitArtifactsCse_customcloud_cniSh = []byte(`#!/bin/bash
-
-configureAzureStackInterfaces() {
-  NETWORK_INTERFACES_FILE="/etc/kubernetes/network_interfaces.json"
-  AZURE_CNI_CONFIG_FILE="/etc/kubernetes/interfaces.json"
-  AZURESTACK_ENVIRONMENT_JSON_PATH="/etc/kubernetes/azurestackcloud.json"
-  SERVICE_MANAGEMENT_ENDPOINT=$(jq -r '.serviceManagementEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
-  ACTIVE_DIRECTORY_ENDPOINT=$(jq -r '.activeDirectoryEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
-  RESOURCE_MANAGER_ENDPOINT=$(jq -r '.resourceManagerEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
-  TOKEN_URL="${ACTIVE_DIRECTORY_ENDPOINT}${TENANT_ID}/oauth2/token"
-
-  if [[ ${IDENTITY_SYSTEM,,} == "adfs" ]]; then
-    TOKEN_URL="${ACTIVE_DIRECTORY_ENDPOINT}adfs/oauth2/token"
-  fi
-
-  set +x
-
-  TOKEN=$(curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X POST \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "grant_type=client_credentials" \
-    -d "client_id=$SERVICE_PRINCIPAL_CLIENT_ID" \
-    --data-urlencode "client_secret=$SERVICE_PRINCIPAL_CLIENT_SECRET" \
-    --data-urlencode "resource=$SERVICE_MANAGEMENT_ENDPOINT" \
-    ${TOKEN_URL} | jq '.access_token' | xargs)
-
-  if [[ -z $TOKEN ]]; then
-    echo "Error generating token for Azure Resource Manager"
-    exit 120
-  fi
-
-  curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "Content-Type: application/json" \
-    "${RESOURCE_MANAGER_ENDPOINT}subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Network/networkInterfaces?api-version=$NETWORK_API_VERSION" >${NETWORK_INTERFACES_FILE}
-
-  if [[ ! -s ${NETWORK_INTERFACES_FILE} ]]; then
-    echo "Error fetching network interface configuration for node"
-    exit 121
-  fi
-
-  echo "Generating Azure CNI interface file"
-
-  mapfile -t local_interfaces < <(cat /sys/class/net/*/address | tr -d : | sed 's/.*/\U&/g')
-
-  SDN_INTERFACES=$(jq ".value | map(select(.properties != null) | select(.properties.macAddress != null) | select(.properties.macAddress | inside(\"${local_interfaces[*]}\"))) | map(select((.properties.ipConfigurations | length) > 0))" ${NETWORK_INTERFACES_FILE})
-
-  if [[ -z $SDN_INTERFACES ]]; then
-      echo "Error extracting the SDN interfaces from the network interfaces file"
-      exit 123
-  fi
-
-  AZURE_CNI_CONFIG=$(echo ${SDN_INTERFACES} | jq "{Interfaces: [.[] | {MacAddress: .properties.macAddress, IsPrimary: .properties.primary, IPSubnets: [{Prefix: .properties.ipConfigurations[0].properties.subnet.id, IPAddresses: .properties.ipConfigurations | [.[] | {Address: .properties.privateIPAddress, IsPrimary: .properties.primary}]}]}]}")
-
-  mapfile -t SUBNET_IDS < <(echo ${SDN_INTERFACES} | jq '[.[].properties.ipConfigurations[0].properties.subnet.id] | unique | .[]' -r)
-
-  for SUBNET_ID in "${SUBNET_IDS[@]}"; do
-    SUBNET_PREFIX=$(curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
-      -H "Authorization: Bearer $TOKEN" \
-      -H "Content-Type: application/json" \
-      "${RESOURCE_MANAGER_ENDPOINT}${SUBNET_ID:1}?api-version=$NETWORK_API_VERSION" |
-      jq '.properties.addressPrefix' -r)
-
-    if [[ -z $SUBNET_PREFIX ]]; then
-      echo "Error fetching the subnet address prefix for a subnet ID"
-      exit 122
-    fi
-
-    # shellcheck disable=SC2001
-    AZURE_CNI_CONFIG=$(echo ${AZURE_CNI_CONFIG} | sed "s|$SUBNET_ID|$SUBNET_PREFIX|g")
-  done
-
-  echo ${AZURE_CNI_CONFIG} >${AZURE_CNI_CONFIG_FILE}
-
-  chmod 0444 ${AZURE_CNI_CONFIG_FILE}
-
-  set -x
-}
-#EOF
-`)
-
-func k8sCloudInitArtifactsCse_customcloud_cniShBytes() ([]byte, error) {
-	return _k8sCloudInitArtifactsCse_customcloud_cniSh, nil
-}
-
-func k8sCloudInitArtifactsCse_customcloud_cniSh() (*asset, error) {
-	bytes, err := k8sCloudInitArtifactsCse_customcloud_cniShBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_customcloud_cni.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 var _k8sCloudInitArtifactsCse_helpersSh = []byte(`#!/bin/bash
 
 OS=$(sort -r /etc/*-release | gawk 'match($0, /^(ID=(.*))$/, a) { print toupper(a[2] a[3]); exit }')
@@ -17928,7 +17832,7 @@ time_metric "ConfigureK8s" configureK8s
 {{- if IsCustomCloudProfile}}
 time_metric "ConfigureK8sCustomCloud" configureK8sCustomCloud
 {{- if and IsAzureStackCloud IsAzureCNI}}
-source "/opt/azure/containers/provision_azurestack_cni.sh"
+source {{GetCustomCloudAzureCNIConfigCSEScriptFilepath}}
 time_metric "ConfigureAzureStackInterfaces" configureAzureStackInterfaces
 {{end}}
 {{end}}
@@ -24748,7 +24652,6 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/cloud-init/artifacts/cis.sh":                                    k8sCloudInitArtifactsCisSh,
 	"k8s/cloud-init/artifacts/cse_config.sh":                             k8sCloudInitArtifactsCse_configSh,
 	"k8s/cloud-init/artifacts/cse_customcloud.sh":                        k8sCloudInitArtifactsCse_customcloudSh,
-	"k8s/cloud-init/artifacts/cse_customcloud_cni.sh":                    k8sCloudInitArtifactsCse_customcloud_cniSh,
 	"k8s/cloud-init/artifacts/cse_helpers.sh":                            k8sCloudInitArtifactsCse_helpersSh,
 	"k8s/cloud-init/artifacts/cse_install.sh":                            k8sCloudInitArtifactsCse_installSh,
 	"k8s/cloud-init/artifacts/cse_main.sh":                               k8sCloudInitArtifactsCse_mainSh,
@@ -24900,7 +24803,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"cis.sh":                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
 				"cse_config.sh":             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
 				"cse_customcloud.sh":        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
-				"cse_customcloud_cni.sh":    {k8sCloudInitArtifactsCse_customcloud_cniSh, map[string]*bintree{}},
 				"cse_helpers.sh":            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
 				"cse_install.sh":            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
 				"cse_main.sh":               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},

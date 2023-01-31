@@ -116,15 +116,16 @@ const (
 
 // cloud-init destination file references
 const (
-	customCloudConfigCSEScriptFilepath     = "/opt/azure/containers/provision_configs_custom_cloud.sh"
-	cseHelpersScriptFilepath               = "/opt/azure/containers/provision_source.sh"
-	cseInstallScriptFilepath               = "/opt/azure/containers/provision_installs.sh"
-	cseConfigScriptFilepath                = "/opt/azure/containers/provision_configs.sh"
-	customSearchDomainsCSEScriptFilepath   = "/opt/azure/containers/setup-custom-search-domains.sh"
-	dhcpV6ServiceCSEScriptFilepath         = "/etc/systemd/system/dhcpv6.service"
-	dhcpV6ConfigCSEScriptFilepath          = "/opt/azure/containers/enable-dhcpv6.sh"
-	kmsKeyvaultKeyServiceCSEScriptFilepath = "/etc/systemd/system/kms-keyvault-key.service"
-	kmsKeyvaultKeyCSEScriptFilepath        = "/opt/azure/containers/kms-keyvault-key.sh"
+	customCloudConfigCSEScriptFilepath         = "/opt/azure/containers/provision_configs_custom_cloud.sh"
+	customCloudAzureCNIConfigCSEScriptFilepath = "/opt/azure/containers/provision_azurestack_cni.sh"
+	cseHelpersScriptFilepath                   = "/opt/azure/containers/provision_source.sh"
+	cseInstallScriptFilepath                   = "/opt/azure/containers/provision_installs.sh"
+	cseConfigScriptFilepath                    = "/opt/azure/containers/provision_configs.sh"
+	customSearchDomainsCSEScriptFilepath       = "/opt/azure/containers/setup-custom-search-domains.sh"
+	dhcpV6ServiceCSEScriptFilepath             = "/etc/systemd/system/dhcpv6.service"
+	dhcpV6ConfigCSEScriptFilepath              = "/opt/azure/containers/enable-dhcpv6.sh"
+	kmsKeyvaultKeyServiceCSEScriptFilepath     = "/etc/systemd/system/kms-keyvault-key.service"
+	kmsKeyvaultKeyCSEScriptFilepath            = "/opt/azure/containers/kms-keyvault-key.sh"
 )
 
 const (
