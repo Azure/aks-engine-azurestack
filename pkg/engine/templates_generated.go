@@ -40,6 +40,7 @@
 // ../../parts/k8s/cloud-init/artifacts/cis.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_config.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_customcloud.sh
+// ../../parts/k8s/cloud-init/artifacts/cse_customcloud_cni.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_helpers.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_install.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_main.sh
@@ -17043,7 +17044,28 @@ ensureAzureStackCertificates() {
   curl $AZURESTACK_RESOURCE_METADATA_ENDPOINT
   exit $?
 }
+{{end}}
+#EOF
+`)
 
+func k8sCloudInitArtifactsCse_customcloudShBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCse_customcloudSh, nil
+}
+
+func k8sCloudInitArtifactsCse_customcloudSh() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCse_customcloudShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_customcloud.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _k8sCloudInitArtifactsCse_customcloud_cniSh = []byte(`#!/bin/bash
+
+{{- if IsAzureStackCloud}}
 configureAzureStackInterfaces() {
   NETWORK_INTERFACES_FILE="/etc/kubernetes/network_interfaces.json"
   AZURE_CNI_CONFIG_FILE="/etc/kubernetes/interfaces.json"
@@ -17123,17 +17145,17 @@ configureAzureStackInterfaces() {
 #EOF
 `)
 
-func k8sCloudInitArtifactsCse_customcloudShBytes() ([]byte, error) {
-	return _k8sCloudInitArtifactsCse_customcloudSh, nil
+func k8sCloudInitArtifactsCse_customcloud_cniShBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCse_customcloud_cniSh, nil
 }
 
-func k8sCloudInitArtifactsCse_customcloudSh() (*asset, error) {
-	bytes, err := k8sCloudInitArtifactsCse_customcloudShBytes()
+func k8sCloudInitArtifactsCse_customcloud_cniSh() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCse_customcloud_cniShBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_customcloud.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_customcloud_cni.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -17916,6 +17938,7 @@ time_metric "ConfigureK8s" configureK8s
 {{- if IsCustomCloudProfile}}
 time_metric "ConfigureK8sCustomCloud" configureK8sCustomCloud
 {{- if and IsAzureStackCloud IsAzureCNI}}
+source "/opt/azure/containers/provision_azurestack_cni.sh"
 time_metric "ConfigureAzureStackInterfaces" configureAzureStackInterfaces
 {{end}}
 {{end}}
@@ -24735,6 +24758,7 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/cloud-init/artifacts/cis.sh":                                    k8sCloudInitArtifactsCisSh,
 	"k8s/cloud-init/artifacts/cse_config.sh":                             k8sCloudInitArtifactsCse_configSh,
 	"k8s/cloud-init/artifacts/cse_customcloud.sh":                        k8sCloudInitArtifactsCse_customcloudSh,
+	"k8s/cloud-init/artifacts/cse_customcloud_cni.sh":                    k8sCloudInitArtifactsCse_customcloud_cniSh,
 	"k8s/cloud-init/artifacts/cse_helpers.sh":                            k8sCloudInitArtifactsCse_helpersSh,
 	"k8s/cloud-init/artifacts/cse_install.sh":                            k8sCloudInitArtifactsCse_installSh,
 	"k8s/cloud-init/artifacts/cse_main.sh":                               k8sCloudInitArtifactsCse_mainSh,
@@ -24886,6 +24910,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"cis.sh":                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
 				"cse_config.sh":             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
 				"cse_customcloud.sh":        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
+				"cse_customcloud_cni.sh":    {k8sCloudInitArtifactsCse_customcloud_cniSh, map[string]*bintree{}},
 				"cse_helpers.sh":            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
 				"cse_install.sh":            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
 				"cse_main.sh":               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},
