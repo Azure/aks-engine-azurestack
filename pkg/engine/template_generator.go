@@ -712,6 +712,9 @@ version = 2
 		"GetCustomCloudConfigCSEScriptFilepath": func() string {
 			return customCloudConfigCSEScriptFilepath
 		},
+		"GetCustomCloudAzureCNIConfigCSEScriptFilepath": func() string {
+			return customCloudAzureCNIConfigCSEScriptFilepath
+		},
 		"GetCSEHelpersScriptFilepath": func() string {
 			return cseHelpersScriptFilepath
 		},

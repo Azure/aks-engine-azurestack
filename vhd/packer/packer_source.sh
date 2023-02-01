@@ -37,6 +37,8 @@ copyPackerFiles() {
   COLLECT_LOGS_DEST=/opt/azure/containers/collect-logs.sh
   NOTICE_SRC=/home/packer/NOTICE.txt
   NOTICE_DEST=/NOTICE.txt
+  PROVISION_AZURESTACK_CNI_SRC=/home/packer/provision_azurestack_cni.sh
+  PROVISION_AZURESTACK_CNI_DEST=/opt/azure/containers/provision_azurestack_cni.sh
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then
     SSHD_CONFIG_SRC=/home/packer/sshd_config_1604
   fi
@@ -58,6 +60,7 @@ copyPackerFiles() {
   cpAndMode $GENERATE_PROXY_CERTS_SRC $GENERATE_PROXY_CERTS_DEST 744
   cpAndMode $COLLECT_LOGS_SRC $COLLECT_LOGS_DEST 744
   cpAndMode $NOTICE_SRC $NOTICE_DEST 444
+  cpAndMode $PROVISION_AZURESTACK_CNI_SRC $PROVISION_AZURESTACK_CNI_DEST 744
 }
 
 cpAndMode() {

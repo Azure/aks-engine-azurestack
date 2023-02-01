@@ -211,6 +211,7 @@ time_metric "ConfigureK8s" configureK8s
 {{- if IsCustomCloudProfile}}
 time_metric "ConfigureK8sCustomCloud" configureK8sCustomCloud
 {{- if and IsAzureStackCloud IsAzureCNI}}
+source {{GetCustomCloudAzureCNIConfigCSEScriptFilepath}}
 time_metric "ConfigureAzureStackInterfaces" configureAzureStackInterfaces
 {{end}}
 {{end}}
