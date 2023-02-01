@@ -146,26 +146,26 @@ var (
 	// AKSUbuntu2004OSImageConfig is the AKS Engine image based on Ubuntu 20.04-LTS.
 	AKSUbuntu2004OSImageConfig = AzureOSImageConfig{
 		ImageOffer:     "aks",
-		ImageSku:       "aks-engine-ubuntu-2004-202301",
+		ImageSku:       "aks-engine-azurestack-ubuntu-2004",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "2023.01.10",
+		ImageVersion:   "2023.032.2",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
 	AKSWindowsServer2019OSImageConfig = AzureOSImageConfig{
 		ImageOffer:     "aks-windows",
-		ImageSku:       "2019-datacenter-core-smalldisk-2212",
+		ImageSku:       "2019-datacenter-core-azurestack-smalldisk",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.3650.221213",
+		ImageVersion:   "17763.3650.20230322",
 	}
 
 	// AKSWindowsServer2019ContainerDOSImageConfig is the aks-engine image based on Windows Server 2019
 	// configured with containerd
 	AKSWindowsServer2019ContainerDOSImageConfig = AzureOSImageConfig{
 		ImageOffer:     "aks-windows",
-		ImageSku:       "2019-datacenter-core-ctrd-2212",
+		ImageSku:       "2019-datacenter-core-azurestack-ctrd",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.3650.221213",
+		ImageVersion:   "17763.3650.20230322",
 	}
 
 	// WindowsServer2019OSImageConfig is the 'vanilla' Windows Server 2019 image
