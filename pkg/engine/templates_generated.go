@@ -12882,14 +12882,14 @@ metadata:
   namespace: kube-system
   labels:
       kubernetes.io/cluster-service: "true"
-      addonmanager.kubernetes.io/mode: EnsureExists
+      addonmanager.kubernetes.io/mode: Reconcile
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
   name: system:coredns
 rules:
 - apiGroups:
@@ -12923,7 +12923,7 @@ metadata:
     rbac.authorization.kubernetes.io/autoupdate: "true"
   labels:
     kubernetes.io/bootstrapping: rbac-defaults
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
   name: system:coredns
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -12940,7 +12940,7 @@ metadata:
   name: coredns
   namespace: kube-system
   labels:
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
 data:
   Corefile: |
     import conf.d/Corefile*
@@ -12988,7 +12988,7 @@ metadata:
     k8s-app: kube-dns
     kubernetes.io/name: "CoreDNS"
     kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
 spec:
   {{- /* replicas: not specified here:
   1. In order to make Addon Manager do not reconcile this replicas parameter.
@@ -13130,7 +13130,7 @@ metadata:
     k8s-app: kube-dns
     kubernetes.io/cluster-service: "true"
     kubernetes.io/name: CoreDNS
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
 spec:
   selector:
     k8s-app: kube-dns
@@ -13153,14 +13153,14 @@ metadata:
   namespace: kube-system
   labels:
     k8s-addon: coredns.addons.k8s.io
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
     k8s-addon: coredns.addons.k8s.io
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
   name: coredns-autoscaler
 rules:
   - apiGroups: [""]
@@ -13181,7 +13181,7 @@ kind: ClusterRoleBinding
 metadata:
   labels:
     k8s-addon: coredns.addons.k8s.io
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
   name: coredns-autoscaler
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -13200,7 +13200,7 @@ metadata:
   labels:
     k8s-app: coredns-autoscaler
     kubernetes.io/cluster-service: "true"
-    addonmanager.kubernetes.io/mode: EnsureExists
+    addonmanager.kubernetes.io/mode: Reconcile
 spec:
   selector:
     matchLabels:
