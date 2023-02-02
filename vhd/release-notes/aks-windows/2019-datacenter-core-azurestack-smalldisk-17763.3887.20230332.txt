@@ -1,14 +1,14 @@
-Build Number: 2023.032.2
-Build Id:     67996566
+Build Number: 2023.033.2
+Build Id:     68091787
 Build Repo:   
 Build Branch: master
-Commit:       7187b7b367a0266346aadf7b5636b477935db5da
+Commit:       b5e15774857a99d40921ec7ed4c81aea7d5329e1
 
-VHD ID:      0a2a4b9e-4ec7-4726-8f09-f67107bd341e
+VHD ID:      fe3e1776-4bff-4b1b-bfcc-4273ffba985c
 
 System Info
 	OS Name        : Windows Server 2019 Datacenter
-	OS Version     : 17763.3650
+	OS Version     : 17763.3887
 	OS InstallType : Server Core
 
 Allowed security protocols: Tls, Tls11, Tls12
@@ -50,19 +50,38 @@ Installed Packages
 	OpenSSH.Server~~~~0.0.1.0
 
 Installed QFEs
-	KB5020627 : Update          : http://support.microsoft.com/?kbid=5020627
-	KB5019966 : Security Update : http://support.microsoft.com/?kbid=5019966
+	KB5020866 : Update          : http://support.microsoft.com/?kbid=5020866
+	KB5022286 : Security Update : http://support.microsoft.com/?kbid=5022286
 	KB5020374 : Security Update : http://support.microsoft.com/?kbid=5020374
 
 Installed Updates
-	2022-11 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5020685)
-	Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.381.2978.0)
+	2022-12 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5021085)
+	Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.381.3043.0)
 
 Windows Update Registry Settings
 	https://docs.microsoft.com/en-us/windows/deployment/update/waas-wu-settings
 	HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate
 	HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
 		NoAutoUpdate : 1
+
+Docker Info
+Version: Docker version 20.10.9, build 591094d
+
+Images:
+
+Repository                                                     Tag      ID          
+----------                                                     ---      --          
+mcr.microsoft.com/windows/servercore                           ltsc2019 2564578bc438
+mcr.microsoft.com/windows/nanoserver                           1809     82d15c591667
+mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager      v1.1.14  d0cd472e2aa7
+mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager      v1.23.11 22b6b24067f9
+mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager      v1.0.18  1ad6e0e7018f
+mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi             v1.10.0  13986b7e53b2
+mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar v2.4.0   113c123f64be
+mcr.microsoft.com/oss/kubernetes-csi/livenessprobe             v2.5.0   fef3c5781cda
+mcr.microsoft.com/oss/kubernetes/pause                         3.4.1    edaa9e09e568
+mcr.microsoft.com/oss/kubernetes/pause                         1.4.1    0ac0b63922f8
+
 
 
 Cached Files:
