@@ -378,7 +378,7 @@ Starting with AKS Engine v0.63.0, the Ubuntu 16.04 distro is not longer a suppor
 
 In Kubernetes v1.24, the dockershim component was removed from kubelet. As a result, the docker container runtime is no longer a supported option. See [Kubernetes v1.24 release notes](https://kubernetes.io/blog/2022/05/03/kubernetes-1-24-release-announcement/#dockershim-removed-from-kubelet) for more information. For AKS Engine v0.75.3 or later versions, aks-engine-azurestack upgrade will automatically overwrite the unsupported `docker` containerRuntime value with `containerd`.
 
-For AKS Engine release v0.75.3, mixed clusters on Kubernetes v1.23 can use the Windows base image with Docker runtime. Mixed clusters on Kubernetes v1.24 can use the Windows base image with Containerd runtime.
+For AKS Engine release v0.75.3, clusters with windows nodes on Kubernetes v1.23 can use the Windows base image with Docker runtime. Clusters with windows nodes on Kubernetes v1.24 can use the Windows base image with Containerd runtime.
 
 ## Frequently Asked Questions
 
