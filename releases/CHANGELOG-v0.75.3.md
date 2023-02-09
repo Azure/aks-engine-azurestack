@@ -1,6 +1,15 @@
 
 <a name="v0.75.3"></a>
 # [v0.75.3] - 2023-02-03
+
+# Attention!
+AKS Engine release v0.75.3, and all future AKS Engine releases on Azure Stack Hub, will be from the new [aks-engine-azurestack repo]( https://github.com/Azure/aks-engine-azurestack). As such, all `aks-engine` commands should be replaced with `aks-engine-azurestack`. Please create an [issue in the new repo]( https://github.com/Azure/aks-engine-azurestack/issues/new) if you find any. 
+
+AKS Engine release v0.75.3 on Azure Stack Hub includes a new [Ubuntu 20.04-LTS VHD distro](https://github.com/Azure/aks-engine-azurestack/blob/v0.75.3/vhd/release-notes/aks-engine-ubuntu-2004/aks-engine-azurestack-ubuntu-2004_2023.032.2.txt) to use in either your control plane and/or worker node pools. Starting from this release, Ubuntu 18.04 will no longer be supported. Please refer to the section [*Upgrading Kubernetes clusters created with the Ubuntu 18.04 Distro*](../docs/topics/azure-stack.md#upgrading-kubernetes-clusters-created-with-the-ubuntu-18.04-distro) for more details. 
+
+Starting from Kubernetes v1.24, only the `containerd` runtime is supported. Please refer to the section [*Upgrading Kubernetes clusters created with docker runtime*](../docs/topics/azure-stack.md#upgrading-kubernetes-clusters-created-with-docker-runtime) for more details. For AKS Engine release v0.75.3, clusters with windows nodes on Kubernetes v1.23 can use [the Windows base image with Docker runtime]( https://github.com/Azure/aks-engine-azurestack/blob/v0.75.3/vhd/release-notes/aks-windows/2019-datacenter-core-azurestack-smalldisk-17763.3887.20230332.txt). Clusters with windows nodes on Kubernetes v1.24 can use [the Windows base image with Containerd runtime]( https://github.com/Azure/aks-engine-azurestack/blob/v0.75.3/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.3887.20230332.txt).
+
+
 ### Bug Fixes 🐞
 - CoreDNS image not updated after cluster upgrade ([#75](https://github.com/Azure/aks-engine-azurestack/issues/75))
 - change reference of cni config to scripts dir ([#71](https://github.com/Azure/aks-engine-azurestack/issues/71))
