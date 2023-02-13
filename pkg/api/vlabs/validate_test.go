@@ -4451,6 +4451,24 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("Should enabled auditd for Ubuntu distro if DISA STIG enforced", func(t *testing.T) {
+		t.Parallel()
+		for _, distro := range DistroValues {
+			cs := getK8sDefaultContainerService(false)
+			agentPoolProfiles := cs.Properties.AgentPoolProfiles
+			agentPoolProfiles[0].Distro = distro
+			agentPoolProfiles[0].AuditDEnabled = to.BoolPtr(false)
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			switch distro {
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+				if err := cs.Properties.validateAgentPoolProfiles(false); err == nil || err.Error() != expectedMsg {
+					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
+				}
+			}
+		}
+	})
 }
 
 func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
@@ -4470,6 +4488,24 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 			case Ubuntu, Ubuntu1804, Ubuntu2004, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, ACC1604:
 				if err := cs.Properties.validateMasterProfile(false); err != nil {
 					t.Errorf("AuditDEnabled should work with distro %s, got error %s", distro, err.Error())
+				}
+			}
+		}
+	})
+
+	t.Run("Should enabled auditd for Ubuntu distro if DISA STIG enforced", func(t *testing.T) {
+		t.Parallel()
+		for _, distro := range DistroValues {
+			cs := getK8sDefaultContainerService(false)
+			masterProfile := cs.Properties.MasterProfile
+			masterProfile.Distro = distro
+			masterProfile.AuditDEnabled = to.BoolPtr(false)
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			switch distro {
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+				if err := cs.Properties.validateMasterProfile(false); err == nil || err.Error() != expectedMsg {
+					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}
 			}
 		}

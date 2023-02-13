@@ -21,6 +21,10 @@ func (cs *ContainerService) setSysctlDConfig() {
 		defaultSysctlDConfig["net.ipv4.ip_forward"] = "1"
 	}
 
+	if cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+		defaultSysctlDConfig["net.ipv4.tcp_syncookies"] = "1"
+	}
+
 	// Master-specific kubelet config changes go here
 	if cs.Properties.MasterProfile != nil {
 		if cs.Properties.MasterProfile.SysctlDConfig == nil {

@@ -293,6 +293,10 @@ apt_get_update && unattended_upgrade
     {{- end}}
 {{- end}}
 
+{{- if ShouldEnforceUbuntu2004DisaStig}}
+{{GetUbuntu2004DisaStigScriptFilepath}}
+{{- end}}
+
 if [ -f /var/run/reboot-required ]; then
   trace_info "RebootRequired" "reboot=true"
   /bin/bash -c "shutdown -r 1 &"

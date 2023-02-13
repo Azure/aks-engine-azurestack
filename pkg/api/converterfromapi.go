@@ -664,6 +664,7 @@ func convertFeatureFlagsToVLabs(api *FeatureFlags, vlabs *vlabs.FeatureFlags) {
 	vlabs.EnableTelemetry = api.EnableTelemetry
 	vlabs.EnableIPv6Only = api.EnableIPv6Only
 	vlabs.EnableWinDSR = api.EnableWinDSR
+	vlabs.EnforceUbuntu2004DisaStig = api.EnforceUbuntu2004DisaStig
 }
 
 func convertCloudProfileToVLabs(api *CustomCloudProfile, vlabsccp *vlabs.CustomCloudProfile) {

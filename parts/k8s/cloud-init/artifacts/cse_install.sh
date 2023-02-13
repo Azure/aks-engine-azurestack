@@ -48,6 +48,8 @@ installDeps() {
     packages+=" cgroup-lite ceph-common glusterfs-client"
     disableTimeSyncd
     packages+=" ntp ntpstat chrony"
+    {{/* STIG SV-238200r653775_rule, SV-238231r653868_rule, SV-238230r653865_rule */}}
+    packages+=" vlock opensc-pkcs11 libpam-pkcs11"
   elif [[ $OS == $DEBIAN_OS_NAME ]]; then
     packages+=" gpg cgroup-bin"
   fi
