@@ -134,7 +134,7 @@ checkAKSEInstalledVersion() {
 # downloadFile downloads the latest binary package and also the checksum
 # for that binary.
 downloadFile() {
-  AKSE_DIST="aks-engine-$TAG-$OS-$ARCH.tar.gz"
+  AKSE_DIST="aks-engine-azurestack-$TAG-$OS-$ARCH.tar.gz"
   DOWNLOAD_URL="https://github.com/Azure/aks-engine-azurestack/releases/download/$TAG/$AKSE_DIST"
   AKSE_TMP_ROOT="$(mktemp -dt akse-installer-XXXXXX)"
   AKSE_TMP_FILE="$AKSE_TMP_ROOT/$AKSE_DIST"
