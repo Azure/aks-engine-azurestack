@@ -79,8 +79,20 @@ jobs:
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: True
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
           BLOCK_SSH: true
+          RETAIN_SSH: false
+          CONTAINER_RUNTIME: containerd
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+          LINUX_NODE_IMAGE_VERSION: 2023.042.1
         run: make test-kubernetes
       - name: Validate 1.23 no-egress scenario
         env:
@@ -95,8 +107,20 @@ jobs:
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: True
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
           BLOCK_SSH: true
+          RETAIN_SSH: false
+          CONTAINER_RUNTIME: containerd
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+          LINUX_NODE_IMAGE_VERSION: 2023.042.1
         run: make test-kubernetes
       - name: Validate 1.23 + containerd E2E
         env:
@@ -117,7 +141,17 @@ jobs:
           CONTAINER_RUNTIME: "containerd"
           BLOCK_SSH: true
           SKIP_LOGS_COLLECTION: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: True
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+          LINUX_NODE_IMAGE_VERSION: 2023.042.1
         run: make test-kubernetes
       - name: Remove untracked files created during workflow steps
         run: git ls-files --others --exclude-standard -z | xargs -0 -r rm
