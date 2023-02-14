@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>aks-engine-azurestack</id>
+    <version>_placeholder_</version>
+    <packageSourceUrl>https://github.com/Azure/aks-engine-azurestack</packageSourceUrl>
+    <owners>AKS Engine Azure Stack maintainers</owners>
+    <title>aks-engine-azurestack</title>
+    <authors>Microsoft AKS Engine Azure Stack is supported by and built with a community of developers</authors>
+    <projectUrl>https://github.com/Azure/aks-engine-azurestack</projectUrl>
+    <docsUrl>https://github.com/Azure/aks-engine-azurestack/blob/master/docs/README.md</docsUrl>
+    <copyright>(c) 2023 Microsoft Azure</copyright>
+    <licenseUrl>https://github.com/Azure/aks-engine-azurestack/blob/master/LICENSE</licenseUrl>
+    <bugTrackerUrl>https://github.com/Azure/aks-engine-azurestack/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/Azure/aks-engine-azurestack</projectSourceUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <tags>kubernetes azurestack aks-engine-azurestack</tags>
+    <summary>AKS Engine AzureStack - a place for community to collaborate and build the best open Kubernetes infrastructure for Azure Stack.</summary>
+    <description>AKS Engine AzureStack - a place for community to collaborate and build the best open Kubernetes infrastructure for Azure Stack.</description>
+    <releaseNotes>https://github.com/Azure/aks-engine-azurestack/releases</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
