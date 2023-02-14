@@ -1,0 +1,29 @@
+name: Package Managers
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'release tag'
+        required: true
+jobs:
+  chocolatey:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: ./choco/aks-engine-azurestack
+    steps:
+      - uses: actions/checkout@v2
+      - name: set env
+        run: |
+          $ReleaseVersion = "${{github.event.inputs.release_version}}".substring(1)
+          "ReleaseVersion=$ReleaseVersion" >> $env:GITHUB_ENV
+      - name: install au module
+        run: choco install --yes au # https://github.com/majkinetor/au
+      - name: update version and sha
+        run: update.ps1
+      - name: package
+        run: choco pack
+      - name: apikey
+        run: choco apikey --api-key ${{ secrets.CHOCO_API_KEY }} -source https://push.chocolatey.org/
+      - name: push
+        run: choco push --source https://push.chocolatey.org/
