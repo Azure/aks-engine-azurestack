@@ -13,6 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	ops "github.com/Azure/aks-engine-azurestack/cmd/rotatecerts"
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
@@ -346,7 +349,8 @@ func (rcc *rotateCertsCmd) getAgentNodes() (nodeMap, error) {
 			Port:    22,
 			Jumpbox: rcc.jumpbox,
 		}
-		switch api.OSType(strings.Title(nli.Status.NodeInfo.OperatingSystem)) {
+		caser := cases.Title(language.English)
+		switch api.OSType(caser.String(nli.Status.NodeInfo.OperatingSystem)) {
 		case api.Linux:
 			node.OperatingSystem = api.Linux
 			node.AuthConfig = rcc.linuxAuthConfig

@@ -15,6 +15,9 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
+
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/ssh"
@@ -287,7 +290,8 @@ func getClusterNodes(glc *getLogsCmd, kubeClient kubernetes.NodeLister) (nodes [
 	}
 	for _, node := range nodeList.Items {
 		if isMasterNode(node.Name, glc.cs.Properties.GetMasterVMPrefix()) || !glc.controlPlaneOnly {
-			switch api.OSType(strings.Title(node.Status.NodeInfo.OperatingSystem)) {
+			caser := cases.Title(language.English)
+			switch api.OSType(caser.String(node.Status.NodeInfo.OperatingSystem)) {
 			case api.Linux:
 				nodes = append(nodes, &ssh.RemoteHost{
 					URI: node.Name, Port: 22, OperatingSystem: api.Linux, AuthConfig: glc.linuxAuthConfig, Jumpbox: glc.jumpbox})
