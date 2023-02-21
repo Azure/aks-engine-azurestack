@@ -414,9 +414,10 @@ func getDefaultContainerService() *ContainerService {
 				EtcdServerPrivateKey:  "SampleEtcdServerPrivateKey",
 			},
 			FeatureFlags: &FeatureFlags{
-				EnableCSERunInBackground: true,
-				BlockOutboundInternet:    false,
-				EnableTelemetry:          false,
+				EnableCSERunInBackground:  true,
+				BlockOutboundInternet:     false,
+				EnableTelemetry:           false,
+				EnforceUbuntu2004DisaStig: false,
 			},
 			AADProfile: &AADProfile{
 				ClientAppID:     "SampleClientAppID",

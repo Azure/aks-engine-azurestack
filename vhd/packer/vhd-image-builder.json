@@ -67,6 +67,11 @@
         },
         {
             "type": "file",
+            "source": "parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh",
+            "destination": "/home/packer/provision_stig_ubuntu2004.sh"
+        },
+        {
+            "type": "file",
             "source": "parts/k8s/cloud-init/artifacts/cis.sh",
             "destination": "/home/packer/cis.sh"
         },
@@ -104,6 +109,11 @@
             "type": "file",
             "source": "parts/k8s/cloud-init/artifacts/etc-issue.net",
             "destination": "/home/packer/etc-issue.net"
+        },
+        {
+            "type": "file",
+            "source": "parts/k8s/cloud-init/artifacts/etc-issue-stig.net",
+            "destination": "/home/packer/etc-issue-stig.net"
         },
         {
             "type": "file",
@@ -177,8 +187,13 @@
         },
         {
             "type": "file",
-            "source": "scripts/cse_customcloud_cni.sh",
+            "source": "parts/k8s/cloud-init/artifacts/cse_customcloud_cni.sh",
             "destination": "/home/packer/provision_azurestack_cni.sh"
+        },
+        {
+            "type": "file",
+            "source": "parts/k8s/cloud-init/artifacts/auditd-rules",
+            "destination": "/home/packer/auditd-rules"
         },
         {
             "type": "shell",

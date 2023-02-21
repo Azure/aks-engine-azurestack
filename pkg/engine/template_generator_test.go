@@ -1283,6 +1283,11 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 			if ret[0].Interface() != cseConfigScriptFilepath {
 				t.Errorf("expected funcMap invocation of GetCSEConfigScriptFilepath to return %s, instead got %s", cseConfigScriptFilepath, ret[0].Interface())
 			}
+			v = reflect.ValueOf(funcMap["GetUbuntu2004DisaStigScriptFilepath"])
+			ret = v.Call(make([]reflect.Value, 0))
+			if ret[0].Interface() != cseUbuntu2004StigScriptFilepath {
+				t.Errorf("expected funcMap invocation of GetUbuntu2004DisaStigScriptFilepath to return %s, instead got %s", cseUbuntu2004StigScriptFilepath, ret[0].Interface())
+			}
 			v = reflect.ValueOf(funcMap["GetCustomSearchDomainsCSEScriptFilepath"])
 			ret = v.Call(make([]reflect.Value, 0))
 			if ret[0].Interface() != customSearchDomainsCSEScriptFilepath {
@@ -1527,6 +1532,26 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{
 					EnableTelemetry: true,
+				}
+				return cs
+			},
+			ExpectedResult: true,
+		},
+		{
+			Name:     "ShouldEnforceUbuntu2004DisaStigDisabled",
+			FuncName: "ShouldEnforceUbuntu2004DisaStig",
+			MutateFunc: func(cs api.ContainerService) api.ContainerService {
+				cs.Properties.FeatureFlags = &api.FeatureFlags{}
+				return cs
+			},
+			ExpectedResult: false,
+		},
+		{
+			Name:     "ShouldEnforceUbuntu2004DisaStigEnabled",
+			FuncName: "ShouldEnforceUbuntu2004DisaStig",
+			MutateFunc: func(cs api.ContainerService) api.ContainerService {
+				cs.Properties.FeatureFlags = &api.FeatureFlags{
+					EnforceUbuntu2004DisaStig: true,
 				}
 				return cs
 			},

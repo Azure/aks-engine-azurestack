@@ -40,15 +40,18 @@
 // ../../parts/k8s/cloud-init/artifacts/cis.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_config.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_customcloud.sh
+// ../../parts/k8s/cloud-init/artifacts/cse_customcloud_cni.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_helpers.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_install.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_main.sh
+// ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh
 // ../../parts/k8s/cloud-init/artifacts/default-grub
 // ../../parts/k8s/cloud-init/artifacts/dhcpv6.service
 // ../../parts/k8s/cloud-init/artifacts/docker-monitor.service
 // ../../parts/k8s/cloud-init/artifacts/docker_clear_mount_propagation_flags.conf
 // ../../parts/k8s/cloud-init/artifacts/enable-dhcpv6.sh
 // ../../parts/k8s/cloud-init/artifacts/etc-issue
+// ../../parts/k8s/cloud-init/artifacts/etc-issue-stig.net
 // ../../parts/k8s/cloud-init/artifacts/etc-issue.net
 // ../../parts/k8s/cloud-init/artifacts/etcd-monitor.service
 // ../../parts/k8s/cloud-init/artifacts/etcd.service
@@ -15968,11 +15971,11 @@ var _k8sCloudInitArtifactsAuditdRules = []byte(`# increase kernel audit buffers 
 -w /etc/localtime -p wa -k time-change
 
 # 4.1.5 Ensure events that modify user/group information are collected
--w /etc/group -p wa -k identity
--w /etc/passwd -p wa -k identity
--w /etc/gshadow -p wa -k identity
--w /etc/shadow -p wa -k identity
--w /etc/security/opasswd -p wa -k identity
+-w /etc/group -p wa -k usergroup_modification
+-w /etc/passwd -p wa -k usergroup_modification
+-w /etc/gshadow -p wa -k usergroup_modification
+-w /etc/shadow -p wa -k usergroup_modification
+-w /etc/security/opasswd -p wa -k usergroup_modification
 
 # 4.1.6 Ensure events that modify the system's network environment are collected
 -a always,exit -F arch=b64 -S sethostname -S setdomainname -k system-locale
@@ -15992,64 +15995,78 @@ var _k8sCloudInitArtifactsAuditdRules = []byte(`# increase kernel audit buffers 
 -w /var/log/tallylog -p wa -k logins
 
 # 4.1.9 Ensure session initiation information is collected
--w /var/run/utmp -p wa -k session
--w /var/log/wtmp -p wa -k session
--w /var/log/btmp -p wa -k session
+-w /var/run/utmp -p wa -k logins
+-w /var/log/wtmp -p wa -k logins
+-w /var/log/btmp -p wa -k logins
+-w /var/run/wtmp -p wa -k logins
 
 # 4.1.10 Ensure discretionary access control permission modification events are collected
--a always,exit -F arch=b64 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S chmod -S fchmod -S fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S chown -S fchown -S fchownat -S lchown -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b64 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
--a always,exit -F arch=b32 -S setxattr -S lsetxattr -S fsetxattr -S removexattr -S lremovexattr -S fremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b32 -S chmod,fchmod,fchmodat -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b64 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F arch=b32 -S chown,fchown,fchownat,lchown -F auid>=1000 -F auid!=4294967295 -k perm_chng
+
+-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b32 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid>=1000 -F auid!=4294967295 -k perm_mod
+-a always,exit -F arch=b64 -S setxattr,fsetxattr,lsetxattr,removexattr,fremovexattr,lremovexattr -F auid=0 -k perm_mod
 
 # 4.1.11 Ensure unsuccessful unauthorized file access attempts are collected
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b64 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
--a always,exit -F arch=b32 -S creat -S open -S openat -S truncate -S ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k access
+-a always,exit -F arch=b64 -S creat,open,openat,open_by_handle_at,truncate,ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+-a always,exit -F arch=b32 -S creat,open,openat,open_by_handle_at,truncate,ftruncate -F exit=-EACCES -F auid>=1000 -F auid!=4294967295 -k perm_access
+-a always,exit -F arch=b64 -S creat,open,openat,open_by_handle_at,truncate,ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
+-a always,exit -F arch=b32 -S creat,open,openat,open_by_handle_at,truncate,ftruncate -F exit=-EPERM -F auid>=1000 -F auid!=4294967295 -k perm_access
 
 # 4.1.12 Ensure use of privileged commands is collected
 -a always,exit -F path=/usr/lib/dbus-1.0/dbus-daemon-launch-helper -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/lib/openssh/ssh-keysign -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
 -a always,exit -F path=/usr/lib/eject/dmcrypt-get-device -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/sudo -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
+-a always,exit -F path=/usr/bin/sudoedit -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
 -a always,exit -F path=/usr/bin/wall -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/ssh-agent -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-ssh
 -a always,exit -F path=/usr/bin/expiry -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/chfn -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-chfn
 -a always,exit -F path=/usr/bin/pkexec -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/usr/bin/screen -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/chcon -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/bin/chsh -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
 -a always,exit -F path=/usr/bin/newgidmap -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/chage -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-chage
+-a always,exit -F path=/usr/bin/crontab -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-crontab
 -a always,exit -F path=/usr/bin/at -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/newgrp -F perm=x -F auid>=1000 -F auid!=4294967295 -k priv_cmd
 -a always,exit -F path=/usr/bin/mlocate -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/mount -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-mount
+-a always,exit -F path=/usr/bin/gpasswd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-gpasswd
 -a always,exit -F path=/usr/bin/newuidmap -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/passwd -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-passwd
 -a always,exit -F path=/usr/bin/bsd-write -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/usr/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-umount
+-a always,exit -F path=/usr/bin/setfacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/bin/chacl -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
+-a always,exit -F path=/usr/sbin/pam_timestamp_check -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-pam_timestamp_check
+-a always,exit -F path=/usr/sbin/usermod -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-usermod
 -a always,exit -F path=/bin/umount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/bin/mount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/bin/ntfs-3g -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/bin/ping6 -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
--a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/bin/su -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-priv_change
 -a always,exit -F path=/bin/ping -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/bin/fusermount -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/sbin/apparmor_parser -F perm=x -F auid>=1000 -F auid!=4294967295 -k perm_chng
 -a always,exit -F path=/sbin/pam_extrausers_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/sbin/mount.nfs -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
 -a always,exit -F path=/sbin/unix_chkpwd -F perm=x -F auid>=1000 -F auid!=4294967295  -k privileged
+-a always,exit -F path=/sbin/unix_update -F perm=x -F auid>=1000 -F auid!=4294967295 -k privileged-unix-update
 
 # 4.1.13 Ensure successful file system mounts are collected
 -a always,exit -F arch=b64 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
 -a always,exit -F arch=b32 -S mount -F auid>=1000 -F auid!=4294967295 -k mounts
 
 # 4.1.14 Ensure file deletion events by users are collected
--a always,exit -F arch=b64 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete
--a always,exit -F arch=b32 -S unlink -S unlinkat -S rename -S renameat -F auid>=1000 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b64 -S unlink,unlinkat,rename,renameat,rmdir -F auid>=1000 -F auid!=4294967295 -k delete
+-a always,exit -F arch=b32 -S unlink,unlinkat,rename,renameat,rmdir -F auid>=1000 -F auid!=4294967295 -k delete
 
 # 4.1.15 Ensure changes to system administration scope (sudoers) is collected
 -w /etc/sudoers -p wa -k scope
@@ -16059,10 +16076,25 @@ var _k8sCloudInitArtifactsAuditdRules = []byte(`# increase kernel audit buffers 
 -w /var/log/sudo.log -p wa -k actions
 
 # 4.1.17 Ensure kernel module loading and unloading is collected
+-w /bin/kmod -p x -k modules
 -w /sbin/insmod -p x -k modules
 -w /sbin/rmmod -p x -k modules
 -w /sbin/modprobe -p x -k modules
 -a always,exit -F arch=b64 -S init_module -S delete_module -k modules
+
+-a always,exit -F arch=b64 -S init_module,finit_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+-a always,exit -F arch=b32 -S init_module,finit_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+-a always,exit -F arch=b64 -S delete_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+-a always,exit -F arch=b32 -S delete_module -F auid>=1000 -F auid!=4294967295 -k module_chng
+
+# Prevent all software from executing at higher privilege levels than users executing the software and the audit system must be configured to audit the execution of privileged functions.
+-a always,exit -F arch=b64 -S execve -C uid!=euid -F euid=0 -F key=execpriv
+-a always,exit -F arch=b64 -S execve -C gid!=egid -F egid=0 -F key=execpriv
+-a always,exit -F arch=b32 -S execve -C uid!=euid -F euid=0 -F key=execpriv
+-a always,exit -F arch=b32 -S execve -C gid!=egid -F egid=0 -F key=execpriv
+
+# Generate audit records when successful/unsuccessful attempts to use the fdisk command.
+-w /sbin/fdisk -p x -k fdisk
 
 # 4.1.18 Ensure the audit configuration is immutable
 -e 2
@@ -17057,6 +17089,101 @@ func k8sCloudInitArtifactsCse_customcloudSh() (*asset, error) {
 	return a, nil
 }
 
+var _k8sCloudInitArtifactsCse_customcloud_cniSh = []byte(`#!/bin/bash
+
+configureAzureStackInterfaces() {
+  NETWORK_INTERFACES_FILE="/etc/kubernetes/network_interfaces.json"
+  AZURE_CNI_CONFIG_FILE="/etc/kubernetes/interfaces.json"
+  AZURESTACK_ENVIRONMENT_JSON_PATH="/etc/kubernetes/azurestackcloud.json"
+  SERVICE_MANAGEMENT_ENDPOINT=$(jq -r '.serviceManagementEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
+  ACTIVE_DIRECTORY_ENDPOINT=$(jq -r '.activeDirectoryEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
+  RESOURCE_MANAGER_ENDPOINT=$(jq -r '.resourceManagerEndpoint' ${AZURESTACK_ENVIRONMENT_JSON_PATH})
+  TOKEN_URL="${ACTIVE_DIRECTORY_ENDPOINT}${TENANT_ID}/oauth2/token"
+
+  if [[ ${IDENTITY_SYSTEM,,} == "adfs" ]]; then
+    TOKEN_URL="${ACTIVE_DIRECTORY_ENDPOINT}adfs/oauth2/token"
+  fi
+
+  set +x
+
+  TOKEN=$(curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X POST \
+    -H "Content-Type: application/x-www-form-urlencoded" \
+    -d "grant_type=client_credentials" \
+    -d "client_id=$SERVICE_PRINCIPAL_CLIENT_ID" \
+    --data-urlencode "client_secret=$SERVICE_PRINCIPAL_CLIENT_SECRET" \
+    --data-urlencode "resource=$SERVICE_MANAGEMENT_ENDPOINT" \
+    ${TOKEN_URL} | jq '.access_token' | xargs)
+
+  if [[ -z $TOKEN ]]; then
+    echo "Error generating token for Azure Resource Manager"
+    exit 120
+  fi
+
+  curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    "${RESOURCE_MANAGER_ENDPOINT}subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Network/networkInterfaces?api-version=$NETWORK_API_VERSION" >${NETWORK_INTERFACES_FILE}
+
+  if [[ ! -s ${NETWORK_INTERFACES_FILE} ]]; then
+    echo "Error fetching network interface configuration for node"
+    exit 121
+  fi
+
+  echo "Generating Azure CNI interface file"
+
+  mapfile -t local_interfaces < <(cat /sys/class/net/*/address | tr -d : | sed 's/.*/\U&/g')
+
+  SDN_INTERFACES=$(jq ".value | map(select(.properties != null) | select(.properties.macAddress != null) | select(.properties.macAddress | inside(\"${local_interfaces[*]}\"))) | map(select((.properties.ipConfigurations | length) > 0))" ${NETWORK_INTERFACES_FILE})
+
+  if [[ -z $SDN_INTERFACES ]]; then
+      echo "Error extracting the SDN interfaces from the network interfaces file"
+      exit 123
+  fi
+
+  AZURE_CNI_CONFIG=$(echo ${SDN_INTERFACES} | jq "{Interfaces: [.[] | {MacAddress: .properties.macAddress, IsPrimary: .properties.primary, IPSubnets: [{Prefix: .properties.ipConfigurations[0].properties.subnet.id, IPAddresses: .properties.ipConfigurations | [.[] | {Address: .properties.privateIPAddress, IsPrimary: .properties.primary}]}]}]}")
+
+  mapfile -t SUBNET_IDS < <(echo ${SDN_INTERFACES} | jq '[.[].properties.ipConfigurations[0].properties.subnet.id] | unique | .[]' -r)
+
+  for SUBNET_ID in "${SUBNET_IDS[@]}"; do
+    SUBNET_PREFIX=$(curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
+      -H "Authorization: Bearer $TOKEN" \
+      -H "Content-Type: application/json" \
+      "${RESOURCE_MANAGER_ENDPOINT}${SUBNET_ID:1}?api-version=$NETWORK_API_VERSION" |
+      jq '.properties.addressPrefix' -r)
+
+    if [[ -z $SUBNET_PREFIX ]]; then
+      echo "Error fetching the subnet address prefix for a subnet ID"
+      exit 122
+    fi
+
+    # shellcheck disable=SC2001
+    AZURE_CNI_CONFIG=$(echo ${AZURE_CNI_CONFIG} | sed "s|$SUBNET_ID|$SUBNET_PREFIX|g")
+  done
+
+  echo ${AZURE_CNI_CONFIG} >${AZURE_CNI_CONFIG_FILE}
+
+  chmod 0444 ${AZURE_CNI_CONFIG_FILE}
+
+  set -x
+}
+#EOF
+`)
+
+func k8sCloudInitArtifactsCse_customcloud_cniShBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCse_customcloud_cniSh, nil
+}
+
+func k8sCloudInitArtifactsCse_customcloud_cniSh() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCse_customcloud_cniShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_customcloud_cni.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _k8sCloudInitArtifactsCse_helpersSh = []byte(`#!/bin/bash
 
 OS=$(sort -r /etc/*-release | gawk 'match($0, /^(ID=(.*))$/, a) { print toupper(a[2] a[3]); exit }')
@@ -17401,6 +17528,8 @@ installDeps() {
     packages+=" cgroup-lite ceph-common glusterfs-client"
     disableTimeSyncd
     packages+=" ntp ntpstat chrony"
+    {{/* STIG SV-238200r653775_rule, SV-238231r653868_rule, SV-238230r653865_rule */}}
+    packages+=" vlock opensc-pkcs11 libpam-pkcs11"
   elif [[ $OS == $DEBIAN_OS_NAME ]]; then
     packages+=" gpg cgroup-bin"
   fi
@@ -17911,6 +18040,10 @@ apt_get_update && unattended_upgrade
     {{- end}}
 {{- end}}
 
+{{- if ShouldEnforceUbuntu2004DisaStig}}
+{{GetUbuntu2004DisaStigScriptFilepath}}
+{{- end}}
+
 if [ -f /var/run/reboot-required ]; then
   trace_info "RebootRequired" "reboot=true"
   /bin/bash -c "shutdown -r 1 &"
@@ -17951,6 +18084,108 @@ func k8sCloudInitArtifactsCse_mainSh() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_main.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _k8sCloudInitArtifactsCse_stig_ubuntu2004Sh = []byte(`#!/bin/bash
+
+setLoginDefs() {
+  local f=/etc/login.defs
+  sed -i '/^PASS_MAX_DAYS/d' ${f} || exit 115
+  sed -i '$aPASS_MAX_DAYS 60' ${f} || exit 115
+  sed -i '/^PASS_MIN_DAYS/d' ${f} || exit 115
+  sed -i '$aPASS_MIN_DAYS 1' ${f} || exit 115
+  sed -i '/^UMASK/d' ${f} || exit 115
+  sed -i '$aUMASK 077' ${f} || exit 115
+}
+setPwqualityConf() {
+  local f=/etc/security/pwquality.conf
+  sed -i '/^difok/d' ${f} || exit 115
+  sed -i '$adifok=8' ${f} || exit 115
+  sed -i '/^dictcheck/d' ${f} || exit 115
+  sed -i '$adictcheck=1' ${f} || exit 115
+  sed -i '/^minlen/d' ${f} || exit 115
+  sed -i '$aminlen=15' ${f} || exit 115
+  sed -i '/^lcredit/d' ${f} || exit 115
+  sed -i '$alcredit=-1' ${f} || exit 115
+}
+setTerminalTimeout() {
+  local f=/etc/profile.d/99-terminal_tmout.sh
+  {{/* STIG SV-238207r653796_rule */}}
+  if [[ -f ${f} ]]; then
+    sed -i '/^TMOUT/d' ${f} || exit 115
+    sed -i '$aTMOUT=600' ${f} || exit 115
+  else
+    echo "TMOUT=600" > ${f}
+    truncate -s -1 ${f}
+  fi
+}
+setSSHDConfig() {
+  local f=/etc/ssh/sshd_config
+  {{/* STIG SV-238212r653811_rule */}}
+  sed -i '/^ClientAliveCountMax/d' ${f} || exit 115
+  sed -i '$aClientAliveCountMax 1' ${f} || exit 115
+  {{/* STIG SV-238216r654316_rule */}}
+  sed -i '/^MACs/d' ${f} || exit 115
+  sed -i '$aMACs hmac-sha2-512,hmac-sha2-256' ${f} || exit 115
+  {{/* STIG SV-238217r653826_rule */}}
+  sed -i '/^Ciphers/d' ${f} || exit 115
+  sed -i '$aCiphers aes256-ctr,aes192-ctr,aes128-ctr' ${f} || exit 115
+  {{/* STIG SV-238220r653835_rule */}}
+  sed -i '/^X11UseLocalhost/d' ${f} || exit 115
+  sed -i '$aX11UseLocalhost yes' ${f} || exit 115
+  {{/* STIG SV-238214r653817_rule */}}
+  if [[ -f /etc/issue-stig.net ]]; then
+    sed -i '/^Banner/d' ${f} || exit 115
+    sed -i '$aBanner /etc/issue-stig.net' ${f} || exit 115
+  fi
+}
+setAuditd() {
+  local f=/etc/audit/auditd.conf
+  {{/* STIG SV-238244r653907_rule */}}
+  sed -i '/^disk_full_action/d' ${f} || exit 115
+  sed -i '$adisk_full_action = HALT' ${f} || exit 115
+}
+setLimitsConf() {
+  local f=/etc/security/limits.conf
+  {{/* STIG SV-238323r654144_rule */}}
+  sed -i '1s|^|* hard maxlogins 10\n|' ${f}
+}
+setAPTConfig() {
+  local f=/etc/apt/apt.conf.d/01-vendor-ubuntu
+  {{/* STIG SV-219155r610963_rule */}}
+  sed -i '/^APT::Get::AllowUnauthenticated/d' ${f} || exit 115
+  sed -i '$aAPT::Get::AllowUnauthenticated "false";' ${f} || exit 115
+  local g=/etc/apt/apt.conf.d/50unattended-upgrades
+  {{/* STIG SV-219156r610963_rule */}}
+  sed -i '/^Unattended-Upgrade::Remove-Unused-Dependencies/d' ${g} || exit 115
+  sed -i '$aUnattended-Upgrade::Remove-Unused-Dependencies "true";' ${g} || exit 115
+  {{/* STIG SV-219156r610963_rule */}}
+  sed -i '/^Unattended-Upgrade::Remove-Unused-Kernel-Packages/d' ${g} || exit 115
+  sed -i '$aUnattended-Upgrade::Remove-Unused-Kernel-Packages "true";' ${g} || exit 115
+}
+setLoginDefs
+setPwqualityConf
+setTerminalTimeout
+setSSHDConfig
+setAuditd
+setLimitsConf
+setAPTConfig
+#EOF
+`)
+
+func k8sCloudInitArtifactsCse_stig_ubuntu2004ShBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, nil
+}
+
+func k8sCloudInitArtifactsCse_stig_ubuntu2004Sh() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCse_stig_ubuntu2004ShBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -18117,6 +18352,36 @@ func k8sCloudInitArtifactsEtcIssue() (*asset, error) {
 	}
 
 	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/etc-issue", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
+var _k8sCloudInitArtifactsEtcIssueStigNet = []byte(`You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only.
+
+By using this IS (which includes any device attached to this IS), you consent to the following conditions:
+
+-The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations.
+
+-At any time, the USG may inspect and seize data stored on this IS.
+
+-Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose.
+
+-This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy.
+
+-Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.
+`)
+
+func k8sCloudInitArtifactsEtcIssueStigNetBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsEtcIssueStigNet, nil
+}
+
+func k8sCloudInitArtifactsEtcIssueStigNet() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsEtcIssueStigNetBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/etc-issue-stig.net", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -19507,14 +19772,6 @@ write_files:
     {{CloudInitData "provisionCIS"}}
 {{end}}
 
-{{- if .MasterProfile.IsAuditDEnabled}}
-- path: /etc/audit/rules.d/CIS.rules
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "auditdRules"}}
-{{end}}
 
 {{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}
@@ -20124,15 +20381,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "provisionCIS"}}
-{{end}}
-
-{{- if .IsAuditDEnabled}}
-- path: /etc/audit/rules.d/CIS.rules
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "auditdRules"}}
 {{end}}
 
 {{- if not .IsUbuntu1604}}
@@ -24649,15 +24897,18 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/cloud-init/artifacts/cis.sh":                                    k8sCloudInitArtifactsCisSh,
 	"k8s/cloud-init/artifacts/cse_config.sh":                             k8sCloudInitArtifactsCse_configSh,
 	"k8s/cloud-init/artifacts/cse_customcloud.sh":                        k8sCloudInitArtifactsCse_customcloudSh,
+	"k8s/cloud-init/artifacts/cse_customcloud_cni.sh":                    k8sCloudInitArtifactsCse_customcloud_cniSh,
 	"k8s/cloud-init/artifacts/cse_helpers.sh":                            k8sCloudInitArtifactsCse_helpersSh,
 	"k8s/cloud-init/artifacts/cse_install.sh":                            k8sCloudInitArtifactsCse_installSh,
 	"k8s/cloud-init/artifacts/cse_main.sh":                               k8sCloudInitArtifactsCse_mainSh,
+	"k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh":                    k8sCloudInitArtifactsCse_stig_ubuntu2004Sh,
 	"k8s/cloud-init/artifacts/default-grub":                              k8sCloudInitArtifactsDefaultGrub,
 	"k8s/cloud-init/artifacts/dhcpv6.service":                            k8sCloudInitArtifactsDhcpv6Service,
 	"k8s/cloud-init/artifacts/docker-monitor.service":                    k8sCloudInitArtifactsDockerMonitorService,
 	"k8s/cloud-init/artifacts/docker_clear_mount_propagation_flags.conf": k8sCloudInitArtifactsDocker_clear_mount_propagation_flagsConf,
 	"k8s/cloud-init/artifacts/enable-dhcpv6.sh":                          k8sCloudInitArtifactsEnableDhcpv6Sh,
 	"k8s/cloud-init/artifacts/etc-issue":                                 k8sCloudInitArtifactsEtcIssue,
+	"k8s/cloud-init/artifacts/etc-issue-stig.net":                        k8sCloudInitArtifactsEtcIssueStigNet,
 	"k8s/cloud-init/artifacts/etc-issue.net":                             k8sCloudInitArtifactsEtcIssueNet,
 	"k8s/cloud-init/artifacts/etcd-monitor.service":                      k8sCloudInitArtifactsEtcdMonitorService,
 	"k8s/cloud-init/artifacts/etcd.service":                              k8sCloudInitArtifactsEtcdService,
@@ -24800,15 +25051,18 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"cis.sh":                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
 				"cse_config.sh":             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
 				"cse_customcloud.sh":        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
+				"cse_customcloud_cni.sh":    {k8sCloudInitArtifactsCse_customcloud_cniSh, map[string]*bintree{}},
 				"cse_helpers.sh":            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
 				"cse_install.sh":            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
 				"cse_main.sh":               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},
+				"cse_stig_ubuntu2004.sh":    {k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, map[string]*bintree{}},
 				"default-grub":              {k8sCloudInitArtifactsDefaultGrub, map[string]*bintree{}},
 				"dhcpv6.service":            {k8sCloudInitArtifactsDhcpv6Service, map[string]*bintree{}},
 				"docker-monitor.service":    {k8sCloudInitArtifactsDockerMonitorService, map[string]*bintree{}},
 				"docker_clear_mount_propagation_flags.conf": {k8sCloudInitArtifactsDocker_clear_mount_propagation_flagsConf, map[string]*bintree{}},
 				"enable-dhcpv6.sh":                          {k8sCloudInitArtifactsEnableDhcpv6Sh, map[string]*bintree{}},
 				"etc-issue":                                 {k8sCloudInitArtifactsEtcIssue, map[string]*bintree{}},
+				"etc-issue-stig.net":                        {k8sCloudInitArtifactsEtcIssueStigNet, map[string]*bintree{}},
 				"etc-issue.net":                             {k8sCloudInitArtifactsEtcIssueNet, map[string]*bintree{}},
 				"etcd-monitor.service":                      {k8sCloudInitArtifactsEtcdMonitorService, map[string]*bintree{}},
 				"etcd.service":                              {k8sCloudInitArtifactsEtcdService, map[string]*bintree{}},

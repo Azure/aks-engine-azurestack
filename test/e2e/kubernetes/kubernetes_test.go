@@ -548,6 +548,32 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
+		It("should validate DISA Ubuntu 20.04 STIG", func() {
+			if cfg.BlockSSHPort {
+				Skip("SSH port is blocked")
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				STIGFilesValidateScript := "stig-validate.sh"
+				err = sshConn.CopyTo(STIGFilesValidateScript)
+				Expect(err).NotTo(HaveOccurred())
+				STIGValidationCommand := fmt.Sprintf("/tmp/%s", STIGFilesValidateScript)
+				err = sshConn.Execute(STIGValidationCommand, false)
+				Expect(err).NotTo(HaveOccurred())
+				for _, n := range nodes {
+					if n.IsUbuntu() {
+						err := sshConn.CopyToRemoteWithRetry(n.Metadata.Name, "/tmp/"+STIGFilesValidateScript, sleepBetweenRetriesRemoteSSHCommand, cfg.Timeout)
+						Expect(err).NotTo(HaveOccurred())
+						err = sshConn.ExecuteRemoteWithRetry(n.Metadata.Name, STIGValidationCommand, false, sleepBetweenRetriesRemoteSSHCommand, cfg.Timeout)
+						Expect(err).NotTo(HaveOccurred())
+						fmt.Println(err)
+					}
+				}
+			} else {
+				Skip("Skip as feature flag EnforceUbuntu2004DisaStig is not set")
+			}
+		})
+
 		It("should validate kernel module configuration", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
@@ -605,6 +631,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate that every linux node has the right sshd config", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+				Skip("Skip as feature flag EnforceUbuntu2004DisaStig is set")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
 					nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
@@ -632,6 +660,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should validate password enforcement configuration", func() {
+			args := fmt.Sprintf("STIG=%t", eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig)
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
@@ -641,7 +670,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					pwQualityValidateScript := "pwquality-validate.sh"
 					err = sshConn.CopyTo(pwQualityValidateScript)
 					Expect(err).NotTo(HaveOccurred())
-					pwQualityValidationCommand := fmt.Sprintf("\"/tmp/%s\"", pwQualityValidateScript)
+					pwQualityValidationCommand := fmt.Sprintf("%s /tmp/%s", args, pwQualityValidateScript)
 					err = sshConn.Execute(pwQualityValidationCommand, false)
 					Expect(err).NotTo(HaveOccurred())
 					for _, n := range nodes {

@@ -38,14 +38,6 @@ write_files:
     {{CloudInitData "provisionCIS"}}
 {{end}}
 
-{{- if .MasterProfile.IsAuditDEnabled}}
-- path: /etc/audit/rules.d/CIS.rules
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "auditdRules"}}
-{{end}}
 
 {{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}

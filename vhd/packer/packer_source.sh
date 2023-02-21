@@ -9,6 +9,8 @@ copyPackerFiles() {
   ETC_ISSUE_CONFIG_DEST=/etc/issue
   ETC_ISSUE_NET_CONFIG_SRC=/home/packer/etc-issue.net
   ETC_ISSUE_NET_CONFIG_DEST=/etc/issue.net
+  ETC_ISSUE_STIG_NET_CONFIG_SRC=/home/packer/etc-issue-stig.net
+  ETC_ISSUE_STIG_NET_CONFIG_DEST=/etc/issue-stig.net
   SSHD_CONFIG_SRC=/home/packer/sshd_config
   SSHD_CONFIG_DEST=/etc/ssh/sshd_config
   MODPROBE_CIS_SRC=/home/packer/modprobe-CIS.conf
@@ -39,6 +41,10 @@ copyPackerFiles() {
   NOTICE_DEST=/NOTICE.txt
   PROVISION_AZURESTACK_CNI_SRC=/home/packer/provision_azurestack_cni.sh
   PROVISION_AZURESTACK_CNI_DEST=/opt/azure/containers/provision_azurestack_cni.sh
+  UBUNTU_STIG_SRC=/home/packer/provision_stig_ubuntu2004.sh
+  UBUNTU_STIG_DEST=/opt/azure/containers/provision_stig_ubuntu2004.sh
+  AUDITD_RULES_SRC=/home/packer/auditd-rules
+  AUDITD_RULES_DEST=/etc/audit/rules.d/aks-engine.rules
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then
     SSHD_CONFIG_SRC=/home/packer/sshd_config_1604
   fi
@@ -46,6 +52,7 @@ copyPackerFiles() {
   cpAndMode $RSYSLOG_CONFIG_SRC $RSYSLOG_CONFIG_DEST 644
   cpAndMode $ETC_ISSUE_CONFIG_SRC $ETC_ISSUE_CONFIG_DEST 644
   cpAndMode $ETC_ISSUE_NET_CONFIG_SRC $ETC_ISSUE_NET_CONFIG_DEST 644
+  cpAndMode $ETC_ISSUE_STIG_NET_CONFIG_SRC $ETC_ISSUE_STIG_NET_CONFIG_DEST 644
   cpAndMode $SSHD_CONFIG_SRC $SSHD_CONFIG_DEST 644
   cpAndMode $MODPROBE_CIS_SRC $MODPROBE_CIS_DEST 644
   cpAndMode $PWQUALITY_CONF_SRC $PWQUALITY_CONF_DEST 600
@@ -61,6 +68,8 @@ copyPackerFiles() {
   cpAndMode $COLLECT_LOGS_SRC $COLLECT_LOGS_DEST 744
   cpAndMode $NOTICE_SRC $NOTICE_DEST 444
   cpAndMode $PROVISION_AZURESTACK_CNI_SRC $PROVISION_AZURESTACK_CNI_DEST 744
+  cpAndMode $UBUNTU_STIG_SRC $UBUNTU_STIG_DEST 744
+  cpAndMode $AUDITD_RULES_SRC $AUDITD_RULES_DEST 744
 }
 
 cpAndMode() {

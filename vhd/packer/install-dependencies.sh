@@ -23,6 +23,7 @@ apt packages:
   - ca-certificates
   - ceph-common
   - cgroup-lite
+  - chrony
   - cifs-utils
   - conntrack
   - cracklib-runtime
@@ -42,22 +43,24 @@ apt packages:
   - ipset
   - iptables
   - jq
+  - libpam-pkcs11
   - libpam-pwquality
   - libpwquality-tools
   - make
   - mount
   - net-tools
   - nfs-common
+  - ntp
+  - ntpstat
+  - opensc-pkcs11
   - pigz
   - socat
   - sysstat
   - traceroute
   - util-linux
+  - vlock
   - xz-utils
   - zip
-  - ntp
-  - ntpstat
-  - chrony
 EOF
 
 chmod a-x /etc/update-motd.d/??-{motd-news,release-upgrade}
