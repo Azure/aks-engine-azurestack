@@ -1,16 +1,13 @@
 {
-	"name": "Go for aks-engine",
-	"image": "mcr.microsoft.com/oss/azcu/go-dev:v1.34.7",
-	"extensions": [
-		"ms-vscode.go"
-	],
-	"runArgs": [
-		"--cap-add=SYS_PTRACE",
-		"--security-opt",
-		"seccomp=unconfined"
-	],
-	"postCreateCommand": "mkdir -p /go/src/github.com/Azure && ln -sf /workspaces/aks-engine-azurestack /go/src/github.com/Azure/aks-engine-azurestack",
-	"settings": {
-		"go.gopath": "/go"
-	}
+	"name": "Go for aks-engine-azurestack",
+	"image": "mcr.microsoft.com/oss/azcu/go-dev:v1.36.1",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"golang.go",
+				"eamodio.gitlens"
+			]
+		}
+	},
+	"postCreateCommand": "mkdir -p /go/src/github.com/Azure && ln -sf /workspaces/aks-engine-azurestack /go/src/github.com/Azure/aks-engine-azurestack"
 }
