@@ -1794,26 +1794,34 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Skip("Skip PV test for clusters using unmanaged disks")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() &&
 				cfg.TestPVC {
-				By("Creating a persistent volume claim")
+				By("Checking a persistent volume claim exists")
 				pvcName := "azure-disk" // should be the same as in pvc-azuredisk.yaml
-				pvc, err := persistentvolumeclaims.CreatePersistentVolumeClaimsFromFileWithRetry(filepath.Join(WorkloadDir, "pvc-azuredisk.yaml"), pvcName, "default", 3*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				// Azure Disk CSI driver in zone-enabled clusters uses 'WaitForFirstConsumer' volume binding mode
-				// thus, pvc won't be available until a pod consumes it
-				isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
-				if !(isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools()) {
-					ready, err := pvc.WaitOnReady("default", 5*time.Second, cfg.Timeout)
+				pvc, err := persistentvolumeclaims.Get(pvcName, "default")
+				if (pvc == nil || err != nil) {
+					By("Creating a persistent volume claim")
+					pvc, err = persistentvolumeclaims.CreatePersistentVolumeClaimsFromFileWithRetry(filepath.Join(WorkloadDir, "pvc-azuredisk.yaml"), pvcName, "default", 3*time.Second, cfg.Timeout)
+					Expect(err).NotTo(HaveOccurred())
+					// Azure Disk CSI driver in zone-enabled clusters uses 'WaitForFirstConsumer' volume binding mode
+					// thus, pvc won't be available until a pod consumes it
+					isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
+					if !(isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools()) {
+						ready, err := pvc.WaitOnReady("default", 5*time.Second, cfg.Timeout)
+						Expect(err).NotTo(HaveOccurred())
+						Expect(ready).To(Equal(true))
+					}
+				}
+
+				By("Checking a pod using the volume claim exists")
+				podName := "pv-pod" // should be the same as in pod-pvc.yaml
+				testPod, err := pod.Get(podName, "default", podLookupRetries)
+				if (testPod == nil || err != nil) {
+					By("Launching a pod using the volume claim")
+					testPod, err = pod.CreatePodFromFileWithRetry(filepath.Join(WorkloadDir, "pod-pvc.yaml"), podName, "default", 1*time.Second, cfg.Timeout)
+					Expect(err).NotTo(HaveOccurred())
+					ready, err := testPod.WaitOnReady(true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
 					Expect(err).NotTo(HaveOccurred())
 					Expect(ready).To(Equal(true))
 				}
-
-				By("Launching a pod using the volume claim")
-				podName := "pv-pod" // should be the same as in pod-pvc.yaml
-				testPod, err := pod.CreatePodFromFileWithRetry(filepath.Join(WorkloadDir, "pod-pvc.yaml"), podName, "default", 1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				ready, err := testPod.WaitOnReady(true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(ready).To(Equal(true))
 
 				By("Checking that the pod can access volume")
 				valid, err := testPod.ValidatePVC("/mnt/azure", 10, 10*time.Second)
@@ -1821,6 +1829,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(err).NotTo(HaveOccurred())
 
 				// Skip label validation for Azure Disk CSI driver since it currently doesn't apply any label to PV
+				isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
 				if !isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools() {
 					pvList, err := persistentvolume.Get()
 					Expect(err).NotTo(HaveOccurred())
@@ -1854,11 +1863,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					Expect(nodeZone == pvZone).To(Equal(true))
 				}
 
-				By("Cleaning up after ourselves")
-				err = testPod.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
-				err = pvc.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
+				if (cfg.CleanPVC) {
+					By("Cleaning up after ourselves")
+					err = testPod.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+					err = pvc.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+				}
 			} else {
 				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
 			}

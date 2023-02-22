@@ -1397,7 +1397,9 @@ func (p *Pod) curlURL(url string) error {
 }
 
 func (p *Pod) mkdir(mountPath string) error {
-	_, err := p.Exec("--", "mkdir", mountPath+"/"+testDir)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	newDir := fmt.Sprintf("%s-%d", testDir, r.Intn(99999))
+	_, err := p.Exec("--", "mkdir", mountPath+"/"+newDir)
 	if err != nil {
 		return err
 	}
@@ -1405,7 +1407,7 @@ func (p *Pod) mkdir(mountPath string) error {
 	if err != nil {
 		return err
 	}
-	if !strings.Contains(string(out), testDir) {
+	if !strings.Contains(string(out), newDir) {
 		return errors.Errorf("Unexpected output from ls: %s", string(out))
 	}
 	return nil
