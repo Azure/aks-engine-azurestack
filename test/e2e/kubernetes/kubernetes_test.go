@@ -1801,14 +1801,14 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					By("Creating a persistent volume claim")
 					pvc, err = persistentvolumeclaims.CreatePersistentVolumeClaimsFromFileWithRetry(filepath.Join(WorkloadDir, "pvc-azuredisk.yaml"), pvcName, "default", 3*time.Second, cfg.Timeout)
 					Expect(err).NotTo(HaveOccurred())
-					// Azure Disk CSI driver in zone-enabled clusters uses 'WaitForFirstConsumer' volume binding mode
-					// thus, pvc won't be available until a pod consumes it
-					isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
-					if !(isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools()) {
-						ready, err := pvc.WaitOnReady("default", 5*time.Second, cfg.Timeout)
-						Expect(err).NotTo(HaveOccurred())
-						Expect(ready).To(Equal(true))
-					}
+				}
+				// Azure Disk CSI driver in zone-enabled clusters uses 'WaitForFirstConsumer' volume binding mode
+				// thus, pvc won't be available until a pod consumes it
+				isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
+				if !(isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools()) {
+					ready, err := pvc.WaitOnReady("default", 5*time.Second, cfg.Timeout)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(ready).To(Equal(true))
 				}
 
 				By("Checking a pod using the volume claim exists")
@@ -1818,10 +1818,10 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					By("Launching a pod using the volume claim")
 					testPod, err = pod.CreatePodFromFileWithRetry(filepath.Join(WorkloadDir, "pod-pvc.yaml"), podName, "default", 1*time.Second, cfg.Timeout)
 					Expect(err).NotTo(HaveOccurred())
-					ready, err := testPod.WaitOnReady(true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
-					Expect(err).NotTo(HaveOccurred())
-					Expect(ready).To(Equal(true))
 				}
+				ready, err := testPod.WaitOnReady(true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(ready).To(Equal(true))
 
 				By("Checking that the pod can access volume")
 				valid, err := testPod.ValidatePVC("/mnt/azure", 10, 10*time.Second)
@@ -1829,7 +1829,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(err).NotTo(HaveOccurred())
 
 				// Skip label validation for Azure Disk CSI driver since it currently doesn't apply any label to PV
-				isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
 				if !isUsingAzureDiskCSIDriver && eng.ExpandedDefinition.Properties.HasZonesForAllAgentPools() {
 					pvList, err := persistentvolume.Get()
 					Expect(err).NotTo(HaveOccurred())
