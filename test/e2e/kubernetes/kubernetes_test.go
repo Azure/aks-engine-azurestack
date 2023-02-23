@@ -1794,14 +1794,10 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Skip("Skip PV test for clusters using unmanaged disks")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() &&
 				cfg.TestPVC {
-				By("Checking a persistent volume claim exists")
+				By("Creating a persistent volume claim")
 				pvcName := "azure-disk" // should be the same as in pvc-azuredisk.yaml
-				pvc, err := persistentvolumeclaims.Get(pvcName, "default")
-				if (pvc == nil || err != nil) {
-					By("Creating a persistent volume claim")
-					pvc, err = persistentvolumeclaims.CreatePersistentVolumeClaimsFromFileWithRetry(filepath.Join(WorkloadDir, "pvc-azuredisk.yaml"), pvcName, "default", 3*time.Second, cfg.Timeout)
-					Expect(err).NotTo(HaveOccurred())
-				}
+				pvc, err := persistentvolumeclaims.CreatePersistentVolumeClaimsFromFileWithRetry(filepath.Join(WorkloadDir, "pvc-azuredisk.yaml"), pvcName, "default", 3*time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
 				// Azure Disk CSI driver in zone-enabled clusters uses 'WaitForFirstConsumer' volume binding mode
 				// thus, pvc won't be available until a pod consumes it
 				isUsingAzureDiskCSIDriver, _ := eng.HasAddon("azuredisk-csi-driver")
@@ -1811,14 +1807,10 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					Expect(ready).To(Equal(true))
 				}
 
-				By("Checking a pod using the volume claim exists")
+				By("Launching a pod using the volume claim")
 				podName := "pv-pod" // should be the same as in pod-pvc.yaml
-				testPod, err := pod.Get(podName, "default", podLookupRetries)
-				if (testPod == nil || err != nil) {
-					By("Launching a pod using the volume claim")
-					testPod, err = pod.CreatePodFromFileWithRetry(filepath.Join(WorkloadDir, "pod-pvc.yaml"), podName, "default", 1*time.Second, cfg.Timeout)
-					Expect(err).NotTo(HaveOccurred())
-				}
+				testPod, err := pod.CreatePodFromFileWithRetry(filepath.Join(WorkloadDir, "pod-pvc.yaml"), podName, "default", 1*time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
 				ready, err := testPod.WaitOnReady(true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(ready).To(Equal(true))
