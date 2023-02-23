@@ -1826,11 +1826,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					Expect(nodeZone == pvZone).To(Equal(true))
 				}
 
-				By("Cleaning up after ourselves")
-				err = testPod.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
-				err = pvc.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
+				if (cfg.CleanPVC) {
+					By("Cleaning up after ourselves")
+					err = testPod.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+					err = pvc.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+				}
 			} else {
 				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
 			}
