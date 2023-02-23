@@ -49,6 +49,7 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/windows/nanoserver:1809",
                 "mcr.microsoft.com/oss/kubernetes/pause:1.4.1",
                 "mcr.microsoft.com/oss/kubernetes/pause:3.4.1",
+                "mcr.microsoft.com/oss/kubernetes/pause:3.8",
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.0.18",
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.1.14",
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.23.11",
@@ -61,7 +62,8 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/windows/servercore:2004",
                 "mcr.microsoft.com/windows/nanoserver:2004",
                 "mcr.microsoft.com/oss/kubernetes/pause:1.4.1",
-                "mcr.microsoft.com/oss/kubernetes/pause:3.4.1")
+                "mcr.microsoft.com/oss/kubernetes/pause:3.4.1",
+                "mcr.microsoft.com/oss/kubernetes/pause:3.8")
         }
         default {
             $imagesToPull = @()

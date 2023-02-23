@@ -331,7 +331,7 @@ const (
 	// https://github.com/containernetworking/plugins
 	CNIPluginVer = "v0.9.1"
 	// WindowsPauseImageVersion specifies version of Windows pause image
-	WindowsPauseImageVersion = "3.4.1"
+	WindowsPauseImageVersion = "3.8"
 	// DefaultAlwaysPullWindowsPauseImage is the default windowsProfile.AlwaysPullWindowsPauseImage value
 	DefaultAlwaysPullWindowsPauseImage = false
 )
