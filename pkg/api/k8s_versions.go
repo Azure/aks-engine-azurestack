@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	pauseImageReference                               string = "oss/kubernetes/pause:3.4.1"
+	pauseImageReference                               string = "oss/kubernetes/pause:3.8"
 	blobfuseFlexVolumeImageReference                  string = "mcr.microsoft.com/k8s/flexvolume/blobfuse-flexvolume:1.0.8"
 	smbFlexVolumeImageReference                       string = "mcr.microsoft.com/k8s/flexvolume/smb-flexvolume:1.0.2"
 	calicoTyphaImageReference                         string = "typha:v3.8.9"

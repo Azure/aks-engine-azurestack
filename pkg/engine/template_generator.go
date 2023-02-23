@@ -635,7 +635,7 @@ version = 2
 
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
-    sandbox_image = "mcr.microsoft.com/oss/kubernetes/pause:3.4.1"
+    sandbox_image = "mcr.microsoft.com/oss/kubernetes/pause:3.8"
     [plugins."io.containerd.grpc.v1.cri".cni]
     [plugins."io.containerd.grpc.v1.cri".containerd]
       default_runtime_name = "nvidia"
