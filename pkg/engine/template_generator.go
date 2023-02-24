@@ -742,6 +742,13 @@ version = 2
 		"GetKMSKeyvaultKeyCSEScriptFilepath": func() string {
 			return kmsKeyvaultKeyCSEScriptFilepath
 		},
+		"NeedsDefaultAPIServerAdmissionConfiguration": func() bool {
+			configFilePath := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig["--admission-control-config-file"]
+			return !containsCustomFile(masterCustomFiles(cs.Properties), configFilePath)
+		},
+		"GetAPIServerAdmissionConfigurationFilepath": func() string {
+			return apiServerAdmissionConfigurationFilepath
+		},
 		"HasPrivateAzureRegistryServer": func() bool {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateAzureRegistryServer != ""
 		},

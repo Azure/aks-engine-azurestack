@@ -997,10 +997,20 @@ func ExampleProperties_validateAddons() {
 		fmt.Printf("error in validateAddons: %s", err)
 	}
 
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = common.PodSecurityPolicyRemovedVersion
+	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
+	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
+		{Name: common.PodSecurityPolicyAddonName, Enabled: to.BoolPtr(true)},
+	}
+	if err := cs.Properties.validateAddons(true); err != nil {
+		fmt.Printf("error in validateAddons: %s", err)
+	}
+
 	// Output:
 	// level=warning msg="The rescheduler addon has been deprecated and disabled, it will be removed during this update"
 	// level=warning msg="The kube-dashboard addon is deprecated, we recommend you install the dashboard yourself, see https://github.com/kubernetes/dashboard"
 	// level=warning msg="The Azure CNI networkmonitor addon has been deprecated, it will be marked as disabled"
+	// level=warning msg="The PodSecurityPolicy admission was removed in Kubernetes v1.25+. The pod security standards will be enforced by the built-in PodSecurity admission controller instead. See https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md"
 }
 
 func ExampleProperties_validateLinuxProfile() {

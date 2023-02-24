@@ -597,25 +597,23 @@ See [here](https://kubernetes.io/docs/reference/generated/kube-apiserver/) for a
 
 Below is a list of apiserver options that AKS Engine will configure by default:
 
-| apiserver option                | default value                                                                                                                                                                                                                   |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| "--anonymous-auth"              | "false"                                                                                                                                                                                                                         |
-| "--admission-control"           | "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota" (Kubernetes versions prior to 1.9.0)                                                                                                          |
-| "--enable-admission-plugins"`*` | "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,ExtendedResourceToleration" (Kubernetes versions 1.9.0 and later) |
-| "--authorization-mode"          | "Node", "RBAC" (_the latter if enabledRbac is true_)                                                                                                                                                                            |
-| "--audit-log-maxage"            | "30"                                                                                                                                                                                                                            |
-| "--audit-log-maxbackup"         | "10"                                                                                                                                                                                                                            |
-| "--audit-log-maxsize"           | "100"                                                                                                                                                                                                                           |
-| "--feature-gates"               | No default (can be a comma-separated list)                                                                                                                                                                                      |
-| "--oidc-username-claim"         | "oid" (_if has AADProfile_)                                                                                                                                                                                                     |
-| "--oidc-groups-claim"           | "groups" (_if has AADProfile_)                                                                                                                                                                                                  |
-| "--oidc-client-id"              | _calculated value that represents OID client ID_ (_if has AADProfile_)                                                                                                                                                          |
-| "--oidc-issuer-url"             | _calculated value that represents OID issuer URL_ (_if has AADProfile_)                                                                                                                                                         |
-| "--service-account-issuer"             | "https://kubernetes.default.svc.cluster.local" (Kubernetes v1.20.0 and greater only) |
-| "--service-account-signing-key-file"             | "/etc/kubernetes/certs/apiserver.key" (Kubernetes v1.20.0 and greater only) |
-| "--v"                           | "2" |
-
-`*` In Kubernetes versions 1.10.0 and later the `--admission-control` flag is deprecated and `--enable-admission-plugins` is used instead.
+| apiserver option                     | default value                                                                                         |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| "--admission-control-config-file"    | "/etc/kubernetes/apiserver-admission-control.yaml" (default content overridable through _CustomFiles_) |
+| "--anonymous-auth"                   | "false"                                                                                               |
+| "--enable-admission-plugins"         | "ExtendedResourceToleration" ("PodSecurityPolicy" if the "pod-security-policy" addon is enabled)      |
+| "--authorization-mode"               | "Node", "RBAC" (_the latter if enabledRbac is true_)                                                  |
+| "--audit-log-maxage"                 | "30"                                                                                                  |
+| "--audit-log-maxbackup"              | "10"                                                                                                  |
+| "--audit-log-maxsize"                | "100"                                                                                                 |
+| "--feature-gates"                    | No default (can be a comma-separated list)                                                            |
+| "--oidc-username-claim"              | "oid" (_if has AADProfile_)                                                                           |
+| "--oidc-groups-claim"                | "groups" (_if has AADProfile_)                                                                        |
+| "--oidc-client-id"                   | _calculated value that represents OID client ID_ (_if has AADProfile_)                                |
+| "--oidc-issuer-url"                  | _calculated value that represents OID issuer URL_ (_if has AADProfile_)                               |
+| "--service-account-issuer"           | "https://kubernetes.default.svc.cluster.local" (Kubernetes v1.20.0 and greater only)                  |
+| "--service-account-signing-key-file" | "/etc/kubernetes/certs/apiserver.key" (Kubernetes v1.20.0 and greater only)                           |
+| "--v"                                | "2"                                                                                                   |
 
 Below is a list of apiserver options that are _not_ currently user-configurable, either because a higher order configuration vector is available that enforces apiserver configuration, or because a static configuration is required to build a functional cluster:
 

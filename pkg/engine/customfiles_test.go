@@ -129,3 +129,57 @@ func TestCustomFilesIntoReaders(t *testing.T) {
 		t.Errorf("expected length of CustomFileReader slice to be %d, but got %d instead", 2, len(cfr))
 	}
 }
+
+func TestContainsCustomFile(t *testing.T) {
+	cases := []struct {
+		name        string
+		customFiles []api.CustomFile
+		filepath    string
+		expected    bool
+	}{
+		{
+			"filepath not in customFiles",
+			[]api.CustomFile{
+				{
+					Source: "/src/path/to/file.yaml",
+					Dest:   "/dst/path/to/file.yaml",
+				},
+			},
+			"/file/not/in/custom/files.yaml",
+			false,
+		},
+		{
+			"filepath in customFiles",
+			[]api.CustomFile{
+				{
+					Source: "/src/path/to/file.yaml",
+					Dest:   "/dst/path/to/file.yaml",
+				},
+			},
+			"/dst/path/to/file.yaml",
+			true,
+		},
+		{
+			"filepath not in customFiles, different casing",
+			[]api.CustomFile{
+				{
+					Source: "/src/path/to/file.yaml",
+					Dest:   "/dst/path/to/file.yaml",
+				},
+			},
+			"/dst/PATH/to/file.yaml",
+			false,
+		},
+	}
+
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			actual := containsCustomFile(c.customFiles, c.filepath)
+			if actual != c.expected {
+				t.Fatalf("expected hasCustomFile to return '%t', but instead got '%t", c.expected, actual)
+			}
+		})
+	}
+}

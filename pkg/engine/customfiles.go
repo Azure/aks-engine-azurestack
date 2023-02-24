@@ -74,3 +74,12 @@ func getBase64CustomFile(source io.Reader) string {
 	cfStr = strings.Replace(cfStr, "\r\n", "\n", -1)
 	return getBase64EncodedGzippedCustomScriptFromStr(cfStr)
 }
+
+func containsCustomFile(customFiles []api.CustomFile, filepath string) bool {
+	for _, cu := range customFiles {
+		if cu.Dest == filepath {
+			return true
+		}
+	}
+	return false
+}

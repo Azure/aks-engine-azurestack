@@ -733,9 +733,10 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		defaultKubeProxyAddonsConfig.Config["metrics-bind-address"] = "::1"
 	}
 
+	pspAddonEnabled := !common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion)
 	defaultPodSecurityPolicyAddonsConfig := KubernetesAddon{
 		Name:    common.PodSecurityPolicyAddonName,
-		Enabled: to.BoolPtr(true),
+		Enabled: to.BoolPtr(pspAddonEnabled),
 	}
 
 	defaultAuditPolicyAddonsConfig := KubernetesAddon{
@@ -1043,8 +1044,12 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		o.KubernetesConfig.Addons = append(o.KubernetesConfig.Addons[:i], o.KubernetesConfig.Addons[i+1:]...)
 	}
 
-	// Enable pod-security-policy addon during upgrade scenarios, unless explicitly disabled
-	if isUpgrade && !o.KubernetesConfig.IsAddonDisabled(common.PodSecurityPolicyAddonName) {
+	// Enable pod-security-policy addon during upgrade scenarios, unless explicitly disabled or v1.25+
+	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
+		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.PodSecurityPolicyAddonName); i > -1 {
+			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(false)
+		}
+	} else if isUpgrade && !o.KubernetesConfig.IsAddonDisabled(common.PodSecurityPolicyAddonName) {
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.PodSecurityPolicyAddonName); i > -1 {
 			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(true)
 		}

@@ -398,6 +398,15 @@ write_files:
     {{CloudInitData "kmsKeyvaultKeyScript"}}
 {{end}}
 
+{{- if NeedsDefaultAPIServerAdmissionConfiguration}}
+- path: {{GetAPIServerAdmissionConfigurationFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "apiServerAdmissionConfiguration"}}
+{{end}}
+
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER
 
 MASTER_CUSTOM_FILES_PLACEHOLDER
