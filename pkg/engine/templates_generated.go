@@ -21155,7 +21155,7 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
       "type": "string"
     },
     "containerdVersion": {
-      "defaultValue": "1.5.13",
+      "defaultValue": "1.5.16",
       "metadata": {
         "description": "The Azure containerd build version"
       },
@@ -21175,7 +21175,8 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
          "1.4.9",
          "1.4.11",
          "1.5.11",
-         "1.5.13"
+         "1.5.13",
+         "1.5.16"
        ],
       "type": "string"
     },
