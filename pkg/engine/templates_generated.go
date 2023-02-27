@@ -34,7 +34,7 @@
 // ../../parts/k8s/addons/smb-flexvolume.yaml
 // ../../parts/k8s/addons/tiller.yaml
 // ../../parts/k8s/armparameters.t
-// ../../parts/k8s/cloud-init/artifacts/apiserver-admission-config.yaml
+// ../../parts/k8s/cloud-init/artifacts/apiserver-admission-control.yaml
 // ../../parts/k8s/cloud-init/artifacts/apiserver-monitor.service
 // ../../parts/k8s/cloud-init/artifacts/apt-preferences
 // ../../parts/k8s/cloud-init/artifacts/auditd-rules
@@ -15916,7 +15916,7 @@ func k8sArmparametersT() (*asset, error) {
 	return a, nil
 }
 
-var _k8sCloudInitArtifactsApiserverAdmissionConfigYaml = []byte(`apiVersion: apiserver.config.k8s.io/v1
+var _k8sCloudInitArtifactsApiserverAdmissionControlYaml = []byte(`apiVersion: apiserver.config.k8s.io/v1
 kind: AdmissionConfiguration
 plugins:
   - name: PodSecurity
@@ -15939,17 +15939,17 @@ plugins:
         namespaces: [kube-system]
 `)
 
-func k8sCloudInitArtifactsApiserverAdmissionConfigYamlBytes() ([]byte, error) {
-	return _k8sCloudInitArtifactsApiserverAdmissionConfigYaml, nil
+func k8sCloudInitArtifactsApiserverAdmissionControlYamlBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsApiserverAdmissionControlYaml, nil
 }
 
-func k8sCloudInitArtifactsApiserverAdmissionConfigYaml() (*asset, error) {
-	bytes, err := k8sCloudInitArtifactsApiserverAdmissionConfigYamlBytes()
+func k8sCloudInitArtifactsApiserverAdmissionControlYaml() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsApiserverAdmissionControlYamlBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/apiserver-admission-config.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/apiserver-admission-control.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -24939,7 +24939,7 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/addons/smb-flexvolume.yaml":                                     k8sAddonsSmbFlexvolumeYaml,
 	"k8s/addons/tiller.yaml":                                             k8sAddonsTillerYaml,
 	"k8s/armparameters.t":                                                k8sArmparametersT,
-	"k8s/cloud-init/artifacts/apiserver-admission-config.yaml":           k8sCloudInitArtifactsApiserverAdmissionConfigYaml,
+	"k8s/cloud-init/artifacts/apiserver-admission-control.yaml":          k8sCloudInitArtifactsApiserverAdmissionControlYaml,
 	"k8s/cloud-init/artifacts/apiserver-monitor.service":                 k8sCloudInitArtifactsApiserverMonitorService,
 	"k8s/cloud-init/artifacts/apt-preferences":                           k8sCloudInitArtifactsAptPreferences,
 	"k8s/cloud-init/artifacts/auditd-rules":                              k8sCloudInitArtifactsAuditdRules,
@@ -25096,7 +25096,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"armparameters.t": {k8sArmparametersT, map[string]*bintree{}},
 		"cloud-init": {nil, map[string]*bintree{
 			"artifacts": {nil, map[string]*bintree{
-				"apiserver-admission-config.yaml":           {k8sCloudInitArtifactsApiserverAdmissionConfigYaml, map[string]*bintree{}},
+				"apiserver-admission-control.yaml":          {k8sCloudInitArtifactsApiserverAdmissionControlYaml, map[string]*bintree{}},
 				"apiserver-monitor.service":                 {k8sCloudInitArtifactsApiserverMonitorService, map[string]*bintree{}},
 				"apt-preferences":                           {k8sCloudInitArtifactsAptPreferences, map[string]*bintree{}},
 				"auditd-rules":                              {k8sCloudInitArtifactsAuditdRules, map[string]*bintree{}},
