@@ -11,8 +11,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
 	"regexp"
 	"text/template"
@@ -115,7 +115,7 @@ func CreateWindowsJobFromTemplate(filename, name, namespace string, windowsTestI
 		return nil, err
 	}
 
-	tempfile, err := ioutil.TempFile("", "*.yaml")
+	tempfile, err := os.CreateTemp("", "*.yaml")
 	if err != nil {
 		return nil, err
 	}
