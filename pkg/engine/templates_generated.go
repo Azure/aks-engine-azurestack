@@ -34,6 +34,7 @@
 // ../../parts/k8s/addons/smb-flexvolume.yaml
 // ../../parts/k8s/addons/tiller.yaml
 // ../../parts/k8s/armparameters.t
+// ../../parts/k8s/cloud-init/artifacts/apiserver-admission-control.yaml
 // ../../parts/k8s/cloud-init/artifacts/apiserver-monitor.service
 // ../../parts/k8s/cloud-init/artifacts/apt-preferences
 // ../../parts/k8s/cloud-init/artifacts/auditd-rules
@@ -15915,6 +15916,44 @@ func k8sArmparametersT() (*asset, error) {
 	return a, nil
 }
 
+var _k8sCloudInitArtifactsApiserverAdmissionControlYaml = []byte(`apiVersion: apiserver.config.k8s.io/v1
+kind: AdmissionConfiguration
+plugins:
+  - name: PodSecurity
+    configuration:
+      apiVersion: pod-security.admission.config.k8s.io/v1{{- if not (IsKubernetesVersionGe "1.25.0")}}beta1{{end}}
+      kind: PodSecurityConfiguration
+      defaults:
+        {{- /* allow everything by default, back-compatible */}}
+        enforce: privileged
+        enforce-version: latest
+        {{- /* cli warning if pod does not enforce the baseline stardard */}}
+        warn: baseline
+        warn-version: latest
+        {{- /* audit log entry if pod does not enforce the restricted stardard */}}
+        audit: restricted
+        audit-version: latest
+      exemptions:
+        usernames: []
+        runtimeClasses: []
+        namespaces: [kube-system]
+`)
+
+func k8sCloudInitArtifactsApiserverAdmissionControlYamlBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsApiserverAdmissionControlYaml, nil
+}
+
+func k8sCloudInitArtifactsApiserverAdmissionControlYaml() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsApiserverAdmissionControlYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/apiserver-admission-control.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _k8sCloudInitArtifactsApiserverMonitorService = []byte(`[Unit]
 Description=a script that checks apiserver health and restarts if needed
 After=kubelet.service
@@ -16649,7 +16688,7 @@ ensureAddons() {
 {{- if IsAzurePolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get namespace gatekeeper-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
-{{- if not HasCustomPodSecurityPolicy}}
+{{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get podsecuritypolicy privileged restricted || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
   replaceAddonsInit
@@ -20130,6 +20169,15 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "kmsKeyvaultKeyScript"}}
+{{end}}
+
+{{- if NeedsDefaultAPIServerAdmissionConfiguration}}
+- path: {{GetAPIServerAdmissionConfigurationFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "apiServerAdmissionConfiguration"}}
 {{end}}
 
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER
@@ -24892,6 +24940,7 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/addons/smb-flexvolume.yaml":                                     k8sAddonsSmbFlexvolumeYaml,
 	"k8s/addons/tiller.yaml":                                             k8sAddonsTillerYaml,
 	"k8s/armparameters.t":                                                k8sArmparametersT,
+	"k8s/cloud-init/artifacts/apiserver-admission-control.yaml":          k8sCloudInitArtifactsApiserverAdmissionControlYaml,
 	"k8s/cloud-init/artifacts/apiserver-monitor.service":                 k8sCloudInitArtifactsApiserverMonitorService,
 	"k8s/cloud-init/artifacts/apt-preferences":                           k8sCloudInitArtifactsAptPreferences,
 	"k8s/cloud-init/artifacts/auditd-rules":                              k8sCloudInitArtifactsAuditdRules,
@@ -25048,20 +25097,21 @@ var _bintree = &bintree{nil, map[string]*bintree{
 		"armparameters.t": {k8sArmparametersT, map[string]*bintree{}},
 		"cloud-init": {nil, map[string]*bintree{
 			"artifacts": {nil, map[string]*bintree{
-				"apiserver-monitor.service": {k8sCloudInitArtifactsApiserverMonitorService, map[string]*bintree{}},
-				"apt-preferences":           {k8sCloudInitArtifactsAptPreferences, map[string]*bintree{}},
-				"auditd-rules":              {k8sCloudInitArtifactsAuditdRules, map[string]*bintree{}},
-				"cis.sh":                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
-				"cse_config.sh":             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
-				"cse_customcloud.sh":        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
-				"cse_customcloud_cni.sh":    {k8sCloudInitArtifactsCse_customcloud_cniSh, map[string]*bintree{}},
-				"cse_helpers.sh":            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
-				"cse_install.sh":            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
-				"cse_main.sh":               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},
-				"cse_stig_ubuntu2004.sh":    {k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, map[string]*bintree{}},
-				"default-grub":              {k8sCloudInitArtifactsDefaultGrub, map[string]*bintree{}},
-				"dhcpv6.service":            {k8sCloudInitArtifactsDhcpv6Service, map[string]*bintree{}},
-				"docker-monitor.service":    {k8sCloudInitArtifactsDockerMonitorService, map[string]*bintree{}},
+				"apiserver-admission-control.yaml":          {k8sCloudInitArtifactsApiserverAdmissionControlYaml, map[string]*bintree{}},
+				"apiserver-monitor.service":                 {k8sCloudInitArtifactsApiserverMonitorService, map[string]*bintree{}},
+				"apt-preferences":                           {k8sCloudInitArtifactsAptPreferences, map[string]*bintree{}},
+				"auditd-rules":                              {k8sCloudInitArtifactsAuditdRules, map[string]*bintree{}},
+				"cis.sh":                                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
+				"cse_config.sh":                             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
+				"cse_customcloud.sh":                        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
+				"cse_customcloud_cni.sh":                    {k8sCloudInitArtifactsCse_customcloud_cniSh, map[string]*bintree{}},
+				"cse_helpers.sh":                            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
+				"cse_install.sh":                            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
+				"cse_main.sh":                               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},
+				"cse_stig_ubuntu2004.sh":                    {k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, map[string]*bintree{}},
+				"default-grub":                              {k8sCloudInitArtifactsDefaultGrub, map[string]*bintree{}},
+				"dhcpv6.service":                            {k8sCloudInitArtifactsDhcpv6Service, map[string]*bintree{}},
+				"docker-monitor.service":                    {k8sCloudInitArtifactsDockerMonitorService, map[string]*bintree{}},
 				"docker_clear_mount_propagation_flags.conf": {k8sCloudInitArtifactsDocker_clear_mount_propagation_flagsConf, map[string]*bintree{}},
 				"enable-dhcpv6.sh":                          {k8sCloudInitArtifactsEnableDhcpv6Sh, map[string]*bintree{}},
 				"etc-issue":                                 {k8sCloudInitArtifactsEtcIssue, map[string]*bintree{}},

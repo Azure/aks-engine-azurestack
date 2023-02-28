@@ -1,0 +1,21 @@
+apiVersion: apiserver.config.k8s.io/v1
+kind: AdmissionConfiguration
+plugins:
+  - name: PodSecurity
+    configuration:
+      apiVersion: pod-security.admission.config.k8s.io/v1{{- if not (IsKubernetesVersionGe "1.25.0")}}beta1{{end}}
+      kind: PodSecurityConfiguration
+      defaults:
+        {{- /* allow everything by default, back-compatible */}}
+        enforce: privileged
+        enforce-version: latest
+        {{- /* cli warning if pod does not enforce the baseline stardard */}}
+        warn: baseline
+        warn-version: latest
+        {{- /* audit log entry if pod does not enforce the restricted stardard */}}
+        audit: restricted
+        audit-version: latest
+      exemptions:
+        usernames: []
+        runtimeClasses: []
+        namespaces: [kube-system]

@@ -798,6 +798,12 @@ func (a *Properties) validateAddons(isUpdate bool) error {
 					if !common.IsKubernetesVersionGe(a.OrchestratorProfile.OrchestratorVersion, "1.16.0") {
 						return errors.Errorf("%s add-on can only be used in 1.16+", addon.Name)
 					}
+				case common.PodSecurityPolicyAddonName:
+					if common.ShouldDisablePodSecurityPolicyAddon(a.OrchestratorProfile.OrchestratorVersion) {
+						log.Warn("The PodSecurityPolicy admission was removed in Kubernetes v1.25+. " +
+							"The pod security standards will be enforced by the built-in PodSecurity admission controller instead. " +
+							"See https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
+					}
 				case common.AzureArcOnboardingAddonName:
 					if err := addon.validateArcAddonConfig(); err != nil {
 						return err

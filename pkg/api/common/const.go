@@ -64,6 +64,8 @@ const (
 	KubernetesDefaultReleaseAzureStack string = "1.23"
 	// KubernetesDefaultReleaseWindowsAzureStack is the default Kubernetes release for Windows on Azure Stack
 	KubernetesDefaultReleaseWindowsAzureStack string = "1.23"
+	// PodSecurityPolicyRemovedVersion is the first Kubernetes version that does not includes the PSP admission plugin
+	PodSecurityPolicyRemovedVersion = "1.25.0"
 )
 
 const LegacyControlPlaneVMPrefix string = "k8s-master"

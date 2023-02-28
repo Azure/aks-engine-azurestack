@@ -624,3 +624,8 @@ var dockerAllConfigString = `{
         }
     }
 }`
+
+// ShouldDisablePodSecurityPolicyAddon returns true if the PodSecurityPolicyAddon should be forcefully disabled
+func ShouldDisablePodSecurityPolicyAddon(version string) bool {
+	return IsKubernetesVersionGe(version, PodSecurityPolicyRemovedVersion)
+}

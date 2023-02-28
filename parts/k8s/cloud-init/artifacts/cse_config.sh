@@ -439,7 +439,7 @@ ensureAddons() {
 {{- if IsAzurePolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get namespace gatekeeper-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
-{{- if not HasCustomPodSecurityPolicy}}
+{{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get podsecuritypolicy privileged restricted || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
   replaceAddonsInit

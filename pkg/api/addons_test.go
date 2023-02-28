@@ -3984,6 +3984,106 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: omitFromAddons([]string{common.PodSecurityPolicyAddonName}, getDefaultAddons("1.15.4", "", common.KubernetesImageBaseTypeMCR)),
 		},
 		{
+			name: "pod-security-policy enabled by default for v1.25- deployment",
+			cs: &ContainerService{
+				Properties: &Properties{
+					OrchestratorProfile: &OrchestratorProfile{
+						OrchestratorVersion: "1.24.0",
+						KubernetesConfig: &KubernetesConfig{
+							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
+							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
+							KubeletConfig: map[string]string{
+								"--cluster-domain": "cluster.local",
+							},
+							ClusterSubnet: DefaultKubernetesSubnet,
+							ProxyMode:     KubeProxyModeIPTables,
+							NetworkPlugin: NetworkPluginAzure,
+						},
+					},
+				},
+			},
+			isUpgrade:      false,
+			expectedAddons: getDefaultAddons("1.24.0", "", common.KubernetesImageBaseTypeMCR),
+		},
+		{
+			name: "pod-security-policy disabled by default for v1.25+ deployment",
+			cs: &ContainerService{
+				Properties: &Properties{
+					OrchestratorProfile: &OrchestratorProfile{
+						OrchestratorVersion: common.PodSecurityPolicyRemovedVersion,
+						KubernetesConfig: &KubernetesConfig{
+							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
+							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
+							KubeletConfig: map[string]string{
+								"--cluster-domain": "cluster.local",
+							},
+							ClusterSubnet: DefaultKubernetesSubnet,
+							ProxyMode:     KubeProxyModeIPTables,
+							NetworkPlugin: NetworkPluginAzure,
+						},
+					},
+				},
+			},
+			isUpgrade:      false,
+			expectedAddons: omitFromAddons([]string{common.PodSecurityPolicyAddonName}, getDefaultAddons(common.PodSecurityPolicyRemovedVersion, "", common.KubernetesImageBaseTypeMCR)),
+		},
+		{
+			name: "pod-security-policy forcefully disabled for v1.25+ deployment",
+			cs: &ContainerService{
+				Properties: &Properties{
+					OrchestratorProfile: &OrchestratorProfile{
+						OrchestratorVersion: common.PodSecurityPolicyRemovedVersion,
+						KubernetesConfig: &KubernetesConfig{
+							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
+							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
+							KubeletConfig: map[string]string{
+								"--cluster-domain": "cluster.local",
+							},
+							ClusterSubnet: DefaultKubernetesSubnet,
+							ProxyMode:     KubeProxyModeIPTables,
+							NetworkPlugin: NetworkPluginAzure,
+							Addons: []KubernetesAddon{
+								{
+									Name:    common.PodSecurityPolicyAddonName,
+									Enabled: to.BoolPtr(true),
+								},
+							},
+						},
+					},
+				},
+			},
+			isUpgrade:      false,
+			expectedAddons: omitFromAddons([]string{common.PodSecurityPolicyAddonName}, getDefaultAddons(common.PodSecurityPolicyRemovedVersion, "", common.KubernetesImageBaseTypeMCR)),
+		},
+		{
+			name: "pod-security-policy forcefully disabled for v1.25+ upgrade",
+			cs: &ContainerService{
+				Properties: &Properties{
+					OrchestratorProfile: &OrchestratorProfile{
+						OrchestratorVersion: common.PodSecurityPolicyRemovedVersion,
+						KubernetesConfig: &KubernetesConfig{
+							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
+							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
+							KubeletConfig: map[string]string{
+								"--cluster-domain": "cluster.local",
+							},
+							ClusterSubnet: DefaultKubernetesSubnet,
+							ProxyMode:     KubeProxyModeIPTables,
+							NetworkPlugin: NetworkPluginAzure,
+							Addons: []KubernetesAddon{
+								{
+									Name:    common.PodSecurityPolicyAddonName,
+									Enabled: to.BoolPtr(true),
+								},
+							},
+						},
+					},
+				},
+			},
+			isUpgrade:      true,
+			expectedAddons: omitFromAddons([]string{common.PodSecurityPolicyAddonName}, getDefaultAddons(common.PodSecurityPolicyRemovedVersion, "", common.KubernetesImageBaseTypeMCR)),
+		},
+		{
 			name: "audit-policy disabled",
 			cs: &ContainerService{
 				Properties: &Properties{
@@ -5111,7 +5211,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 		},
 		{
 			Name:    common.PodSecurityPolicyAddonName,
-			Enabled: to.BoolPtr(true),
+			Enabled: to.BoolPtr(!common.ShouldDisablePodSecurityPolicyAddon(version)),
 		},
 	}
 

@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	policyv1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -26,6 +27,8 @@ type Client interface {
 	ListNodesByOptions(opts metav1.ListOptions) (*v1.NodeList, error)
 	// ListServiceAccounts returns a list of Service Accounts in a namespace
 	ListServiceAccounts(namespace string) (*v1.ServiceAccountList, error)
+	// ListPodSecurityPolices returns the list of Pod Security Policies
+	ListPodSecurityPolices(opts metav1.ListOptions) (*policyv1.PodSecurityPolicyList, error)
 	// GetDaemonSet returns details about DaemonSet with passed in name.
 	GetDaemonSet(namespace, name string) (*appsv1.DaemonSet, error)
 	// GetDeployment returns a given deployment in a namespace.
