@@ -16,7 +16,7 @@ through the `PodSecurity` admission controller should use a combination of:
 
 ## Migrating from PSP
 
-Migrating from the PodSecurityPolicy admission is a pre-requisite to upgrade to Kubernetes v1.25+.
+Migrating from the PodSecurityPolicy admission is a **pre-requisite** to upgrade to Kubernetes v1.25+.
 
 The [step-by-step guide][Migration] published by the Kubernetes project is a good resource
 on how to migrate from the PodSecurityPolicy admission
@@ -24,8 +24,6 @@ if the target cluster includes customizations beyond AKS Engine's defaults.
 
 If the target AKS Engine-based cluster only includes the configuration applied
 by the `"pod-security-policy"` addon, then there are two migration alternatives:
-
-<!-- then the migration process can be reduced to this **ordered** sequence: -->
 
 ### Option 1: Migrate using `aks-engine-azurestack upgrade`
 
@@ -50,9 +48,10 @@ To migrate using a cluster upgrade operation, the API Model should be updated in
 }
 ```
 
-To speed up the upgrade process,
-perform a "forced" upgrade to the cluster's current version (needs flag `--force`)
-of the master nodes only (needs flag `--control-plane-only`).
+To speed up the upgrade process, use the `--control-plane-only`.
+
+To validate pod security before upgrading to Kubernetes v1.25,
+perform a "forced" upgrade to the cluster's current version (needs flag `--force`).
 
 ```bash
 aks-engine-azurestack upgrade \
