@@ -6,7 +6,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
@@ -191,7 +190,7 @@ func (glc *getLogsCmd) loadAPIModel() (err error) {
 
 func (glc *getLogsCmd) init() (err error) {
 	if glc.linuxScriptPath != "" {
-		sc, err := ioutil.ReadFile(glc.linuxScriptPath)
+		sc, err := os.ReadFile(glc.linuxScriptPath)
 		if err != nil {
 			return errors.Wrapf(err, "error reading log collection script %s", glc.linuxScriptPath)
 		}
@@ -204,7 +203,7 @@ func (glc *getLogsCmd) init() (err error) {
 		PrivateKeyPath: glc.linuxSSHPrivateKeyPath,
 	}
 	if glc.windowsScriptPath != "" {
-		sc, err := ioutil.ReadFile(glc.windowsScriptPath)
+		sc, err := os.ReadFile(glc.windowsScriptPath)
 		if err != nil {
 			return errors.Wrapf(err, "error reading log collection script %s", glc.windowsScriptPath)
 		}

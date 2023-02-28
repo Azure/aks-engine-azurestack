@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -325,7 +324,7 @@ func getCompletionCmd(root *cobra.Command) *cobra.Command {
 
 func writeCustomCloudProfile(cs *api.ContainerService) error {
 
-	tmpFile, err := ioutil.TempFile("", "azurestackcloud.json")
+	tmpFile, err := os.CreateTemp("", "azurestackcloud.json")
 	tmpFileName := tmpFile.Name()
 	if err != nil {
 		return err
@@ -337,7 +336,7 @@ func writeCustomCloudProfile(cs *api.ContainerService) error {
 	if err != nil {
 		return err
 	}
-	if err = ioutil.WriteFile(tmpFileName, []byte(content), os.ModeAppend); err != nil {
+	if err = os.WriteFile(tmpFileName, []byte(content), os.ModeAppend); err != nil {
 		return err
 	}
 
