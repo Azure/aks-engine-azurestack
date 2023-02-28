@@ -27,6 +27,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	policyv1beta1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -86,6 +87,7 @@ type MockKubernetesClient struct {
 	FailListPods              bool
 	FailListNodes             bool
 	FailListServiceAccounts   bool
+	FailListPodSecurityPolicy bool
 	FailGetNode               bool
 	UpdateNodeFunc            func(*v1.Node) (*v1.Node, error)
 	GetNodeFunc               func(name string) (*v1.Node, error)
@@ -102,6 +104,7 @@ type MockKubernetesClient struct {
 	ShouldSupportEviction     bool
 	PodsList                  *v1.PodList
 	ServiceAccountList        *v1.ServiceAccountList
+	PodSecurityPolicyList     *policyv1beta1.PodSecurityPolicyList
 	FailGetDeploymentCount    int
 	FailUpdateDeploymentCount int
 }
@@ -357,6 +360,24 @@ func (mkc *MockKubernetesClient) ListServiceAccounts(namespace string) (*v1.Serv
 	saList.Items = append(saList.Items, *sa)
 	saList.Items = append(saList.Items, *sa2)
 	return saList, nil
+}
+
+// ListPodSecurityPolices returns the list of Pod Security Policies
+func (mkc *MockKubernetesClient) ListPodSecurityPolices(opts metav1.ListOptions) (*policyv1beta1.PodSecurityPolicyList, error) {
+	if mkc.FailListPodSecurityPolicy {
+		return nil, errors.New("ListPodSecurityPolices failed")
+	}
+	if mkc.PodSecurityPolicyList != nil {
+		return mkc.PodSecurityPolicyList, nil
+	}
+	psp1 := &policyv1beta1.PodSecurityPolicy{}
+	psp1.Name = "privileged"
+	psp2 := &policyv1beta1.PodSecurityPolicy{}
+	psp2.Name = "restricted"
+	pspList := &policyv1beta1.PodSecurityPolicyList{}
+	pspList.Items = append(pspList.Items, *psp1)
+	pspList.Items = append(pspList.Items, *psp2)
+	return pspList, nil
 }
 
 // GetNode returns details about node with passed in name

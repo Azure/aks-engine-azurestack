@@ -11,6 +11,7 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	policy "k8s.io/api/policy/v1beta1"
+	policyv1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -82,6 +83,11 @@ func (c *ClientSetClient) ListServiceAccounts(namespace string) (*v1.ServiceAcco
 // ListServiceAccountsByOptions returns a list of Service Accounts in the provided namespace.
 func (c *ClientSetClient) ListServiceAccountsByOptions(namespace string, opts metav1.ListOptions) (*v1.ServiceAccountList, error) {
 	return c.clientset.CoreV1().ServiceAccounts(namespace).List(context.TODO(), opts)
+}
+
+// ListPodSecurityPolices returns the list of Pod Security Policies
+func (c *ClientSetClient) ListPodSecurityPolices(opts metav1.ListOptions) (*policyv1.PodSecurityPolicyList, error) {
+	return c.clientset.PolicyV1beta1().PodSecurityPolicies().List(context.TODO(), opts)
 }
 
 // ListDeployments returns a list of deployments in the provided namespace.
