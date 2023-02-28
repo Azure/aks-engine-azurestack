@@ -43,6 +43,7 @@ type Upgrader struct {
 	AKSEngineVersion   string
 	CurrentVersion     string
 	ControlPlaneOnly   bool
+	Force              bool
 }
 
 type vmStatus int
@@ -79,7 +80,12 @@ func (ku *Upgrader) Init(translator *i18n.Translator, logger *logrus.Entry, clus
 // RunUpgrade runs the upgrade pipeline
 func (ku *Upgrader) RunUpgrade() error {
 	if err := ku.validatePodSecurityPolices(); err != nil {
-		return err
+		if ku.Force {
+			ku.logger.Warning("Error validating PodSecurityPolices")
+		} else {
+			ku.logger.Warning("Error validating PodSecurityPolices. Consider using --force if you really want to proceed")
+			return errors.Wrap(err, "error validating PodSecurityPolices")
+		}
 	}
 	controlPlaneUpgradeTimeout := perNodeUpgradeTimeout
 	if ku.ClusterTopology.DataModel.Properties.MasterProfile.Count > 0 {
@@ -952,11 +958,11 @@ func (ku *Upgrader) validatePodSecurityPolices() error {
 	ku.logger.Debug("Checking no user-created PodSecurityPolicies still present.")
 	client, err := ku.getKubernetesClient(getResourceTimeout)
 	if err != nil {
-		return errors.Wrap(err, "Error getting Kubernetes client")
+		return errors.Wrap(err, "error getting Kubernetes client")
 	}
 	policies, err := client.ListPodSecurityPolices(metav1.ListOptions{})
 	if err != nil {
-		return errors.Wrap(err, "Error listing PodSecurityPolices")
+		return errors.Wrap(err, "error listing PodSecurityPolices")
 	}
 	next := ku.DataModel.Properties.OrchestratorProfile.OrchestratorVersion
 	return validateUserCreatedPodSecurityPolices(ku.CurrentVersion, next, policies.Items)
@@ -971,15 +977,15 @@ func validateUserCreatedPodSecurityPolices(currentVersion, upgradeVersion string
 		return nil
 	}
 	if len(policies) > 2 {
-		return errors.New("User-created PodSecurityPolices found in the cluster (try 'kubectl get psp'). " +
-			"Migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+" +
-			"See https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
+		return errors.New("user-created PodSecurityPolices found in the cluster (try 'kubectl get psp'), " +
+			"migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+, " +
+			"see https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
 	}
 	for _, policy := range policies {
 		if policy.Name != "privileged" && policy.Name != "restricted" {
-			return errors.New("User-created PodSecurityPolices found in the cluster (try 'kubectl get psp'). " +
-				"Migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+" +
-				"See https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
+			return errors.New("user-created PodSecurityPolices found in the cluster (try 'kubectl get psp'), " +
+				"migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+, " +
+				"see https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
 		}
 	}
 	return nil
