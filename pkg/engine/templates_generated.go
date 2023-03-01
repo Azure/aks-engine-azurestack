@@ -16672,16 +16672,23 @@ fi
 }
 
 ensureKubeAddonManager() {
-  {{/* Wait 5 mins for kube-addon-manager to become Ready */}}
-  if ! retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s -l app=kube-addon-manager po -n kube-system; then
-    {{/* Restart kubelet if kube-addon-manager is not Ready after 5 mins */}}
+  local pod_name=kube-addon-manager-${HOSTNAME}
+  {{/* Wait 30 sec for kube-addon-manager to become Ready */}}
+  if ! retrycmd 6 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${pod_name} -n kube-system; then
+    {{/* Restart kubelet if kube-addon-manager is not Ready after timeout */}}
     systemctl_restart 3 5 30 kubelet
-    {{/* Wait 5 more mins for kube-addon-manager to become Ready, and then return failure if not */}}
-    retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s -l app=kube-addon-manager po -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+  fi
+  {{/* Wait 2.5 mins for kube-addon-manager to become Ready */}}
+  if ! retrycmd 30 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${pod_name} -n kube-system; then
+    {{/* Restart kubelet if kube-addon-manager is not Ready after timeout */}}
+    systemctl_restart 3 5 30 kubelet
+    {{/* Wait 2.5 mins more mins for kube-addon-manager to become Ready, and then return failure if not */}}
+    retrycmd 30 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${pod_name} -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
   fi
 }
 
 ensureAddons() {
+  local pod_name=kube-addon-manager-${HOSTNAME}
 {{- if IsDashboardAddonEnabled}} {{/* Note: dashboard addon is deprecated */}}
   retrycmd 120 5 30 $KUBECTL get namespace kubernetes-dashboard || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
@@ -16695,9 +16702,7 @@ ensureAddons() {
   rm -Rf ${ADDONS_DIR}/init
   ensureKubeAddonManager
   {{/* Manually delete any kube-addon-manager pods that point to the init directory */}}
-  for initPod in $(${KUBECTL} get pod -l app=kube-addon-manager -n kube-system -o json | jq -r '.items[] | select(.spec.containers[0].env[] | select(.value=="/etc/kubernetes/addons/init")) | select(.status.phase=="Running") .metadata.name'); do
-    retrycmd 120 5 30 ${KUBECTL} delete pod $initPod -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
-  done
+  retrycmd 120 5 30 ${KUBECTL} delete pod ${pod_name} -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
   {{if HasCiliumNetworkPolicy}}
   while [ ! -f /etc/cni/net.d/05-cilium.conf ]; do
     sleep 3
