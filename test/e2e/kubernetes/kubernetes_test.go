@@ -212,7 +212,7 @@ var _ = AfterSuite(func() {
 		fmt.Println(string(stdout))
 	}
 	if cfg.DebugAfterSuite {
-		cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses,podsecuritypolicy", "--all-namespaces", "-o", "wide")
+		cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses", "--all-namespaces", "-o", "wide")
 		out, err := cmd.CombinedOutput()
 		log.Printf("%s\n", out)
 		if err != nil {
@@ -729,12 +729,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have core kube-system componentry running", func() {
-			coreComponents := []string{
-				common.AddonManagerComponentName,
-				common.APIServerComponentName,
-				common.ControllerManagerComponentName,
-				common.KubeProxyAddonName,
-				common.SchedulerComponentName,
+			coreComponents := []string{common.KubeProxyAddonName}
+			masterPrefix := eng.ExpandedDefinition.Properties.GetMasterVMPrefix()
+			for i := 0; i < eng.ExpandedDefinition.Properties.MasterProfile.Count; i++ {
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.AddonManagerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.APIServerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.ControllerManagerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.SchedulerComponentName, masterPrefix, i))
 			}
 			if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 				coreComponents = append(coreComponents, common.CloudControllerManagerComponentName)
@@ -861,7 +862,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should print cluster resources", func() {
-			cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses,podsecuritypolicy", "--all-namespaces", "-o", "wide")
+			cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses", "--all-namespaces", "-o", "wide")
 			out, err := cmd.CombinedOutput()
 			log.Printf("%s\n", out)
 			if err != nil {
