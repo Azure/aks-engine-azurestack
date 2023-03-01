@@ -156,10 +156,11 @@ for CLUSTER_AUTOSCALER_VERSION in ${CLUSTER_AUTOSCALER_VERSIONS}; do
 done
 
 CORE_DNS_VERSIONS="
+1.9.4
 1.8.6
 "
 for CORE_DNS_VERSION in ${CORE_DNS_VERSIONS}; do
-    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/coredns:${CORE_DNS_VERSION}"
+    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/coredns:v${CORE_DNS_VERSION}"
     loadContainerImage ${CONTAINER_IMAGE}
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
