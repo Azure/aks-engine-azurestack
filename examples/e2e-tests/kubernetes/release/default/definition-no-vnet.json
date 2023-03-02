@@ -4,23 +4,15 @@
         "orchestratorProfile": {
             "kubernetesConfig": {
                 "useCloudControllerManager": true,
-                "useManagedIdentity": true,
-                "addons": [
-                    {
-                        "name": "coredns",
-                        "enabled": true,
-                        "config": {
-                            "min-replicas": "3",
-                            "nodes-per-replica": "10"
-                        }
-                    }
-                ]
+                "useManagedIdentity": true
             }
         },
         "masterProfile": {
             "count": 3,
             "dnsPrefix": "",
             "vmSize": "Standard_D2_v3",
+            "distro": "aks-ubuntu-20.04",
+            "auditDEnabled": true,
             "OSDiskSizeGB": 200
         },
         "agentPoolProfiles": [
@@ -29,6 +21,7 @@
                 "count": 1,
                 "vmSize": "Standard_D2_v3",
                 "OSDiskSizeGB": 200,
+                "distro": "aks-ubuntu-20.04",
                 "storageProfile": "ManagedDisks",
                 "diskSizesGB": [
                     128
@@ -47,6 +40,8 @@
             }
         ],
         "linuxProfile": {
+            "enableUnattendedUpgrades": false,
+            "runUnattendedUpgradesOnBootstrap": false,
             "adminUsername": "azureuser",
             "ssh": {
                 "publicKeys": [

@@ -8,7 +8,6 @@ data:
       kubeconfig: /var/lib/kubelet/kubeconfig
     clusterCIDR: "{{ContainerConfig "cluster-cidr"}}"
     mode: "{{ContainerConfig "proxy-mode"}}"
-  {{- if IsKubernetesVersionGe "1.18.0"}}
     {{- if ContainerConfig "bind-address"}}
     bindAddress: "{{ContainerConfig "bind-address"}}"
     {{- end}}
@@ -18,7 +17,6 @@ data:
     {{- if ContainerConfig "metrics-bind-address"}}
     metricsBindAddress: "{{ContainerConfig "metrics-bind-address"}}"
     {{- end}}
-  {{- end}}
     featureGates:
       {{ContainerConfig "featureGates"}}
 metadata:
@@ -59,10 +57,7 @@ spec:
         tier: node
         k8s-app: kube-proxy
       annotations:
-{{- if IsKubernetesVersionGe "1.17.0"}}
         cluster-autoscaler.kubernetes.io/daemonset-pod: "true"
-{{- end}}
-        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       priorityClassName: system-node-critical
       tolerations:

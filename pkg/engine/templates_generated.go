@@ -13009,8 +13009,6 @@ spec:
     metadata:
       labels:
         k8s-app: kube-dns
-      annotations:
-        seccomp.security.alpha.kubernetes.io/pod: docker/default
     spec:
       priorityClassName: system-cluster-critical
       affinity:
@@ -13782,7 +13780,6 @@ data:
       kubeconfig: /var/lib/kubelet/kubeconfig
     clusterCIDR: "{{ContainerConfig "cluster-cidr"}}"
     mode: "{{ContainerConfig "proxy-mode"}}"
-  {{- if IsKubernetesVersionGe "1.18.0"}}
     {{- if ContainerConfig "bind-address"}}
     bindAddress: "{{ContainerConfig "bind-address"}}"
     {{- end}}
@@ -13792,7 +13789,6 @@ data:
     {{- if ContainerConfig "metrics-bind-address"}}
     metricsBindAddress: "{{ContainerConfig "metrics-bind-address"}}"
     {{- end}}
-  {{- end}}
     featureGates:
       {{ContainerConfig "featureGates"}}
 metadata:
@@ -13833,10 +13829,7 @@ spec:
         tier: node
         k8s-app: kube-proxy
       annotations:
-{{- if IsKubernetesVersionGe "1.17.0"}}
         cluster-autoscaler.kubernetes.io/daemonset-pod: "true"
-{{- end}}
-        scheduler.alpha.kubernetes.io/critical-pod: ''
     spec:
       priorityClassName: system-node-critical
       tolerations:
@@ -16673,6 +16666,8 @@ fi
 
 ensureKubeAddonManager() {
   local kam_pod=kube-addon-manager-${HOSTNAME}
+  {{/* This empty directory clears an addon-manager warning  */}}
+  mkdir -p /etc/kubernetes/admission-controls
   {{/* Wait 30 sec for kube-addon-manager to become Ready */}}
   if ! retrycmd 6 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system; then
     {{/* Restart kubelet if kube-addon-manager is not Ready after timeout */}}

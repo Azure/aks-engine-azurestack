@@ -126,7 +126,6 @@ for METRICS_SERVER_VERSION in ${METRICS_SERVER_VERSIONS}; do
 done
 
 KUBE_ADDON_MANAGER_VERSIONS="
-9.1.3
 9.1.5
 "
 for KUBE_ADDON_MANAGER_VERSION in ${KUBE_ADDON_MANAGER_VERSIONS}; do
@@ -137,7 +136,6 @@ done
 
 MCR_PAUSE_VERSIONS="
 3.8
-3.4.1
 "
 for PAUSE_VERSION in ${MCR_PAUSE_VERSIONS}; do
     # Pull the arch independent MCR pause image which is built for Linux and Windows
@@ -157,7 +155,6 @@ done
 
 CORE_DNS_VERSIONS="
 1.9.4
-1.8.6
 "
 for CORE_DNS_VERSION in ${CORE_DNS_VERSIONS}; do
     CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/coredns:v${CORE_DNS_VERSION}"
@@ -211,10 +208,8 @@ loadContainerImage "mcr.microsoft.com/oss/busybox/busybox:1.33.1"
 echo "  - busybox" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
+1.25.7
 1.24.9
-1.23.15
-1.22.17
-1.21.14
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -228,10 +223,8 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_MANAGER_VERSIONS="
+1.25.9
 1.24.0
-1.23.11
-1.1.14
-1.0.18
 "
 for CLOUD_MANAGER_VERSION in ${CLOUD_MANAGER_VERSIONS}; do
   for COMPONENT in azure-cloud-controller-manager azure-cloud-node-manager; do

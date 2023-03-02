@@ -81,6 +81,14 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		}
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.25.0") {
+		// https://github.com/kubernetes/kubernetes/pull/109612
+		removedFlags125 := []string{"--deleting-pods-qps", "--deleting-pods-burst", "--register-retry-count"}
+		for _, key := range removedFlags125 {
+			delete(o.KubernetesConfig.ControllerManagerConfig, key)
+		}
+	}
+
 	// Enables Node Exclusion from Services (toggled on agent nodes by the alpha.service-controller.kubernetes.io/exclude-balancer label).
 	// ServiceNodeExclusion feature gate is GA in 1.19, removed in 1.22 (xref: https://github.com/kubernetes/kubernetes/pull/100776)
 	if !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.19.0") {

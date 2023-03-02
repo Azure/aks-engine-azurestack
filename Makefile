@@ -22,6 +22,7 @@ VERSION_SHORT   ?= $(shell git rev-parse --short HEAD)
 GITTAG          := $(shell git describe --exact-match --tags $(shell git log -n1 --pretty='%h') 2> /dev/null)
 GOBIN           ?= $(shell $(GO) env GOPATH)/bin
 TOOLSBIN        := $(CURDIR)/hack/tools/bin
+ACK_GINKGO_RC   := true
 ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif

@@ -164,10 +164,10 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 
-	for key, val := range map[string]string{"--non-masquerade-cidr": DefaultKubernetesSubnet} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
+	// Removed kubelet --non-masquerade-cidr deprecated CLI flag (https://github.com/kubernetes/kubernetes/pull/97252)
+	for key := range map[string]string{"--non-masquerade-cidr": DefaultKubernetesSubnet} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
 		}
 	}
 
@@ -355,10 +355,10 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 
-	for key, val := range map[string]string{"--non-masquerade-cidr": DefaultKubernetesSubnet} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
+	// Removed kubelet --non-masquerade-cidr deprecated CLI flag (https://github.com/kubernetes/kubernetes/pull/97252)
+	for key := range map[string]string{"--non-masquerade-cidr": DefaultKubernetesSubnet} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
 		}
 	}
 
@@ -494,9 +494,8 @@ func TestKubeletConfigNetworkPlugin(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPlugin = NetworkPluginKubenet
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--network-plugin"] != NetworkPluginKubenet {
-		t.Fatalf("got unexpected '--network-plugin' kubelet config value for NetworkPlugin=kubenet: %s",
-			k["--network-plugin"])
+	if _, ok := k["--network-plugin"]; ok {
+		t.Fatalf("got unexpected (removed) '--network-plugin' kubelet config value")
 	}
 
 	// Test NetworkPlugin = "azure"
@@ -504,11 +503,9 @@ func TestKubeletConfigNetworkPlugin(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPlugin = NetworkPluginAzure
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--network-plugin"] != "cni" {
-		t.Fatalf("got unexpected '--network-plugin' kubelet config value for NetworkPlugin=azure: %s",
-			k["--network-plugin"])
+	if _, ok := k["--network-plugin"]; ok {
+		t.Fatalf("got unexpected (removed) '--network-plugin' kubelet config value")
 	}
-
 }
 
 func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
@@ -654,9 +651,8 @@ func TestKubeletCalico(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.NetworkPolicy = NetworkPolicyCalico
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--network-plugin"] != "cni" {
-		t.Fatalf("got unexpected '--network-plugin' kubelet config value for NetworkPolicy=%s: %s",
-			NetworkPolicyCalico, k["--network-plugin"])
+	if _, ok := k["--network-plugin"]; ok {
+		t.Fatal("got unexpected (removed) '--network-plugin' kubelet config value")
 	}
 }
 
@@ -676,9 +672,9 @@ func TestKubeletIPMasqAgentEnabledOrDisabled(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.ClusterSubnet = subnet
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--non-masquerade-cidr"] != subnet {
-		t.Fatalf("got unexpected '--non-masquerade-cidr' kubelet config value %s, the expected value is %s",
-			k["--non-masquerade-cidr"], subnet)
+	// Removed kubelet --non-masquerade-cidr deprecated CLI flag (https://github.com/kubernetes/kubernetes/pull/97252)
+	if _, ok := k["--non-masquerade-cidr"]; ok {
+		t.Fatal("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
 	}
 
 	// MasterIPMasqAgent enabled, --non-masquerade-cidr should be 0.0.0.0/0
@@ -695,18 +691,16 @@ func TestKubeletIPMasqAgentEnabledOrDisabled(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.ClusterSubnet = subnet
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--non-masquerade-cidr"] != DefaultNonMasqueradeCIDR {
-		t.Fatalf("got unexpected '--non-masquerade-cidr' kubelet config value %s, the expected value is %s",
-			k["--non-masquerade-cidr"], DefaultNonMasqueradeCIDR)
+	if _, ok := k["--non-masquerade-cidr"]; ok {
+		t.Fatalf("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
 	}
 
 	// No ip-masq-agent addon configuration specified, --non-masquerade-cidr should be 0.0.0.0/0
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--non-masquerade-cidr"] != DefaultNonMasqueradeCIDR {
-		t.Fatalf("got unexpected '--non-masquerade-cidr' kubelet config value %s, the expected value is %s",
-			k["--non-masquerade-cidr"], DefaultNonMasqueradeCIDR)
+	if _, ok := k["--non-masquerade-cidr"]; ok {
+		t.Fatalf("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
 	}
 }
 
