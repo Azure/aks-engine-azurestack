@@ -211,6 +211,7 @@ loadContainerImage "mcr.microsoft.com/oss/busybox/busybox:1.33.1"
 echo "  - busybox" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
+1.25.7
 1.24.9
 1.23.15
 1.22.17
@@ -228,6 +229,7 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_MANAGER_VERSIONS="
+1.25.9
 1.24.0
 1.23.11
 1.1.14

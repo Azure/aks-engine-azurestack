@@ -424,6 +424,8 @@ fi
 
 ensureKubeAddonManager() {
   local kam_pod=kube-addon-manager-${HOSTNAME}
+  {{/* This empty directory clears an addon-manager warning  */}}
+  mkdir -p /etc/kubernetes/admission-controls
   {{/* Wait 30 sec for kube-addon-manager to become Ready */}}
   if ! retrycmd 6 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system; then
     {{/* Restart kubelet if kube-addon-manager is not Ready after timeout */}}
