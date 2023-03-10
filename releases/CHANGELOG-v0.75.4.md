@@ -1,6 +1,8 @@
 
 <a name="v0.75.4"></a>
+
 # [v0.75.4] - 2023-03-09
+
 ### Bug Fixes 🐞
 - kubernetes-azurestack.json uses distro aks-ubuntu-20.04 ([#87](https://github.com/Azure/aks-engine-azurestack/issues/87))
 - use cross-platform pause image as the containerd sandbox image on Windows ([#106](https://github.com/Azure/aks-engine-azurestack/issues/106))

@@ -50,71 +50,30 @@ jobs:
       - name: print git status after build
         run: |
           git status
-      - name: Validate 1.21 no-egress scenario
+      - name: Validate 1.23 + docker E2E
         env:
-          ORCHESTRATOR_RELEASE: "1.21"
-          CLUSTER_DEFINITION: "examples/no_outbound.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "westus2"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          SKIP_LOGS_COLLECTION: true
-          SKIP_TEST: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: True
-          BLOCK_SSH: true
-        run: make test-kubernetes
-      - name: Validate 1.22 no-egress scenario
-        env:
-          ORCHESTRATOR_RELEASE: "1.22"
-          CLUSTER_DEFINITION: "examples/no_outbound.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "westus2"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          SKIP_LOGS_COLLECTION: true
-          SKIP_TEST: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
-          BLOCK_SSH: true
-          RETAIN_SSH: false
-          CONTAINER_RUNTIME: containerd
-          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
-          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
-          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
-          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
-          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
-          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
-          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
-          LINUX_NODE_IMAGE_VERSION: 2023.042.1
-        run: make test-kubernetes
-      - name: Validate 1.23 no-egress scenario
-        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.23"
-          CLUSTER_DEFINITION: "examples/no_outbound.json"
+          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CREATE_VNET: true
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
-          SKIP_LOGS_COLLECTION: true
-          SKIP_TEST: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
-          BLOCK_SSH: true
+          GINKGO_SKIP: ""
+          STABILITY_ITERATIONS: "0"
           RETAIN_SSH: false
-          CONTAINER_RUNTIME: containerd
+          CONTAINER_RUNTIME: "docker"
+          BLOCK_SSH: true
+          SKIP_LOGS_COLLECTION: true
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
           WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
           WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
-          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_NAME: windows2019docker
           WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
           LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
@@ -126,6 +85,37 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.23"
+          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
+          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          LOCATION: "eastus"
+          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CREATE_VNET: true
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: true
+          GINKGO_SKIP: ""
+          STABILITY_ITERATIONS: "0"
+          RETAIN_SSH: false
+          CONTAINER_RUNTIME: "containerd"
+          BLOCK_SSH: true
+          SKIP_LOGS_COLLECTION: true
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+          LINUX_NODE_IMAGE_VERSION: 2023.042.1
+        run: make test-kubernetes
+      - name: Validate 1.24 + containerd E2E
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ORCHESTRATOR_RELEASE: "1.24"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
