@@ -19,5 +19,4 @@
 - e2e suite validates an existing PV works after a cluster upgrade ([#92](https://github.com/Azure/aks-engine-azurestack/issues/92))
 
 #### Please report any issues here: https://github.com/Azure/aks-engine-azurestack/issues/new
-[Unreleased]: https://github.com/Azure/aks-engine-azurestack/compare/v0.75.4...HEAD
 [v0.75.4]: https://github.com/Azure/aks-engine-azurestack/compare/v0.75.3...v0.75.4
