@@ -71,12 +71,13 @@ type Properties struct {
 
 // FeatureFlags defines feature-flag restricted functionality
 type FeatureFlags struct {
-	EnableCSERunInBackground bool `json:"enableCSERunInBackground,omitempty"`
-	BlockOutboundInternet    bool `json:"blockOutboundInternet,omitempty"`
-	EnableIPv6DualStack      bool `json:"enableIPv6DualStack,omitempty"`
-	EnableTelemetry          bool `json:"enableTelemetry,omitempty"`
-	EnableIPv6Only           bool `json:"enableIPv6Only,omitempty"`
-	EnableWinDSR             bool `json:"enableWinDSR,omitempty"`
+	EnableCSERunInBackground  bool `json:"enableCSERunInBackground,omitempty"`
+	BlockOutboundInternet     bool `json:"blockOutboundInternet,omitempty"`
+	EnableIPv6DualStack       bool `json:"enableIPv6DualStack,omitempty"`
+	EnableTelemetry           bool `json:"enableTelemetry,omitempty"`
+	EnableIPv6Only            bool `json:"enableIPv6Only,omitempty"`
+	EnableWinDSR              bool `json:"enableWinDSR,omitempty"`
+	EnforceUbuntu2004DisaStig bool `json:"enforceUbuntu2004DisaStig,omitempty"`
 }
 
 // ServicePrincipalProfile contains the client and secret used by the cluster for Azure Resource CRUD
@@ -1742,7 +1743,7 @@ func (o *OrchestratorProfile) IsHostsConfigAgentEnabled() bool {
 	return o.KubernetesConfig != nil && o.KubernetesConfig.PrivateCluster != nil && to.Bool(o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent)
 }
 
-// GetPodInfraContainerSpec returns the sandbox image as a string (ex: k8s.gcr.io/pause-amd64:3.1)
+// GetPodInfraContainerSpec returns the sandbox image as a string (ex: registry.k8s.io/pause-amd64:3.1)
 func (o *OrchestratorProfile) GetPodInfraContainerSpec() string {
 	return o.KubernetesConfig.MCRKubernetesImageBase + GetK8sComponentsByVersionMap(o.KubernetesConfig)[o.OrchestratorVersion][common.PauseComponentName]
 }
@@ -2199,6 +2200,8 @@ func (f *FeatureFlags) IsFeatureEnabled(feature string) bool {
 			return f.EnableIPv6Only
 		case "EnableWinDSR":
 			return f.EnableWinDSR
+		case "EnforceUbuntu2004DisaStig":
+			return f.EnforceUbuntu2004DisaStig
 		default:
 			return false
 		}
@@ -2207,7 +2210,7 @@ func (f *FeatureFlags) IsFeatureEnabled(feature string) bool {
 }
 
 // GetCloudSpecConfig returns the Kubernetes container images URL configurations based on the deploy target environment.
-// for example: if the target is the public azure, then the default container image url should be k8s.gcr.io/...
+// for example: if the target is the public azure, then the default container image url should be registry.k8s.io/...
 // if the target is azure china, then the default container image should be mirror.azure.cn:5000/google_container/...
 func (cs *ContainerService) GetCloudSpecConfig() AzureEnvironmentSpecConfig {
 	targetEnv := helpers.GetTargetEnv(cs.Location, cs.Properties.GetCustomCloudName())

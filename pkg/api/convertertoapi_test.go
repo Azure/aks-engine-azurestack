@@ -499,10 +499,11 @@ func TestConvertVLabsContainerService(t *testing.T) {
 				EtcdServerPrivateKey:  "SampleEtcdServerPrivateKey",
 			},
 			FeatureFlags: &vlabs.FeatureFlags{
-				EnableCSERunInBackground: true,
-				BlockOutboundInternet:    false,
-				EnableTelemetry:          false,
-				EnableWinDSR:             true,
+				EnableCSERunInBackground:  true,
+				BlockOutboundInternet:     false,
+				EnableTelemetry:           false,
+				EnableWinDSR:              true,
+				EnforceUbuntu2004DisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{
 				ClientAppID:  "SampleClientAppID",
@@ -707,9 +708,10 @@ func TestTelemetryEnabled(t *testing.T) {
 				EtcdServerPrivateKey:  "SampleEtcdServerPrivateKey",
 			},
 			FeatureFlags: &vlabs.FeatureFlags{
-				EnableCSERunInBackground: true,
-				BlockOutboundInternet:    false,
-				EnableTelemetry:          true,
+				EnableCSERunInBackground:  true,
+				BlockOutboundInternet:     false,
+				EnableTelemetry:           true,
+				EnforceUbuntu2004DisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{
 				ClientAppID:  "SampleClientAppID",

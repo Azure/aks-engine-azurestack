@@ -91,6 +91,7 @@ const (
 	kubernetesHealthMonitorScript      = "k8s/cloud-init/artifacts/health-monitor.sh"
 	// kubernetesKubeletMonitorSystemdTimer     = "k8s/cloud-init/artifacts/kubelet-monitor.timer" // TODO enable
 	kubernetesKubeletMonitorSystemdService   = "k8s/cloud-init/artifacts/kubelet-monitor.service"
+	apiServerAdmissionConfiguration          = "k8s/cloud-init/artifacts/apiserver-admission-control.yaml"
 	apiserverMonitorSystemdService           = "k8s/cloud-init/artifacts/apiserver-monitor.service"
 	kubernetesDockerMonitorSystemdService    = "k8s/cloud-init/artifacts/docker-monitor.service"
 	etcdMonitorSystemdService                = "k8s/cloud-init/artifacts/etcd-monitor.service"
@@ -116,11 +117,13 @@ const (
 
 // cloud-init destination file references
 const (
+	apiServerAdmissionConfigurationFilepath    = "/etc/kubernetes/apiserver-admission-control.yaml"
 	customCloudConfigCSEScriptFilepath         = "/opt/azure/containers/provision_configs_custom_cloud.sh"
 	customCloudAzureCNIConfigCSEScriptFilepath = "/opt/azure/containers/provision_azurestack_cni.sh"
 	cseHelpersScriptFilepath                   = "/opt/azure/containers/provision_source.sh"
 	cseInstallScriptFilepath                   = "/opt/azure/containers/provision_installs.sh"
 	cseConfigScriptFilepath                    = "/opt/azure/containers/provision_configs.sh"
+	cseUbuntu2004StigScriptFilepath            = "/opt/azure/containers/provision_stig_ubuntu2004.sh"
 	customSearchDomainsCSEScriptFilepath       = "/opt/azure/containers/setup-custom-search-domains.sh"
 	dhcpV6ServiceCSEScriptFilepath             = "/etc/systemd/system/dhcpv6.service"
 	dhcpV6ConfigCSEScriptFilepath              = "/opt/azure/containers/enable-dhcpv6.sh"

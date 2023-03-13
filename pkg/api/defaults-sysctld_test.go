@@ -112,6 +112,61 @@ func TestSetSysctlDConfig(t *testing.T) {
 			},
 		},
 		{
+			name: "defaults w/ stig",
+			cs: &ContainerService{
+				Properties: &Properties{
+					MasterProfile: &MasterProfile{},
+					AgentPoolProfiles: []*AgentPoolProfile{
+						{
+							Name:   "foo",
+							OSType: Linux,
+						},
+					},
+					OrchestratorProfile: &OrchestratorProfile{
+						OrchestratorType:    Kubernetes,
+						OrchestratorVersion: "1.15.0",
+						KubernetesConfig: &KubernetesConfig{
+							ContainerRuntime: Containerd,
+						},
+					},
+					FeatureFlags: &FeatureFlags{
+						EnforceUbuntu2004DisaStig: true,
+					},
+				},
+			},
+			expectedMaster: &MasterProfile{
+				SysctlDConfig: map[string]string{
+					"net.ipv4.tcp_retries2":             "8",
+					"net.core.somaxconn":                "16384",
+					"net.ipv4.tcp_max_syn_backlog":      "16384",
+					"net.core.message_cost":             "40",
+					"net.core.message_burst":            "80",
+					"net.ipv4.neigh.default.gc_thresh1": "4096",
+					"net.ipv4.neigh.default.gc_thresh2": "8192",
+					"net.ipv4.neigh.default.gc_thresh3": "16384",
+					"net.ipv4.ip_forward":               "1",
+					"net.ipv4.tcp_syncookies":           "1",
+				},
+			},
+			expectedPools: []*AgentPoolProfile{
+				{
+					Name: "foo",
+					SysctlDConfig: map[string]string{
+						"net.ipv4.tcp_retries2":             "8",
+						"net.core.somaxconn":                "16384",
+						"net.ipv4.tcp_max_syn_backlog":      "16384",
+						"net.core.message_cost":             "40",
+						"net.core.message_burst":            "80",
+						"net.ipv4.neigh.default.gc_thresh1": "4096",
+						"net.ipv4.neigh.default.gc_thresh2": "8192",
+						"net.ipv4.neigh.default.gc_thresh3": "16384",
+						"net.ipv4.ip_forward":               "1",
+						"net.ipv4.tcp_syncookies":           "1",
+					},
+				},
+			},
+		},
+		{
 			name: "user-configured",
 			cs: &ContainerService{
 				Properties: &Properties{

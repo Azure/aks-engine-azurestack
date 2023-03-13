@@ -46,20 +46,27 @@ func (cs *ContainerService) setAPIServerConfig() {
 		}
 	}
 
-	// Default apiserver config
-	defaultAPIServerConfig := map[string]string{
-		"--anonymous-auth":      "false",
-		"--audit-log-maxage":    "30",
-		"--audit-log-maxbackup": "10",
-		"--audit-log-maxsize":   "100",
-		"--profiling":           DefaultKubernetesAPIServerEnableProfiling,
-		"--tls-cipher-suites":   TLSStrongCipherSuitesAPIServer,
-		"--v":                   DefaultKubernetesAPIServerVerbosity,
-	}
-
 	// Data Encryption at REST configuration conditions
 	if to.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) || to.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
 		staticAPIServerConfig["--encryption-provider-config"] = "/etc/kubernetes/encryption-config.yaml"
+	}
+
+	// Enable cloudprovider if we're not using cloud controller manager
+	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+		staticAPIServerConfig["--cloud-provider"] = "azure"
+		staticAPIServerConfig["--cloud-config"] = "/etc/kubernetes/azure.json"
+	}
+
+	// Default apiserver config
+	defaultAPIServerConfig := map[string]string{
+		"--admission-control-config-file": "/etc/kubernetes/apiserver-admission-control.yaml",
+		"--anonymous-auth":                "false",
+		"--audit-log-maxage":              "30",
+		"--audit-log-maxbackup":           "10",
+		"--audit-log-maxsize":             "100",
+		"--profiling":                     DefaultKubernetesAPIServerEnableProfiling,
+		"--tls-cipher-suites":             TLSStrongCipherSuitesAPIServer,
+		"--v":                             DefaultKubernetesAPIServerVerbosity,
 	}
 
 	// Aggregated API configuration
@@ -71,12 +78,6 @@ func (cs *ContainerService) setAPIServerConfig() {
 		defaultAPIServerConfig["--requestheader-extra-headers-prefix"] = "X-Remote-Extra-"
 		defaultAPIServerConfig["--requestheader-group-headers"] = "X-Remote-Group"
 		defaultAPIServerConfig["--requestheader-username-headers"] = "X-Remote-User"
-	}
-
-	// Enable cloudprovider if we're not using cloud controller manager
-	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
-		staticAPIServerConfig["--cloud-provider"] = "azure"
-		staticAPIServerConfig["--cloud-config"] = "/etc/kubernetes/azure.json"
 	}
 
 	// AAD configuration
@@ -151,6 +152,14 @@ func (cs *ContainerService) setAPIServerConfig() {
 		delete(o.KubernetesConfig.APIServerConfig, key)
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.25.0") {
+		// https://github.com/kubernetes/kubernetes/pull/108624
+		removedFlags125 := []string{"--service-account-api-audiences"}
+		for _, key := range removedFlags125 {
+			delete(o.KubernetesConfig.APIServerConfig, key)
+		}
+	}
+
 	// Set bind address to prefer IPv6 address for single stack IPv6 cluster
 	// Remove --advertise-address so that --bind-address will be used
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6Only") {
@@ -165,19 +174,14 @@ func (cs *ContainerService) setAPIServerConfig() {
 		o.KubernetesConfig.APIServerConfig["--service-account-issuer"] = "https://kubernetes.default.svc.cluster.local"
 	}
 
-	invalidFeatureGates := []string{}
-	// Remove --feature-gate VolumeSnapshotDataSource starting with 1.22
-	// Reference: https://github.com/kubernetes/kubernetes/pull/101531
-	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
-		invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
-	}
-	removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, invalidFeatureGates)
+	cs.overrideAPIServerConfig()
 }
 
 func getDefaultAdmissionControls(cs *ContainerService) (string, string) {
 	o := cs.Properties.OrchestratorProfile
 	admissionControlKey := "--enable-admission-plugins"
-	admissionControlValues := "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,ValidatingAdmissionWebhook,ResourceQuota,ExtendedResourceToleration"
+	// Only include admission controllers that are not enabled by default
+	admissionControlValues := "ExtendedResourceToleration"
 
 	// Pod Security Policy configuration
 	if o.KubernetesConfig.IsAddonEnabled(common.PodSecurityPolicyAddonName) {
@@ -185,4 +189,22 @@ func getDefaultAdmissionControls(cs *ContainerService) (string, string) {
 	}
 
 	return admissionControlKey, admissionControlValues
+}
+
+// overrideAPIServerConfig fixes the kube-apiserver configuration,
+// mostly by cleaning up removed features (flags, gates or admission controllers)
+func (cs *ContainerService) overrideAPIServerConfig() {
+	o := cs.Properties.OrchestratorProfile
+
+	// Remove --feature-gate VolumeSnapshotDataSource starting with 1.22
+	// Reference: https://github.com/kubernetes/kubernetes/pull/101531
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
+		removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, []string{"VolumeSnapshotDataSource"})
+	}
+
+	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
+		curPlugins := o.KubernetesConfig.APIServerConfig["--enable-admission-plugins"]
+		newPlugins := common.RemoveFromCommaSeparatedList(curPlugins, "PodSecurityPolicy")
+		o.KubernetesConfig.APIServerConfig["--enable-admission-plugins"] = newPlugins
+	}
 }

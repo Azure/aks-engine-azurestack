@@ -26,6 +26,7 @@ import (
 	"github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
+	policyv1beta1 "k8s.io/api/policy/v1beta1"
 	rbacv1 "k8s.io/api/rbac/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -42,6 +43,7 @@ type Upgrader struct {
 	AKSEngineVersion   string
 	CurrentVersion     string
 	ControlPlaneOnly   bool
+	Force              bool
 }
 
 type vmStatus int
@@ -77,6 +79,14 @@ func (ku *Upgrader) Init(translator *i18n.Translator, logger *logrus.Entry, clus
 
 // RunUpgrade runs the upgrade pipeline
 func (ku *Upgrader) RunUpgrade() error {
+	if err := ku.validatePodSecurityPolices(); err != nil {
+		if ku.Force {
+			ku.logger.Warning("Error validating PodSecurityPolices")
+		} else {
+			ku.logger.Warning("Error validating PodSecurityPolices. Consider using --force if you really want to proceed")
+			return errors.Wrap(err, "error validating PodSecurityPolices")
+		}
+	}
 	controlPlaneUpgradeTimeout := perNodeUpgradeTimeout
 	if ku.ClusterTopology.DataModel.Properties.MasterProfile.Count > 0 {
 		controlPlaneUpgradeTimeout = perNodeUpgradeTimeout * time.Duration(ku.ClusterTopology.DataModel.Properties.MasterProfile.Count)
@@ -937,4 +947,46 @@ func getAvailableIndex(vms map[int]*vmInfo) int {
 	}
 
 	return maxIndex + 1
+}
+
+// validatePodSecurityPolices tries to guess if the user needs to manually migrate from PSP to PSA
+// before upgrading to Kubernetes v1.25
+func (ku *Upgrader) validatePodSecurityPolices() error {
+	if common.IsKubernetesVersionGe(ku.CurrentVersion, common.PodSecurityPolicyRemovedVersion) {
+		return nil
+	}
+	ku.logger.Debug("Checking no user-created PodSecurityPolicies still present.")
+	client, err := ku.getKubernetesClient(getResourceTimeout)
+	if err != nil {
+		return errors.Wrap(err, "error getting Kubernetes client")
+	}
+	policies, err := client.ListPodSecurityPolices(metav1.ListOptions{})
+	if err != nil {
+		return errors.Wrap(err, "error listing PodSecurityPolices")
+	}
+	next := ku.DataModel.Properties.OrchestratorProfile.OrchestratorVersion
+	return validateUserCreatedPodSecurityPolices(ku.CurrentVersion, next, policies.Items)
+}
+
+// validatePodSecurityPolices tries to guess if the user needs to manually migrate from PSP to PSA
+func validateUserCreatedPodSecurityPolices(currentVersion, upgradeVersion string, policies []policyv1beta1.PodSecurityPolicy) error {
+	if common.IsKubernetesVersionGe(currentVersion, common.PodSecurityPolicyRemovedVersion) {
+		return nil
+	}
+	if !common.IsKubernetesVersionGe(upgradeVersion, common.PodSecurityPolicyRemovedVersion) {
+		return nil
+	}
+	if len(policies) > 2 {
+		return errors.New("user-created PodSecurityPolices found in the cluster (try 'kubectl get psp'), " +
+			"migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+, " +
+			"see https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
+	}
+	for _, policy := range policies {
+		if policy.Name != "privileged" && policy.Name != "restricted" {
+			return errors.New("user-created PodSecurityPolices found in the cluster (try 'kubectl get psp'), " +
+				"migrate from PodSecurityPolices before upgrading to Kubernetes v1.25+, " +
+				"see https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md")
+		}
+	}
+	return nil
 }

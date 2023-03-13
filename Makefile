@@ -22,11 +22,12 @@ VERSION_SHORT   ?= $(shell git rev-parse --short HEAD)
 GITTAG          := $(shell git describe --exact-match --tags $(shell git log -n1 --pretty='%h') 2> /dev/null)
 GOBIN           ?= $(shell $(GO) env GOPATH)/bin
 TOOLSBIN        := $(CURDIR)/hack/tools/bin
+ACK_GINKGO_RC   := true
 ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif
 
-DEV_ENV_IMAGE := mcr.microsoft.com/oss/azcu/go-dev:v1.34.7
+DEV_ENV_IMAGE := mcr.microsoft.com/oss/azcu/go-dev:v1.36.1
 DEV_ENV_WORK_DIR := /aks-engine-azurestack
 DEV_ENV_OPTS := --rm -v $(GOPATH)/pkg/mod:/go/pkg/mod -v $(CURDIR):$(DEV_ENV_WORK_DIR) -w $(DEV_ENV_WORK_DIR) $(DEV_ENV_VARS)
 DEV_ENV_CMD := docker run $(DEV_ENV_OPTS) $(DEV_ENV_IMAGE)

@@ -11,7 +11,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"os"
@@ -153,7 +152,7 @@ func ReplaceContainerImageFromFile(filename, containerImage string) (string, err
 		return "", err
 	}
 	_, filenameOnly := path.Split(filename)
-	tmpFile, err := ioutil.TempFile(os.TempDir(), filenameOnly)
+	tmpFile, err := os.CreateTemp(os.TempDir(), filenameOnly)
 	if err != nil {
 		return "", err
 	}
@@ -1397,7 +1396,9 @@ func (p *Pod) curlURL(url string) error {
 }
 
 func (p *Pod) mkdir(mountPath string) error {
-	_, err := p.Exec("--", "mkdir", mountPath+"/"+testDir)
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+	newDir := fmt.Sprintf("%s-%d", testDir, r.Intn(99999))
+	_, err := p.Exec("--", "mkdir", mountPath+"/"+newDir)
 	if err != nil {
 		return err
 	}
@@ -1405,7 +1406,7 @@ func (p *Pod) mkdir(mountPath string) error {
 	if err != nil {
 		return err
 	}
-	if !strings.Contains(string(out), testDir) {
+	if !strings.Contains(string(out), newDir) {
 		return errors.Errorf("Unexpected output from ls: %s", string(out))
 	}
 	return nil
@@ -1585,7 +1586,7 @@ func (l *List) CheckOutboundConnection(sleep, timeout time.Duration, osType api.
 	}
 }
 
-//ValidateCurlConnection checks curl connection for a list of Linux pods to a specified uri.
+// ValidateCurlConnection checks curl connection for a list of Linux pods to a specified uri.
 func (l *List) ValidateCurlConnection(uri string, sleep, timeout time.Duration) (bool, error) {
 	type isReady struct {
 		pod   Pod

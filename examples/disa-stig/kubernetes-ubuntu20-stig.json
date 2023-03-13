@@ -1,0 +1,33 @@
+{
+    "apiVersion": "vlabs",
+    "properties": {
+        "masterProfile": {
+            "count": 3,
+            "dnsPrefix": "",
+            "auditDEnabled": true,
+            "vmSize": "Standard_D2_v3"
+        },
+        "agentPoolProfiles": [
+            {
+                "name": "poollinux",
+                "count": 1,
+                "vmSize": "Standard_D2_v3",
+                "auditDEnabled": true,
+                "availabilityProfile": "AvailabilitySet"
+            }
+        ],
+        "linuxProfile": {
+            "adminUsername": "azureuser",
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "keyData": ""
+                    }
+                ]
+            }
+        },
+        "featureFlags": {
+            "enforceUbuntu2004DisaStig": true
+        }
+    }
+}

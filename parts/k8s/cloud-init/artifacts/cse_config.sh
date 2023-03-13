@@ -423,31 +423,40 @@ fi
 }
 
 ensureKubeAddonManager() {
+  local kam_pod=kube-addon-manager-${HOSTNAME}
+  {{/* This empty directory clears an addon-manager warning  */}}
+  mkdir -p /etc/kubernetes/admission-controls
+  {{/* Wait 30 sec for kube-addon-manager to become Ready */}}
+  if ! retrycmd 6 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system; then
+    {{/* Restart kubelet if kube-addon-manager is not Ready after timeout */}}
+    systemctl_restart 3 5 30 kubelet
+  fi
   {{/* Wait 5 mins for kube-addon-manager to become Ready */}}
-  if ! retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s -l app=kube-addon-manager po -n kube-system; then
+  if ! retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system; then
     {{/* Restart kubelet if kube-addon-manager is not Ready after 5 mins */}}
     systemctl_restart 3 5 30 kubelet
     {{/* Wait 5 more mins for kube-addon-manager to become Ready, and then return failure if not */}}
-    retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s -l app=kube-addon-manager po -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+    retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
   fi
 }
 
 ensureAddons() {
+  local kam_pod=kube-addon-manager-${HOSTNAME}
 {{- if IsDashboardAddonEnabled}} {{/* Note: dashboard addon is deprecated */}}
   retrycmd 120 5 30 $KUBECTL get namespace kubernetes-dashboard || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
 {{- if IsAzurePolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get namespace gatekeeper-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
-{{- if not HasCustomPodSecurityPolicy}}
+{{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
   retrycmd 120 5 30 $KUBECTL get podsecuritypolicy privileged restricted || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
 {{- end}}
   replaceAddonsInit
   rm -Rf ${ADDONS_DIR}/init
   ensureKubeAddonManager
   {{/* Manually delete any kube-addon-manager pods that point to the init directory */}}
-  for initPod in $(${KUBECTL} get pod -l app=kube-addon-manager -n kube-system -o json | jq -r '.items[] | select(.spec.containers[0].env[] | select(.value=="/etc/kubernetes/addons/init")) | select(.status.phase=="Running") .metadata.name'); do
-    retrycmd 120 5 30 ${KUBECTL} delete pod $initPod -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+  for initPod in $(${KUBECTL} get pod ${kam_pod} -n kube-system -o json | jq -r '.items[] | select(.spec.containers[0].env[] | select(.value=="/etc/kubernetes/addons/init")) | select(.status.phase=="Running") .metadata.name'); do
+    retrycmd 120 5 30 ${KUBECTL} delete pod ${kam_pod} -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
   done
   {{if HasCiliumNetworkPolicy}}
   while [ ! -f /etc/cni/net.d/05-cilium.conf ]; do

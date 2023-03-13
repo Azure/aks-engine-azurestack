@@ -354,34 +354,121 @@ func TestAPIServerConfigEnableSecureKubelet(t *testing.T) {
 }
 
 func TestAPIServerConfigDefaultAdmissionControls(t *testing.T) {
-	version := "1.15.4"
-	enableAdmissionPluginsKey := "--enable-admission-plugins"
-	admissonControlKey := "--admission-control"
-	cs := CreateMockContainerService("testcluster", version, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{}
-	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig[admissonControlKey] = "NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,AlwaysPullImages,ExtendedResourceToleration"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
+	cases := []struct {
+		name                 string
+		k8sVersion           string
+		pspEnabled           bool
+		prevAdmissionPlugins string
+		expected             string
+	}{
 		{
-			Name:    common.PodSecurityPolicyAddonName,
-			Enabled: to.BoolPtr(true),
+			"Admission plugins for v1.25- & PSP enabled",
+			"1.23.4",
+			true,
+			"",
+			"ExtendedResourceToleration,PodSecurityPolicy",
+		},
+		{
+			"Admission plugins for v1.25- & PSP disabled",
+			"1.23.4",
+			false,
+			"",
+			"ExtendedResourceToleration",
+		},
+		{
+			"Admission plugins for v1.25+ & PSP enabled",
+			common.PodSecurityPolicyRemovedVersion,
+			true,
+			"",
+			"ExtendedResourceToleration",
+		},
+		{
+			"Admission plugins for v1.25+ & PSP disabled",
+			common.PodSecurityPolicyRemovedVersion,
+			false,
+			"",
+			"ExtendedResourceToleration",
+		},
+		// Note: this is a misconfiguration, not a valid test case
+		// {
+		// 	"Admission plugins for upgrade to v1.25- & PSP enabled",
+		// 	"1.23.4",
+		// 	true,
+		// 	"UserConfiguredAdmission",
+		// 	"UserConfiguredAdmission,PodSecurityPolicy",
+		// },
+		{
+			"Admission plugins for upgrade to v1.25- & PSP disabled",
+			"1.23.4",
+			false,
+			"UserConfiguredAdmission",
+			"UserConfiguredAdmission",
+		},
+		{
+			"Admission plugins for upgrade to v1.25+ & PSP enabled",
+			common.PodSecurityPolicyRemovedVersion,
+			true,
+			"UserConfiguredAdmission,PodSecurityPolicy",
+			"UserConfiguredAdmission",
+		},
+		{
+			"Admission plugins for upgrade to v1.25+ & PSP disabled",
+			common.PodSecurityPolicyRemovedVersion,
+			false,
+			"UserConfiguredAdmission",
+			"UserConfiguredAdmission",
 		},
 	}
-	cs.setAPIServerConfig()
-	a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
 
-	if _, found := a[enableAdmissionPluginsKey]; !found {
-		t.Fatalf("Admission control key '%s' not set in API server config for version %s", enableAdmissionPluginsKey, version)
-	}
+	enableAdmissionPluginsKey := "--enable-admission-plugins"
+	admissonControlKey := "--admission-control"
+	admissonControlConfigFileKey := "--admission-control-config-file"
 
-	// --admission-control was deprecated in v1.10
-	if _, found := a[admissonControlKey]; found {
-		t.Fatalf("Deprecated admission control key '%s' set in API server config for version %s", admissonControlKey, version)
-	}
-
-	// PodSecurityPolicy should be enabled in admission control
-	admissionControlVal := a[enableAdmissionPluginsKey]
-	if !strings.Contains(admissionControlVal, ",PodSecurityPolicy") {
-		t.Fatalf("Admission control value '%s' expected to contain PodSecurityPolicy", admissionControlVal)
+	for _, c := range cases {
+		c := c
+		t.Run(c.name, func(t *testing.T) {
+			t.Parallel()
+			cs := CreateMockContainerService("testcluster", c.k8sVersion, 3, 2, false)
+			cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{}
+			cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig[admissonControlKey] = "This,Flag,Should,Be,Removed"
+			if c.prevAdmissionPlugins != "" {
+				cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig[enableAdmissionPluginsKey] = c.prevAdmissionPlugins
+			}
+			cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
+				{
+					Name:    common.PodSecurityPolicyAddonName,
+					Enabled: to.BoolPtr(c.pspEnabled),
+				},
+			}
+			cs.setAPIServerConfig()
+			apiServerConfig := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+			// Check the --admission-control is not included, it was deprecated in v1.10
+			if _, found := apiServerConfig[admissonControlKey]; found {
+				t.Fatalf("Deprecated admission control flag '%s' set in API server config for version %s", admissonControlKey, c.k8sVersion)
+			}
+			// Check the --enable-admission-plugins flag is set
+			if _, found := apiServerConfig[enableAdmissionPluginsKey]; !found {
+				t.Fatalf("Admission plugin flag '%s' not set in API server config for version %s", enableAdmissionPluginsKey, c.k8sVersion)
+			}
+			// PodSecurityPolicy validation
+			admissionPlugins := apiServerConfig[enableAdmissionPluginsKey]
+			if common.ShouldDisablePodSecurityPolicyAddon(c.k8sVersion) {
+				if strings.Contains(admissionPlugins, "PodSecurityPolicy") {
+					t.Fatal("--enable-admission-plugins should not contain 'PodSecurityPolicy' after v1.25+")
+				}
+				// Flag --admission-control-config-file should be set
+				if _, found := apiServerConfig[admissonControlConfigFileKey]; !found {
+					t.Fatalf("Admission plugin config file flag '%s' not set in API server config for version %s", enableAdmissionPluginsKey, c.k8sVersion)
+				}
+			} else if c.pspEnabled && !strings.Contains(admissionPlugins, "PodSecurityPolicy") {
+				t.Fatal("--enable-admission-plugins should contain 'PodSecurityPolicy' if the 'pod-security-policy' addon is enabled")
+			} else if !c.pspEnabled && strings.Contains(admissionPlugins, "PodSecurityPolicy") {
+				t.Fatal("--enable-admission-plugins should not contain 'PodSecurityPolicy' if the 'pod-security-policy' addon is disabled")
+			}
+			if !strings.EqualFold(admissionPlugins, c.expected) {
+				t.Fatalf("expected --enable-admission-plugins value is '%s', got instead '%s'", c.expected, admissionPlugins)
+			}
+		})
 	}
 }
 

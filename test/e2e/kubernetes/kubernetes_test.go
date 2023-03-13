@@ -13,7 +13,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
@@ -217,14 +216,14 @@ var _ = AfterSuite(func() {
 		if err := vmssHealthCommand.Process.Kill(); err != nil {
 			log.Fatal(fmt.Sprintf("failed to kill process ID %d: ", vmssHealthCommand.Process.Pid), err)
 		}
-		stdout, err := ioutil.ReadFile(vmssHealthCommandStdOut)
+		stdout, err := os.ReadFile(vmssHealthCommandStdOut)
 		if err != nil {
 			fmt.Printf("Unable to read file %s", vmssHealthCommandStdOut)
 		}
 		fmt.Println(string(stdout))
 	}
 	if cfg.DebugAfterSuite {
-		cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses,podsecuritypolicy", "--all-namespaces", "-o", "wide")
+		cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses", "--all-namespaces", "-o", "wide")
 		out, err := cmd.CombinedOutput()
 		log.Printf("%s\n", out)
 		if err != nil {
@@ -560,6 +559,32 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
+		It("should validate DISA Ubuntu 20.04 STIG", func() {
+			if cfg.BlockSSHPort {
+				Skip("SSH port is blocked")
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				STIGFilesValidateScript := "stig-validate.sh"
+				err = sshConn.CopyTo(STIGFilesValidateScript)
+				Expect(err).NotTo(HaveOccurred())
+				STIGValidationCommand := fmt.Sprintf("/tmp/%s", STIGFilesValidateScript)
+				err = sshConn.Execute(STIGValidationCommand, false)
+				Expect(err).NotTo(HaveOccurred())
+				for _, n := range nodes {
+					if n.IsUbuntu() {
+						err := sshConn.CopyToRemoteWithRetry(n.Metadata.Name, "/tmp/"+STIGFilesValidateScript, sleepBetweenRetriesRemoteSSHCommand, cfg.Timeout)
+						Expect(err).NotTo(HaveOccurred())
+						err = sshConn.ExecuteRemoteWithRetry(n.Metadata.Name, STIGValidationCommand, false, sleepBetweenRetriesRemoteSSHCommand, cfg.Timeout)
+						Expect(err).NotTo(HaveOccurred())
+						fmt.Println(err)
+					}
+				}
+			} else {
+				Skip("Skip as feature flag EnforceUbuntu2004DisaStig is not set")
+			}
+		})
+
 		It("should validate kernel module configuration", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
@@ -617,6 +642,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate that every linux node has the right sshd config", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+				Skip("Skip as feature flag EnforceUbuntu2004DisaStig is set")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
 					nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
@@ -644,6 +671,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should validate password enforcement configuration", func() {
+			args := fmt.Sprintf("STIG=%t", eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig)
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
@@ -653,7 +681,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					pwQualityValidateScript := "pwquality-validate.sh"
 					err = sshConn.CopyTo(pwQualityValidateScript)
 					Expect(err).NotTo(HaveOccurred())
-					pwQualityValidationCommand := fmt.Sprintf("\"/tmp/%s\"", pwQualityValidateScript)
+					pwQualityValidationCommand := fmt.Sprintf("%s /tmp/%s", args, pwQualityValidateScript)
 					err = sshConn.Execute(pwQualityValidationCommand, false)
 					Expect(err).NotTo(HaveOccurred())
 					for _, n := range nodes {
@@ -733,7 +761,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				cfg.AddNodePoolInput == "" && !cfg.RebootControlPlaneNodes {
 				totalNodeCount := eng.NodeCount()
 				nodes := totalNodeCount - len(masterNodes)
-				_, err := node.WaitForNodesWithAnnotation(nodes, "foo", "bar", 5*time.Second, cfg.Timeout)
+				_, err := node.WaitForNodesWithAnnotation(nodes, "foo", "bar", 5*time.Second, 2*time.Minute)
 				Expect(err).NotTo(HaveOccurred())
 			} else {
 				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
@@ -741,12 +769,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have core kube-system componentry running", func() {
-			coreComponents := []string{
-				common.AddonManagerComponentName,
-				common.APIServerComponentName,
-				common.ControllerManagerComponentName,
-				common.KubeProxyAddonName,
-				common.SchedulerComponentName,
+			coreComponents := []string{common.KubeProxyAddonName}
+			masterPrefix := eng.ExpandedDefinition.Properties.GetMasterVMPrefix()
+			for i := 0; i < eng.ExpandedDefinition.Properties.MasterProfile.Count; i++ {
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.AddonManagerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.APIServerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.ControllerManagerComponentName, masterPrefix, i))
+				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.SchedulerComponentName, masterPrefix, i))
 			}
 			if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 				coreComponents = append(coreComponents, common.CloudControllerManagerComponentName)
@@ -873,7 +902,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should print cluster resources", func() {
-			cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses,podsecuritypolicy", "--all-namespaces", "-o", "wide")
+			cmd := exec.Command("k", "get", "deployments,pods,svc,daemonsets,configmaps,endpoints,jobs,clusterroles,clusterrolebindings,roles,rolebindings,storageclasses", "--all-namespaces", "-o", "wide")
 			out, err := cmd.CombinedOutput()
 			log.Printf("%s\n", out)
 			if err != nil {
@@ -1877,11 +1906,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					Expect(nodeZone == pvZone).To(Equal(true))
 				}
 
-				By("Cleaning up after ourselves")
-				err = testPod.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
-				err = pvc.Delete(util.DefaultDeleteRetries)
-				Expect(err).NotTo(HaveOccurred())
+				if cfg.CleanPVC {
+					By("Cleaning up after ourselves")
+					err = testPod.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+					err = pvc.Delete(util.DefaultDeleteRetries)
+					Expect(err).NotTo(HaveOccurred())
+				}
 			} else {
 				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
 			}

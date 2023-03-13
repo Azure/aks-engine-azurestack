@@ -64,7 +64,7 @@ func Test_OrchestratorProfile_Validate(t *testing.T) {
 					},
 				},
 			},
-			expectedError: "Invalid containerd version \"1.0.0\", please use one of the following versions: [1.3.2 1.3.3 1.3.4 1.3.5 1.3.6 1.3.7 1.3.8 1.3.9 1.4.4 1.4.6 1.4.7 1.4.8 1.4.9 1.4.11 1.5.11 1.5.13]",
+			expectedError: "Invalid containerd version \"1.0.0\", please use one of the following versions: [1.3.2 1.3.3 1.3.4 1.3.5 1.3.6 1.3.7 1.3.8 1.3.9 1.4.4 1.4.6 1.4.7 1.4.8 1.4.9 1.4.11 1.5.11 1.5.13 1.5.16]",
 		},
 		"should error when KubernetesConfig has containerdVersion value for docker container runtime": {
 			properties: &Properties{
@@ -997,10 +997,20 @@ func ExampleProperties_validateAddons() {
 		fmt.Printf("error in validateAddons: %s", err)
 	}
 
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = common.PodSecurityPolicyRemovedVersion
+	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
+	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
+		{Name: common.PodSecurityPolicyAddonName, Enabled: to.BoolPtr(true)},
+	}
+	if err := cs.Properties.validateAddons(true); err != nil {
+		fmt.Printf("error in validateAddons: %s", err)
+	}
+
 	// Output:
 	// level=warning msg="The rescheduler addon has been deprecated and disabled, it will be removed during this update"
 	// level=warning msg="The kube-dashboard addon is deprecated, we recommend you install the dashboard yourself, see https://github.com/kubernetes/dashboard"
 	// level=warning msg="The Azure CNI networkmonitor addon has been deprecated, it will be marked as disabled"
+	// level=warning msg="The PodSecurityPolicy admission was removed in Kubernetes v1.25+. The pod security standards will be enforced by the built-in PodSecurity admission controller instead. See https://github.com/Azure/aks-engine-azurestack/blob/master/docs/topics/pod-security.md"
 }
 
 func ExampleProperties_validateLinuxProfile() {
@@ -4451,6 +4461,24 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 			}
 		}
 	})
+
+	t.Run("Should enabled auditd for Ubuntu distro if DISA STIG enforced", func(t *testing.T) {
+		t.Parallel()
+		for _, distro := range DistroValues {
+			cs := getK8sDefaultContainerService(false)
+			agentPoolProfiles := cs.Properties.AgentPoolProfiles
+			agentPoolProfiles[0].Distro = distro
+			agentPoolProfiles[0].AuditDEnabled = to.BoolPtr(false)
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			switch distro {
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+				if err := cs.Properties.validateAgentPoolProfiles(false); err == nil || err.Error() != expectedMsg {
+					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
+				}
+			}
+		}
+	})
 }
 
 func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
@@ -4470,6 +4498,24 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 			case Ubuntu, Ubuntu1804, Ubuntu2004, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, ACC1604:
 				if err := cs.Properties.validateMasterProfile(false); err != nil {
 					t.Errorf("AuditDEnabled should work with distro %s, got error %s", distro, err.Error())
+				}
+			}
+		}
+	})
+
+	t.Run("Should enabled auditd for Ubuntu distro if DISA STIG enforced", func(t *testing.T) {
+		t.Parallel()
+		for _, distro := range DistroValues {
+			cs := getK8sDefaultContainerService(false)
+			masterProfile := cs.Properties.MasterProfile
+			masterProfile.Distro = distro
+			masterProfile.AuditDEnabled = to.BoolPtr(false)
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			switch distro {
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+				if err := cs.Properties.validateMasterProfile(false); err == nil || err.Error() != expectedMsg {
+					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}
 			}
 		}

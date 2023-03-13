@@ -635,7 +635,7 @@ version = 2
 
 [plugins]
   [plugins."io.containerd.grpc.v1.cri"]
-    sandbox_image = "mcr.microsoft.com/oss/kubernetes/pause:3.4.1"
+    sandbox_image = "mcr.microsoft.com/oss/kubernetes/pause:3.8"
     [plugins."io.containerd.grpc.v1.cri".cni]
     [plugins."io.containerd.grpc.v1.cri".containerd]
       default_runtime_name = "nvidia"
@@ -724,6 +724,9 @@ version = 2
 		"GetCSEConfigScriptFilepath": func() string {
 			return cseConfigScriptFilepath
 		},
+		"GetUbuntu2004DisaStigScriptFilepath": func() string {
+			return cseUbuntu2004StigScriptFilepath
+		},
 		"GetCustomSearchDomainsCSEScriptFilepath": func() string {
 			return customSearchDomainsCSEScriptFilepath
 		},
@@ -739,6 +742,13 @@ version = 2
 		"GetKMSKeyvaultKeyCSEScriptFilepath": func() string {
 			return kmsKeyvaultKeyCSEScriptFilepath
 		},
+		"NeedsDefaultAPIServerAdmissionConfiguration": func() bool {
+			configFilePath := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig["--admission-control-config-file"]
+			return !containsCustomFile(masterCustomFiles(cs.Properties), configFilePath)
+		},
+		"GetAPIServerAdmissionConfigurationFilepath": func() string {
+			return apiServerAdmissionConfigurationFilepath
+		},
 		"HasPrivateAzureRegistryServer": func() bool {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateAzureRegistryServer != ""
 		},
@@ -747,6 +757,9 @@ version = 2
 		},
 		"HasTelemetryEnabled": func() bool {
 			return cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.EnableTelemetry
+		},
+		"ShouldEnforceUbuntu2004DisaStig": func() bool {
+			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2004DisaStig")
 		},
 		"HasBlockOutboundInternet": func() bool {
 			return cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.BlockOutboundInternet

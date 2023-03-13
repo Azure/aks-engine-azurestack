@@ -54,12 +54,13 @@ type Properties struct {
 
 // FeatureFlags defines feature-flag restricted functionality
 type FeatureFlags struct {
-	EnableCSERunInBackground bool `json:"enableCSERunInBackground,omitempty"`
-	BlockOutboundInternet    bool `json:"blockOutboundInternet,omitempty"`
-	EnableIPv6DualStack      bool `json:"enableIPv6DualStack,omitempty"`
-	EnableTelemetry          bool `json:"enableTelemetry,omitempty"`
-	EnableIPv6Only           bool `json:"enableIPv6Only,omitempty"`
-	EnableWinDSR             bool `json:"enableWinDSR,omitempty"`
+	EnableCSERunInBackground  bool `json:"enableCSERunInBackground,omitempty"`
+	BlockOutboundInternet     bool `json:"blockOutboundInternet,omitempty"`
+	EnableIPv6DualStack       bool `json:"enableIPv6DualStack,omitempty"`
+	EnableTelemetry           bool `json:"enableTelemetry,omitempty"`
+	EnableIPv6Only            bool `json:"enableIPv6Only,omitempty"`
+	EnableWinDSR              bool `json:"enableWinDSR,omitempty"`
+	EnforceUbuntu2004DisaStig bool `json:"enforceUbuntu2004DisaStig,omitempty"`
 }
 
 // ServicePrincipalProfile contains the client and secret used by the cluster for Azure Resource CRUD
@@ -1026,4 +1027,9 @@ func (f *FeatureFlags) IsIPv6OnlyEnabled() bool {
 // IsWinDSREnabled checks if WinDSR feature is enabled
 func (f *FeatureFlags) IsWinDSREnabled() bool {
 	return f != nil && f.EnableWinDSR
+}
+
+// IsEnforceUbuntu2004DisaStigEnabled checks if EnforceUbuntu2004DisaStig feature is enabled
+func (f *FeatureFlags) IsEnforceUbuntu2004DisaStigEnabled() bool {
+	return f != nil && f.EnforceUbuntu2004DisaStig
 }

@@ -749,6 +749,7 @@ var _ = Describe("Upgrade Kubernetes cluster tests", func() {
 		uc := UpgradeCluster{
 			Translator: &i18n.Translator{},
 			Logger:     log.NewEntry(log.New()),
+			Force:      true,
 		}
 
 		mockClient := armhelpers.MockAKSEngineClient{

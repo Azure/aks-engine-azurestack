@@ -38,14 +38,6 @@ write_files:
     {{CloudInitData "provisionCIS"}}
 {{end}}
 
-{{- if .MasterProfile.IsAuditDEnabled}}
-- path: /etc/audit/rules.d/CIS.rules
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "auditdRules"}}
-{{end}}
 
 {{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}
@@ -404,6 +396,15 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "kmsKeyvaultKeyScript"}}
+{{end}}
+
+{{- if NeedsDefaultAPIServerAdmissionConfiguration}}
+- path: {{GetAPIServerAdmissionConfigurationFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "apiServerAdmissionConfiguration"}}
 {{end}}
 
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER

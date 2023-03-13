@@ -23,6 +23,7 @@ apt packages:
   - ca-certificates
   - ceph-common
   - cgroup-lite
+  - chrony
   - cifs-utils
   - conntrack
   - cracklib-runtime
@@ -42,22 +43,24 @@ apt packages:
   - ipset
   - iptables
   - jq
+  - libpam-pkcs11
   - libpam-pwquality
   - libpwquality-tools
   - make
   - mount
   - net-tools
   - nfs-common
+  - ntp
+  - ntpstat
+  - opensc-pkcs11
   - pigz
   - socat
   - sysstat
   - traceroute
   - util-linux
+  - vlock
   - xz-utils
   - zip
-  - ntp
-  - ntpstat
-  - chrony
 EOF
 
 chmod a-x /etc/update-motd.d/??-{motd-news,release-upgrade}
@@ -76,7 +79,7 @@ installBpftrace
 echo "  - bpftrace" >> ${VHD_LOGS_FILEPATH}
 
 MOBY_VERSION="20.10.14"
-CONTAINERD_VERSION="1.5.13"
+CONTAINERD_VERSION="1.5.16"
 installMoby
 installRunc
 systemctl_restart 100 5 30 docker || exit 1
@@ -123,7 +126,6 @@ for METRICS_SERVER_VERSION in ${METRICS_SERVER_VERSIONS}; do
 done
 
 KUBE_ADDON_MANAGER_VERSIONS="
-9.1.3
 9.1.5
 "
 for KUBE_ADDON_MANAGER_VERSION in ${KUBE_ADDON_MANAGER_VERSIONS}; do
@@ -132,7 +134,9 @@ for KUBE_ADDON_MANAGER_VERSION in ${KUBE_ADDON_MANAGER_VERSIONS}; do
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
-MCR_PAUSE_VERSIONS="3.4.1"
+MCR_PAUSE_VERSIONS="
+3.8
+"
 for PAUSE_VERSION in ${MCR_PAUSE_VERSIONS}; do
     # Pull the arch independent MCR pause image which is built for Linux and Windows
     CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/pause:${PAUSE_VERSION}"
@@ -150,10 +154,10 @@ for CLUSTER_AUTOSCALER_VERSION in ${CLUSTER_AUTOSCALER_VERSIONS}; do
 done
 
 CORE_DNS_VERSIONS="
-1.8.6
+1.9.4
 "
 for CORE_DNS_VERSION in ${CORE_DNS_VERSIONS}; do
-    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/coredns:${CORE_DNS_VERSION}"
+    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/coredns:v${CORE_DNS_VERSION}"
     loadContainerImage ${CONTAINER_IMAGE}
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
@@ -204,10 +208,8 @@ loadContainerImage "mcr.microsoft.com/oss/busybox/busybox:1.33.1"
 echo "  - busybox" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
+1.25.7
 1.24.9
-1.23.15
-1.22.17
-1.21.14
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -221,10 +223,8 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_MANAGER_VERSIONS="
+1.25.9
 1.24.0
-1.23.11
-1.1.14
-1.0.18
 "
 for CLOUD_MANAGER_VERSION in ${CLOUD_MANAGER_VERSIONS}; do
   for COMPONENT in azure-cloud-controller-manager azure-cloud-node-manager; do

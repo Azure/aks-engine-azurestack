@@ -331,7 +331,7 @@ const (
 	// https://github.com/containernetworking/plugins
 	CNIPluginVer = "v0.9.1"
 	// WindowsPauseImageVersion specifies version of Windows pause image
-	WindowsPauseImageVersion = "3.4.1"
+	WindowsPauseImageVersion = "3.8"
 	// DefaultAlwaysPullWindowsPauseImage is the default windowsProfile.AlwaysPullWindowsPauseImage value
 	DefaultAlwaysPullWindowsPauseImage = false
 )
@@ -448,7 +448,7 @@ const (
 	// DefaultMobyVersion specifies the default Azure build version of Moby to install.
 	DefaultMobyVersion = "20.10.14"
 	// DefaultContainerdVersion specifies the default containerd version to install.
-	DefaultContainerdVersion = "1.5.13"
+	DefaultContainerdVersion = "1.5.16"
 	// DefaultDockerBridgeSubnet specifies the default subnet for the docker bridge network for masters and agents.
 	DefaultDockerBridgeSubnet = "172.17.0.1/16"
 	// DefaultKubernetesMaxPodsKubenet is the maximum number of pods to run on a node for Kubenet.

@@ -6,7 +6,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net/url"
 	"os"
 	"path"
@@ -14,6 +13,9 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
@@ -188,7 +190,7 @@ func (glc *getLogsCmd) loadAPIModel() (err error) {
 
 func (glc *getLogsCmd) init() (err error) {
 	if glc.linuxScriptPath != "" {
-		sc, err := ioutil.ReadFile(glc.linuxScriptPath)
+		sc, err := os.ReadFile(glc.linuxScriptPath)
 		if err != nil {
 			return errors.Wrapf(err, "error reading log collection script %s", glc.linuxScriptPath)
 		}
@@ -201,7 +203,7 @@ func (glc *getLogsCmd) init() (err error) {
 		PrivateKeyPath: glc.linuxSSHPrivateKeyPath,
 	}
 	if glc.windowsScriptPath != "" {
-		sc, err := ioutil.ReadFile(glc.windowsScriptPath)
+		sc, err := os.ReadFile(glc.windowsScriptPath)
 		if err != nil {
 			return errors.Wrapf(err, "error reading log collection script %s", glc.windowsScriptPath)
 		}
@@ -287,7 +289,8 @@ func getClusterNodes(glc *getLogsCmd, kubeClient kubernetes.NodeLister) (nodes [
 	}
 	for _, node := range nodeList.Items {
 		if isMasterNode(node.Name, glc.cs.Properties.GetMasterVMPrefix()) || !glc.controlPlaneOnly {
-			switch api.OSType(strings.Title(node.Status.NodeInfo.OperatingSystem)) {
+			caser := cases.Title(language.English)
+			switch api.OSType(caser.String(node.Status.NodeInfo.OperatingSystem)) {
 			case api.Linux:
 				nodes = append(nodes, &ssh.RemoteHost{
 					URI: node.Name, Port: 22, OperatingSystem: api.Linux, AuthConfig: glc.linuxAuthConfig, Jumpbox: glc.jumpbox})

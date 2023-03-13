@@ -12,6 +12,7 @@ import (
 	logrus "github.com/sirupsen/logrus"
 	v1 "k8s.io/api/apps/v1"
 	v10 "k8s.io/api/core/v1"
+	v1beta1 "k8s.io/api/policy/v1beta1"
 	v11 "k8s.io/api/rbac/v1"
 	v12 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	reflect "reflect"
@@ -113,6 +114,21 @@ func (m *MockClient) ListServiceAccounts(namespace string) (*v10.ServiceAccountL
 func (mr *MockClientMockRecorder) ListServiceAccounts(namespace interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListServiceAccounts", reflect.TypeOf((*MockClient)(nil).ListServiceAccounts), namespace)
+}
+
+// ListPodSecurityPolices mocks base method
+func (m *MockClient) ListPodSecurityPolices(opts v12.ListOptions) (*v1beta1.PodSecurityPolicyList, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListPodSecurityPolices", opts)
+	ret0, _ := ret[0].(*v1beta1.PodSecurityPolicyList)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListPodSecurityPolices indicates an expected call of ListPodSecurityPolices
+func (mr *MockClientMockRecorder) ListPodSecurityPolices(opts interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListPodSecurityPolices", reflect.TypeOf((*MockClient)(nil).ListPodSecurityPolices), opts)
 }
 
 // GetDaemonSet mocks base method

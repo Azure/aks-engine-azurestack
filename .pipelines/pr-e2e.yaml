@@ -17,7 +17,7 @@ pr:
 resources:
   containers:
     - container: dev1
-      image: mcr.microsoft.com/oss/azcu/go-dev:v1.34.7
+      image: mcr.microsoft.com/oss/azcu/go-dev:v1.36.1
 
 jobs:
   - job: unit_tests
@@ -58,27 +58,8 @@ jobs:
 
   - template: e2e-job-template.yaml
     parameters:
-      name: "k8s_1_23_docker_e2e"
-      k8sRelease: "1.23"
-      apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
-      createVNET: false
-      enableKMSEncryption: false
-      containerRuntime: "docker"
-      distro: "aks-ubuntu-20.04"
-      runSSHTests: true
-      regions: $(REGIONS)
-      subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
-      tenantId: $(TENANT_ID)
-      clientId: $(SERVICE_PRINCIPAL_CLIENT_ID_E2E_KUBERNETES)
-      clientSecret: $(SERVICE_PRINCIPAL_CLIENT_SECRET_E2E_KUBERNETES)
-      msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
-      windowsVHDBuild: $(WINDOWS_VHD_BUILD)
-      linuxVHDBuild: $(LINUX_VHD_BUILD)
-
-  - template: e2e-job-template.yaml
-    parameters:
-      name: "k8s_1_23_containerd_e2e"
-      k8sRelease: "1.23"
+      name: "k8s_1_24_containerd_e2e"
+      k8sRelease: "1.24"
       apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
       createVNET: false
       enableKMSEncryption: false
@@ -96,8 +77,8 @@ jobs:
 
   - template: e2e-job-template.yaml
     parameters:
-      name: "k8s_1_24_containerd_e2e"
-      k8sRelease: "1.24"
+      name: "k8s_1_25_containerd_e2e"
+      k8sRelease: "1.25"
       apimodel: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
       createVNET: false
       enableKMSEncryption: false

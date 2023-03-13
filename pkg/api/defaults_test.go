@@ -1197,7 +1197,7 @@ func TestKubernetesImageBase(t *testing.T) {
 	mockCS.Location = "westus2"
 	cloudSpecConfig = mockCS.GetCloudSpecConfig()
 	properties = mockCS.Properties
-	properties.OrchestratorProfile.KubernetesConfig.KubernetesImageBase = "k8s.gcr.io/"
+	properties.OrchestratorProfile.KubernetesConfig.KubernetesImageBase = "registry.k8s.io/"
 	properties.OrchestratorProfile.KubernetesConfig.KubernetesImageBaseType = ""
 	mockCS.setOrchestratorDefaults(true, false)
 	if properties.OrchestratorProfile.KubernetesConfig.KubernetesImageBase != cloudSpecConfig.KubernetesSpecConfig.MCRKubernetesImageBase {
@@ -6185,9 +6185,9 @@ func ExampleContainerService_setOrchestratorDefaults() {
 
 	// Output:
 	// level=warning msg="Moby will be upgraded to version 20.10.14\n"
-	// level=warning msg="containerd will be upgraded to version 1.5.13\n"
+	// level=warning msg="containerd will be upgraded to version 1.5.16\n"
 	// level=warning msg="Any new nodes will have Moby version 20.10.14\n"
-	// level=warning msg="Any new nodes will have containerd version 1.5.13\n"
+	// level=warning msg="Any new nodes will have containerd version 1.5.16\n"
 }
 
 func TestCombineValues(t *testing.T) {
