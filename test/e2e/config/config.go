@@ -55,9 +55,13 @@ type Config struct {
 	GinkgoSkip                         string `envconfig:"GINKGO_SKIP" default:""`
 	GinkgoFailFast                     bool   `envconfig:"GINKGO_FAIL_FAST" default:"false"`
 	GinkgoParallel                     bool   `envconfig:"GINKGO_PARALLEL" default:"false"`
+	UpgradeCluster                     bool   `envconfig:"UPGRADE_CLUSTER" default:"false"`
+	UpgradeVersion                     string `envconfig:"UPGRADE_VERSION" default:""`
+	SkipTestsAfterUpgrade              bool   `envconfig:"SKIP_TESTS_AFTER_UPGRADE" default:"true"`
 	DebugAfterSuite                    bool   `envconfig:"DEBUG_AFTERSUITE" default:"false"`
 	RunVMSSHygiene                     bool   `envconfig:"RUN_VMSS_HYGIENE" default:"false"`
 	BlockSSHPort                       bool   `envconfig:"BLOCK_SSH" default:"false"`
+	BlockOutboundInternet              bool   `envconfig:"BLOCK_OUTBOUND_INTERNET" default:"false"`
 	RebootControlPlaneNodes            bool   `envconfig:"REBOOT_CONTROL_PLANE_NODES" default:"false"`
 	RunVMSSNodePrototype               bool   `envconfig:"RUN_VMSS_NODE_PROTOTYPE" default:"false"`
 	AddNodePoolInput                   string `envconfig:"ADD_NODE_POOL_INPUT" default:""`

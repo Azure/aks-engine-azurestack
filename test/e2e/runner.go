@@ -232,6 +232,67 @@ func main() {
 		}
 	}
 
+	if cfg.UpgradeCluster { 
+		var resourceGroup string
+		if cliProvisioner.Account.ResourceGroup.Name != "" {
+			resourceGroup = cliProvisioner.Account.ResourceGroup.Name
+		} else {
+			resourceGroup = cfg.Name
+		}
+
+		if resourceGroup == "" {
+			if cfg.CleanUpIfFail {
+				teardown()
+			}
+			log.Fatalf("Resource Group is empty")
+		}
+
+		os.Setenv("RESOURCE_GROUP", resourceGroup)
+
+		err = cliProvisioner.RunUpgrade()
+		rgs = cliProvisioner.ResourceGroups
+		eng = cliProvisioner.Engine
+		if err != nil {
+			if cfg.CleanUpIfFail {
+				teardown()
+			}
+			log.Fatalf("Error while trying to upgrade cluster:%s", err)
+		}
+
+		if !cfg.SkipTestsAfterUpgrade {
+			var resourceGroup string
+			if cliProvisioner.Account.ResourceGroup.Name != "" {
+				resourceGroup = cliProvisioner.Account.ResourceGroup.Name
+			} else {
+				resourceGroup = cfg.Name
+			}
+	
+			if resourceGroup == "" {
+				if cfg.CleanUpIfFail {
+					teardown()
+				}
+				log.Fatalf("Resource Group is empty")
+			}
+	
+			os.Setenv("RESOURCE_GROUP", resourceGroup)
+	
+			g, err := runner.BuildGinkgoRunner(cfg, pt)
+			if err != nil {
+				if cfg.CleanUpIfFail {
+					teardown()
+				}
+				log.Fatalf("Error: Unable to parse ginkgo configuration!")
+			}
+			err = g.Run()
+			if err != nil {
+				if cfg.CleanUpIfFail {
+					teardown()
+				}
+				os.Exit(1)
+			}
+		}
+	}
+
 	teardown()
 	os.Exit(0)
 }

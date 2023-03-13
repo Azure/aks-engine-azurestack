@@ -96,6 +96,7 @@ type Config struct {
 	DefinitionName            string // Unique cluster name
 	GeneratedTemplatePath     string // azuredeploy.json path
 	GeneratedParametersPath   string // azuredeploy.parameters.json path
+	GeneratedApiModelPath     string // apimodel.json path
 }
 
 // Engine holds necessary information to interact with aks-engine cli
@@ -121,6 +122,7 @@ func ParseConfig(cwd, clusterDefinition, name string) (*Config, error) {
 	c.GeneratedDefinitionPath = filepath.Join(cwd, generatedDefinitionPath)
 	c.GeneratedTemplatePath = filepath.Join(cwd, generatedDefinitionPath, "azuredeploy.json")
 	c.GeneratedParametersPath = filepath.Join(cwd, generatedDefinitionPath, "azuredeploy.parameters.json")
+	c.GeneratedApiModelPath = filepath.Join(cwd, generatedDefinitionPath, "apimodel.json")
 	return c, nil
 }
 

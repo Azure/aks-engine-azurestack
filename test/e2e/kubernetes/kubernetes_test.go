@@ -155,6 +155,18 @@ var _ = BeforeSuite(func() {
 		Expect(success).To(BeTrue())
 		firstMasterRegexp, err = regexp.Compile(firstMasterRegexStr)
 		Expect(err).NotTo(HaveOccurred())
+		
+		// Remove previous host keys
+		knownHostsFile := fmt.Sprintf("~/.ssh/known_hosts")
+		hostName := fmt.Sprintf("%s.%s.cloudapp.azure.com", cfg.Name, cfg.Location)
+		removePrevHostCmd := fmt.Sprintf("ssh-keygen -f %s -R %s", knownHostsFile, hostName)
+		cmd := exec.Command("bash", "-c", removePrevHostCmd)
+		util.PrintCommand(cmd)
+		out, err := cmd.CombinedOutput()
+		log.Printf("%s\n", out)
+		if err != nil {
+			log.Printf("Error: Unable to remove known hosts: %s\n", err)
+		}
 	}
 	if hasAddon, addon := eng.HasAddon(common.ClusterAutoscalerAddonName); hasAddon {
 		clusterAutoscalerAddon = addon
@@ -878,6 +890,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have functional container networking DNS", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			By("Ensuring that we have functional DNS resolution from a linux container")
 			validateDNSLinuxName := "validate-dns-linux"
 			validateDNSLinuxNamespace := "default"
@@ -940,7 +955,26 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			Expect(successes).Should(BeNumerically(">=", cfg.StabilityIterationsSuccessRate*float32(cfg.StabilityIterations)))
 		})
 
+		It("should not have outbound access if specified", func() {
+			if cfg.BlockOutboundInternet {
+				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				outboundInternetCommand := fmt.Sprintf("nc -vz microsoft.com 80")
+				for _, n := range nodes {
+					if n.IsLinux() {
+						err = sshConn.ExecuteRemoteWithRetry(n.Metadata.Name, outboundInternetCommand, true, 1*time.Minute, timeoutWhenWaitingForPodOutboundAccess)
+						Expect(err).To(HaveOccurred())
+					}
+				}
+			} else {
+				Skip("Outbound access is allowed")
+			}
+		})
+
 		It("should be able to create and connect to a hostPort-configured pod", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if eng.AnyAgentIsLinux() {
 				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
@@ -1058,6 +1092,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have stable external container networking as we recycle a bunch of pods", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			// Test for basic UDP networking
 			name := fmt.Sprintf("alpine-%s", cfg.Name)
 			command := fmt.Sprintf("time nc -vz 8.8.8.8 53 || nc -vz 8.8.4.4 53")
@@ -1086,6 +1123,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have stable internal container networking as we recycle a bunch of pods", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			name := fmt.Sprintf("alpine-%s", cfg.Name)
 			command := fmt.Sprintf("time nc -vz kubernetes 443 && nc -vz kubernetes.default.svc 443 && nc -vz kubernetes.default.svc.cluster.local 443")
 			deploymentCommand := fmt.Sprintf("time %s && while true; do sleep 1; done || echo unable to reach internal kubernetes endpoints", command)
@@ -1100,6 +1140,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have stable pod-to-pod networking", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if eng.AnyAgentIsLinux() {
 				By("Creating a php-apache deployment")
 				phpApacheDeploy, err := deployment.CreateLinuxDeployIfNotExist("deis/hpa-example", longRunningApacheDeploymentName, "default", "", "", 3*time.Second, cfg.Timeout)
@@ -1412,6 +1455,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should be able to kubectl port-forward to a running pod", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			deploymentNamespace := "default"
 			testPortForward := func(deploymentName string) {
 				running, podWaitErr := pod.WaitOnSuccesses(deploymentName, deploymentNamespace, 3, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
@@ -1575,6 +1621,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should have the correct service account issuer when consuming a projected service account token", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if !common.IsKubernetesVersionGe(eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion, "1.20.0") {
 				Skip("Service account token volume projection is not available prior to Kubernetes 1.20")
 			}
@@ -1690,6 +1739,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 
 	Describe("with a linux agent pool", func() {
 		It("should be able to produce working LoadBalancers", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if eng.AnyAgentIsLinux() {
 				By("Creating a nginx deployment")
 				r := rand.New(rand.NewSource(time.Now().UnixNano()))
@@ -2141,6 +2193,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 
 	Describe("with a windows agent pool", func() {
 		It("should be able to deploy and scale an iis webserver", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if eng.HasWindowsAgents() {
 				windowsImages, err := eng.GetWindowsTestImages()
 				Expect(err).NotTo(HaveOccurred())
@@ -2254,6 +2309,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should be able to resolve DNS across windows and linux deployments", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			if eng.HasWindowsAgents() {
 				if eng.HasNetworkPlugin(api.NetworkPluginKubenet) {
 					Skip("This tests is not enabled for kubenet CNI on windows")
@@ -2634,6 +2692,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should be able to autoscale", func() {
+			if cfg.BlockOutboundInternet {
+				Skip("Outbound internet is blocked")
+			}
 			var numCoreDNSPods int
 			var testCoreDNSScaleOut bool
 			if eng.AnyAgentIsLinux() && eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.EnableAggregatedAPIs {

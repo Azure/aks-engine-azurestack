@@ -230,7 +230,7 @@ func (n *Node) Describe() error {
 // AddLabel adds a label to a node
 func (n *Node) AddLabel(label string) error {
 	var commandTimeout time.Duration
-	cmd := exec.Command("k", "label", "node", n.Metadata.Name, label)
+	cmd := exec.Command("k", "label", "--overwrite=true", "node", n.Metadata.Name, label)
 	out, err := util.RunAndLogCommand(cmd, commandTimeout)
 	log.Printf("\n%s\n", string(out))
 	return err
@@ -269,7 +269,7 @@ func (n *Node) AddLabelWithRetry(sleep, timeout time.Duration, label string) err
 // AddAnnotation adds an annotation to node
 func (n *Node) AddAnnotation(annotation string) error {
 	var commandTimeout time.Duration
-	cmd := exec.Command("k", "annotate", "nodes", n.Metadata.Name, annotation)
+	cmd := exec.Command("k", "annotate", "--overwrite=true", "nodes", n.Metadata.Name, annotation)
 	out, err := util.RunAndLogCommand(cmd, commandTimeout)
 	log.Printf("\n%s\n", string(out))
 	return err
