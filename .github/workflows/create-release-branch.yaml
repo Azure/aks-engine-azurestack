@@ -158,3 +158,20 @@ jobs:
           title: 'release: ${{github.event.inputs.release_version}} CHANGELOG'
           body: Add CHANGELOG for upcoming ${{github.event.inputs.release_version}} release
           branch: CHANGELOG-${{github.event.inputs.release_version}}
+      - name: create changelog branch
+        run: |
+          git commit -m "release: ${RELEASE_VER} CHANGELOG"
+          git checkout -b CHANGELOG-${RELEASE_VER}
+          git push origin CHANGELOG-${RELEASE_VER}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VER: ${{github.event.inputs.release_version}}
+      - name: print create pr instructions
+        run: |
+          BASE=release-${RELEASE_VER}
+          TITLE="release: ${RELEASE_VER} CHANGELOG"
+          BODY="Add CHANGELOG for upcoming ${RELEASE_VER} release"
+          echo "Create PR from web UI: https://github.com/Azure/aks-engine-azurestack/pull/new/CHANGELOG-${RELEASE_VER}"
+          echo "Create PR from GH CLI: > gh pr create -b $BASE -t $TITLE -b $BODY"
+        env:
+          RELEASE_VER: ${{github.event.inputs.release_version}}
