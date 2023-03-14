@@ -12,7 +12,7 @@ jobs:
       run:
         working-directory: ./choco/aks-engine-azurestack
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: set env
         run: |
           $ReleaseVersion = "${{github.event.inputs.release_version}}".substring(1)

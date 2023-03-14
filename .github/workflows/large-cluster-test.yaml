@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 720
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{github.event.inputs.from_branch}}
       - name: Setup SSH Keys and known_hosts
@@ -99,13 +99,13 @@ jobs:
           sonobuoy run --plugin e2e --wait --e2e-skip "\[Serial\]" --e2e-focus "\[Conformance\]" --timeout=86400
           k get pod sonobuoy -n sonobuoy -o json | jq -r '.metadata.annotations."sonobuoy.hept.io/status"'
       - name: checkout knarly
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: Azure/knarly
           path: knarly
           ref: main
       - name: checkout perf-tests
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: kubernetes/perf-tests
           path: perf-tests

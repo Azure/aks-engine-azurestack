@@ -41,7 +41,7 @@ jobs:
   run-e2e:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           ref: ${{github.event.inputs.from_branch}}
       - name: validate cluster config
