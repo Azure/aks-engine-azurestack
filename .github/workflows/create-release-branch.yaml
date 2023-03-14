@@ -137,6 +137,10 @@ jobs:
         with:
           ref: release-${{github.event.inputs.release_version}}
           fetch-depth: 0
+      - name: setup git
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "<>"
       - name: install go
         uses: actions/setup-go@v3
         with:
@@ -151,10 +155,20 @@ jobs:
           git add releases/CHANGELOG-${{github.event.inputs.release_version}}.md
       - name: remove git-chglog binary
         run: rm -f ${GITHUB_WORKSPACE}/git-chglog
-      - name: create pull request
-        uses: peter-evans/create-pull-request@v3
-        with:
-          commit-message: 'release: ${{github.event.inputs.release_version}} CHANGELOG'
-          title: 'release: ${{github.event.inputs.release_version}} CHANGELOG'
-          body: Add CHANGELOG for upcoming ${{github.event.inputs.release_version}} release
-          branch: CHANGELOG-${{github.event.inputs.release_version}}
+      - name: create changelog branch
+        run: |
+          git commit -m "release: ${RELEASE_VER} CHANGELOG"
+          git checkout -b CHANGELOG-${RELEASE_VER}
+          git push origin CHANGELOG-${RELEASE_VER}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_VER: ${{github.event.inputs.release_version}}
+      - name: print create pr instructions
+        run: |
+          BASE=release-${RELEASE_VER}
+          TITLE="release: ${RELEASE_VER} CHANGELOG"
+          BODY="Add CHANGELOG for upcoming ${RELEASE_VER} release"
+          echo "Create PR from web UI: https://github.com/${GITHUB_REPOSITORY}/pull/new/CHANGELOG-${RELEASE_VER}"
+          echo "Create PR from GH CLI: > gh pr create -b \"${BASE}\" -t \"${TITLE}\" -b \"${BODY}\" -R ${GITHUB_REPOSITORY}"
+        env:
+          RELEASE_VER: ${{github.event.inputs.release_version}}
