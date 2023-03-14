@@ -179,6 +179,9 @@ tools-install:
 tools-clean:
 	make -C hack/tools/ clean
 
+create-release-branch:
+	@./scripts/gh-create-release-branch.sh
+
 include versioning.mk
 include test.mk
 include packer.mk
