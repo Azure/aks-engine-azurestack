@@ -40,13 +40,10 @@ jobs:
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
-          CLEANUP_ON_EXIT: true
+          CLEANUP_ON_EXIT: false
           CLEANUP_IF_FAIL: false
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: false
-          UPGRADE_CLUSTER: false
-          UPGRADE_VERSION: "1.24.9"
-          SKIP_TESTS_AFTER_UPGRADE: false
           AZURE_CORE_ONLY_SHOW_ERRORS: true
           BLOCK_SSH: false
           RETAIN_SSH: false
@@ -65,11 +62,11 @@ jobs:
         run: make test-kubernetes
       - name: Validate 1.23 no-egress scenario, upgrade
         run : |
-          RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2) \
-          REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2) \
-          CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json) \
-          TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2) \
-          ./bin/aks-engine-azurestack upgrade --force \ 
+          RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
+          REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
+          CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
+          TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
+          ./bin/aks-engine-azurestack upgrade --force \
           --subscription-id ${{ secrets.TEST_AZURE_SUB_ID }} \
           --api-model _output/$RESOURCE_GROUP/apimodel.json \
           --location $REGION \
@@ -79,8 +76,36 @@ jobs:
           --client-id ${{ secrets.TEST_AZURE_SP_ID }} \
           --client-secret ${{ secrets.TEST_AZURE_SP_PW }}
       - name: Validate 1.23 no-egress scenario, test suite after upgrade
+        env:
+          ORCHESTRATOR_RELEASE: "1.23"
+          CLUSTER_DEFINITION: "examples/no_outbound.json"
+          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          LOCATION: "eastus"
+          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: false
+          SKIP_LOGS_COLLECTION: true
+          SKIP_TEST: false
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          BLOCK_SSH: false
+          RETAIN_SSH: false
+          BLOCK_OUTBOUND_INTERNET: true
+          CONTAINER_RUNTIME: containerd
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          WINDOWS_NODE_IMAGE_GALLERY: AKSeGallery
+          WINDOWS_NODE_IMAGE_NAME: windows2019containerd
+          WINDOWS_NODE_IMAGE_VERSION: 2023.033.2
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: AKSeImages
+          LINUX_NODE_IMAGE_GALLERY: AKSeGallery
+          LINUX_NODE_IMAGE_NAME: ubuntu-20.04
+          LINUX_NODE_IMAGE_VERSION: 2023.032.2
+          GINKGO_FOCUS: "should validate filesystem config"
         run : |
-          NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2) \
+          NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
           make test-kubernetes
       - name: Validate 1.24 no-egress scenario
         env:
