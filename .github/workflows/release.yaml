@@ -176,3 +176,5 @@ jobs:
           bodyFile: releases/CHANGELOG-${{ env.RELEASE_VERSION }}.md
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: ${{ env.RELEASE_VERSION }}
+          commit: release-${{ env.RELEASE_VERSION }}
+          prerelease: true

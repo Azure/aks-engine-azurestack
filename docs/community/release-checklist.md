@@ -50,13 +50,13 @@ Let's go through the process of creating a new release of the [aks-engine][] bin
 
 We will use **v0.65.0** as an example herein. You should replace this with the new version you're releasing.
 
-### Prepare a Release Branch
+### Release Branch
 
 For a minor release, we will release from master. For a patch, we will create a new branch at the `Azure/` git origin from the previous release branch and use `git cherry-pick` to apply specific commits.
 
 Once your source branch is prepared for a release, we run the "Create Release Branch" GitHub Action to automatically validate and create the destination release branch:
 
-- https://github.com/Azure/aks-engine-azurestack/actions/workflows/create-release-branch.yaml
+- [Create Release Branch action](https://github.com/Azure/aks-engine-azurestack/actions/workflows/create-release-branch.yaml)
 
 Use the full "v"-prefixed semver release string in the field with the description "Which version are we creating a release branch for?", for example `v0.65.0`.
 
@@ -68,17 +68,96 @@ Click "Run Workflow" to initiate the process of validating and creating our rele
 - Run well-known "no egress" tests to validate that the base set of default components are pre-installed onto the default Linux and Windows VHDs.
 - Create a new branch at the `Azure/` git origin named "release-<release version>", for example `release-v0.65.0` for the `v0.65.0` release.
 - Generate automated release notes using the `git-chglog` tool.
-- Create a PR with the generated release notes as a potential commit to the destination release branch.
+- Create a branch with the generated release notes as a potential commit to the destination release branch.
 
-### Review Release Notes
+#### Minor Release Branch using GitHub CLI
 
-If the "Create Release Branch" GitHub Action ran successfully, there will be a new PR in the `Azure/aks-engine-azurestack` queue named "release: <release version> CHANGELOG", for example `release: v0.65.0 CHANGELOG` for the `v0.65.0` release.
+See example of how to prepare a minor branch:
 
-At this time project maintainers should review the CHANGELOG PR for the following:
+```bash
+# New release version
+RELEASE_VERSION=v0.76.0
+# Find your Azure/aks-engine-azurestack remote using git remote -v`
+GH_ORG_REPO=Azure/aks-engine-azurestack
+REMOTE=$(git remote -v | grep ${GH_ORG_REPO} | head -n 1 | cut -f 1)
+
+# Run create-release-action GH action
+WORKFLOW_FROM_BRANCH=master \
+RELEASE_REPOSITORY=${GH_ORG_REPO} \
+RELEASE_VERSION=${RELEASE_VERSION} \
+RELEASE_FROM_BRANCH=master \
+make create-release-branch
+
+# Wait for action to finish
+gh run watch -R ${GH_ORG_REPO}
+
+# Validate remote branches
+git fetch ${REMOTE}
+git log ${REMOTE}/CHANGELOG-${RELEASE_VERSION}
+git log ${REMOTE}/release-${RELEASE_VERSION}
+```
+
+#### Patch Release Branch using GitHub CLI
+
+See example of how to prepare a patch release branch:
+
+```bash
+# Base release version
+PREVIOUS_VERSION=v0.76.0
+# New release version
+RELEASE_VERSION=v0.76.1
+# Find your Azure/aks-engine-azurestack remote using git remote -v`
+GH_ORG_REPO=Azure/aks-engine-azurestack
+REMOTE=$(git remote -v | grep ${GH_ORG_REPO} | head -n 1 | cut -f 1)
+
+# Create local work branch
+git checkout -b patch-release-${RELEASE_VERSION}
+# Move it to previous release
+git reset --hard ${REMOTE}/release-${PREVIOUS_VERSION}
+# Cherry-pick commits to include
+git cherry-pick ${COMMIT_1} ${COMMIT_2} ...
+# Push work branch to remote
+git push ${REMOTE} patch-release-${RELEASE_VERSION}
+
+# Run create-release-action GH action
+WORKFLOW_FROM_BRANCH=master \
+RELEASE_REPOSITORY=${GH_ORG_REPO} \
+RELEASE_VERSION=${RELEASE_VERSION} \
+RELEASE_FROM_BRANCH=patch-release-${RELEASE_VERSION} \
+scripts/gh-create-release-branch.sh
+
+# Wait for action to finish
+gh run watch -R ${GH_ORG_REPO}
+
+# Validate remote branches
+git fetch ${REMOTE}
+git log ${REMOTE}/CHANGELOG-${RELEASE_VERSION}
+git log ${REMOTE}/release-${RELEASE_VERSION}
+```
+
+### Release Notes
+
+If the "Create Release Branch" GitHub Action ran successfully, there will be a new branch in the `Azure/aks-engine-azurestack` repository named "CHANGELOG-${RELEASE_VERSION}", for example `CHANGELOG-v0.65.0` for the `v0.65.0` release.
+
+At this time project maintainers should review file `releases/CHANGELOG-${RELEASE_VERSION}.md` for the following:
 
 - Does the generated list of changes meet with the desired set of changes to include in this release?
 - Is there anything that can be improved with manual, human changes to the CHANGELOG markdown?
-  - If so, edit the `.md` file in-place in the PR
+  - If so, edit the `.md` file and push a new commit to branch "CHANGELOG-${RELEASE_VERSION}"
+
+After this, create a pull request for the changelog file:
+
+```bash
+gh pr create \
+  --base release-${RELEASE_VERSION} \
+  --head CHANGELOG-${RELEASE_VERSION} \
+  --title "release: ${RELEASE_VERSION} CHANGELOG" \
+  --body "Add CHANGELOG for upcoming ${RELEASE_VERSION} release" \
+  --repo Azure/aks-engine-azurestack
+
+# Merge if you have admin permissions
+gh pr merge <PR_ID> --admin --squash --repo ${GH_ORG_REPO}
+```
 
 Ensure that at least two maintainers lgtm the final proposed CHANGELOG. Once this PR is merged to the release branch, a GitHub Action will perform the actual release publication.
 
