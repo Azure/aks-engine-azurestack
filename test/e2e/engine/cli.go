@@ -45,22 +45,3 @@ func (e *Engine) Deploy(location string) error {
 	}
 	return nil
 }
-
-// Upgrade will run aks-engine upgrade on a given cluster definition
-func (e *Engine) Upgrade(location string, upgradeVersion string) error {
-	cmd := exec.Command("./bin/aks-engine-azurestack", "upgrade",
-		"--location", location,
-		"--api-model", e.Config.GeneratedApiModelPath,
-		"--resource-group", e.Config.DefinitionName,
-		"--upgrade-version", upgradeVersion,
-		"--vm-timeout", "20",
-	)
-	util.PrintCommand(cmd)
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Printf("Error while trying to upgrade aks-engine template with cluster definition - %s: %s\n", e.Config.ClusterDefinitionTemplate, err)
-		log.Printf("Output:%s\n", out)
-		return err
-	}
-	return nil
-}
