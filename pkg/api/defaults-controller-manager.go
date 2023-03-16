@@ -81,6 +81,14 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		}
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.24.0") {
+		// https://github.com/kubernetes/kubernetes/pull/106860
+		removedFlags124 := []string{"--address", "--port"}
+		for _, key := range removedFlags124 {
+			delete(o.KubernetesConfig.ControllerManagerConfig, key)
+		}
+	}
+
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.25.0") {
 		// https://github.com/kubernetes/kubernetes/pull/109612
 		removedFlags125 := []string{"--deleting-pods-qps", "--deleting-pods-burst", "--register-retry-count"}

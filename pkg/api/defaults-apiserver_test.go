@@ -658,18 +658,6 @@ func TestAPIServerInsecureFlag(t *testing.T) {
 			version: "1.23.0",
 			found:   false,
 		},
-		{
-			version: "1.24.0",
-			found:   false,
-		},
-		{
-			version: "1.24.0-alpha.0",
-			found:   false,
-		},
-		{
-			version: "1.24.0-alpha.1-24",
-			found:   false,
-		},
 	}
 
 	for _, tt := range apiTests {
@@ -685,6 +673,46 @@ func TestAPIServerInsecureFlag(t *testing.T) {
 		if tt.found && v != "0" {
 			t.Fatalf("got unexpected '--insecure-port' API server config value for k8s v%s: %s",
 				defaultTestClusterVer, a["--insecure-port"])
+		}
+	}
+
+	apiTestsForceDelete := []apiServerTest{
+		{
+			version: "1.23.0",
+			found:   true,
+		},
+		{
+			version: "1.24.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range apiTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+			"--address":               "0.0.0.0",
+			"--insecure-bind-address": "0.0.0.0",
+			"--port":                  "443",
+			"--insecure-port":         "0",
+		}
+		cs.setAPIServerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+
+		_, found := a["--address"]
+		if found != tt.found {
+			t.Fatalf("got --address found %t want %t", found, tt.found)
+		}
+		_, found = a["--insecure-bind-address"]
+		if found != tt.found {
+			t.Fatalf("got --insecure-bind-address found %t want %t", found, tt.found)
+		}
+		_, found = a["--port"]
+		if found != tt.found {
+			t.Fatalf("got --port found %t want %t", found, tt.found)
+		}
+		_, found = a["--insecure-port"]
+		if found != tt.found {
+			t.Fatalf("got --insecure-port found %t want %t", found, tt.found)
 		}
 	}
 
