@@ -182,3 +182,41 @@ func TestControllerManagerDefaultConfig(t *testing.T) {
 		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
 	}
 }
+
+func TestControllerManagerInsecureFlag(t *testing.T) {
+	type controllerManagerTest struct {
+		version string
+		found   bool
+	}
+
+	controllerManagerTestsForceDelete := []controllerManagerTest{
+		{
+			version: "1.23.0",
+			found:   true,
+		},
+		{
+			version: "1.24.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range controllerManagerTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = map[string]string{
+			"--address": "0.0.0.0",
+			"--port":    "443",
+		}
+		cs.setControllerManagerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+
+		_, found := a["--address"]
+		if found != tt.found {
+			t.Fatalf("got --address found %t want %t", found, tt.found)
+		}
+		_, found = a["--port"]
+		if found != tt.found {
+			t.Fatalf("got --port found %t want %t", found, tt.found)
+		}
+	}
+
+}

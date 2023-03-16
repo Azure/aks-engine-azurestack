@@ -152,6 +152,14 @@ func (cs *ContainerService) setAPIServerConfig() {
 		delete(o.KubernetesConfig.APIServerConfig, key)
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.24.0") {
+		// https://github.com/kubernetes/kubernetes/pull/106859
+		removedFlags124 := []string{"--address", "--insecure-bind-address", "--port", "--insecure-port"}
+		for _, key := range removedFlags124 {
+			delete(o.KubernetesConfig.APIServerConfig, key)
+		}
+	}
+
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.25.0") {
 		// https://github.com/kubernetes/kubernetes/pull/108624
 		removedFlags125 := []string{"--service-account-api-audiences"}
