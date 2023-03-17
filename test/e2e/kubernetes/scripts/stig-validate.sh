@@ -49,3 +49,11 @@ for ((i = 0; i < ${#CONFIGS[@]}; i++))
 do
     grep -i "${CONFIGS[$i]}" /etc/ssh/sshd_config || exit 1
 done
+
+ENSURE_INSTALLED="
+auditd
+"
+
+for PACKAGE in ${ENSURE_INSTALLED}; do
+    apt list --installed | grep -E "^${PACKAGE}" || exit 1
+done

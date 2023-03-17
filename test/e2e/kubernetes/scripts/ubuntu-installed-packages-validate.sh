@@ -28,7 +28,6 @@ fi
 
 ENSURE_INSTALLED="
 apt-transport-https
-auditd
 blobfuse
 ca-certificates
 chrony
