@@ -127,6 +127,7 @@ done
 
 KUBE_ADDON_MANAGER_VERSIONS="
 9.1.5
+9.1.6
 "
 for KUBE_ADDON_MANAGER_VERSION in ${KUBE_ADDON_MANAGER_VERSIONS}; do
     CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/kube-addon-manager:v${KUBE_ADDON_MANAGER_VERSION}"
