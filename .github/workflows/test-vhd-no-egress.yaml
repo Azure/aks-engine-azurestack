@@ -1,4 +1,4 @@
-name: Test VHD Air-gapped
+name: Test VHD No Egress
 
 on:
   workflow_dispatch:
@@ -105,7 +105,7 @@ jobs:
         run : |
           export NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2);\
           make test-kubernetes
-      - name: Validate 1.25 no-egress scenario
+      - name: Validate 1.25 no-egress scenario, deploy and test suite after deploy
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.25"
