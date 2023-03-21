@@ -154,18 +154,6 @@ var _ = BeforeSuite(func() {
 		Expect(success).To(BeTrue())
 		firstMasterRegexp, err = regexp.Compile(firstMasterRegexStr)
 		Expect(err).NotTo(HaveOccurred())
-		
-		// Remove previous host keys
-		knownHostsFile := fmt.Sprintf("~/.ssh/known_hosts")
-		hostName := fmt.Sprintf("%s.%s.cloudapp.azure.com", cfg.Name, cfg.Location)
-		removePrevHostCmd := fmt.Sprintf("ssh-keygen -f %s -R %s", knownHostsFile, hostName)
-		cmd := exec.Command("bash", "-c", removePrevHostCmd)
-		util.PrintCommand(cmd)
-		out, err := cmd.CombinedOutput()
-		log.Printf("%s\n", out)
-		if err != nil {
-			log.Printf("Error: Unable to remove known hosts: %s\n", err)
-		}
 	}
 	if hasAddon, addon := eng.HasAddon(common.ClusterAutoscalerAddonName); hasAddon {
 		clusterAutoscalerAddon = addon
