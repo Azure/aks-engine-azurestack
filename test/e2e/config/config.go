@@ -57,6 +57,7 @@ type Config struct {
 	DebugAfterSuite                    bool   `envconfig:"DEBUG_AFTERSUITE" default:"false"`
 	RunVMSSHygiene                     bool   `envconfig:"RUN_VMSS_HYGIENE" default:"false"`
 	BlockSSHPort                       bool   `envconfig:"BLOCK_SSH" default:"false"`
+	BlockOutboundInternet              bool   `envconfig:"BLOCK_OUTBOUND_INTERNET" default:"false"`
 	RebootControlPlaneNodes            bool   `envconfig:"REBOOT_CONTROL_PLANE_NODES" default:"false"`
 	RunVMSSNodePrototype               bool   `envconfig:"RUN_VMSS_NODE_PROTOTYPE" default:"false"`
 	AddNodePoolInput                   string `envconfig:"ADD_NODE_POOL_INPUT" default:""`
