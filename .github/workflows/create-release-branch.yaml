@@ -18,7 +18,7 @@ on:
         required: true
         default: 2023.079.1
 jobs:
-  call-test-vhd-no-egress:
+  validate-no-egress:
     uses: ./.github/workflows/test-vhd-no-egress.yaml
     with:
       from_branch: ${{github.event.inputs.from_branch}}
@@ -26,7 +26,7 @@ jobs:
       WINDOWS_NODE_IMAGE_VERSION: ${{github.event.inputs.WINDOWS_NODE_IMAGE_VERSION}}
     secrets: inherit
   create-release-branch:
-    needs: call-test-vhd-no-egress
+    needs: validate-no-egress
     runs-on: ubuntu-latest
     steps:
       - name: validate version
