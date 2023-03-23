@@ -3,6 +3,10 @@ name: Test VHD No Egress
 on:
   workflow_dispatch:
     inputs:
+      from_branch:
+        description: 'Which branch are we testing? (if left blank, by default will use the branch used to trigger workflow)'
+        required: false
+        default: ''
       LINUX_NODE_IMAGE_VERSION:
         description: 'What is the Linux SIG image version?'
         required: true
@@ -11,12 +15,25 @@ on:
         description: 'What is the Windows SIG image version?'
         required: true
         default: 2023.079.1
+  workflow_call:
+    inputs:
+      from_branch:
+        required: true
+        type: string
+      LINUX_NODE_IMAGE_VERSION:
+        type: string
+        required: true
+      WINDOWS_NODE_IMAGE_VERSION:
+        type: string
+        required: true
 jobs:
   e2e:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          ref: ${{inputs.from_branch}}
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
