@@ -3,7 +3,7 @@ NODE_INDEX=$(hostname | tail -c 2)
 NODE_NAME=$(hostname)
 KUBECTL="/usr/local/bin/kubectl --kubeconfig=/home/$ADMINUSER/.kube/config"
 ADDONS_DIR=/etc/kubernetes/addons
-POD_SECURITY_POLICY_SPEC=$ADDONS_DIR/pod-security-policy.yaml
+PSP_SPEC=$ADDONS_DIR/pod-security-policy.yaml
 ADDON_MANAGER_SPEC=/etc/kubernetes/manifests/kube-addon-manager.yaml
 GET_KUBELET_LOGS="journalctl -u kubelet --no-pager"
 
@@ -612,8 +612,8 @@ configAddons() {
   configAzurePolicyAddon
   {{end}}
   {{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
-  wait_for_file 1200 1 $POD_SECURITY_POLICY_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
-  mkdir -p $ADDONS_DIR/init && cp $POD_SECURITY_POLICY_SPEC $ADDONS_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  wait_for_file 1200 1 $PSP_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
+  mkdir -p $ADDONS_DIR/init && cp $PSP_SPEC $ADDONS_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
   {{- end}}
 }
 {{- if and HasNSeriesSKU IsNvidiaDevicePluginAddonEnabled}}

@@ -16245,7 +16245,7 @@ NODE_INDEX=$(hostname | tail -c 2)
 NODE_NAME=$(hostname)
 KUBECTL="/usr/local/bin/kubectl --kubeconfig=/home/$ADMINUSER/.kube/config"
 ADDONS_DIR=/etc/kubernetes/addons
-POD_SECURITY_POLICY_SPEC=$ADDONS_DIR/pod-security-policy.yaml
+PSP_SPEC=$ADDONS_DIR/pod-security-policy.yaml
 ADDON_MANAGER_SPEC=/etc/kubernetes/manifests/kube-addon-manager.yaml
 GET_KUBELET_LOGS="journalctl -u kubelet --no-pager"
 
@@ -16854,8 +16854,8 @@ configAddons() {
   configAzurePolicyAddon
   {{end}}
   {{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
-  wait_for_file 1200 1 $POD_SECURITY_POLICY_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
-  mkdir -p $ADDONS_DIR/init && cp $POD_SECURITY_POLICY_SPEC $ADDONS_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  wait_for_file 1200 1 $PSP_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
+  mkdir -p $ADDONS_DIR/init && cp $PSP_SPEC $ADDONS_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
   {{- end}}
 }
 {{- if and HasNSeriesSKU IsNvidiaDevicePluginAddonEnabled}}
@@ -16984,18 +16984,18 @@ var _k8sCloudInitArtifactsCse_customcloudSh = []byte(`#!/bin/bash
 {{- if IsCustomCloudProfile}}
   {{- if not IsAzureStackCloud}}
 ensureCustomCloudRootCertificates() {
-    CUSTOM_CLOUD_ROOT_CERTIFICATES="{{GetCustomCloudRootCertificates}}"
-    KUBE_CONTROLLER_MANAGER_FILE=/etc/kubernetes/manifests/kube-controller-manager.yaml
+    CUSTOM_CLOUD_CERTS="{{GetCustomCloudRootCertificates}}"
+    KCM_FILE=/etc/kubernetes/manifests/kube-controller-manager.yaml
 
-    if [ ! -z $CUSTOM_CLOUD_ROOT_CERTIFICATES ]; then
+    if [ ! -z $CUSTOM_CLOUD_CERTS ]; then
         # Replace placeholder for ssl binding
-        if [ -f $KUBE_CONTROLLER_MANAGER_FILE ]; then
-            sed -i "s|<volumessl>|- name: ssl\n      hostPath:\n        path: \\/etc\\/ssl\\/certs|g" $KUBE_CONTROLLER_MANAGER_FILE
-            sed -i "s|<volumeMountssl>|- name: ssl\n          mountPath: \\/etc\\/ssl\\/certs\n          readOnly: true|g" $KUBE_CONTROLLER_MANAGER_FILE
+        if [ -f $KCM_FILE ]; then
+            sed -i "s|<volumessl>|- name: ssl\n      hostPath:\n        path: \\/etc\\/ssl\\/certs|g" $KCM_FILE
+            sed -i "s|<volumeMountssl>|- name: ssl\n          mountPath: \\/etc\\/ssl\\/certs\n          readOnly: true|g" $KCM_FILE
         fi
 
         local i=1
-        for cert in $(echo $CUSTOM_CLOUD_ROOT_CERTIFICATES | tr ',' '\n')
+        for cert in $(echo $CUSTOM_CLOUD_CERTS | tr ',' '\n')
         do
             echo $cert | base64 -d > "/usr/local/share/ca-certificates/customCloudRootCertificate$i.crt"
             ((i++))
@@ -17003,21 +17003,21 @@ ensureCustomCloudRootCertificates() {
 
         update-ca-certificates
     else
-        if [ -f $KUBE_CONTROLLER_MANAGER_FILE ]; then
+        if [ -f $KCM_FILE ]; then
             # remove the placeholder for ssl binding
-            sed -i "/<volumessl>/d" $KUBE_CONTROLLER_MANAGER_FILE
-            sed -i "/<volumeMountssl>/d" $KUBE_CONTROLLER_MANAGER_FILE
+            sed -i "/<volumessl>/d" $KCM_FILE
+            sed -i "/<volumeMountssl>/d" $KCM_FILE
         fi
     fi
 }
 
 ensureCustomCloudSourcesList() {
-    CUSTOM_CLOUD_SOURCES_LIST="{{GetCustomCloudSourcesList}}"
+    CUSTOM_CLOUD_LIST="{{GetCustomCloudSourcesList}}"
 
-    if [ ! -z $CUSTOM_CLOUD_SOURCES_LIST ]; then
+    if [ ! -z $CUSTOM_CLOUD_LIST ]; then
         # Just in case, let's take a back up before we overwrite
         cp /etc/apt/sources.list /etc/apt/sources.list.backup
-        echo $CUSTOM_CLOUD_SOURCES_LIST | base64 -d > /etc/apt/sources.list
+        echo $CUSTOM_CLOUD_LIST | base64 -d > /etc/apt/sources.list
     fi
 }
   {{end}}
@@ -17036,24 +17036,23 @@ configureK8sCustomCloud() {
   #    "password": "$password"
   #}
   if [[ ${AUTHENTICATION_METHOD,,} == "client_certificate" ]]; then
-    SERVICE_PRINCIPAL_CLIENT_SECRET_DECODED=$(echo ${SERVICE_PRINCIPAL_CLIENT_SECRET} | base64 --decode)
-    SERVICE_PRINCIPAL_CLIENT_SECRET_CERT=$(echo $SERVICE_PRINCIPAL_CLIENT_SECRET_DECODED | jq .data)
-    SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD=$(echo $SERVICE_PRINCIPAL_CLIENT_SECRET_DECODED | jq .password)
+    SPN_DECODED=$(echo ${SERVICE_PRINCIPAL_CLIENT_SECRET} | base64 --decode)
+    SPN_CERT=$(echo $SPN_DECODED | jq .data)
+    SPN_PWD=$(echo $SPN_DECODED | jq .password)
 
     # trim the starting and ending "
-    SERVICE_PRINCIPAL_CLIENT_SECRET_CERT=${SERVICE_PRINCIPAL_CLIENT_SECRET_CERT#'"'}
-    SERVICE_PRINCIPAL_CLIENT_SECRET_CERT=${SERVICE_PRINCIPAL_CLIENT_SECRET_CERT%'"'}
+    SPN_CERT=${SPN_CERT#'"'}
+    SPN_CERT=${SPN_CERT%'"'}
 
-    SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD=${SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD#'"'}
-    SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD=${SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD%'"'}
+    SPN_PWD=${SPN_PWD#'"'}
+    SPN_PWD=${SPN_PWD%'"'}
 
-    KUBERNETES_FILE_DIR=$(dirname "${azure_json_path}")
-    K8S_CLIENT_CERT_PATH="${KUBERNETES_FILE_DIR}/k8s_auth_certificate.pfx"
-    echo $SERVICE_PRINCIPAL_CLIENT_SECRET_CERT | base64 --decode >$K8S_CLIENT_CERT_PATH
+    K8S_CLIENT_CERT="$(dirname ${azure_json_path})/k8s_auth_certificate.pfx"
+    echo $SPN_CERT | base64 --decode >$K8S_CLIENT_CERT
     # shellcheck disable=SC2002,SC2005
     echo $(cat "${azure_json_path}" |
-      jq --arg K8S_CLIENT_CERT_PATH ${K8S_CLIENT_CERT_PATH} '. + {aadClientCertPath:($K8S_CLIENT_CERT_PATH)}' |
-      jq --arg SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD ${SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD} '. + {aadClientCertPassword:($SERVICE_PRINCIPAL_CLIENT_SECRET_PASSWORD)}' |
+      jq --arg K8S_CLIENT_CERT ${K8S_CLIENT_CERT} '. + {aadClientCertPath:($K8S_CLIENT_CERT)}' |
+      jq --arg SPN_PWD ${SPN_PWD} '. + {aadClientCertPassword:($SPN_PWD)}' |
       jq 'del(.aadClientSecret)') >${azure_json_path}
   fi
 
