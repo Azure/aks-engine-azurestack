@@ -73,7 +73,7 @@ type Config struct {
 	CustomKubeControllerManagerImage string `envconfig:"CUSTOM_KUBE_CONTROLLER_MANAGER_IMAGE" default:""`
 	CustomKubeBinaryURL              string `envconfig:"CUSTOM_KUBE_BINARY_URL" default:""`
 	CustomWindowsPackageURL          string `envconfig:"CUSTOM_WINDOWS_PACKAGE_URL" default:""`
-	EnableTelemetry                  bool   `envconfig:"ENABLE_TELEMETRY" default:"true"`
+	EnableTelemetry                  bool   `envconfig:"ENABLE_TELEMETRY" default:"false"`
 	KubernetesImageBase              string `envconfig:"KUBERNETES_IMAGE_BASE" default:""`
 	KubernetesImageBaseType          string `envconfig:"KUBERNETES_IMAGE_BASE_TYPE" default:""`
 	LinuxContainerdURL               string `envconfig:"LINUX_CONTAINERD_URL"`

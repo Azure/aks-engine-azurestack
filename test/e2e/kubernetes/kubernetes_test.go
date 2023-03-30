@@ -550,7 +550,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate DISA Ubuntu 20.04 STIG", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
-			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
 				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 				STIGFilesValidateScript := "stig-validate.sh"
@@ -630,7 +630,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate that every linux node has the right sshd config", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
-			} else if eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
 				Skip("Skip as feature flag EnforceUbuntu2004DisaStig is set")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
@@ -659,11 +659,13 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should validate password enforcement configuration", func() {
-			args := fmt.Sprintf("STIG=%t", eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig)
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
+					enforceStig := eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2004DisaStig
+					args := fmt.Sprintf("STIG=%t", enforceStig)
+
 					nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
 					Expect(err).NotTo(HaveOccurred())
 					pwQualityValidateScript := "pwquality-validate.sh"
