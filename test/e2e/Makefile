@@ -9,7 +9,7 @@ build: clean runner-build ginkgo-build
 
 .PHONY: runner-build
 runner-build:
-	$(GO) build -tags=test -o ./$(BINDIR)/e2e-runner .
+	$(GO) build -tags=test -buildvcs=false -o ./$(BINDIR)/e2e-runner .
 
 .PHONY: ginkgo-build
 ginkgo-build:

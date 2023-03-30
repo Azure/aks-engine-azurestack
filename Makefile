@@ -95,7 +95,7 @@ build: generate go-build
 
 .PHONY: go-build
 go-build:
-	$(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -o $(BINDIR)/$(PROJECT)$(EXTENSION) $(REPO_PATH)
+	$(GO) build $(GOFLAGS) -ldflags '$(LDFLAGS)' -buildvcs=false -o $(BINDIR)/$(PROJECT)$(EXTENSION) $(REPO_PATH)
 
 .PHONY: tidy
 tidy:
