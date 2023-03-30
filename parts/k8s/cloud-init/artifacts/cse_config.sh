@@ -2,10 +2,10 @@
 NODE_INDEX=$(hostname | tail -c 2)
 NODE_NAME=$(hostname)
 KUBECTL="/usr/local/bin/kubectl --kubeconfig=/home/$ADMINUSER/.kube/config"
-ADDONS_DIR=/etc/kubernetes/addons
-PSP_SPEC=$ADDONS_DIR/pod-security-policy.yaml
-ADDON_MANAGER_SPEC=/etc/kubernetes/manifests/kube-addon-manager.yaml
-GET_KUBELET_LOGS="journalctl -u kubelet --no-pager"
+AO_DIR=/etc/kubernetes/addons
+PSP_SPEC=$AO_DIR/pod-security-policy.yaml
+AOM_SPEC=/etc/kubernetes/manifests/kube-addon-manager.yaml
+K_LOG="journalctl -u kubelet --no-pager"
 
 systemctlEnableAndStart() {
   local ret
@@ -436,27 +436,27 @@ ensureKubeAddonManager() {
     {{/* Restart kubelet if kube-addon-manager is not Ready after 5 mins */}}
     systemctl_restart 3 5 30 kubelet
     {{/* Wait 5 more mins for kube-addon-manager to become Ready, and then return failure if not */}}
-    retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+    retrycmd 60 5 30 ${KUBECTL} wait --for=condition=Ready --timeout=5s po ${kam_pod} -n kube-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $K_LOG
   fi
 }
 
 ensureAddons() {
   local kam_pod=kube-addon-manager-${HOSTNAME}
 {{- if IsDashboardAddonEnabled}} {{/* Note: dashboard addon is deprecated */}}
-  retrycmd 120 5 30 $KUBECTL get namespace kubernetes-dashboard || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+  retrycmd 120 5 30 $KUBECTL get namespace kubernetes-dashboard || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $K_LOG
 {{- end}}
 {{- if IsAzurePolicyAddonEnabled}}
-  retrycmd 120 5 30 $KUBECTL get namespace gatekeeper-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+  retrycmd 120 5 30 $KUBECTL get namespace gatekeeper-system || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $K_LOG
 {{- end}}
 {{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
-  retrycmd 120 5 30 $KUBECTL get podsecuritypolicy privileged restricted || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+  retrycmd 120 5 30 $KUBECTL get podsecuritypolicy privileged restricted || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $K_LOG
 {{- end}}
   replaceAddonsInit
-  rm -Rf ${ADDONS_DIR}/init
+  rm -Rf ${AO_DIR}/init
   ensureKubeAddonManager
   {{/* Manually delete any kube-addon-manager pods that point to the init directory */}}
   for initPod in $(${KUBECTL} get pod ${kam_pod} -n kube-system -o json | jq -r '.items[] | select(.spec.containers[0].env[] | select(.value=="/etc/kubernetes/addons/init")) | select(.status.phase=="Running") .metadata.name'); do
-    retrycmd 120 5 30 ${KUBECTL} delete pod ${kam_pod} -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $GET_KUBELET_LOGS
+    retrycmd 120 5 30 ${KUBECTL} delete pod ${kam_pod} -n kube-system --force --grace-period 0 || exit_cse {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}} $K_LOG
   done
   {{if HasCiliumNetworkPolicy}}
   while [ ! -f /etc/cni/net.d/05-cilium.conf ]; do
@@ -481,10 +481,10 @@ ensureAddons() {
   {{end}}
 }
 replaceAddonsInit() {
-  wait_for_file 1200 1 $ADDON_MANAGER_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
-  cp $ADDON_MANAGER_SPEC /tmp/kube-addon-manager.yaml || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
-  sed -i "s|${ADDONS_DIR}/init|${ADDONS_DIR}|g" /tmp/kube-addon-manager.yaml || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
-  mv /tmp/kube-addon-manager.yaml $ADDON_MANAGER_SPEC || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  wait_for_file 1200 1 $AOM_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
+  cp $AOM_SPEC /tmp/kube-addon-manager.yaml || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  sed -i "s|${AO_DIR}/init|${AO_DIR}|g" /tmp/kube-addon-manager.yaml || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  mv /tmp/kube-addon-manager.yaml $AOM_SPEC || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
 }
 ensureLabelNodes() {
   wait_for_file 1200 1 /opt/azure/containers/label-nodes.sh || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
@@ -532,11 +532,11 @@ ensureK8sControlPlane() {
   if [ "$NO_OUTBOUND" = "true" ]; then
     return
   fi
-  retrycmd 120 5 25 $KUBECTL 2>/dev/null cluster-info || exit_cse {{GetCSEErrorCode "ERR_K8S_RUNNING_TIMEOUT"}} $GET_KUBELET_LOGS
+  retrycmd 120 5 25 $KUBECTL 2>/dev/null cluster-info || exit_cse {{GetCSEErrorCode "ERR_K8S_RUNNING_TIMEOUT"}} $K_LOG
 }
 {{- if IsAzurePolicyAddonEnabled}}
 ensureLabelExclusionForAzurePolicyAddon() {
-  retrycmd 120 5 25 $KUBECTL label ns kube-system control-plane=controller-manager --overwrite 2>/dev/null || exit_cse {{GetCSEErrorCode "ERR_K8S_RUNNING_TIMEOUT"}} $GET_KUBELET_LOGS
+  retrycmd 120 5 25 $KUBECTL label ns kube-system control-plane=controller-manager --overwrite 2>/dev/null || exit_cse {{GetCSEErrorCode "ERR_K8S_RUNNING_TIMEOUT"}} $K_LOG
 }
 {{end}}
 ensureEtcd() {
@@ -587,7 +587,7 @@ users:
 }
 {{- if IsClusterAutoscalerAddonEnabled}}
 configClusterAutoscalerAddon() {
-  local f=$ADDONS_DIR/cluster-autoscaler.yaml
+  local f=$AO_DIR/cluster-autoscaler.yaml
   wait_for_file 1200 1 $f || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
   sed -i "s|<clientID>|$(echo $SERVICE_PRINCIPAL_CLIENT_ID | base64)|g" $f
   sed -i "s|<clientSec>|$(echo $SERVICE_PRINCIPAL_CLIENT_SECRET | base64)|g" $f
@@ -598,7 +598,7 @@ configClusterAutoscalerAddon() {
 {{end}}
 {{- if IsAzurePolicyAddonEnabled}}
 configAzurePolicyAddon() {
-  sed -i "s|<resourceId>|/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP|g" $ADDONS_DIR/azure-policy-deployment.yaml
+  sed -i "s|<resourceId>|/subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP|g" $AO_DIR/azure-policy-deployment.yaml
 }
 {{end}}
 
@@ -613,7 +613,7 @@ configAddons() {
   {{end}}
   {{- if and (not HasCustomPodSecurityPolicy) IsPodSecurityPolicyAddonEnabled}}
   wait_for_file 1200 1 $PSP_SPEC || exit {{GetCSEErrorCode "ERR_FILE_WATCH_TIMEOUT"}}
-  mkdir -p $ADDONS_DIR/init && cp $PSP_SPEC $ADDONS_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
+  mkdir -p $AO_DIR/init && cp $PSP_SPEC $AO_DIR/init/ || exit {{GetCSEErrorCode "ERR_ADDONS_START_FAIL"}}
   {{- end}}
 }
 {{- if and HasNSeriesSKU IsNvidiaDevicePluginAddonEnabled}}
