@@ -107,7 +107,7 @@ vendor: tidy
 	$(GO) mod vendor
 
 build-binary: generate
-	go build $(GOFLAGS) -v -ldflags "$(LDFLAGS)" -o $(BINARY_DEST_DIR)/aks-engine-azurestack .
+	go build $(GOFLAGS) -v -ldflags "$(LDFLAGS)" -buildvcs=false -o $(BINARY_DEST_DIR)/aks-engine-azurestack .
 
 # usage: make clean build-cross dist VERSION=v0.4.0
 .PHONY: build-cross
