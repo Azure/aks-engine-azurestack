@@ -20,12 +20,20 @@ env:
   WINDOWS_NODE_IMAGE_VERSION: 2023.079.1
 
 jobs:
+  sig_image_versions:
+    runs-on: ubuntu-latest
+    outputs:
+      LINUX_NODE_IMAGE_VERSION: ${{ env.LINUX_NODE_IMAGE_VERSION }}
+      WINDOWS_NODE_IMAGE_VERSION: ${{ env.WINDOWS_NODE_IMAGE_VERSION }}
+    steps:
+      - run: echo "Exposing sig image version variables"
   validate-no-egress:
+    needs: sig_image_versions
     uses: ./.github/workflows/test-vhd-no-egress.yaml
     with:
       from_branch: ''
-      LINUX_NODE_IMAGE_VERSION: ${{env.LINUX_NODE_IMAGE_VERSION}}
-      WINDOWS_NODE_IMAGE_VERSION: ${{env.WINDOWS_NODE_IMAGE_VERSION}}
+      LINUX_NODE_IMAGE_VERSION: ${{ needs.sig_image_versions.outputs.LINUX_NODE_IMAGE_VERSION }}
+      WINDOWS_NODE_IMAGE_VERSION: ${{ needs.sig_image_versions.outputs.WINDOWS_NODE_IMAGE_VERSION }}
     secrets: inherit
   build:
     needs: validate-no-egress
