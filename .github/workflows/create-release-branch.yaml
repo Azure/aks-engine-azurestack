@@ -9,24 +9,8 @@ on:
         description: 'Which branch to source release branch from? (default: master)'
         required: false
         default: 'master'
-      LINUX_NODE_IMAGE_VERSION:
-        description: 'What is the Linux SIG image version?'
-        required: true
-        default: 2023.079.1
-      WINDOWS_NODE_IMAGE_VERSION:
-        description: 'What is the Windows SIG image version?'
-        required: true
-        default: 2023.079.1
 jobs:
-  validate-no-egress:
-    uses: ./.github/workflows/test-vhd-no-egress.yaml
-    with:
-      from_branch: ${{github.event.inputs.from_branch}}
-      LINUX_NODE_IMAGE_VERSION: ${{github.event.inputs.LINUX_NODE_IMAGE_VERSION}}
-      WINDOWS_NODE_IMAGE_VERSION: ${{github.event.inputs.WINDOWS_NODE_IMAGE_VERSION}}
-    secrets: inherit
   create-release-branch:
-    needs: validate-no-egress
     runs-on: ubuntu-latest
     steps:
       - name: validate version
