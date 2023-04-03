@@ -98,6 +98,7 @@ jobs:
           BLOCK_SSH: true
           SKIP_LOGS_COLLECTION: true
           AZURE_CORE_ONLY_SHOW_ERRORS: true
+          DISTRO: "aks-ubuntu-20.04"
         run: make test-kubernetes
       - name: Validate 1.25 + containerd E2E
         env:
@@ -119,6 +120,7 @@ jobs:
           BLOCK_SSH: true
           SKIP_LOGS_COLLECTION: true
           AZURE_CORE_ONLY_SHOW_ERRORS: true
+          DISTRO: "aks-ubuntu-20.04"
         run: make test-kubernetes
       - name: Remove untracked files created during workflow steps
         run: git ls-files --others --exclude-standard -z | xargs -0 -r rm
