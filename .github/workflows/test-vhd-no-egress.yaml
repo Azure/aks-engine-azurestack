@@ -67,7 +67,7 @@ jobs:
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
           CLEANUP_ON_EXIT: false
-          CLEANUP_IF_FAIL: false
+          CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: false
           AZURE_CORE_ONLY_SHOW_ERRORS: true
@@ -119,7 +119,7 @@ jobs:
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
           CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: false
+          CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: false
           AZURE_CORE_ONLY_SHOW_ERRORS: true
@@ -141,7 +141,7 @@ jobs:
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
           CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: false
+          CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
           SKIP_TEST: false
           AZURE_CORE_ONLY_SHOW_ERRORS: true
