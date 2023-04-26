@@ -59,6 +59,14 @@ collectDaemonLogs() {
     fi
 }
 
+collectEtcdMetrics() {
+    local DIR=${OUTDIR}/daemons
+    mkdir -p ${DIR}
+    if [ -f .kube/config ]; then
+        curl -L http://$(hostname -i):2480/metrics | grep -v debugging > ${DIR}/etcd.metrics
+    fi
+}
+
 collectContainerLogs() {
     local DIR=${OUTDIR}/containers
     mkdir -p ${DIR}
@@ -230,6 +238,7 @@ collectContainerLogs kube-scheduler
 collectDaemonLogs kubelet.service
 collectDaemonLogs etcd.service
 collectDaemonLogs docker.service
+collectEtcdMetrics
 clusterInfo
 
 if [ "${AZURE_ENV}" = "AzureStackCloud" ]; then
