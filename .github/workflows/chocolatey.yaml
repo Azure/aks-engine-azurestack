@@ -20,7 +20,9 @@ jobs:
       - name: install au module
         run: choco install --yes au # https://github.com/majkinetor/au
       - name: update version and sha
-        run: update.ps1
+        run: | 
+          ls .
+          .\update.ps1
       - name: package
         run: choco pack
       - name: apikey
