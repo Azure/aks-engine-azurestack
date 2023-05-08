@@ -10,7 +10,7 @@ jobs:
     runs-on: windows-latest
     defaults:
       run:
-        working-directory: ./choco/aks-engine-azurestack
+        working-directory: .choco\aks-engine-azurestack
     steps:
       - uses: actions/checkout@v3
       - name: set env
@@ -20,7 +20,7 @@ jobs:
       - name: install au module
         run: choco install --yes au # https://github.com/majkinetor/au
       - name: update version and sha
-        run: update.ps1
+        run: .\update.ps1
       - name: package
         run: choco pack
       - name: apikey

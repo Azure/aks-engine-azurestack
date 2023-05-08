@@ -15,8 +15,8 @@
     <projectSourceUrl>https://github.com/Azure/aks-engine-azurestack</projectSourceUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <tags>kubernetes azurestack aks-engine-azurestack</tags>
-    <summary>AKS Engine AzureStack - a place for community to collaborate and build the best open Kubernetes infrastructure for Azure Stack.</summary>
-    <description>AKS Engine AzureStack - a place for community to collaborate and build the best open Kubernetes infrastructure for Azure Stack.</description>
+    <summary>aks-engine-azurestack is a CLI tool. It provides functionality to create and maintain a Kubernetes cluster on Azure Stack Hub.</summary>
+    <description>AKS Engine is an ARM template-driven way to provision a self-managed Kubernetes cluster on Azure Stack Hub. By leveraging ARM (Azure Resource Manager), AKS Engine helps you create, destroy and maintain clusters provisioned with basic IaaS resources in Azure Stack Hub.</description>
     <releaseNotes>https://github.com/Azure/aks-engine-azurestack/releases</releaseNotes>
   </metadata>
   <files>
