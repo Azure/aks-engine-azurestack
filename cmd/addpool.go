@@ -209,6 +209,7 @@ func (apc *addPoolCmd) run(cmd *cobra.Command, args []string) error {
 	if err := apc.load(); err != nil {
 		return errors.Wrap(err, "failed to load existing container service")
 	}
+	apCount := len(apc.containerService.Properties.AgentPoolProfiles)
 
 	ctx, cancel := context.WithTimeout(context.Background(), armhelpers.DefaultARMOperationTimeout)
 	defer cancel()
@@ -267,6 +268,10 @@ func (apc *addPoolCmd) run(cmd *cobra.Command, args []string) error {
 	err = json.Unmarshal([]byte(parameters), &parametersJSON)
 	if err != nil {
 		return errors.Wrap(err, "error unmarshaling parameters")
+	}
+
+	if apc.nodePool.OSType == api.Windows {
+		winPoolIndex = apCount
 	}
 
 	// The agent pool is set to index 0 for the scale operation, we need to overwrite the template variables that rely on pool index.
