@@ -25,6 +25,7 @@ To ensure that the nodes are rebooted in a non-disruptive way, you can deploy th
 The `kured` daemonset can be installed by following this [instructions](https://kured.dev/docs/installation/):
 
 ```bash
+# Find the appropiate version for your cluster https://kured.dev/docs/installation/#kubernetes--os-compatibility
 latest=$(curl -s https://api.github.com/repos/kubereboot/kured/releases | jq -r '.[0].tag_name')
 
 # Check https://kured.dev/docs/configuration/ for configuration options
