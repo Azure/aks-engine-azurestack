@@ -28,7 +28,7 @@ Setting the `linuxProfile.runUnattendedUpgradesOnBootstrap` option allows cluste
 
 ## Orchestrate Node Reboots
 
-Some OS patches are effective after a node reboot. To ensure that the nodes are rebooted in a non-disruptive way, you can deploy the [kured](https://github.com/weaveworks/kured) daemonset.
+Some OS patches are only effective after a node reboot. To ensure that the nodes are rebooted in a non-disruptive way, you can deploy the [kured](https://github.com/weaveworks/kured) daemonset.
 
 The `kured` daemonset can be installed by following this [instructions](https://kured.dev/docs/installation/):
 
