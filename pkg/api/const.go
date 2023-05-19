@@ -223,6 +223,8 @@ const (
 	StandardVMType = "standard"
 	// DefaultRunUnattendedUpgradesOnBootstrap sets the default configuration for running a blocking unattended-upgrade on Linux VMs as part of CSE
 	DefaultRunUnattendedUpgradesOnBootstrap = true
+	// DefaultRunUnattendedUpgradesOnBootstrapAzureStack sets the default configuration for running a blocking unattended-upgrade on Linux VMs as part of CSE for Azure Stack Hub
+	DefaultRunUnattendedUpgradesOnBootstrapAzureStack = false
 	// DefaultEnableUnattendedUpgrades sets the default configuration for running unattended-upgrade on a regular schedule in the background
 	DefaultEnableUnattendedUpgrades = true
 	// DefaultEnableUnattendedUpgradesAzureStack sets the default configuration for running unattended-upgrade on a regular schedule in the background for Azure Stack Hub

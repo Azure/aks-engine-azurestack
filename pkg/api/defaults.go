@@ -723,8 +723,12 @@ func (p *Properties) setMasterProfileDefaults() {
 }
 
 func (p *Properties) setLinuxProfileDefaults() {
-	if !p.IsAzureStackCloud() && p.LinuxProfile.RunUnattendedUpgradesOnBootstrap == nil {
-		p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr(DefaultRunUnattendedUpgradesOnBootstrap)
+	if p.LinuxProfile.RunUnattendedUpgradesOnBootstrap == nil {
+		if p.IsAzureStackCloud() {
+			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr(DefaultRunUnattendedUpgradesOnBootstrapAzureStack)
+		} else {
+			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr(DefaultRunUnattendedUpgradesOnBootstrap)
+		}
 	}
 	if p.LinuxProfile.EnableUnattendedUpgrades == nil {
 		if p.IsAzureStackCloud() {
