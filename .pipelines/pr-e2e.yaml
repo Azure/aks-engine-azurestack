@@ -96,7 +96,7 @@ jobs:
 
   - template: e2e-job-template.yaml
     parameters:
-      name: "k8s_1_25_containerd_e2e"
+      name: "k8s_1_25_stig_e2e"
       k8sRelease: "1.25"
       apimodel: "examples/e2e-tests/kubernetes/release/default/definition-stig.json"
       createVNET: false
