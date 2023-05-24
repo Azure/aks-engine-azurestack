@@ -26,18 +26,11 @@
                 "diskSizesGB": [
                     128
                 ],
+                "auditDEnabled": true,
                 "availabilityProfile": "AvailabilitySet",
                 "osDiskCachingType": "ReadOnly",
                 "dataDiskCachingType": "ReadWrite"
             },
-            {
-                "name": "poolwin",
-                "count": 1,
-                "vmSize": "Standard_D2s_v3",
-                "OSDiskSizeGB": 256,
-                "availabilityProfile": "AvailabilitySet",
-                "osType": "Windows"
-            }
         ],
         "linuxProfile": {
             "enableUnattendedUpgrades": false,
@@ -50,12 +43,6 @@
                     }
                 ]
             }
-        },
-        "windowsProfile": {
-            "adminUsername": "azureuser",
-            "adminPassword": "replacepassword1234$",
-            "sshEnabled": true,
-            "enableAutomaticUpdates": false
         },
         "featureFlags": {
             "enforceUbuntu2004DisaStig": true,
