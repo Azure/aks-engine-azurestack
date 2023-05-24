@@ -30,7 +30,7 @@
                 "availabilityProfile": "AvailabilitySet",
                 "osDiskCachingType": "ReadOnly",
                 "dataDiskCachingType": "ReadWrite"
-            },
+            }
         ],
         "linuxProfile": {
             "enableUnattendedUpgrades": false,
