@@ -102,7 +102,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--pod-max-pids":                      strconv.Itoa(DefaultKubeletPodMaxPIDs),
 		"--image-pull-progress-deadline":      "30m",
 		"--enforce-node-allocatable":          "pods",
-		"--streaming-connection-idle-timeout": "4h",
+		"--streaming-connection-idle-timeout": "5m", // STIG Rule ID: SV-245541r879622_rule
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
 	}
@@ -144,6 +144,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	addDefaultFeatureGates(o.KubernetesConfig.KubeletConfig, o.OrchestratorVersion, minVersionRotateCerts, "RotateKubeletServerCertificate=true")
 	addDefaultFeatureGates(o.KubernetesConfig.KubeletConfig, o.OrchestratorVersion, "1.20.0-rc.0", "ExecProbeTimeout=true")
+	// STIG Rule ID: SV-254801r879719_rule
+	addDefaultFeatureGates(o.KubernetesConfig.KubeletConfig, o.OrchestratorVersion, "1.25.0", "PodSecurity=true")
 
 	// Override default cloud-provider?
 	if to.Bool(o.KubernetesConfig.UseCloudControllerManager) {

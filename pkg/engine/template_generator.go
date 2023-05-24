@@ -709,6 +709,9 @@ version = 2
 		"GetTargetEnvironment": func() string {
 			return helpers.GetTargetEnv(cs.Location, cs.Properties.GetCustomCloudName())
 		},
+		"DNSPrefix": func() string {
+			return cs.Properties.GetDNSPrefix()
+		},
 		"GetCustomCloudConfigCSEScriptFilepath": func() string {
 			return customCloudConfigCSEScriptFilepath
 		},
@@ -760,6 +763,9 @@ version = 2
 		},
 		"ShouldEnforceUbuntu2004DisaStig": func() bool {
 			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2004DisaStig")
+		},
+		"ShouldEnforceKubernetesDisaStig": func() bool {
+			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceKubernetesDisaStig")
 		},
 		"HasBlockOutboundInternet": func() bool {
 			return cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.BlockOutboundInternet

@@ -233,7 +233,7 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--protect-kernel-defaults":           "true",
 		"--read-only-port":                    "0",
 		"--rotate-certificates":               "true",
-		"--streaming-connection-idle-timeout": "4h",
+		"--streaming-connection-idle-timeout": "5m",
 		"--feature-gates":                     "ExecProbeTimeout=true,RotateKubeletServerCertificate=true",
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
@@ -290,7 +290,7 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--read-only-port":                    "0",
 		"--register-with-taints":              common.MasterNodeTaint,
 		"--rotate-certificates":               "true",
-		"--streaming-connection-idle-timeout": "4h",
+		"--streaming-connection-idle-timeout": "5m",
 		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
@@ -951,6 +951,16 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	if k["--feature-gates"] != "DynamicKubeletConfig=true,ExecProbeTimeout=false,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
 			k["--feature-gates"])
+	}
+
+	// test 1.25.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.25.0"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
+		t.Fatalf("got unexpected '--feature-gates' kubelet config value for k8s v%s: %s",
+			"1.25.0", k["--feature-gates"])
 	}
 
 	// test user-overrides, removal of VolumeSnapshotDataSource for k8s versions >= 1.22

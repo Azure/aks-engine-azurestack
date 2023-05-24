@@ -13,8 +13,10 @@ var staticSchedulerConfig = map[string]string{
 
 // defaultSchedulerConfig provides targeted defaults, but is user-overridable
 var defaultSchedulerConfig = map[string]string{
-	"--v":         "2",
-	"--profiling": DefaultKubernetesSchedulerEnableProfiling,
+	"--v":               "2",
+	"--profiling":       DefaultKubernetesSchedulerEnableProfiling,
+	"--bind-address":    "127.0.0.1",    // STIG Rule ID: SV-242384r879530_rule
+	"--tls-min-version": "VersionTLS12", // STIG Rule ID: SV-242377r879519_rule
 }
 
 func (cs *ContainerService) setSchedulerConfig() {
@@ -32,6 +34,9 @@ func (cs *ContainerService) setSchedulerConfig() {
 			o.KubernetesConfig.SchedulerConfig[key] = val
 		}
 	}
+
+	// STIG Rule ID: SV-254801r879719_rule
+	addDefaultFeatureGates(o.KubernetesConfig.SchedulerConfig, o.OrchestratorVersion, "1.25.0", "PodSecurity=true")
 
 	// We don't support user-configurable values for the following,
 	// so any of the value assignments below will override user-provided values

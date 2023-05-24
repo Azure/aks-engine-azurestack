@@ -119,6 +119,16 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 			cm["--feature-gates"])
 	}
 
+	// test 1.25.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.25.0"
+	cs.setControllerManagerConfig()
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true\": %s",
+			cm["--feature-gates"])
+	}
+
 	// test user-overrides
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
@@ -164,6 +174,12 @@ func TestControllerManagerDefaultConfig(t *testing.T) {
 		t.Fatalf("expected controller-manager to have pod-eviction-timeout set to its default value")
 	}
 	if cm["--route-reconciliation-period"] != string(DefaultKubernetesCtrlMgrRouteReconciliationPeriod) {
+		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
+	}
+	if cm["--bind-address"] != "127.0.0.1" {
+		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
+	}
+	if cm["--tls-min-version"] != "VersionTLS12" {
 		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
 	}
 

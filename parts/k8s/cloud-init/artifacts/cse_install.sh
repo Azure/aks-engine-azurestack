@@ -11,6 +11,10 @@ NVIDIA_PACKAGES="libnvidia-container1 libnvidia-container-tools nvidia-container
 NVIDIA_CONTAINER_TOOLKIT_VER=1.6.0
 NVIDIA_RUNTIME_VER=3.6.0
 
+disableSshd() {
+  systemctl_stop 20 5 10 sshd || exit 3
+  retrycmd 120 5 25 systemctl disable sshd || exit 3
+}
 disableTimeSyncd() {
   systemctl_stop 20 5 10 systemd-timesyncd || exit 3
   retrycmd 120 5 25 systemctl disable systemd-timesyncd || exit 3

@@ -76,6 +76,10 @@ else
   FULL_INSTALL_REQUIRED=true
 fi
 
+{{- if ShouldEnforceKubernetesDisaStig}}
+disableSshd
+{{- end}}
+
 {{- if not IsVHDDistroForAllNodes}}
 if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
   time_metric "InstallDeps" installDeps

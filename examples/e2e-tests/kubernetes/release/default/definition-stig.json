@@ -1,0 +1,65 @@
+{
+    "apiVersion": "vlabs",
+    "properties": {
+        "orchestratorProfile": {
+            "kubernetesConfig": {
+                "useCloudControllerManager": true,
+                "useManagedIdentity": true
+            }
+        },
+        "masterProfile": {
+            "count": 3,
+            "dnsPrefix": "",
+            "vmSize": "Standard_D2_v3",
+            "distro": "aks-ubuntu-20.04",
+            "auditDEnabled": true,
+            "OSDiskSizeGB": 200
+        },
+        "agentPoolProfiles": [
+            {
+                "name": "poollinux",
+                "count": 1,
+                "vmSize": "Standard_D2_v3",
+                "OSDiskSizeGB": 200,
+                "distro": "aks-ubuntu-20.04",
+                "storageProfile": "ManagedDisks",
+                "diskSizesGB": [
+                    128
+                ],
+                "availabilityProfile": "AvailabilitySet",
+                "osDiskCachingType": "ReadOnly",
+                "dataDiskCachingType": "ReadWrite"
+            },
+            {
+                "name": "poolwin",
+                "count": 1,
+                "vmSize": "Standard_D2s_v3",
+                "OSDiskSizeGB": 256,
+                "availabilityProfile": "AvailabilitySet",
+                "osType": "Windows"
+            }
+        ],
+        "linuxProfile": {
+            "enableUnattendedUpgrades": false,
+            "runUnattendedUpgradesOnBootstrap": false,
+            "adminUsername": "azureuser",
+            "ssh": {
+                "publicKeys": [
+                    {
+                        "keyData": ""
+                    }
+                ]
+            }
+        },
+        "windowsProfile": {
+            "adminUsername": "azureuser",
+            "adminPassword": "replacepassword1234$",
+            "sshEnabled": true,
+            "enableAutomaticUpdates": false
+        },
+        "featureFlags": {
+            "enforceUbuntu2004DisaStig": true,
+            "enforceKubernetesDisaStig": true
+        }
+    }
+}

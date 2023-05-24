@@ -61,6 +61,7 @@ type FeatureFlags struct {
 	EnableIPv6Only            bool `json:"enableIPv6Only,omitempty"`
 	EnableWinDSR              bool `json:"enableWinDSR,omitempty"`
 	EnforceUbuntu2004DisaStig bool `json:"enforceUbuntu2004DisaStig,omitempty"`
+	EnforceKubernetesDisaStig bool `json:"enforceKubernetesDisaStig,omitempty"`
 }
 
 // ServicePrincipalProfile contains the client and secret used by the cluster for Azure Resource CRUD
@@ -1032,4 +1033,9 @@ func (f *FeatureFlags) IsWinDSREnabled() bool {
 // IsEnforceUbuntu2004DisaStigEnabled checks if EnforceUbuntu2004DisaStig feature is enabled
 func (f *FeatureFlags) IsEnforceUbuntu2004DisaStigEnabled() bool {
 	return f != nil && f.EnforceUbuntu2004DisaStig
+}
+
+// IsEnforceKubernetesDisaStigEnabled checks if EnforceKubernetesDisaStig feature is enabled
+func (f *FeatureFlags) IsEnforceKubernetesDisaStigEnabled() bool {
+	return f != nil && f.EnforceKubernetesDisaStig
 }
