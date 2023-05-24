@@ -207,22 +207,28 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 		prop.WindowsProfile.WindowsImageSourceURL = config.WindowsNodeVhdURL
 		log.Printf("Windows nodes will use image at %s for test pass", config.WindowsNodeVhdURL)
 	} else if config.WindowsNodeImageName != "" && config.WindowsNodeImageResourceGroup != "" {
-		prop.WindowsProfile.ImageRef = &vlabs.ImageReference{
-			Name:          config.WindowsNodeImageName,
-			ResourceGroup: config.WindowsNodeImageResourceGroup,
+		if prop.WindowsProfile != nil {
+			prop.WindowsProfile.ImageRef = &vlabs.ImageReference{
+				Name:          config.WindowsNodeImageName,
+				ResourceGroup: config.WindowsNodeImageResourceGroup,
+			}
 		}
 
 		if config.WindowsNodeImageGallery != "" && config.WindowsNodeImageSubscriptionID != "" && config.WindowsNodeImageVersion != "" {
-			prop.WindowsProfile.ImageRef.Gallery = config.WindowsNodeImageGallery
-			prop.WindowsProfile.ImageRef.SubscriptionID = config.WindowsNodeImageSubscriptionID
-			prop.WindowsProfile.ImageRef.Version = config.WindowsNodeImageVersion
+			if prop.WindowsProfile != nil {
+				prop.WindowsProfile.ImageRef.Gallery = config.WindowsNodeImageGallery
+				prop.WindowsProfile.ImageRef.SubscriptionID = config.WindowsNodeImageSubscriptionID
+				prop.WindowsProfile.ImageRef.Version = config.WindowsNodeImageVersion
+			}
 		}
 		log.Printf("Windows nodes will use image reference name:%s, rg:%s, sub:%s, gallery:%s, version:%s for test pass", config.WindowsNodeImageName, config.WindowsNodeImageResourceGroup, config.WindowsNodeImageSubscriptionID, config.WindowsNodeImageGallery, config.WindowsNodeImageVersion)
 	}
 
 	if config.WindowsProvisioningScriptsURL != "" {
-		prop.WindowsProfile.ProvisioningScriptsPackageURL = config.WindowsProvisioningScriptsURL
-		log.Printf("Windows nodes will use provisioning scripts from: %s", config.WindowsProvisioningScriptsURL)
+		if prop.WindowsProfile != nil {
+			prop.WindowsProfile.ProvisioningScriptsPackageURL = config.WindowsProvisioningScriptsURL
+			log.Printf("Windows nodes will use provisioning scripts from: %s", config.WindowsProvisioningScriptsURL)
+		}
 	}
 
 	if config.LinuxNodeImageName != "" && config.LinuxNodeImageResourceGroup != "" {
