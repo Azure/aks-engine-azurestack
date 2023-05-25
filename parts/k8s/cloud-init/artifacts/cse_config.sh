@@ -603,6 +603,7 @@ configAzurePolicyAddon() {
 {{end}}
 
 configAddons() {
+  echo "configAddons placeholder, keep"
   {{if IsClusterAutoscalerAddonEnabled}}
   if [[ ${CLUSTER_AUTOSCALER_ADDON} == true ]]; then
     configClusterAutoscalerAddon

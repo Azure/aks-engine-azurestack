@@ -16,6 +16,7 @@ plugins:
         audit: restricted
         audit-version: latest
       exemptions:
-        usernames: []
+        {{- /* STIG Rule ID: SV-254800r879719_rule */}}
+        usernames: [{{DNSPrefix}}-admin]
         runtimeClasses: []
         namespaces: [kube-system]

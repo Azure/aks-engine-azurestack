@@ -65,7 +65,9 @@ func (cs *ContainerService) setAPIServerConfig() {
 		"--audit-log-maxbackup":           "10",
 		"--audit-log-maxsize":             "100",
 		"--profiling":                     DefaultKubernetesAPIServerEnableProfiling,
+		"--request-timeout":               "1m", // STIG Rule ID: SV-242438r879806_rule
 		"--tls-cipher-suites":             TLSStrongCipherSuitesAPIServer,
+		"--tls-min-version":               "VersionTLS12", // STIG Rule ID: SV-242468r879889_rule
 		"--v":                             DefaultKubernetesAPIServerVerbosity,
 	}
 
@@ -132,6 +134,9 @@ func (cs *ContainerService) setAPIServerConfig() {
 			}
 		}
 	}
+
+	// STIG Rule ID: SV-254801r879719_rule
+	addDefaultFeatureGates(o.KubernetesConfig.APIServerConfig, o.OrchestratorVersion, "1.25.0", "PodSecurity=true")
 
 	// We don't support user-configurable values for the following,
 	// so any of the value assignments below will override user-provided values

@@ -606,6 +606,16 @@ func TestAPIServerFeatureGates(t *testing.T) {
 			"1.22.0", a["--feature-gates"])
 	}
 
+	// test 1.25.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.25.0"
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--feature-gates"] != "PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for k8s v%s: %s",
+			"1.25.0", a["--feature-gates"])
+	}
+
 	// test user-overrides, removal of VolumeSnapshotDataSource for k8s versions >= 1.22
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.22.0"
@@ -734,6 +744,51 @@ func TestAPIServerIPv6Only(t *testing.T) {
 			t.Fatalf("got unexpected '%s' API server config value for '--advertise-address' %s",
 				key, a[key])
 		}
+	}
+}
+
+func TestAPIServerRequestTimeout(t *testing.T) {
+	// Validate request-timeout default
+	cs := CreateMockContainerService("testcluster", "", 3, 2, false)
+	cs.setAPIServerConfig()
+	a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--request-timeout"] != "1m" {
+		t.Fatalf("got unexpected '--request-timeout' API server config value: %s",
+			a["--request-timeout"])
+	}
+
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+		"--request-timeout": "10m",
+	}
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--request-timeout"] != "10m" {
+		t.Fatalf("got unexpected '--request-timeout' API server config value: %s",
+			a["--request-timeout"])
+	}
+}
+
+func TestAPIServerTLSMinVersion(t *testing.T) {
+	// Validate tls-min-version default
+	cs := CreateMockContainerService("testcluster", "", 3, 2, false)
+	cs.setAPIServerConfig()
+	a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--tls-min-version"] != "VersionTLS12" {
+		t.Fatalf("got unexpected '--tls-min-version' API server config value: %s",
+			a["--tls-min-version"])
+	}
+
+	// Validate anonymous-auth enabled
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+		"--tls-min-version": "VersionTLS11",
+	}
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--tls-min-version"] != "VersionTLS11" {
+		t.Fatalf("got unexpected '--tls-min-version' API server config value: %s",
+			a["--tls-min-version"])
 	}
 }
 

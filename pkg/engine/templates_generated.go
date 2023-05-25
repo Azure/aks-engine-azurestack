@@ -5746,6 +5746,11 @@ func k8sAddonsArcOnboardingYaml() (*asset, error) {
 
 var _k8sAddonsAuditPolicyYaml = []byte(`apiVersion: audit.k8s.io/v1
 kind: Policy
+{{- if ShouldEnforceKubernetesDisaStig}}
+{{- /* STIG Rule ID: SV-242403r879525_rule */}}
+rules:
+- level: RequestResponse
+{{else}}
 omitStages:
   - RequestReceived
 rules:
@@ -5784,6 +5789,7 @@ rules:
   - level: Metadata
     omitStages:
       - RequestReceived
+{{- end}}
 `)
 
 func k8sAddonsAuditPolicyYamlBytes() ([]byte, error) {
@@ -15927,7 +15933,8 @@ plugins:
         audit: restricted
         audit-version: latest
       exemptions:
-        usernames: []
+        {{- /* STIG Rule ID: SV-254800r879719_rule */}}
+        usernames: [{{DNSPrefix}}-admin]
         runtimeClasses: []
         namespaces: [kube-system]
 `)
@@ -16845,6 +16852,7 @@ configAzurePolicyAddon() {
 {{end}}
 
 configAddons() {
+  echo "configAddons placeholder, keep"
   {{if IsClusterAutoscalerAddonEnabled}}
   if [[ ${CLUSTER_AUTOSCALER_ADDON} == true ]]; then
     configClusterAutoscalerAddon
@@ -17531,6 +17539,10 @@ NVIDIA_PACKAGES="libnvidia-container1 libnvidia-container-tools nvidia-container
 NVIDIA_CONTAINER_TOOLKIT_VER=1.6.0
 NVIDIA_RUNTIME_VER=3.6.0
 
+disableSshd() {
+  systemctl_stop 20 5 10 sshd || exit 3
+  retrycmd 120 5 25 systemctl disable sshd || exit 3
+}
 disableTimeSyncd() {
   systemctl_stop 20 5 10 systemd-timesyncd || exit 3
   retrycmd 120 5 25 systemctl disable systemd-timesyncd || exit 3
@@ -17868,6 +17880,10 @@ else
   fi
   FULL_INSTALL_REQUIRED=true
 fi
+
+{{- if ShouldEnforceKubernetesDisaStig}}
+disableSshd
+{{- end}}
 
 {{- if not IsVHDDistroForAllNodes}}
 if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
@@ -20329,7 +20345,8 @@ MASTER_CONTAINER_ADDONS_PLACEHOLDER
     sudo sed -i "1iETCDCTL_KEY_FILE={{WrapAsVariable "etcdClientKeyFilepath"}}" /etc/environment
     sudo sed -i "1iETCDCTL_CERT_FILE={{WrapAsVariable "etcdClientCertFilepath"}}" /etc/environment
     sudo sed -i "/^DAEMON_ARGS=/d" /etc/default/etcd
-    /bin/echo DAEMON_ARGS=--name "{{WrapAsVerbatim "variables('masterVMNames')[copyIndex(variables('masterOffset'))]"}}" --peer-client-cert-auth --peer-trusted-ca-file={{WrapAsVariable "etcdCaFilepath"}} --peer-cert-file={{WrapAsVerbatim "variables('etcdPeerCertFilepath')[copyIndex(variables('masterOffset'))]"}} --peer-key-file={{WrapAsVerbatim "variables('etcdPeerKeyFilepath')[copyIndex(variables('masterOffset'))]"}} --initial-advertise-peer-urls "{{WrapAsVerbatim "variables('masterEtcdPeerURLs')[copyIndex(variables('masterOffset'))]"}}" --listen-peer-urls "{{WrapAsVerbatim "variables('masterEtcdPeerURLs')[copyIndex(variables('masterOffset'))]"}}" --client-cert-auth --trusted-ca-file={{WrapAsVariable "etcdCaFilepath"}} --cert-file={{WrapAsVariable "etcdServerCertFilepath"}} --key-file={{WrapAsVariable "etcdServerKeyFilepath"}} --advertise-client-urls "{{WrapAsVerbatim "variables('masterEtcdClientURLs')[copyIndex(variables('masterOffset'))]"}}" --listen-client-urls "{{WrapAsVerbatim "concat(variables('masterEtcdClientURLs')[copyIndex(variables('masterOffset'))], ',https://127.0.0.1:', variables('masterEtcdClientPort'))"}}" --initial-cluster-token "k8s-etcd-cluster" --initial-cluster {{WrapAsVerbatim "variables('masterEtcdClusterStates')[div(variables('masterCount'), 2)]"}} --data-dir "/var/lib/etcddisk" --initial-cluster-state "new" --listen-metrics-urls "{{WrapAsVerbatim "variables('masterEtcdMetricURLs')[copyIndex(variables('masterOffset'))]"}}" --quota-backend-bytes={{GetEtcdStorageLimitGB}} | tee -a /etc/default/etcd
+    {{- /* STIG Rule ID: SV-242380r879519_rule, SV-242379r879519_rule */}}
+    /bin/echo DAEMON_ARGS=--name "{{WrapAsVerbatim "variables('masterVMNames')[copyIndex(variables('masterOffset'))]"}}" --peer-client-cert-auth --peer-trusted-ca-file={{WrapAsVariable "etcdCaFilepath"}} --peer-cert-file={{WrapAsVerbatim "variables('etcdPeerCertFilepath')[copyIndex(variables('masterOffset'))]"}} --peer-key-file={{WrapAsVerbatim "variables('etcdPeerKeyFilepath')[copyIndex(variables('masterOffset'))]"}} --initial-advertise-peer-urls "{{WrapAsVerbatim "variables('masterEtcdPeerURLs')[copyIndex(variables('masterOffset'))]"}}" --listen-peer-urls "{{WrapAsVerbatim "variables('masterEtcdPeerURLs')[copyIndex(variables('masterOffset'))]"}}" --client-cert-auth --trusted-ca-file={{WrapAsVariable "etcdCaFilepath"}} --cert-file={{WrapAsVariable "etcdServerCertFilepath"}} --key-file={{WrapAsVariable "etcdServerKeyFilepath"}} --advertise-client-urls "{{WrapAsVerbatim "variables('masterEtcdClientURLs')[copyIndex(variables('masterOffset'))]"}}" --listen-client-urls "{{WrapAsVerbatim "concat(variables('masterEtcdClientURLs')[copyIndex(variables('masterOffset'))], ',https://127.0.0.1:', variables('masterEtcdClientPort'))"}}" --initial-cluster-token "k8s-etcd-cluster" --initial-cluster {{WrapAsVerbatim "variables('masterEtcdClusterStates')[div(variables('masterCount'), 2)]"}} --data-dir "/var/lib/etcddisk" --initial-cluster-state "new" --listen-metrics-urls "{{WrapAsVerbatim "variables('masterEtcdMetricURLs')[copyIndex(variables('masterOffset'))]"}}" --quota-backend-bytes={{GetEtcdStorageLimitGB}} --peer-auto-tls --auto-tls | tee -a /etc/default/etcd
   {{end}}
 {{end}}
     #EOF

@@ -679,6 +679,9 @@ func getAddonFuncMap(addon api.KubernetesAddon, cs *api.ContainerService) templa
 			}
 			return "admissionregistration.k8s.io/v1beta1"
 		},
+		"ShouldEnforceKubernetesDisaStig": func() bool {
+			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceKubernetesDisaStig")
+		},
 	}
 }
 

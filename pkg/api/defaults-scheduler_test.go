@@ -44,9 +44,11 @@ func TestSchedulerUserConfig(t *testing.T) {
 func TestSchedulerStaticConfig(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = map[string]string{
-		"--kubeconfig":   "user-override",
-		"--leader-elect": "user-override",
-		"--profiling":    "user-override",
+		"--kubeconfig":      "user-override",
+		"--leader-elect":    "user-override",
+		"--profiling":       "user-override",
+		"--bind-address":    "user-override",
+		"--tls-min-version": "user-override",
 	}
 	cs.setSchedulerConfig()
 	for key, val := range staticSchedulerConfig {
@@ -111,6 +113,16 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	if s["--feature-gates"] != "" {
 		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for k8s v%s: %s",
 			"1.22.0", s["--feature-gates"])
+	}
+
+	// test 1.25.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.25.0"
+	cs.setSchedulerConfig()
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	if s["--feature-gates"] != "PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for k8s v%s: %s",
+			"1.25.0", s["--feature-gates"])
 	}
 
 	// test user-overrides, removal of VolumeSnapshotDataSource for k8s versions >= 1.22

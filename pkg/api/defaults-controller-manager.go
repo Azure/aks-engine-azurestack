@@ -60,10 +60,12 @@ func (cs *ContainerService) setControllerManagerConfig() {
 
 	// Default controller-manager config
 	defaultControllerManagerConfig := map[string]string{
+		"--bind-address":                    "127.0.0.1", // STIG Rule ID: SV-242385r879530_rule
 		"--node-monitor-grace-period":       ctrlMgrNodeMonitorGracePeriod,
 		"--pod-eviction-timeout":            ctrlMgrPodEvictionTimeout,
 		"--route-reconciliation-period":     ctrlMgrRouteReconciliationPeriod,
 		"--terminated-pod-gc-threshold":     DefaultKubernetesCtrlMgrTerminatedPodGcThreshold,
+		"--tls-min-version":                 "VersionTLS12", // STIG Rule ID: SV-242376r879519_rule
 		"--use-service-account-credentials": DefaultKubernetesCtrlMgrUseSvcAccountCreds,
 		"--profiling":                       DefaultKubernetesCtrMgrEnableProfiling,
 	}
@@ -108,6 +110,9 @@ func (cs *ContainerService) setControllerManagerConfig() {
 
 	// Enable legacy service account token autogeneration for v1.24.0
 	addDefaultFeatureGates(o.KubernetesConfig.ControllerManagerConfig, o.OrchestratorVersion, "1.24.0", "LegacyServiceAccountTokenNoAutoGeneration=false")
+
+	// STIG Rule ID: SV-254801r879719_rule
+	addDefaultFeatureGates(o.KubernetesConfig.ControllerManagerConfig, o.OrchestratorVersion, "1.25.0", "PodSecurity=true")
 
 	// We don't support user-configurable values for the following,
 	// so any of the value assignments below will override user-provided values

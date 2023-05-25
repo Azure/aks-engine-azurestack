@@ -1,22 +1,40 @@
 {
     "apiVersion": "vlabs",
     "properties": {
+        "orchestratorProfile": {
+            "kubernetesConfig": {
+                "useCloudControllerManager": true,
+                "useManagedIdentity": true
+            }
+        },
         "masterProfile": {
             "count": 3,
             "dnsPrefix": "",
+            "vmSize": "Standard_D2_v3",
+            "distro": "aks-ubuntu-20.04",
             "auditDEnabled": true,
-            "vmSize": "Standard_D2_v3"
+            "OSDiskSizeGB": 200
         },
         "agentPoolProfiles": [
             {
                 "name": "poollinux",
                 "count": 1,
                 "vmSize": "Standard_D2_v3",
+                "OSDiskSizeGB": 200,
+                "distro": "aks-ubuntu-20.04",
+                "storageProfile": "ManagedDisks",
+                "diskSizesGB": [
+                    128
+                ],
                 "auditDEnabled": true,
-                "availabilityProfile": "AvailabilitySet"
+                "availabilityProfile": "AvailabilitySet",
+                "osDiskCachingType": "ReadOnly",
+                "dataDiskCachingType": "ReadWrite"
             }
         ],
         "linuxProfile": {
+            "enableUnattendedUpgrades": false,
+            "runUnattendedUpgradesOnBootstrap": false,
             "adminUsername": "azureuser",
             "ssh": {
                 "publicKeys": [

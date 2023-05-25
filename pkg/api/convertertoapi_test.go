@@ -504,6 +504,7 @@ func TestConvertVLabsContainerService(t *testing.T) {
 				EnableTelemetry:           false,
 				EnableWinDSR:              true,
 				EnforceUbuntu2004DisaStig: false,
+				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{
 				ClientAppID:  "SampleClientAppID",
@@ -712,6 +713,7 @@ func TestTelemetryEnabled(t *testing.T) {
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           true,
 				EnforceUbuntu2004DisaStig: false,
+				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{
 				ClientAppID:  "SampleClientAppID",

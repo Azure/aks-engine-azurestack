@@ -43,7 +43,7 @@ jobs:
       MSI_USER_ASSIGNED_ID: ${{ parameters.msiId }}
       ENABLE_KMS_ENCRYPTION: ${{ parameters.enableKMSEncryption }}
       CONTAINER_RUNTIME: ${{ parameters.containerRuntime }}
-      BLOCK_SSH: ${{ parameters.runSSHTests }}
+      BLOCK_SSH: ${{ parameters.skipSSHTests }}
       DISTRO: ${{ parameters.distro }}
       WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ parameters.subscriptionId }}
       WINDOWS_NODE_IMAGE_RESOURCE_GROUP: AKSeImages

@@ -1,5 +1,10 @@
 apiVersion: audit.k8s.io/v1
 kind: Policy
+{{- if ShouldEnforceKubernetesDisaStig}}
+{{- /* STIG Rule ID: SV-242403r879525_rule */}}
+rules:
+- level: RequestResponse
+{{else}}
 omitStages:
   - RequestReceived
 rules:
@@ -38,3 +43,4 @@ rules:
   - level: Metadata
     omitStages:
       - RequestReceived
+{{- end}}

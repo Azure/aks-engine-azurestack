@@ -418,6 +418,7 @@ func getDefaultContainerService() *ContainerService {
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           false,
 				EnforceUbuntu2004DisaStig: false,
+				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &AADProfile{
 				ClientAppID:     "SampleClientAppID",
