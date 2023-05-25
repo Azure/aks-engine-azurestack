@@ -65,7 +65,7 @@ jobs:
       enableKMSEncryption: false
       containerRuntime: "containerd"
       distro: "aks-ubuntu-20.04"
-      runSSHTests: true
+      skipSSHTests: true
       regions: $(REGIONS)
       subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
       tenantId: $(TENANT_ID)
@@ -84,7 +84,7 @@ jobs:
       enableKMSEncryption: false
       containerRuntime: "containerd"
       distro: "aks-ubuntu-20.04"
-      runSSHTests: true
+      skipSSHTests: true
       regions: $(REGIONS)
       subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
       tenantId: $(TENANT_ID)
@@ -103,7 +103,7 @@ jobs:
       enableKMSEncryption: false
       containerRuntime: "containerd"
       distro: "aks-ubuntu-20.04"
-      runSSHTests: false
+      skipSSHTests: true
       regions: $(REGIONS)
       subscriptionId: $(SUBSCRIPTION_ID_E2E_KUBERNETES)
       tenantId: $(TENANT_ID)
