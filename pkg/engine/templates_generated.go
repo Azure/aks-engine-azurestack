@@ -13494,7 +13494,9 @@ spec:
         args:
           - --enable-ipv6={{ContainerConfig "enable-ipv6"}}
         securityContext:
-          privileged: true
+          privileged: false
+          capabilities:
+            add: ["NET_ADMIN", "NET_RAW"]
         volumeMounts:
           - name: azure-ip-masq-agent-config-volume
             mountPath: /etc/config
