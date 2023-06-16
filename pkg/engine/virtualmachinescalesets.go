@@ -250,7 +250,7 @@ func CreateMasterVMSS(cs *api.ContainerService) VirtualMachineScaleSetARM {
 
 	storageProfile := compute.VirtualMachineScaleSetStorageProfile{}
 	imageRef := masterProfile.ImageRef
-	etcdSizeGB, _ := strconv.Atoi(k8sConfig.EtcdDiskSizeGB)
+	etcdSizeGB, _ := strconv.ParseInt(k8sConfig.EtcdDiskSizeGB, 10, 32)
 	dataDisk := compute.VirtualMachineScaleSetDataDisk{
 		CreateOption: compute.DiskCreateOptionTypesEmpty,
 		DiskSizeGB:   to.Int32Ptr(int32(etcdSizeGB)),
