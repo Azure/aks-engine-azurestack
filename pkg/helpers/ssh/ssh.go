@@ -5,12 +5,17 @@ package ssh
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
+	"net"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/ssh"
+	kh "golang.org/x/crypto/ssh/knownhosts"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/client-go/util/retry"
 )
@@ -111,19 +116,98 @@ func client(host *RemoteHost) (*ssh.Client, error) {
 }
 
 func config(authConfig *AuthConfig) (*ssh.ClientConfig, error) {
-	var err error
-	var auth ssh.AuthMethod
-	if authConfig.PrivateKeyPath != "" {
-		auth, err = PublicKeyAuth(authConfig.PrivateKeyPath)
-		if err != nil {
-			return nil, err
+	authMethod, err := clientConfigAuth(authConfig)
+	if err != nil {
+		return nil, err
+	}
+	hkCallback, err := knownHostsHostKeyCallback()
+	if err != nil {
+		return nil, err
+	}
+	hostKeyCallback := func(host string, remote net.Addr, pubKey ssh.PublicKey) error {
+		var keyErr *kh.KeyError
+		if cbErr := hkCallback(host, remote, pubKey); cbErr != nil && errors.As(cbErr, &keyErr) {
+			hostname := strings.Split(host, ":")[0]
+			if len(keyErr.Want) > 0 {
+				log.Errorf("Strict host key check failed. Remote host identification has changed.")
+				log.Errorf("Key '%v' does not match a key known for host %s.", hostKeyString(pubKey), hostname)
+				return keyErr
+			}
+			if len(keyErr.Want) == 0 {
+				if err := addHostKey(hostname, pubKey); err != nil {
+					return err
+				}
+				log.Warnf("Permanently added '%s' (%s) to the list of known hosts (%s)", hostname, pubKey.Type(), khpath)
+			}
 		}
-	} else {
-		auth = ssh.Password(authConfig.Password)
+		return nil
 	}
 	return &ssh.ClientConfig{
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		HostKeyCallback: hostKeyCallback,
 		User:            authConfig.User,
-		Auth:            []ssh.AuthMethod{auth},
+		Auth:            authMethod,
 	}, nil
+}
+
+// clientConfigAuth returns the ssh authentication method
+func clientConfigAuth(authConfig *AuthConfig) ([]ssh.AuthMethod, error) {
+	// TODO we may be able to return both methods, not changing behavior for now
+	// TODO this can be reworked so it is executed once per command
+	if authConfig.PrivateKeyPath != "" {
+		keyAuth, err := PublicKeyAuth(authConfig.PrivateKeyPath)
+		if err != nil {
+			return nil, errors.Wrap(err, "creating public key authentication method")
+		}
+		return []ssh.AuthMethod{keyAuth}, nil
+	}
+	return []ssh.AuthMethod{ssh.Password(authConfig.Password)}, nil
+}
+
+// knownHostsHostKeyCallback returns a host key callback that uses file
+// ${HOME}/.ssh/known_hosts to store known host keys
+func knownHostsHostKeyCallback() (ssh.HostKeyCallback, error) {
+	err := ensuresKnownHosts()
+	if err != nil {
+		return nil, err
+	}
+	khCallback, err := kh.New(khpath)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating HostKeyCallback instance")
+	}
+	return khCallback, nil
+}
+
+// ensuresKnownHosts creates file ${HOME}/.ssh/known_hosts if it does not exist
+func ensuresKnownHosts() error {
+	f, err := os.OpenFile(khpath, os.O_CREATE, 0600)
+	if err != nil {
+		return errors.Wrap(err, "creating known_hosts file")
+	}
+	f.Close()
+	return nil
+}
+
+// hostKeyString pretty-prints a public key struct
+func hostKeyString(k ssh.PublicKey) string {
+	return fmt.Sprintf("%s %s", k.Type(), base64.StdEncoding.EncodeToString(k.Marshal()))
+}
+
+// addHostKey adds an entry to ${HOME}/.ssh/known_hosts
+func addHostKey(hostname string, pubKey ssh.PublicKey) error {
+	f, err := os.OpenFile(khpath, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return errors.Wrap(err, "opening known_hosts file")
+	}
+	defer f.Close()
+	// append blank line
+	if _, err = f.WriteString(lineBreak); err != nil {
+		return errors.Wrap(err, "appending blank line to known_hosts file")
+	}
+	// append host key line
+	knownHosts := kh.Normalize(hostname)
+	_, err = f.WriteString(kh.Line([]string{knownHosts}, pubKey))
+	if err != nil {
+		return errors.Wrap(err, "writing known_hosts file")
+	}
+	return nil
 }
