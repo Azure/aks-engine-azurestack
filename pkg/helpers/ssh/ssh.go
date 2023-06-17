@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"path"
 	"strings"
 	"time"
 
@@ -179,6 +180,9 @@ func knownHostsHostKeyCallback() (ssh.HostKeyCallback, error) {
 
 // ensuresKnownHosts creates file ${HOME}/.ssh/known_hosts if it does not exist
 func ensuresKnownHosts() error {
+	if err := os.MkdirAll(path.Dir(khpath), 0700); err != nil {
+		return errors.Wrap(err, "creating .ssh directory")
+	}
 	f, err := os.OpenFile(khpath, os.O_CREATE, 0600)
 	if err != nil {
 		return errors.Wrap(err, "creating known_hosts file")
