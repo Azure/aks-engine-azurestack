@@ -16,7 +16,7 @@ import (
 
 // CopyToRemote copies a file to a remote host.
 //
-// Context ctx is only enforced during the process that stablishes
+// Context ctx is only enforced during the process that establishes
 // the SSH connection and creates the SSH client.
 func CopyToRemote(ctx context.Context, host *RemoteHost, file *RemoteFile) (combinedOutput string, err error) {
 	c, err := clientWithRetry(ctx, host)
@@ -40,7 +40,7 @@ func CopyToRemote(ctx context.Context, host *RemoteHost, file *RemoteFile) (comb
 
 // CopyFromRemote copies a remote file to the local host.
 //
-// Context ctx is only enforced during the process that stablishes
+// Context ctx is only enforced during the process that establishes
 // the SSH connection and creates the SSH client.
 func CopyFromRemote(ctx context.Context, host *RemoteHost, remoteFile *RemoteFile, destinationPath string) (stderr string, err error) {
 	f, err := os.OpenFile(destinationPath, os.O_WRONLY|os.O_CREATE, 0644)

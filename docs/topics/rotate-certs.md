@@ -92,6 +92,17 @@ At a high level, the `aks-engine-azurestack rotate-certs` command performs the f
 - rotate agent certificates
 - update input `apimodel.json` with new certificates information
 
+### SSH StrictHostKeyChecking
+
+The SSH option `StrictHostKeyChecking` is a security feature that affects how SSH verifies the identity of a remote computer when connecting to it.
+SSH automatically checks and persists in local file `~/.ssh/known_hosts` the identity of all the hosts that have ever been used in host key checks.
+
+When this option is enabled, the SSH client will automatically reject any key from the server that does not match the one stored in its `known_hosts` file.
+This helps protect against man-in-the-middle attacks, where an attacker may attempt to impersonate the server by providing a different hostkey.
+
+Starting with AKS Engine v0.77.0, `StrictHostKeyChecking` will be enforced during the execution of the `aks-engine-azurestack rotate-certs` command.
+Hence, new entries will be appended to the local `known_hosts` file if no SSH sessions to the remove host were established in the past.
+
 ### Generating certificates
 
 `aks-engine-azurestack rotate-certs` is able to generate the new set of certificates that will be deployed to the cluster based on the information found in the API model.

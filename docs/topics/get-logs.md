@@ -14,7 +14,18 @@ At a high level, it works by establishing a SSH session into each node, executin
 
 ### SSH Authentication
 
-A valid SSH private key is always required to stablish a SSH session to the cluster Linux nodes. Windows credentials are stored in the API model and will be loaded from there. Make sure `windowsprofile.sshEnabled` is set to `true` to enable SSH in your Windows nodes.
+A valid SSH private key is always required to establish a SSH session to the cluster Linux nodes. Windows credentials are stored in the API model and will be loaded from there. Make sure `windowsprofile.sshEnabled` is set to `true` to enable SSH in your Windows nodes.
+
+### SSH StrictHostKeyChecking
+
+The SSH option `StrictHostKeyChecking` is a security feature that affects how SSH verifies the identity of a remote computer when connecting to it.
+SSH automatically checks and persists in local file `~/.ssh/known_hosts` the identity of all the hosts that have ever been used in host key checks.
+
+When this option is enabled, the SSH client will automatically reject any key from the server that does not match the one stored in its `known_hosts` file.
+This helps protect against man-in-the-middle attacks, where an attacker may attempt to impersonate the server by providing a different hostkey.
+
+Starting with AKS Engine v0.77.0, `StrictHostKeyChecking` will be enforced during the execution of the `aks-engine-azurestack get-logs` command.
+Hence, new entries will be appended to the local `known_hosts` file if no SSH sessions to the remove host were established in the past.
 
 ### Log Collection Scripts
 

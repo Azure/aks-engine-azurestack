@@ -27,17 +27,6 @@ func SSHClient(jumpboxHost, jumpboxPort, hostname string, jumpboxConfig, nodeCon
 	return ssh.NewClient(ncc, chans, reqs), nil
 }
 
-func SSHClientConfig(user string, auth ssh.AuthMethod) *ssh.ClientConfig {
-	return &ssh.ClientConfig{
-		// FixedHostKey instead?
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		User:            user,
-		Auth: []ssh.AuthMethod{
-			auth,
-		},
-	}
-}
-
 func PublicKeyAuth(sshPrivateKeyPath string) (ssh.AuthMethod, error) {
 	b, err := os.ReadFile(sshPrivateKeyPath)
 	if err != nil {
