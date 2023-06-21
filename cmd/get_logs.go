@@ -419,7 +419,7 @@ func collectLogsScript(f *ssh.RemoteFile, os api.OSType, isAzureStack bool) stri
 		}
 		return fmt.Sprintf("sudo -E bash -c %s", f.Path)
 	case api.Windows:
-		return fmt.Sprintf("powershell -command \"iex %s | Where-Object { $_.extension -eq '.zip' } | Copy-Item -Destination $env:temp\\$env:computername.zip\"", f.Path)
+		return fmt.Sprintf("powershell -command \"iex %s; ls . | Where-Object { $_.extension -eq '.zip' } | sort LastWriteTime -Descending | Select -First 1 | Copy-Item -Destination $env:temp\\$env:computername.zip\"", f.Path)
 	default:
 		return ""
 	}

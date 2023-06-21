@@ -288,6 +288,13 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       --linux-ssh-private-key _output/$RESOURCE_GROUP-ssh \
       --linux-script ./scripts/collect-logs.sh \
       --windows-script ./scripts/collect-windows-logs.ps1
+
+      for logfile in _output/$RESOURCE_GROUP/_logs/*.zip; do
+        if [ -z "$(cat ${logfile})" ]; then
+          echo "File ${logfile} is empty"
+          exit 1
+        fi
+      done
   fi
 
   if [ $(( RANDOM % 4 )) -eq 3 ]; then
