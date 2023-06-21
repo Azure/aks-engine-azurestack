@@ -289,7 +289,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       --linux-script ./scripts/collect-logs.sh \
       --windows-script ./scripts/collect-windows-logs.ps1
 
-      for logfile in _output/$RESOURCE_GROUP/_logs/*.zip; do
+      for logfile in _output/${RESOURCE_GROUP}/_logs/*.zip; do
         if [ -z "$(cat ${logfile})" ]; then
           echo "File ${logfile} is empty"
           exit 1
