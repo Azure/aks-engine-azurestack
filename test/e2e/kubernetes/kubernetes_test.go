@@ -1187,11 +1187,11 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				consumerPodName := fmt.Sprintf("consumer-pod-%s-%v", cfg.Name, r.Intn(99999))
 				deploymentCommand := fmt.Sprintf("%s && while true; do sleep 1; done || echo unable to connect to in-cluster web listener", commandString)
 				// Ensure across all nodes
-				successes, err := deployment.RunDeploymentMultipleTimes(deployment.RunLinuxDeploy, "busybox", consumerPodName, deploymentCommand, deploymentReplicasCount, cfg.StabilityIterations, 1*time.Second, timeoutWhenWaitingForPodOutboundAccess, cfg.Timeout)
+				successes, err := deployment.RunDeploymentMultipleTimes(deployment.RunLinuxDeploy, "mcr.microsoft.com/oss/busybox/busybox:1.33.1", consumerPodName, deploymentCommand, deploymentReplicasCount, cfg.StabilityIterations, 1*time.Second, timeoutWhenWaitingForPodOutboundAccess, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(successes).To(Equal(cfg.StabilityIterations))
 				// Ensure responsiveness
-				successes, err = pod.RunCommandMultipleTimes(pod.RunLinuxPod, "busybox", consumerPodName, commandString, cfg.StabilityIterations, 1*time.Second, stabilityCommandTimeout, cfg.Timeout, cfg.StabilityIterationsSuccessRate == 1.0)
+				successes, err = pod.RunCommandMultipleTimes(pod.RunLinuxPod, "mcr.microsoft.com/oss/busybox/busybox:1.33.1", consumerPodName, commandString, cfg.StabilityIterations, 1*time.Second, stabilityCommandTimeout, cfg.Timeout, cfg.StabilityIterationsSuccessRate == 1.0)
 				Expect(err).NotTo(HaveOccurred())
 				Expect(successes).Should(BeNumerically(">=", cfg.StabilityIterationsSuccessRate*float32(cfg.StabilityIterations)))
 			} else {
@@ -2803,7 +2803,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				if clusterAutoscalerEngaged {
 					numLoadTestPods = (totalMaxPods / 2)
 				}
-				loadTestDeploy, err := deployment.RunLinuxDeployDeleteIfExists(loadTestPrefix, "busybox", loadTestName, "default", commandString, numLoadTestPods)
+				loadTestDeploy, err := deployment.RunLinuxDeployDeleteIfExists(loadTestPrefix, "mcr.microsoft.com/oss/busybox/busybox:1.33.1", loadTestName, "default", commandString, numLoadTestPods)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Ensuring we have more than 1 apache-php pods due to hpa enforcement")
