@@ -379,3 +379,25 @@ tee -a ${VHD_LOGS_FILEPATH} < /proc/version
   echo "Commit: ${COMMIT}"
   echo "Feature flags: ${FEATURE_FLAGS}"
 } >> ${VHD_LOGS_FILEPATH}
+
+VHD_CG_MANIFEST=/opt/azure/cgmanifest.json
+apt list --installed \
+| grep -v 'Listing...' \
+| awk '{split($0, a, "/"); print a[1]","$2",Ubuntu,20.04"}' \
+| jq --slurp --raw-input \
+'{
+  "$schema": "https://json.schemastore.org/component-detection-manifest.json",
+  "Registrations": (split("\n") | map(split(",") | select(.[0] | length > 0)) | map(
+  {
+    "Component": {
+      "Type": "linux",
+      "Linux": {
+        "Name": .[0],
+        "Version": .[1],
+        "Distribution": .[2],
+        "Release": .[3]
+      }
+    }
+  }
+  ))
+}' > ${VHD_CG_MANIFEST}
