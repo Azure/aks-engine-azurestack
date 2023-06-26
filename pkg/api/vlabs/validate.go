@@ -1923,9 +1923,6 @@ func validateDependenciesLocation(dependenciesLocation DependenciesLocation, dep
 func (a *Properties) validateAzureStackSupport() error {
 	if a.IsAzureStackCloud() {
 		networkPlugin := a.OrchestratorProfile.KubernetesConfig.NetworkPlugin
-		if networkPlugin == "azure" || networkPlugin == "" {
-			log.Warnf("NetworkPlugin 'azure' is a private preview feature on Azure Stack clouds")
-		}
 		if networkPlugin != "azure" && networkPlugin != "kubenet" && networkPlugin != "" {
 			return errors.Errorf("kubernetesConfig.networkPlugin '%s' is not supported on Azure Stack clouds", networkPlugin)
 		}
