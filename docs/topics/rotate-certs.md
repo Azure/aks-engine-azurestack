@@ -151,3 +151,82 @@ Executing `aks-engine-azurestack rotate-certs` from a VM running on the target c
 ## Troubleshooting
 
 `aks-engine-azurestack rotate-certs` logs the output of every step in file `/var/log/azure/rotate-certs.log` (Linux) and `c:\k\rotate-certs.log` (Windows).
+
+## Frequently Asked Questions
+
+### How to rotate the front-proxy certificates
+
+Older AKS Engine releases (before v0.65.0) create a front-proxy PKI that expires after 2 years (730 days).
+
+Errors executing `kubectl top` are an indication that the front-proxy certificates are expired.
+To confirm, check the `metrics-server` logs and/or run the following command:
+
+```bash
+sudo openssl x509 -noout -in /etc/kubernetes/certs/proxy.crt -enddate
+```
+
+If the front-proxy certificates expired and the cluster was updated to AKS Engine v0.65.0 or greater,
+then execute `aks-engine rotate-certs` to renew them. 
+
+If the cluster was **not** updated to AKS Engine v0.65.0 or greater,
+then a set of manual steps are required:
+
+#### 1. On master 0 as `root`
+
+- Delete certificate data from `etcd`
+  ```bash
+  ETCDCTL_ENDPOINTS="${ETCDCTL_ENDPOINTS:=https://127.0.0.1:2379}"
+  ETCDCTL_CA_FILE="${ETCDCTL_CA_FILE:=/etc/kubernetes/certs/ca.crt}"
+  ETCD_CA_PARAM="--cacert=${ETCDCTL_CA_FILE}"
+  ETCDCTL_KEY_FILE="${ETCDCTL_KEY_FILE:=/etc/kubernetes/certs/etcdclient.key}"
+  ETCDCTL_CERT_FILE="${ETCDCTL_CERT_FILE:=/etc/kubernetes/certs/etcdclient.crt}"
+  ETCDCTL_PARAMS="--command-timeout=30s --cert=${ETCDCTL_CERT_FILE} --key=${ETCDCTL_KEY_FILE} ${ETCD_CA_PARAM} --endpoints=${ETCDCTL_ENDPOINTS}"
+  # delete etcd entries
+  ETCDCTL_API=3 etcdctl ${ETCDCTL_PARAMS} del "/proxycerts/requestheader-client-ca-file"
+  ETCDCTL_API=3 etcdctl ${ETCDCTL_PARAMS} del "/proxycerts/proxy-client-key-file"
+  ETCDCTL_API=3 etcdctl ${ETCDCTL_PARAMS} del "/proxycerts/proxy-client-cert-file"
+  ```
+- Download latest front-proxy generation script
+  ```bash
+  curl -L https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/generateproxycerts.sh -o generate-proxy-certs.sh
+  chmod +x generate-proxy-certs.sh
+  ```
+- Execute the script
+  ```bash
+  source /etc/environment
+  export OVERRIDE_PROXY_CERTS=true
+  ./generate-proxy-certs.sh
+  ```
+- Verify new expiration date
+  ```bash
+  sudo openssl x509 -noout -in /etc/kubernetes/certs/proxy.crt -enddate
+  ```
+- Reboot server
+
+#### 2. On the rest of master nodes as `root`
+
+- Download latest front-proxy generation script
+  ```bash
+  curl -L https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/generateproxycerts.sh -o generate-proxy-certs.sh
+  chmod +x generate-proxy-certs.sh
+  ```
+- Execute the script
+  ```bash
+  source /etc/environment
+  ./generate-proxy-certs.sh
+  ```
+- Verify new expiration date
+  ```bash
+  sudo openssl x509 -noout -in /etc/kubernetes/certs/proxy.crt -enddate
+  ```
+- Reboot server
+
+#### 3. Regenerate metrics-server secret
+
+- Delete the existing secret and redeploy metrics-server 
+  ```bash
+  SECRET_NAME=$(kubectl get sa metrics-server -n kube-system -o json | jq -r '.secrets | map(.name)[0]')
+
+  kubectl delete secret $SECRET_NAME -n kube-system
+  kubectl rollout restart deploy metrics-server -n kube-system
+  ```
