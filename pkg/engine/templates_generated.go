@@ -17696,8 +17696,8 @@ installRunc() {
   local v
   local url
   v=$(runc --version | head -n 1 | cut -d" " -f3)
-  if [[ $v != "1.1.4" ]]; then
-    apt_get_install 20 30 120 moby-runc=1.1.4* --allow-downgrades || exit 27
+  if [[ $v != "1.1.7" ]]; then
+    apt_get_install 20 30 120 moby-runc=1.1.7* --allow-downgrades || exit 27
   fi
 }
 installMoby() {
@@ -21277,7 +21277,7 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
       "type": "string"
     },
     "containerdVersion": {
-      "defaultValue": "1.5.16",
+      "defaultValue": "1.6.21",
       "metadata": {
         "description": "The Azure containerd build version"
       },
@@ -21298,7 +21298,8 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
          "1.4.11",
          "1.5.11",
          "1.5.13",
-         "1.5.16"
+         "1.5.16",
+         "1.6.21"
        ],
       "type": "string"
     },
