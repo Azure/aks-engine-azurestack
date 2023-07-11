@@ -12,7 +12,7 @@ $ErrorActionPreference = "Stop"
 
 filter Timestamp { "$(Get-Date -Format o): $_" }
 
-$global:containerdPackageUrl = "https://mobyartifacts.azureedge.net/moby/moby-containerd/1.5.8+azure/windows/windows_amd64/moby-containerd-1.5.8+azure-1.amd64.zip"
+$global:containerdPackageUrl = "https://acs-mirror.azureedge.net/containerd/windows/v1.6.21-azure.1/binaries/containerd-v1.6.21-azure.1-windows-amd64.tar.gz"
 
 function Write-Log($Message) {
     $msg = $message | Timestamp
