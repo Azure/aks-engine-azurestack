@@ -1,6 +1,16 @@
 {
     "apiVersion": "vlabs",
     "properties": {
+        "orchestratorProfile": {
+            "kubernetesConfig": {
+                "addons": [
+                    {
+                        "name": "azuredisk-csi-driver",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
         "masterProfile": {
             "count": 1,
             "dnsPrefix": "",

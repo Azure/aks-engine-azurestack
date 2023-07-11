@@ -4,7 +4,13 @@
         "orchestratorProfile": {
             "kubernetesConfig": {
                 "useCloudControllerManager": true,
-                "useManagedIdentity": true
+                "useManagedIdentity": true,
+                "addons": [
+                    {
+                        "name": "azuredisk-csi-driver",
+                        "enabled": true
+                    }
+                ]
             }
         },
         "masterProfile": {
