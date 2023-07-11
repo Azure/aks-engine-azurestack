@@ -42,7 +42,7 @@ const (
 	csiResizerImageReference                          string = "oss/kubernetes-csi/csi-resizer:v1.3.0"
 	csiSnapshotterImageReference                      string = "oss/kubernetes-csi/csi-snapshotter:v4.2.1"
 	csiSnapshotControllerImageReference               string = "oss/kubernetes-csi/snapshot-controller:v4.2.1"
-	csiAzureDiskImageReference                        string = "oss/kubernetes-csi/azuredisk-csi:v1.10.0"
+	csiAzureDiskImageReference                        string = "oss/kubernetes-csi/azuredisk-csi:v1.26.5"
 	csiAzureFileImageReference                        string = "oss/kubernetes-csi/azurefile-csi:v1.9.0"
 	azureCloudControllerManagerImageReference         string = "oss/kubernetes/azure-cloud-controller-manager:v1.1.1"
 	azureCloudNodeManagerImageReference               string = "oss/kubernetes/azure-cloud-node-manager:v1.1.1"

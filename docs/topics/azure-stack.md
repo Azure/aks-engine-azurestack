@@ -201,7 +201,7 @@ If the data persisted in the underlying Azure disks should be preserved, then th
 The following script uses `Helm` to install the Azure Disk CSI Driver:
 
 ```bash
-DRIVER_VERSION=v1.10.0
+DRIVER_VERSION=v1.26.5
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -273,8 +273,9 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 
 ```bash
 # Install CSI Driver
+DRIVER_VERSION=v1.26.5
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
-helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --version v1.10.0
+helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --version ${DRIVER_VERSION}
 
 # Deploy Storage Class
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/storageclass-azuredisk-csi-azurestack.yaml
