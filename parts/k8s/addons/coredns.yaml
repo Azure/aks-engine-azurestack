@@ -140,7 +140,7 @@ spec:
                   operator: In
                   values:
                   - kube-dns
-              topologyKey: failure-domain.beta.kubernetes.io/zone
+              topologyKey: topology.kubernetes.io/zone
             weight: 10
           - podAffinityTerm:
               labelSelector:
