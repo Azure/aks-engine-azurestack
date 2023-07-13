@@ -84,8 +84,8 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setControllerManagerConfig()
 	cm := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true\": %s",
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true\": %s",
 			cm["--feature-gates"])
 	}
 
@@ -129,13 +129,23 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 			cm["--feature-gates"])
 	}
 
+	// test 1.26.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cs.setControllerManagerConfig()
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true\": %s",
+			cm["--feature-gates"])
+	}
+
 	// test user-overrides
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "TaintBasedEvictions=true"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,TaintBasedEvictions=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,TaintBasedEvictions=true\": %s",
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true\": %s",
 			cm["--feature-gates"])
 	}
 
