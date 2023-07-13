@@ -4804,7 +4804,7 @@ func TestValidateLocation(t *testing.T) {
 					},
 					OrchestratorProfile: &OrchestratorProfile{
 						OrchestratorType:    Kubernetes,
-						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "1.24", "", false, false, true),
+						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
 							UseCloudControllerManager: to.BoolPtr(trueVal),
 							ContainerRuntime:          "docker",
