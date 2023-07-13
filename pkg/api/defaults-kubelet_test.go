@@ -948,7 +948,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = "DynamicKubeletConfig=true,ExecProbeTimeout=false"
 	cs.setKubeletConfig(false)
-	if k["--feature-gates"] != "DynamicKubeletConfig=true,ExecProbeTimeout=false,RotateKubeletServerCertificate=true" {
+	if k["--feature-gates"] != "DynamicKubeletConfig=true,ExecProbeTimeout=false,PodSecurity=true,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
 			k["--feature-gates"])
 	}
@@ -968,7 +968,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = "VolumeSnapshotDataSource=true"
 	cs.setKubeletConfig(false)
-	if k["--feature-gates"] != "ExecProbeTimeout=true,RotateKubeletServerCertificate=true" {
+	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
 			k["--feature-gates"])
 	}
