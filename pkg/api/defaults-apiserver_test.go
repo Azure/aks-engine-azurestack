@@ -581,7 +581,7 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setAPIServerConfig()
 	a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	if a["--feature-gates"] != "" {
+	if a["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for k8s v%s: %s",
 			defaultTestClusterVer, a["--feature-gates"])
 	}
@@ -614,6 +614,16 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	if a["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for k8s v%s: %s",
 			"1.25.0", a["--feature-gates"])
+	}
+
+	// test 1.26.0
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--feature-gates"] != "PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for k8s v%s: %s",
+			"1.26.0", a["--feature-gates"])
 	}
 
 	// test user-overrides, removal of VolumeSnapshotDataSource for k8s versions >= 1.22

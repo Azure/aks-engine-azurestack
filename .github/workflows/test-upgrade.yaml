@@ -1,0 +1,160 @@
+name: Test Upgrade
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_branch:
+        description: 'Which branch are we testing? (if left blank, by default will use the branch used to trigger workflow)'
+        required: false
+        default: ''
+      LINUX_NODE_IMAGE_VERSION:
+        description: 'What is the Linux SIG image version?'
+        required: true
+        default: 2023.116.3
+      WINDOWS_NODE_IMAGE_VERSION:
+        description: 'What is the Windows SIG image version?'
+        required: true
+        default: 2023.116.3
+  workflow_call:
+    inputs:
+      from_branch:
+        required: true
+        type: string
+      LINUX_NODE_IMAGE_VERSION:
+        type: string
+        required: true
+      WINDOWS_NODE_IMAGE_VERSION:
+        type: string
+        required: true
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{inputs.from_branch}}
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: "go.mod"
+      - name: Setup SSH Keys and known_hosts
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: |
+          ssh-agent -a $SSH_AUTH_SOCK
+      - name: Install helm
+        run: |
+          curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
+          sudo apt-get install apt-transport-https --yes
+          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+          sudo apt-get update
+          sudo apt-get install helm
+      - name: Install k
+        run: |
+          sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
+          sudo chmod +x /usr/local/bin/k
+      - name: Build aks-engine-azurestack binary
+        run: make build-binary
+      - name: Validate 1.25 scenario, deploy and test suite after deploy
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ORCHESTRATOR_RELEASE: "1.25"
+          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          LOCATION: "eastus"
+          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CLEANUP_ON_EXIT: false
+          CLEANUP_IF_FAIL: true
+          SKIP_LOGS_COLLECTION: true
+          SKIP_TEST: false
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          BLOCK_SSH: false
+          RETAIN_SSH: true
+          CONTAINER_RUNTIME: containerd
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
+          WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
+          WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
+          WINDOWS_NODE_IMAGE_VERSION: ${{inputs.WINDOWS_NODE_IMAGE_VERSION}}
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
+          LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
+          LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
+          LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
+        run: make test-kubernetes
+      - name: Validate 1.25 scenario, upgrade
+        run : |
+          RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
+          REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
+          CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
+          TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
+          ./bin/aks-engine-azurestack upgrade --force \
+          --subscription-id ${{ secrets.TEST_AZURE_SUB_ID }} \
+          --api-model _output/$RESOURCE_GROUP/apimodel.json \
+          --location $REGION \
+          --resource-group $RESOURCE_GROUP \
+          --upgrade-version $TARGET_VERSION \
+          --vm-timeout 20 \
+          --client-id ${{ secrets.TEST_AZURE_SP_ID }} \
+          --client-secret ${{ secrets.TEST_AZURE_SP_PW }}
+      - name: Validate 1.25 scenario, remove known hosts
+        run : |
+          RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
+          REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
+          CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
+          TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
+          ssh-keygen -f ~/.ssh/known_hosts -R ${RESOURCE_GROUP}.${REGION}.cloudapp.azure.com
+      - name: Validate 1.25 scenario, test suite after upgrade
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ORCHESTRATOR_RELEASE: "1.25"
+          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          LOCATION: "eastus"
+          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: true
+          SKIP_LOGS_COLLECTION: true
+          SKIP_TEST: false
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          BLOCK_SSH: false
+          RETAIN_SSH: false
+          CONTAINER_RUNTIME: containerd
+        run : |
+          export NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2);\
+          make test-kubernetes
+      - name: Validate 1.26 scenario, deploy and test suite after deploy
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ORCHESTRATOR_RELEASE: "1.26"
+          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          LOCATION: "eastus"
+          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          CLEANUP_ON_EXIT: true
+          CLEANUP_IF_FAIL: true
+          SKIP_LOGS_COLLECTION: true
+          SKIP_TEST: false
+          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          BLOCK_SSH: false
+          RETAIN_SSH: false
+          CONTAINER_RUNTIME: containerd
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
+          WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
+          WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
+          WINDOWS_NODE_IMAGE_VERSION: ${{inputs.WINDOWS_NODE_IMAGE_VERSION}}
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
+          LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
+          LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
+          LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
+        run: |
+          make test-kubernetes

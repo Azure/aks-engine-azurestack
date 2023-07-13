@@ -90,7 +90,7 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setSchedulerConfig()
 	s := cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	if s["--feature-gates"] != "" {
+	if s["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for k8s v%s: %s",
 			defaultTestClusterVer, s["--feature-gates"])
 	}

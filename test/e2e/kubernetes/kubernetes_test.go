@@ -2896,10 +2896,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				// Check node labels applied by cloud-node-manager
 				if hasAddon, _ := eng.HasAddon(common.CloudNodeManagerAddonName); hasAddon {
 					// Can't extract zone from API model, so just ensure that zone-related labels exist
-					Expect(labels).To(HaveKey("failure-domain.beta.kubernetes.io/zone"))
 					Expect(labels).To(HaveKey("topology.kubernetes.io/zone"))
 					region := eng.ExpandedDefinition.Location
-					Expect(labels).To(HaveKeyWithValue("failure-domain.beta.kubernetes.io/region", region))
 					Expect(labels).To(HaveKeyWithValue("topology.kubernetes.io/region", region))
 					var instanceType string
 					switch role {
@@ -2908,7 +2906,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					case "agent":
 						instanceType = util.GetAgentVMSize(eng.ExpandedDefinition.Properties.AgentPoolProfiles, n.Metadata.Name, n.Status.NodeInfo.OperatingSystem)
 					}
-					Expect(labels).To(HaveKeyWithValue("beta.kubernetes.io/instance-type", instanceType))
 					Expect(labels).To(HaveKeyWithValue("node.kubernetes.io/instance-type", instanceType))
 				}
 			}
