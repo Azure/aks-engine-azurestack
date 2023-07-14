@@ -237,6 +237,7 @@ for CLOUD_MANAGER_VERSION in ${CLOUD_MANAGER_VERSIONS}; do
 done
 
 AZUREDISK_CSI_VERSIONS="
+1.10.0
 1.26.5
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
@@ -256,6 +257,7 @@ done
 
 CSI_ATTACHER_VERSIONS="
 4.0.0
+3.3.0
 "
 for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
@@ -265,6 +267,7 @@ done
 
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
 2.6.2
+2.4.0
 "
 for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
@@ -274,6 +277,7 @@ done
 
 CSI_PROVISIONER_VERSIONS="
 3.3.0
+3.0.0
 "
 for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
@@ -283,6 +287,7 @@ done
 
 LIVENESSPROBE_VERSIONS="
 2.8.0
+2.5.0
 "
 for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
@@ -292,6 +297,7 @@ done
 
 CSI_RESIZER_VERSIONS="
 1.6.0
+1.3.0
 "
 for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
