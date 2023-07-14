@@ -7408,7 +7408,7 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshots"]
     verbs: ["get", "list"]
@@ -7441,7 +7441,7 @@ rules:
     verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
 # Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
 kind: ClusterRole
@@ -7462,16 +7462,16 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents"]
-    verbs: ["create", "get", "list", "watch", "update", "delete"]
+    verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents/status"]
-    verbs: ["update"]
+    verbs: ["update", "patch"]
   - apiGroups: ["apiextensions.k8s.io"]
     resources: ["customresourcedefinitions"]
     verbs: ["create", "list", "watch", "delete"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "watch", "list", "delete", "update", "create"]
+    verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
 # Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
 kind: ClusterRole
@@ -7496,7 +7496,7 @@ rules:
     verbs: ["list", "watch", "create", "update", "patch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: [""]
     resources: ["pods"]
     verbs: ["get", "list", "watch"]
@@ -7698,6 +7698,8 @@ spec:
             - "--nodeid=$(KUBE_NODE_NAME)"
             - "--metrics-address=0.0.0.0:29605"
             - "--user-agent-suffix=aks-engine"
+            - "--support-zone=true"
+            - "--get-node-info-from-labels=false"
           ports:
             - containerPort: 29603
               name: healthz
@@ -7879,6 +7881,8 @@ spec:
             - "--metrics-address=0.0.0.0:29605"
             - "--enable-perf-optimization=true"
             - "--user-agent-suffix=aks-engine"
+            - "--support-zone=true"
+            - "--get-node-info-from-labels=false"
           ports:
             - containerPort: 29603
               name: healthz
@@ -7919,8 +7923,8 @@ spec:
               name: device-dir
             - mountPath: /sys/bus/scsi/devices
               name: sys-devices-dir
-            - mountPath: /sys/class/scsi_host/
-              name: scsi-host-dir
+            - mountPath: /sys/class/
+              name: sys-class
             {{- if IsAzureStackCloud}}
             - mountPath: /etc/ssl/certs
               readOnly: true
@@ -7959,9 +7963,9 @@ spec:
             type: Directory
           name: sys-devices-dir
         - hostPath:
-            path: /sys/class/scsi_host/
+            path: /sys/class/
             type: Directory
-          name: scsi-host-dir
+          name: sys-class
         {{- if IsAzureStackCloud}}
         - hostPath:
             path: /etc/ssl/certs
@@ -7992,7 +7996,7 @@ spec:
       serviceAccountName: csi-azuredisk-controller-sa
       nodeSelector:
         kubernetes.io/os: linux
-        kubernetes.io/role: master
+        node-role.kubernetes.io/master: ""
       priorityClassName: system-cluster-critical
       tolerations:
         - key: "node-role.kubernetes.io/master"
@@ -8008,11 +8012,14 @@ spec:
             - "--feature-gates=Topology=true"
             - "--csi-address=$(ADDRESS)"
             - "--v=2"
-            - "--timeout=15s"
+            - "--timeout=30s"
             - "--leader-election"
+            - "--leader-election-namespace=kube-system"
             - "--worker-threads=40"
             - "--extra-create-metadata=true"
             - "--strict-topology=true"
+            - "--kube-api-qps=50"
+            - "--kube-api-burst=100"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -8031,9 +8038,12 @@ spec:
           args:
             - "-v=2"
             - "-csi-address=$(ADDRESS)"
-            - "-timeout=600s"
+            - "-timeout=1200s"
             - "-leader-election"
+            - "--leader-election-namespace=kube-system"
             - "-worker-threads=500"
+            - "-kube-api-qps=50"
+            - "-kube-api-burst=100"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -8053,6 +8063,7 @@ spec:
           args:
             - "-csi-address=$(ADDRESS)"
             - "-leader-election"
+            - "--leader-election-namespace=kube-system"
             - "-v=2"
           env:
             - name: ADDRESS
@@ -8074,8 +8085,10 @@ spec:
             - "-csi-address=$(ADDRESS)"
             - "-v=2"
             - "-leader-election"
+            - "--leader-election-namespace=kube-system"
             - '-handle-volume-inuse-error=false'
-            - '-timeout=60s'
+            - '-feature-gates=RecoverVolumeExpansionFailure=true'
+            - '-timeout=240s'
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -8113,6 +8126,7 @@ spec:
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--metrics-address=0.0.0.0:29604"
             - "--user-agent-suffix=aks-engine"
+            - "--vmss-cache-ttl-seconds=-1"
           ports:
             - containerPort: 29602
               name: healthz
@@ -8207,6 +8221,7 @@ spec:
           args:
             - "--v=2"
             - "--leader-election=false"
+            - "--leader-election-namespace=kube-system"
           resources:
             limits:
               cpu: {{ContainerCPULimits "csi-snapshot-controller"}}
@@ -8240,13 +8255,16 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotcontents"]
-    verbs: ["create", "get", "list", "watch", "update", "delete"]
+    verbs: ["create", "get", "list", "watch", "update", "delete", "patch"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotcontents/status"]
+    verbs: ["patch"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshots"]
-    verbs: ["get", "list", "watch", "update"]
+    verbs: ["get", "list", "watch", "update", "patch"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshots/status"]
-    verbs: ["update"]
+    verbs: ["update", "patch"]
 ---
 # Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
 kind: ClusterRole
@@ -8259,7 +8277,7 @@ metadata:
 rules:
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
-    verbs: ["get", "watch", "list", "delete", "update", "create"]
+    verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
 # Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
 kind: ClusterRoleBinding
@@ -8311,6 +8329,8 @@ spec:
     kind: VolumeSnapshot
     listKind: VolumeSnapshotList
     plural: volumesnapshots
+    shortNames:
+    - vs
     singular: volumesnapshot
   scope: Namespaced
   versions:
@@ -8544,6 +8564,9 @@ spec:
     kind: VolumeSnapshotClass
     listKind: VolumeSnapshotClassList
     plural: volumesnapshotclasses
+    shortNames:
+    - vsclass
+    - vsclasses
     singular: volumesnapshotclass
   scope: Cluster
   versions:
