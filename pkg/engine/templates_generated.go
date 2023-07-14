@@ -8554,6 +8554,8 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
   creationTimestamp: null
   name: volumesnapshotclasses.snapshot.storage.k8s.io
 spec:
@@ -8673,6 +8675,8 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
+  labels:
+    addonmanager.kubernetes.io/mode: Reconcile
   creationTimestamp: null
   name: volumesnapshotcontents.snapshot.storage.k8s.io
 spec:
