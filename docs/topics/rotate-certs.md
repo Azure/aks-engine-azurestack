@@ -154,7 +154,20 @@ Executing `aks-engine-azurestack rotate-certs` from a VM running on the target c
 
 ## Frequently Asked Questions
 
-### How to rotate the front-proxy certificates
+### How to Rotate Service Principal Credentials
+
+[Service Principals](./service-principals.md) are not managed by AKS Engine.
+Hence, it is possible for their secrets to expire on a date different than the cluster certificates' expiration date.
+
+The service principal credentials can be rotated individually 1) as part of the cluster [upgrade](./upgrade.md) process or 2) by following a few manual steps.
+
+> Ensure the SPN credentials are valid before proceeding.
+
+1). Rotating SPN credentials as part of the cluster upgrade process can be accomplished by replacing the values in the API Model's `"servicePrincipalProfile"` prior to the execution of the `aks-engine-azurestack upgrade` command.
+
+2). Rotating SPN credentials manually can be accomplished by updating a few properties in the `/etc/kubernetes/azure.json` file found on each master node and rebooting the node once the changes are persisted. In particular, the value of properties `"aadClientId"` and `"aadClientSecret"` have to be replaced with the new credentials.
+
+### How to Rotate `front-proxy` Certificates
 
 Older AKS Engine releases (before v0.65.0) create a front-proxy PKI that expires after 2 years (730 days).
 
@@ -166,7 +179,7 @@ sudo openssl x509 -noout -in /etc/kubernetes/certs/proxy.crt -enddate
 ```
 
 If the front-proxy certificates expired and the cluster was updated to AKS Engine v0.65.0 or greater,
-then execute `aks-engine rotate-certs` to renew them. 
+then execute `aks-engine-azurestack rotate-certs` to renew them. 
 
 If the cluster was **not** updated to AKS Engine v0.65.0 or greater,
 then a set of manual steps are required:
