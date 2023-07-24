@@ -207,6 +207,9 @@ helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
   --set cloud=AzureStackCloud \
   --set controller.runOnMaster=true \
+  --set node.supportZone=false \
+  --set windows.getNodeInfoFromLabels=true \
+  --set linux.getNodeInfoFromLabels=true \
   --version ${DRIVER_VERSION}
 ```
 
@@ -275,7 +278,7 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 # Install CSI Driver
 DRIVER_VERSION=v1.26.5
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
-helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --version ${DRIVER_VERSION}
+helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --set node.supportZone=false --set windows.getNodeInfoFromLabels=true --set linux.getNodeInfoFromLabels=true --version ${DRIVER_VERSION}
 
 # Deploy Storage Class
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/storageclass-azuredisk-csi-azurestack.yaml
