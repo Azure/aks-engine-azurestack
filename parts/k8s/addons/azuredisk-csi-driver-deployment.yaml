@@ -335,8 +335,8 @@ spec:
             - "--nodeid=$(KUBE_NODE_NAME)"
             - "--metrics-address=0.0.0.0:29605"
             - "--user-agent-suffix=aks-engine"
-            - "--support-zone=true"
-            - "--get-node-info-from-labels=false"
+            - "--support-zone=false"
+            - "--get-node-info-from-labels=true"
           ports:
             - containerPort: 29603
               name: healthz
@@ -518,8 +518,8 @@ spec:
             - "--metrics-address=0.0.0.0:29605"
             - "--enable-perf-optimization=true"
             - "--user-agent-suffix=aks-engine"
-            - "--support-zone=true"
-            - "--get-node-info-from-labels=false"
+            - "--support-zone=false"
+            - "--get-node-info-from-labels=true"
           ports:
             - containerPort: 29603
               name: healthz
