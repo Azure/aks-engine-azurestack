@@ -109,5 +109,6 @@ if ($res)
 
 Write-Host "Compressing all logs to $zipName"
 $paths | Format-Table FullName, Length -AutoSize
+$global:ProgressPreference = "SilentlyContinue"
 Compress-Archive -LiteralPath $paths -DestinationPath $zipName
 Get-ChildItem $zipName # this puts a FileInfo on the pipeline so that another script can get it on the pipeline
