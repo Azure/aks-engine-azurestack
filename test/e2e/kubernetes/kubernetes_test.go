@@ -1832,9 +1832,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		})
 
 		It("should create a pv by deploying a pod that consumes a pvc", func() {
-			if cfg.BlockOutboundInternet {
-				Skip("Outbound internet is blocked")
-			}
 			if !util.IsUsingManagedDisks(eng.ExpandedDefinition.Properties.AgentPoolProfiles) {
 				Skip("Skip PV test for clusters using unmanaged disks")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() &&

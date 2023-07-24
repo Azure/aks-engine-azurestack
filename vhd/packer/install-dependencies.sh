@@ -368,6 +368,17 @@ for CLUSTER_PROPORTIONAL_AUTOSCALER_VERSION in ${CLUSTER_PROPORTIONAL_AUTOSCALER
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
+# for testing pipeline
+NGINX_VERSIONS="
+1.23
+"
+
+for NGINX_VERSION in ${NGINX_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/mirror/docker/library/nginx:${NGINX_VERSION}"
+  loadContainerImage ${CONTAINER_IMAGE}
+  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
+done
+
 df -h
 
 # warn at 75% space taken
