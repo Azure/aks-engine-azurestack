@@ -1418,9 +1418,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 			var (
 				isUsingAzureDiskCSIDriver bool
-				// isUsingAzureFileCSIDriver bool
-				azureDiskProvisioner string
-				// azureFileProvisioner      string
+				isUsingAzureFileCSIDriver bool
+				azureDiskProvisioner      string
+				azureFileProvisioner      string
 			)
 
 			if isUsingAzureDiskCSIDriver, _ = eng.HasAddon(common.AzureDiskCSIDriverAddonName); isUsingAzureDiskCSIDriver {
@@ -1428,12 +1428,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			} else {
 				azureDiskProvisioner = "kubernetes.io/azure-disk"
 			}
-
-			// if isUsingAzureFileCSIDriver, _ = eng.HasAddon(common.AzureFileCSIDriverAddonName); isUsingAzureFileCSIDriver {
-			// 	azureFileProvisioner = "file.csi.azure.com"
-			// } else {
-			// 	azureFileProvisioner = "kubernetes.io/azure-file"
-			// }
 
 			azureDiskStorageClasses := []string{"default"}
 			// Managed disk is used by default when useCloudControllerManager is enabled
@@ -1462,15 +1456,18 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				}
 			}
 
-			// for _, azureFileStorageClass := range []string{"azurefile"} {
-			// 	sc, err := storageclass.Get(azureFileStorageClass)
-			// 	Expect(err).NotTo(HaveOccurred())
-			// 	Expect(sc.Provisioner).To(Equal(azureFileProvisioner))
-			// 	Expect(sc.VolumeBindingMode).To(Equal("Immediate"))
-			// 	if isUsingAzureFileCSIDriver && common.IsKubernetesVersionGe(eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion, "1.16.0") {
-			// 		Expect(sc.AllowVolumeExpansion).To(BeTrue())
-			// 	}
-			// }
+			if isUsingAzureFileCSIDriver, _ = eng.HasAddon(common.AzureFileCSIDriverAddonName); isUsingAzureFileCSIDriver {
+				azureFileProvisioner = "file.csi.azure.com"
+				for _, azureFileStorageClass := range []string{"azurefile"} {
+					sc, err := storageclass.Get(azureFileStorageClass)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(sc.Provisioner).To(Equal(azureFileProvisioner))
+					Expect(sc.VolumeBindingMode).To(Equal("Immediate"))
+					if common.IsKubernetesVersionGe(eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion, "1.16.0") {
+						Expect(sc.AllowVolumeExpansion).To(BeTrue())
+					}
+				}
+			}
 		})
 
 		It("should be able to kubectl port-forward to a running pod", func() {
