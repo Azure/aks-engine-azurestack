@@ -249,7 +249,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 				o.KubernetesConfig.ContainerdVersion = DefaultContainerdVersion
 			}
 
-			if o.KubernetesConfig.WindowsContainerdURL == "" {
+			if o.KubernetesConfig.WindowsContainerdURL == "" || isUpdate {
 				o.KubernetesConfig.WindowsContainerdURL = DefaultWindowsContainerdURL
 			}
 		}
