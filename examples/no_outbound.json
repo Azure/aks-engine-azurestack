@@ -3,6 +3,8 @@
     "properties": {
         "orchestratorProfile": {
             "kubernetesConfig": {
+                "useCloudControllerManager": true,
+                "containerRuntime": "containerd",
                 "addons": [
                     {
                         "name": "azuredisk-csi-driver",

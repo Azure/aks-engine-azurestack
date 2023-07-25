@@ -104,8 +104,24 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 			},
 		}
 
+		allowARMRule := network.SecurityRule{
+			Name: to.StringPtr("allow_ARM"),
+			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
+				Access:                   network.SecurityRuleAccessAllow,
+				Description:              to.StringPtr("Allow outbound internet to ARM"),
+				DestinationAddressPrefix: to.StringPtr("AzureResourceManager"),
+				DestinationPortRange:     to.StringPtr("443"),
+				Direction:                network.SecurityRuleDirectionOutbound,
+				Priority:                 to.Int32Ptr(100),
+				Protocol:                 network.SecurityRuleProtocolTCP,
+				SourceAddressPrefix:      to.StringPtr("*"),
+				SourcePortRange:          to.StringPtr("*"),
+			},
+		}
+
 		securityRules = append(securityRules, vnetRule)
 		securityRules = append(securityRules, blockOutBoundRule)
+		securityRules = append(securityRules, allowARMRule)
 	}
 
 	nsg := network.SecurityGroup{

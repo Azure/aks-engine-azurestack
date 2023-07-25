@@ -2102,7 +2102,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2290,7 +2290,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2528,7 +2528,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2720,7 +2720,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2926,7 +2926,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3137,7 +3137,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3343,7 +3343,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: to.BoolPtr(true),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,

@@ -7,7 +7,7 @@ spec:
     kubernetes.io/os: linux
   containers:
     - name: myfrontend
-      image: nginx
+      image: mcr.microsoft.com/mirror/docker/library/nginx:1.23
       volumeMounts:
       - mountPath: "/mnt/azure"
         name: volume

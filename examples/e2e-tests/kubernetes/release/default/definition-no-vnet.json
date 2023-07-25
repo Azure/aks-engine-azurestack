@@ -5,6 +5,7 @@
             "kubernetesConfig": {
                 "useCloudControllerManager": true,
                 "useManagedIdentity": true,
+                "containerRuntime": "containerd",
                 "addons": [
                     {
                         "name": "azuredisk-csi-driver",
