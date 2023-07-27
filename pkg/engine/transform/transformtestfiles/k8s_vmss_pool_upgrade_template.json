@@ -1212,16 +1212,6 @@
                   "type": "CustomScript",
                   "typeHandlerVersion": "2.0"
                 }
-              },
-              {
-                "name": "[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]",
-                "properties": {
-                  "autoUpgradeMinorVersion": true,
-                  "publisher": "Microsoft.AKS",
-                  "settings": {},
-                  "type": "Compute.AKS-Engine.Linux.Billing",
-                  "typeHandlerVersion": "1.0"
-                }
               }
             ]
           },

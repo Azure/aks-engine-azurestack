@@ -123,16 +123,6 @@ func TestCreateMasterVMSS(t *testing.T) {
 									},
 								},
 							},
-							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
 						},
 					},
 				},
@@ -227,16 +217,6 @@ func TestCreateMasterVMSS(t *testing.T) {
 					ProtectedSettings: map[string]interface{}{
 						"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 					},
-				},
-			},
-			{
-				Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss-computeAksLinuxBilling')]"),
-				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.AKS"),
-					Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-					TypeHandlerVersion:      to.StringPtr("1.0"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
-					Settings:                map[string]interface{}{},
 				},
 			},
 		},
@@ -355,16 +335,7 @@ func TestCreateAgentVMSS(t *testing.T) {
 									AutoUpgradeMinorVersion: to.BoolPtr(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
-										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-								Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
+										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 						},
 					},
 				},
@@ -489,16 +460,6 @@ func TestCreateAgentVMSS(t *testing.T) {
 					},
 				},
 			},
-			{
-				Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.AKS"),
-					Type:                    to.StringPtr("Compute.AKS-Engine.Windows.Billing"),
-					TypeHandlerVersion:      to.StringPtr("1.0"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
-					Settings:                map[string]interface{}{},
-				},
-			},
 		},
 	}
 
@@ -566,16 +527,6 @@ func TestCreateAgentVMSS(t *testing.T) {
 					ProtectedSettings: map[string]interface{}{
 						"commandToExecute": `[concat('echo %DATE%,%TIME%,%COMPUTERNAME% && powershell.exe -ExecutionPolicy Unrestricted -command "', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp'),` + generateUserAssignedIdentityClientIDParameterForWindows(to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)) + `' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '" > %SYSTEMDRIVE%\AzureData\CustomDataSetupScript.log 2>&1 ; exit $LASTEXITCODE')]`,
 					},
-				},
-			},
-			{
-				Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.AKS"),
-					Type:                    to.StringPtr("Compute.AKS-Engine.Windows.Billing"),
-					TypeHandlerVersion:      to.StringPtr("1.0"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
-					Settings:                map[string]interface{}{},
 				},
 			},
 		},
@@ -658,29 +609,6 @@ func TestCreateAgentVMSS(t *testing.T) {
 	cs.Properties.AgentPoolProfiles[0].ScaleSetPriority = api.ScaleSetPrioritySpot
 	cs.Properties.AgentPoolProfiles[0].SpotMaxPrice = to.Float64Ptr(float64(22))
 	actual = CreateAgentVMSS(cs, cs.Properties.AgentPoolProfiles[0])
-
-	//   Test VirtualMachineProfile.BillingProfile
-	expected.VirtualMachineProfile.BillingProfile = &compute.BillingProfile{
-		MaxPrice: to.Float64Ptr(float64(22)),
-	}
-	diff = cmp.Diff(actual.VirtualMachineProfile.BillingProfile, expected.VirtualMachineProfile.BillingProfile)
-	if diff != "" {
-		t.Errorf("unexpected diff while expecting equal structs: %s", diff)
-	}
-
-	//    Test VirtualMachineProfile.Priority
-	expected.VirtualMachineProfile.Priority = compute.VirtualMachinePriorityTypes(fmt.Sprintf("[variables('%sScaleSetPriority')]", cs.Properties.AgentPoolProfiles[0].Name))
-	diff = cmp.Diff(actual.VirtualMachineProfile.BillingProfile, expected.VirtualMachineProfile.BillingProfile)
-	if diff != "" {
-		t.Errorf("unexpected diff while expecting equal structs: %s", diff)
-	}
-
-	//    Test VirtualMachineProfile.EvictionPolicy
-	expected.VirtualMachineProfile.EvictionPolicy = compute.VirtualMachineEvictionPolicyTypes(fmt.Sprintf("[variables('%sScaleSetEvictionPolicy')]", cs.Properties.AgentPoolProfiles[0].Name))
-	diff = cmp.Diff(actual.VirtualMachineProfile.BillingProfile, expected.VirtualMachineProfile.BillingProfile)
-	if diff != "" {
-		t.Errorf("unexpected diff while expecting equal structs: %s", diff)
-	}
 }
 
 func getIPConfigsMaster() *[]compute.VirtualMachineScaleSetIPConfiguration {
@@ -922,16 +850,6 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 									},
 								},
 							},
-							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
 						},
 					},
 				},
@@ -1029,16 +947,7 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 									AutoUpgradeMinorVersion: to.BoolPtr(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
-										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=false GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-								Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
+										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=false GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 						},
 					},
 				},

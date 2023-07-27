@@ -2220,12 +2220,6 @@ func (cs *ContainerService) GetCloudSpecConfig() AzureEnvironmentSpecConfig {
 	return AzureCloudSpecEnvMap[targetEnv]
 }
 
-// IsAKSBillingEnabled checks if the AKS Billing Extension should be enabled for a cloud environment.
-func (cs *ContainerService) IsAKSBillingEnabled() bool {
-	cloudSpecConfig := cs.GetCloudSpecConfig()
-	return cloudSpecConfig.CloudName == AzurePublicCloud || cloudSpecConfig.CloudName == AzureChinaCloud || cloudSpecConfig.CloudName == AzureUSGovernmentCloud
-}
-
 // GetAzureProdFQDN returns the formatted FQDN string for a given apimodel.
 func (cs *ContainerService) GetAzureProdFQDN() string {
 	return FormatProdFQDNByLocation(cs.Properties.MasterProfile.DNSPrefix, cs.Location, cs.Properties.GetCustomCloudName())
