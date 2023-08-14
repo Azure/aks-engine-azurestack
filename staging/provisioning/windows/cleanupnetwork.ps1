@@ -1,9 +1,8 @@
 $Global:ClusterConfiguration = ConvertFrom-Json ((Get-Content "c:\k\kubeclusterconfig.json" -ErrorAction Stop) | out-string)
 
 $global:NetworkMode = "L2Bridge"
-$global:ContainerRuntime = $Global:ClusterConfiguration.Cri.Name
 $global:NetworkPlugin = $Global:ClusterConfiguration.Cni.Name
-$global:HNSModule = "c:\k\hns.psm1"
+$global:HNSModule = "c:\k\hns.v2.psm1"
 
 ipmo $global:HNSModule
 
@@ -16,13 +15,9 @@ $hnsNetwork = Get-HnsNetwork | ? Name -EQ $networkname
 if ($hnsNetwork) {
     # Cleanup all containers
     Write-Host "Cleaning up containers"
-    if ($global:ContainerRuntime -eq "containerd") {
-        ctr.exe -n k8s.io c ls -q | ForEach-Object { ctr -n k8s.io tasks kill $_ }
-        ctr.exe -n k8s.io c ls -q | ForEach-Object { ctr -n k8s.io c rm $_ }
-    }
-    else {
-        docker.exe ps -q | ForEach-Object { docker rm $_ -f }
-    }
+    # Only support ContainerD runtime
+    ctr.exe -n k8s.io c ls -q | ForEach-Object { ctr -n k8s.io tasks kill $_ }
+    ctr.exe -n k8s.io c ls -q | ForEach-Object { ctr -n k8s.io c rm $_ }
     
     Write-Host "Cleaning up persisted HNS policy lists"
     # Initially a workaround for https://github.com/kubernetes/kubernetes/pull/68923 in < 1.14,

@@ -5,7 +5,7 @@
 #>
 
 $global:LogPath = "c:\k\windowsnodereset.log"
-$global:HNSModule = "c:\k\hns.psm1"
+$global:HNSModule = "c:\k\hns.v2.psm1"
 
 $Global:ClusterConfiguration = ConvertFrom-Json ((Get-Content "c:\k\kubeclusterconfig.json" -ErrorAction Stop) | out-string)
 
@@ -13,39 +13,18 @@ $global:CsiProxyEnabled = [System.Convert]::ToBoolean($Global:ClusterConfigurati
 $global:MasterSubnet = $Global:ClusterConfiguration.Kubernetes.ControlPlane.MasterSubnet
 $global:NetworkMode = "L2Bridge"
 $global:NetworkPlugin = $Global:ClusterConfiguration.Cni.Name
-$global:ContainerRuntime = $Global:ClusterConfiguration.Cri.Name
-$UseContainerD = ($global:ContainerRuntime -eq "containerd")
-$IsDualStackEnabled = $Global:ClusterConfiguration.Kubernetes.Kubeproxy.FeatureGates -contains "IPv6DualStack=true"
+# if dual-stack is enabled, the clusterCidr will have an IPv6 CIDR in the comma separated list
+# we can split the entire string by ":" to get a count of how many ":" there are. If there are
+# at least 3 groups (which means there are at least 2 ":") then we know there is an IPv6 CIDR
+# in the list. We cannot just rely on `ClusterCidr -like "*::*" because there are IPv6 CIDRs that
+# don't have "::", e.g. fe80:0:0:0:0:0:0:0/64
+$IsDualStackEnabled = ($Global:ClusterConfiguration.Kubernetes.Kubeproxy.FeatureGates -contains "IPv6DualStack=true") -Or `
+                        (($Global:ClusterConfiguration.Kubernetes.Network.ClusterCidr -split ":").Count -ge 3)
 
 filter Timestamp { "$(Get-Date -Format o): $_" }
 
 function Write-Log ($message) {
     $message | Timestamp | Tee-Object -FilePath $global:LogPath -Append
-}
-
-Write-Log "Entering windowsnodereset.ps1"
-
-Import-Module $global:HNSModule
-
-Unregister-HNSRemediatorScriptTask
-
-#
-# Stop services
-#
-Write-Log "Stopping kubeproxy service"
-Stop-Service kubeproxy
-
-Write-Log "Stopping kubelet service"
-Stop-Service kubelet
-
-if ($global:CsiProxyEnabled) {
-    Write-Log "Stopping csi-proxy service"
-    Stop-Service csi-proxy
-}
-
-if ($global:EnableHostsConfigAgent) {
-    Write-Log "Stopping hosts-config-agent service"
-    Stop-Service hosts-config-agent
 }
 
 function Register-HNSRemediatorScriptTask {
@@ -88,6 +67,31 @@ function Unregister-HNSRemediatorScriptTask {
             }
         }
     }
+}
+
+Write-Log "Entering windowsnodereset.ps1"
+
+Import-Module $global:HNSModule
+
+Unregister-HNSRemediatorScriptTask
+
+#
+# Stop services
+#
+Write-Log "Stopping kubeproxy service"
+Stop-Service kubeproxy
+
+Write-Log "Stopping kubelet service"
+Stop-Service kubelet
+
+if ($global:CsiProxyEnabled) {
+    Write-Log "Stopping csi-proxy service"
+    Stop-Service csi-proxy
+}
+
+if ($global:EnableHostsConfigAgent) {
+    Write-Log "Stopping hosts-config-agent service"
+    Stop-Service hosts-config-agent
 }
 
 # Due to a bug in hns there is a race where it picks up the incorrect IPv6 address from the node in some cases.

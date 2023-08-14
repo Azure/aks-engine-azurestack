@@ -21786,6 +21786,7 @@ function Get-LogCollectionScripts {
     DownloadFileOverHttp -Url 'https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/debug/VFP.psm1' -DestinationPath 'c:\k\debug\VFP.psm1'
     DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/helper.psm1' -DestinationPath 'c:\k\debug\helper.psm1'
     DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1' -DestinationPath 'c:\k\debug\hns.psm1'
+    DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.v2.psm1' -DestinationPath 'c:\k\debug\hns.v2.psm1'
 }
 
 function Register-LogsCleanupScriptTask {
@@ -22024,7 +22025,7 @@ $global:ExcludeMasterFromStandardLB = "{{WrapAsVariable "excludeMasterFromStanda
 # Windows defaults, not changed by aks-engine
 $global:CacheDir = "c:\akse-cache"
 $global:KubeDir = "c:\k"
-$global:HNSModule = [Io.path]::Combine("$global:KubeDir", "hns.psm1")
+$global:HNSModule = [Io.path]::Combine("$global:KubeDir", "hns.v2.psm1")
 
 $global:KubeDnsSearchPath = "svc.cluster.local"
 
@@ -23500,7 +23501,7 @@ var _k8sWindowscnifuncPs1 = []byte(`function Get-HnsPsm1
 {
     Param(
         [string]
-        $HnsUrl = "https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1",
+        $HnsUrl = "https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/hns.v2.psm1",
         [Parameter(Mandatory=$true)][string]
         $HNSModule
     )

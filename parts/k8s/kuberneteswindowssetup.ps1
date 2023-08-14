@@ -115,7 +115,7 @@ $global:ExcludeMasterFromStandardLB = "{{WrapAsVariable "excludeMasterFromStanda
 # Windows defaults, not changed by aks-engine
 $global:CacheDir = "c:\akse-cache"
 $global:KubeDir = "c:\k"
-$global:HNSModule = [Io.path]::Combine("$global:KubeDir", "hns.psm1")
+$global:HNSModule = [Io.path]::Combine("$global:KubeDir", "hns.v2.psm1")
 
 $global:KubeDnsSearchPath = "svc.cluster.local"
 

@@ -11,10 +11,9 @@ $global:KubeDir = $Global:ClusterConfiguration.Install.Destination
 $global:NetworkMode = "L2Bridge"
 $global:ExternalNetwork = "ext"
 $global:CNIConfig = "$CNIConfig"
-$global:HNSModule = "c:\k\hns.psm1"
+$global:HNSModule = "c:\k\hns.v2.psm1"
 $global:NetworkPlugin = $Global:ClusterConfiguration.Cni.Name
 $global:KubeletNodeLabels = $Global:ClusterConfiguration.Kubernetes.Kubelet.NodeLabels
-$global:ContainerRuntime = $Global:ClusterConfiguration.Cri.Name
 
 $global:AzureCNIDir = [Io.path]::Combine("$global:KubeDir", "azurecni")
 $global:AzureCNIBinDir = [Io.path]::Combine("$global:AzureCNIDir", "bin")
@@ -39,26 +38,12 @@ $KubeletArgList += "--volume-plugin-dir=$global:VolumePluginDir"
 # If you are thinking about adding another arg here, you should be considering pkg/engine/defaults-kubelet.go first
 # Only args that need to be calculated or combined with other ones on the Windows agent should be added here.
 
-
-if ($global:ContainerRuntime -eq "docker") {
-    # Configure kubelet to use CNI plugins if enabled.
-    # Note: --cni-bin-dir and --cni-conf-dir kubelet args are only used with dockershim and have been removed in v1.24
-    if ($NetworkPlugin -eq "azure") {
-        $KubeletArgList += @("--cni-bin-dir=$AzureCNIBinDir", "--cni-conf-dir=$AzureCNIConfDir")
-    }
-    elseif ($NetworkPlugin -eq "kubenet") {
-        $KubeletArgList += @("--cni-bin-dir=$CNIPath", "--cni-conf-dir=$CNIConfigPath")
-        # handle difference in naming between Linux & Windows reference plugin
-        $KubeletArgList = $KubeletArgList -replace "kubenet", "cni"
-    }
-    else {
-        throw "Unknown network type $NetworkPlugin, can't configure kubelet"
-    }
-}
-
-# Update args to use ContainerD if needed
-if ($global:ContainerRuntime -eq "containerd") {
-    $KubeletArgList += @("--container-runtime=remote", "--container-runtime-endpoint=npipe://./pipe/containerd-containerd")
+# Update args to use ContainerD
+$KubeletArgList += @("--container-runtime-endpoint=npipe://./pipe/containerd-containerd")
+# Kubelet flag --container-runtime has been removed from k8s 1.27
+# Reference: https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.27.md#other-cleanup-or-flake
+if ($global:KubeBinariesVersion -lt "1.27.0") {
+    $KubeletArgList += @("--container-runtime=remote")
 }
 
 # Used in WinCNI version of kubeletstart.ps1
@@ -93,46 +78,6 @@ Get-PodCIDR() {
 function
 Test-PodCIDR($podCIDR) {
     return $podCIDR.length -gt 0
-}
-
-function
-Update-CNIConfigKubenetDocker($podCIDR, $masterSubnetGW) {
-    $jsonSampleConfig =
-    "{
-    ""cniVersion"": ""0.2.0"",
-    ""name"": ""<NetworkMode>"",
-    ""type"": ""win-bridge"",
-    ""master"": ""Ethernet"",
-    ""dns"" : {
-        ""Nameservers"" : [ ""<NameServers>"" ],
-        ""Search"" : [ ""<Cluster DNS Suffix or Search Path>"" ]
-    },
-    ""policies"": [
-    {
-        ""Name"" : ""EndpointPolicy"", ""Value"" : { ""Type"" : ""OutBoundNAT"", ""ExceptionList"": [ ""<ClusterCIDR>"", ""<MgmtSubnet>"" ] }
-    },
-    {
-        ""Name"" : ""EndpointPolicy"", ""Value"" : { ""Type"" : ""ROUTE"", ""DestinationPrefix"": ""<ServiceCIDR>"", ""NeedEncap"" : true }
-    }
-    ]
-}"
-
-    $configJson = ConvertFrom-Json $jsonSampleConfig
-    $configJson.name = $global:NetworkMode.ToLower()
-    $configJson.dns.Nameservers[0] = $global:KubeDnsServiceIp
-    $configJson.dns.Search[0] = $global:KubeDnsSearchPath
-
-    $configJson.policies[0].Value.ExceptionList[0] = $global:KubeClusterCIDR
-    $configJson.policies[0].Value.ExceptionList[1] = $global:MasterSubnet
-    $configJson.policies[1].Value.DestinationPrefix = $global:KubeServiceCIDR
-
-    if (Test-Path $global:CNIConfig) {
-        Clear-Content -Path $global:CNIConfig
-    }
-
-    Write-Host "Generated CNI Config [$configJson]"
-
-    Add-Content -Path $global:CNIConfig -Value (ConvertTo-Json $configJson -Depth 20)
 }
 function
 Update-CNIConfigKubenetContainerD($podCIDR, $masterSubnetGW) {
