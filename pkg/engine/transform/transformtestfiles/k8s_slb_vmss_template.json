@@ -1277,16 +1277,6 @@
                   "type": "CustomScript",
                   "typeHandlerVersion": "2.0"
                 }
-              },
-              {
-                "name": "[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]",
-                "properties": {
-                  "autoUpgradeMinorVersion": true,
-                  "publisher": "Microsoft.AKS",
-                  "settings": {},
-                  "type": "Compute.AKS-Engine.Linux.Billing",
-                  "typeHandlerVersion": "1.0"
-                }
               }
             ]
           },
@@ -2228,27 +2218,6 @@
         "settings": {},
         "type": "CustomScript",
         "typeHandlerVersion": "2.0"
-      },
-      "tags": {},
-      "type": "Microsoft.Compute/virtualMachines/extensions"
-    },
-    {
-      "apiVersion": "[variables('apiVersionCompute')]",
-      "copy": {
-        "count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-        "name": "vmLoopNode"
-      },
-      "dependsOn": [
-        "[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"
-      ],
-      "location": "[variables('location')]",
-      "name": "[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]",
-      "properties": {
-        "autoUpgradeMinorVersion": true,
-        "publisher": "Microsoft.AKS",
-        "settings": {},
-        "type": "Compute.AKS-Engine.Linux.Billing",
-        "typeHandlerVersion": "1.0"
       },
       "tags": {},
       "type": "Microsoft.Compute/virtualMachines/extensions"

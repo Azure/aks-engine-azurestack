@@ -14,39 +14,6 @@ import (
 	"github.com/Azure/go-autorest/autorest/to"
 )
 
-func CreateAKSBillingExtension(cs *api.ContainerService) VirtualMachineExtensionARM {
-	location := "[variables('location')]"
-	name := "[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]"
-	dependentVM := ""
-	dependentVM = "[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"
-
-	return VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				dependentVM,
-			},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			Location: to.StringPtr(location),
-			Name:     to.StringPtr(name),
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{},
-			},
-			Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Tags: map[string]*string{},
-		},
-	}
-}
-
 func CreateCustomScriptExtension(cs *api.ContainerService) VirtualMachineExtensionARM {
 	location := "[variables('location')]"
 	name := "[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"
@@ -150,44 +117,6 @@ func createAgentVMASCustomScriptExtension(cs *api.ContainerService, profile *api
 				"name":  "vmLoopNode",
 			},
 			DependsOn: []string{dependency},
-		},
-		VirtualMachineExtension: vmExtension,
-	}
-}
-
-func CreateAgentVMASAKSBillingExtension(cs *api.ContainerService, profile *api.AgentPoolProfile) VirtualMachineExtensionARM {
-	location := "[variables('location')]"
-	name := fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')), '/computeAksLinuxBilling')]", profile.Name)
-	dependentVM := fmt.Sprintf("[concat('Microsoft.Compute/virtualMachines/', variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)
-
-	vmExtension := compute.VirtualMachineExtension{
-		Location: to.StringPtr(location),
-		Name:     to.StringPtr(name),
-		VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-			Publisher:               to.StringPtr("Microsoft.AKS"),
-			TypeHandlerVersion:      to.StringPtr("1.0"),
-			AutoUpgradeMinorVersion: to.BoolPtr(true),
-			Settings:                &map[string]interface{}{},
-		},
-		Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-	}
-
-	if profile.IsWindows() {
-		vmExtension.VirtualMachineExtensionProperties.Type = to.StringPtr("Compute.AKS-Engine.Windows.Billing")
-	} else {
-		vmExtension.VirtualMachineExtensionProperties.Type = to.StringPtr("Compute.AKS-Engine.Linux.Billing")
-	}
-
-	return VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": fmt.Sprintf("[sub(variables('%[1]sCount'), variables('%[1]sOffset'))]", profile.Name),
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				dependentVM,
-			},
 		},
 		VirtualMachineExtension: vmExtension,
 	}

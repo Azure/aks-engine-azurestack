@@ -166,10 +166,5 @@ func createKubernetesAgentVMASResources(cs *api.ContainerService, profile *api.A
 	agentVMASCSE := createAgentVMASCustomScriptExtension(cs, profile)
 	agentVMASResources = append(agentVMASResources, agentVMASCSE)
 
-	if cs.IsAKSBillingEnabled() {
-		agentVMASAKSBilling := CreateAgentVMASAKSBillingExtension(cs, profile)
-		agentVMASResources = append(agentVMASResources, agentVMASAKSBilling)
-	}
-
 	return agentVMASResources
 }

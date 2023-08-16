@@ -1660,27 +1660,6 @@
       },
       {
         "apiVersion": "[variables('apiVersionCompute')]",
-        "copy": {
-          "count": "[sub(variables('agentpool1Count'), variables('agentpool1Offset'))]",
-          "name": "vmLoopNode"
-        },
-        "dependsOn": [
-          "[concat('Microsoft.Compute/virtualMachines/', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"
-        ],
-        "location": "[variables('location')]",
-        "name": "[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')), '/computeAksLinuxBilling')]",
-        "properties": {
-          "autoUpgradeMinorVersion": true,
-          "publisher": "Microsoft.AKS",
-          "settings": {},
-          "type": "Compute.AKS-Engine.Linux.Billing",
-          "typeHandlerVersion": "1.0"
-        },
-        "tags": null,
-        "type": "Microsoft.Compute/virtualMachines/extensions"
-      },
-      {
-        "apiVersion": "[variables('apiVersionCompute')]",
         "location": "[variables('location')]",
         "name": "[variables('masterAvailabilitySet')]",
         "properties": {
@@ -2306,27 +2285,6 @@
           "settings": {},
           "type": "CustomScript",
           "typeHandlerVersion": "2.0"
-        },
-        "tags": {},
-        "type": "Microsoft.Compute/virtualMachines/extensions"
-      },
-      {
-        "apiVersion": "[variables('apiVersionCompute')]",
-        "copy": {
-          "count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-          "name": "vmLoopNode"
-        },
-        "dependsOn": [
-          "[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"
-        ],
-        "location": "[variables('location')]",
-        "name": "[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]",
-        "properties": {
-          "autoUpgradeMinorVersion": true,
-          "publisher": "Microsoft.AKS",
-          "settings": {},
-          "type": "Compute.AKS-Engine.Linux.Billing",
-          "typeHandlerVersion": "1.0"
         },
         "tags": {},
         "type": "Microsoft.Compute/virtualMachines/extensions"

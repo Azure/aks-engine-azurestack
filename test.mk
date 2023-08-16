@@ -2,6 +2,7 @@ LOCATION ?= westus2
 CLUSTER_DEFINITION ?= examples/kubernetes.json
 SSH_KEY_NAME ?= id_rsa
 SKIP_TEST ?= false
+ACK_GINKGO_RC = true
 
 TEST_CMD = docker run --rm \
 						-v ${CURDIR}:${DEV_ENV_WORK_DIR} \

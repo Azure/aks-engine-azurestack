@@ -207,32 +207,6 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 		},
 	}
 
-	masterAKSBillingExtension := VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]",
-			},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{},
-			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
-			Tags:     map[string]*string{},
-		},
-	}
-
 	masterCSEExtension := VirtualMachineExtensionARM{
 		ARMResource: ARMResource{
 			APIVersion: "[variables('apiVersionCompute')]",
@@ -474,7 +448,6 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 	expectedResources := []interface{}{
 		masterNIC,
 		masterVMAS,
-		masterAKSBillingExtension,
 		masterCSEExtension,
 		masterJumpboxVM,
 		masterJumpboxNSG,
@@ -628,16 +601,6 @@ func TestCreateKubernetesMasterResourcesVMSS(t *testing.T) {
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 									},
-								},
-							},
-							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
 								},
 							},
 						},

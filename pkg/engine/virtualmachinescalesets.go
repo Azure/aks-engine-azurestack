@@ -303,20 +303,6 @@ func CreateMasterVMSS(cs *api.ContainerService) VirtualMachineScaleSetARM {
 
 	extensions = append(extensions, vmssCSE)
 
-	if cs.IsAKSBillingEnabled() {
-		aksBillingExtension := compute.VirtualMachineScaleSetExtension{
-			Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss-computeAksLinuxBilling')]"),
-			VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                map[string]interface{}{},
-			},
-		}
-		extensions = append(extensions, aksBillingExtension)
-	}
-
 	extensionProfile := compute.VirtualMachineScaleSetExtensionProfile{
 		Extensions: &extensions,
 	}
@@ -778,27 +764,6 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 	}
 
 	vmssExtensions = append(vmssExtensions, vmssCSE)
-
-	if cs.IsAKSBillingEnabled() {
-		aksBillingExtension := compute.VirtualMachineScaleSetExtension{
-			Name: to.StringPtr(fmt.Sprintf("[concat(variables('%sVMNamePrefix'), '-computeAksLinuxBilling')]", profile.Name)),
-			VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                map[string]interface{}{},
-			},
-		}
-
-		if profile.IsWindows() {
-			aksBillingExtension.VirtualMachineScaleSetExtensionProperties.Type = to.StringPtr("Compute.AKS-Engine.Windows.Billing")
-		} else {
-			aksBillingExtension.VirtualMachineScaleSetExtensionProperties.Type = to.StringPtr("Compute.AKS-Engine.Linux.Billing")
-		}
-
-		vmssExtensions = append(vmssExtensions, aksBillingExtension)
-	}
 
 	vmssVMProfile.ExtensionProfile = &compute.VirtualMachineScaleSetExtensionProfile{
 		Extensions: &vmssExtensions,
