@@ -80,7 +80,7 @@ var (
 		VnetCNIWindowsPluginsDownloadURL:     "https://kubernetesartifacts.azureedge.net/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-singletenancy-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
 		ContainerdDownloadURLBase:            "https://storage.googleapis.com/cri-containerd-release/",
 		CSIProxyDownloadURL:                  "https://kubernetesartifacts.azureedge.net/csi-proxy/" + DefaultWindowsCsiProxyVersion + "/binaries/csi-proxy-" + DefaultWindowsCsiProxyVersion + ".tar.gz",
-		WindowsProvisioningScriptsPackageURL: "https://kubernetesartifacts.azureedge.net/aks-engine/windows/provisioning/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",
+		WindowsProvisioningScriptsPackageURL: "https://akseashpackages.blob.core.windows.net/scripts/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",
 		WindowsPauseImageURL:                 "mcr.microsoft.com/oss/kubernetes/pause:" + WindowsPauseImageVersion,
 		AlwaysPullWindowsPauseImage:          DefaultAlwaysPullWindowsPauseImage,
 	}
@@ -271,7 +271,7 @@ var (
 			VnetCNIWindowsPluginsDownloadURL:     "https://mirror.azk8s.cn/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-singletenancy-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
 			ContainerdDownloadURLBase:            "https://mirror.azk8s.cn/kubernetes/containerd/",
 			CSIProxyDownloadURL:                  "https://mirror.azk8s.cn/csi-proxy/" + DefaultWindowsCsiProxyVersion + "/binaries/csi-proxy-" + DefaultWindowsCsiProxyVersion + ".tar.gz",
-			WindowsProvisioningScriptsPackageURL: "https://mirror.azk8s.cn/aks-engine/windows/provisioning/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",
+			WindowsProvisioningScriptsPackageURL: "https://akseashpackages.blob.core.windows.net/scripts/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",
 			WindowsPauseImageURL:                 "mcr.microsoft.com/oss/kubernetes/pause:" + WindowsPauseImageVersion,
 			AlwaysPullWindowsPauseImage:          DefaultAlwaysPullWindowsPauseImage,
 		},
