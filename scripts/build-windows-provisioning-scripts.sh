@@ -19,10 +19,8 @@ required_env_vars=(
 
 unset_vars=()
 for v in "${required_env_vars[@]}"
-do
-    echo ${v}
+do    
     if [ -z "${!v}" ]; then
-        echo ${v}
         unset_vars+=(${v})
     fi
 done
