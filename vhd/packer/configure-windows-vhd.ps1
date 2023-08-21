@@ -107,7 +107,7 @@ function Get-FilesToCacheOnVHD {
             "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/helper.psm1",
             "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.v2.psm1"
             "https://globalcdn.nuget.org/packages/microsoft.applicationinsights.2.11.0.nupkg",
-            "https://akseashpackages.blob.core.windows.net/scripts/signedscripts-v0.0.18.zip"
+            "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip"
         );
         "c:\akse-cache\containerd\"   = @(
             $global:containerdPackageUrl

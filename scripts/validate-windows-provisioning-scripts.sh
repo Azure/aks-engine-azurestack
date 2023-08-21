@@ -31,5 +31,5 @@ if [ -z "$package_version" ]; then
 fi
 
 # urls from pkg/api/azenvtypes.go
-validate_package "https://akseashpackages.blob.core.windows.net/scripts/signedscripts-${package_version}.zip"
+validate_package "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-${package_version}.zip"
 
