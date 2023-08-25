@@ -41,9 +41,7 @@ Write-AzureConfig {
         [Parameter(Mandatory = $true)][string]
         $KubeDir,
         [Parameter(Mandatory = $true)][string]
-        $TargetEnvironment,
-        [Parameter(Mandatory = $false)][bool]
-        $UseContainerD = $false
+        $TargetEnvironment
     )
 
     if ( -Not $PrimaryAvailabilitySetName -And -Not $PrimaryScaleSetName ) {
@@ -141,9 +139,7 @@ Test-ContainerImageExists {
         [Parameter(Mandatory = $true)][string]
         $Image,
         [Parameter(Mandatory = $false)][string]
-        $Tag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $Tag
     )
 
     $target = $Image
@@ -151,35 +147,7 @@ Test-ContainerImageExists {
         $target += ":$Tag"
     }
 
-    if ($ContainerRuntime -eq "docker") {
-        $images = docker image list $target --format "{{json .}}"
-        return $images.Count -gt 0
-    }
-    else {
-        return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
-    }
-}
-
-function
-Build-PauseContainer {
-    Param(
-        [Parameter(Mandatory = $true)][string]
-        $WindowsBase,
-        $DestinationTag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
-    )
-    # Future work: This needs to build wincat - see https://github.com/Azure/aks-engine/issues/1461
-    # Otherwise, delete this code and require a prebuilt pause image (or override with one from an Azure Container Registry instance)
-    # ContainerD can't build, so doing the builds outside of node deployment is probably the right long-term solution.
-    "FROM $($WindowsBase)" | Out-File -encoding ascii -FilePath Dockerfile
-    "CMD cmd /c ping -t localhost" | Out-File -encoding ascii -FilePath Dockerfile -Append
-    if ($ContainerRuntime -eq "docker") {
-        Invoke-Executable -Executable "docker" -ArgList @("build", "-t", "$DestinationTag", ".")
-    }
-    else {
-        throw "Cannot build pause container without Docker"
-    }
+    return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
 }
 
 function
@@ -187,9 +155,7 @@ New-InfraContainer {
     Param(
         [Parameter(Mandatory = $true)][string]
         $KubeDir,
-        $DestinationTag = "kubletwin/pause",
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $DestinationTag = "kubletwin/pause"
     )
     cd $KubeDir
     $windowsVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ReleaseId
@@ -203,49 +169,14 @@ New-InfraContainer {
     $pauseImageVersions = @("1809", "1903", "1909", "2004", "2009", "20h2", "ltsc2022")
 
     if ($pauseImageVersions -icontains $windowsVersion) {
-        if ($ContainerRuntime -eq "docker") {
-            if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
-                Invoke-Executable -Executable "docker" -ArgList @("pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
-            }
-            Invoke-Executable -Executable "docker" -ArgList @("tag", "$defaultPauseImage", "$DestinationTag")
+        # containerd
+        if (-not (Test-ContainerImageExists -Image $defaultPauseImage) -or $global:AlwaysPullWindowsPauseImage) {
+            Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
         }
-        else {
-            # containerd
-            if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
-                Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
-            }
-            Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
-        }
-    }
-    else {
-        Build-PauseContainer -WindowsBase "mcr.microsoft.com/nanoserver-insider" -DestinationTag $DestinationTag -ContainerRuntime $ContainerRuntime
+        Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
     }
 }
 
-function
-Test-ContainerImageExists {
-    Param(
-        [Parameter(Mandatory = $true)][string]
-        $Image,
-        [Parameter(Mandatory = $false)][string]
-        $Tag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
-    )
-
-    $target = $Image
-    if ($Tag) {
-        $target += ":$Tag"
-    }
-
-    if ($ContainerRuntime -eq "docker") {
-        $images = docker image list $target --format "{{json .}}"
-        return $images.Count -gt 0
-    }
-    else {
-        return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
-    }
-}
 
 # TODO: Deprecate this and replace with methods that get individual components instead of zip containing everything
 # This expects the ZIP file created by Azure Pipelines.
@@ -267,6 +198,7 @@ Get-KubePackage {
         }
     }
     Expand-Archive -path $zipfile -DestinationPath C:\
+    Remove-Item $zipfile
 }
 
 function
@@ -315,12 +247,10 @@ New-NSSMService {
         $KubeletStartFile,
         [string]
         [Parameter(Mandatory = $true)]
-        $KubeProxyStartFile,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $KubeProxyStartFile
     )
 
-    $kubeletDependOnServices = $ContainerRuntime
+    $kubeletDependOnServices = "containerd"
     if ($global:EnableCsiProxy) {
         $kubeletDependOnServices += " csi-proxy"
     }
@@ -375,9 +305,7 @@ function
 Install-KubernetesServices {
     param(
         [Parameter(Mandatory = $true)][string]
-        $KubeDir,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $KubeDir
     )
 
     # TODO ksbrmnn fix callers to this function
@@ -387,6 +315,5 @@ Install-KubernetesServices {
 
     New-NSSMService -KubeDir $KubeDir `
         -KubeletStartFile $KubeletStartFile `
-        -KubeProxyStartFile $KubeProxyStartFile `
-        -ContainerRuntime $ContainerRuntime
+        -KubeProxyStartFile $KubeProxyStartFile
 }

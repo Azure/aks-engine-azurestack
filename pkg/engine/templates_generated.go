@@ -21820,7 +21820,7 @@ function Write-KubeClusterConfig {
     $Global:ClusterConfiguration = [PSCustomObject]@{ }
 
     $Global:ClusterConfiguration | Add-Member -MemberType NoteProperty -Name Cri -Value @{
-        Name   = $global:ContainerRuntime;
+        Name   = "containerd";
         Images = @{
             # e.g. "mcr.microsoft.com/oss/kubernetes/pause:3.8"
             "Pause" = $global:WindowsPauseImageURL
@@ -21883,12 +21883,10 @@ function Update-DefenderPreferences {
     Add-MpPreference -ExclusionProcess "c:\k\kubelet.exe"
 
     if ($global:EnableCsiProxy) {
-        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy-server.exe"
+        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy.exe"
     }
 
-    if ($global:ContainerRuntime -eq 'containerd') {
-        Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
-    }
+    Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
 }
 `)
 
@@ -22082,7 +22080,6 @@ Expand-Archive scripts.zip -DestinationPath "C:\\AzureData\\"
 . c:\AzureData\k8s\windowscontainerdfunc.ps1
 . c:\AzureData\k8s\windowshostsconfigagentfunc.ps1
 
-$useContainerD = ($global:ContainerRuntime -eq "containerd")
 $global:KubeClusterConfigPath = "c:\k\kubeclusterconfig.json"
 
 try
@@ -22186,27 +22183,17 @@ try
             Get-KubeBinaries -KubeBinariesURL $global:WindowsKubeBinariesURL
         }
 
-        if ($useContainerD) {
-            Write-Log "Installing ContainerD"
-            $containerdTimer = [System.Diagnostics.Stopwatch]::StartNew()
-            $cniBinPath = $global:AzureCNIBinDir
-            $cniConfigPath = $global:AzureCNIConfDir
-            if ($global:NetworkPlugin -eq "kubenet") {
-                $cniBinPath = $global:CNIPath
-                $cniConfigPath = $global:CNIConfigPath
-            }
-            Install-Containerd -ContainerdUrl $global:ContainerdUrl -CNIBinDir $cniBinPath -CNIConfDir $cniConfigPath -KubeDir $global:KubeDir
-            $containerdTimer.Stop()
-            $global:AppInsightsClient.TrackMetric("Install-ContainerD", $containerdTimer.Elapsed.TotalSeconds)
-            # TODO: disable/uninstall Docker later
-        } else {
-            Write-Log "Install docker"
-            $dockerTimer = [System.Diagnostics.Stopwatch]::StartNew()
-            Install-Docker -DockerVersion $global:DockerVersion
-            Set-DockerLogFileOptions
-            $dockerTimer.Stop()
-            $global:AppInsightsClient.TrackMetric("Install-Docker", $dockerTimer.Elapsed.TotalSeconds)
+        Write-Log "Installing ContainerD"
+        $containerdTimer = [System.Diagnostics.Stopwatch]::StartNew()
+        $cniBinPath = $global:AzureCNIBinDir
+        $cniConfigPath = $global:AzureCNIConfDir
+        if ($global:NetworkPlugin -eq "kubenet") {
+            $cniBinPath = $global:CNIPath
+            $cniConfigPath = $global:CNIConfigPath
         }
+        Install-Containerd -ContainerdUrl $global:ContainerdUrl -CNIBinDir $cniBinPath -CNIConfDir $cniConfigPath -KubeDir $global:KubeDir
+        $containerdTimer.Stop()
+        $global:AppInsightsClient.TrackMetric("Install-ContainerD", $containerdTimer.Elapsed.TotalSeconds)
 
         Write-Log "Write Azure cloud provider config"
         Write-AzureConfig ` + "`" + `
@@ -22260,19 +22247,14 @@ try
 
         Write-Log "Create the Pause Container kubletwin/pause"
         $infraContainerTimer = [System.Diagnostics.Stopwatch]::StartNew()
-        New-InfraContainer -KubeDir $global:KubeDir -ContainerRuntime $global:ContainerRuntime
+        New-InfraContainer -KubeDir $global:KubeDir
         $infraContainerTimer.Stop()
         $global:AppInsightsClient.TrackMetric("New-InfraContainer", $infraContainerTimer.Elapsed.TotalSeconds)
 
-        if (-not (Test-ContainerImageExists -Image "kubletwin/pause" -ContainerRuntime $global:ContainerRuntime)) {
+        if (-not (Test-ContainerImageExists -Image "kubletwin/pause")) {
             Write-Log "Could not find container with name kubletwin/pause"
-            if ($useContainerD) {
-                $o = ctr -n k8s.io image list
-                Write-Log $o
-            } else {
-                $o = docker image list
-                Write-Log $o
-            }
+            $o = ctr -n k8s.io image list
+            Write-Log $o
             throw "kubletwin/pause container does not exist!"
         }
 
@@ -22313,19 +22295,14 @@ try
         }
         elseif ($global:NetworkPlugin -eq "kubenet") {
             Write-Log "Fetching additional files needed for kubenet"
-            if ($useContainerD) {
-                # TODO: CNI may need to move to c:\program files\containerd\cni\bin with ContainerD
-                Install-SdnBridge -Url $global:ContainerdSdnPluginUrl -CNIPath $global:CNIPath
-            } else {
-                Update-WinCNI -CNIPath $global:CNIPath
-            }
+            # TODO: CNI may need to move to c:\program files\containerd\cni\bin with ContainerD
+            Install-SdnBridge -Url $global:ContainerdSdnPluginUrl -CNIPath $global:CNIPath
         }
 
         New-ExternalHnsNetwork -IsDualStackEnabled $global:IsDualStackEnabled
 
         Install-KubernetesServices ` + "`" + `
-            -KubeDir $global:KubeDir ` + "`" + `
-            -ContainerRuntime $global:ContainerRuntime
+            -KubeDir $global:KubeDir
 
         Get-LogCollectionScripts
 
@@ -22350,7 +22327,7 @@ try
         PREPROVISION_EXTENSION
 
         Write-Log "Update service failure actions"
-        Update-ServiceFailureActions -ContainerRuntime $global:ContainerRuntime
+        Update-ServiceFailureActions
 
         Adjust-DynamicPortRange
         Register-LogsCleanupScriptTask
@@ -23048,24 +23025,7 @@ func k8sRotateCertsSh() (*asset, error) {
 
 var _k8sWindowsazurecnifuncPs1 = []byte(`
 
-# TODO: remove - dead code?
-function
-Set-VnetPluginMode()
-{
-    Param(
-        [Parameter(Mandatory=$true)][string]
-        $AzureCNIConfDir,
-        [Parameter(Mandatory=$true)][string]
-        $Mode
-    )
-    # Sets Azure VNET CNI plugin operational mode.
-    $fileName  = [Io.path]::Combine("$AzureCNIConfDir", "10-azure.conflist")
-    (Get-Content $fileName) | %{$_ -replace "` + "`" + `"mode` + "`" + `":.*", "` + "`" + `"mode` + "`" + `": ` + "`" + `"$Mode` + "`" + `","} | Out-File -encoding ASCII -filepath $fileName
-}
-
-
-function
-Install-VnetPlugins
+function Install-VnetPlugins
 {
     Param(
         [Parameter(Mandatory=$true)][string]
@@ -23092,16 +23052,7 @@ Install-VnetPlugins
     move $AzureCNIBinDir/*.conflist $AzureCNIConfDir
 }
 
-# TODO: remove - dead code?
-function
-Set-AzureNetworkPlugin()
-{
-    # Azure VNET network policy requires tunnel (hairpin) mode because policy is enforced in the host.
-    Set-VnetPluginMode "tunnel"
-}
-
-function
-Set-AzureCNIConfig
+function Set-AzureCNIConfig
 {
     Param(
         [Parameter(Mandatory=$true)][string]
@@ -23146,7 +23097,35 @@ Set-AzureCNIConfig
         $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $processedExceptions
     }
     else {
-        $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $exceptionAddresses
+        if ($IsDualStackEnabled) {
+            $ipv4Cidrs = @()
+            $ipv6Cidrs = @()
+            foreach ($cidr in $exceptionAddresses) {
+                # this is the pwsh way of strings.Count(s, ":") >= 2
+                if (($cidr -split ":").Count -ge 3) {
+                    $ipv6Cidrs += $cidr
+                } else {
+                    $ipv4Cidrs += $cidr
+                }
+            }
+
+            # we just assume the first entry in additional Args is the exception
+            # list for IPv4 and then append a new EnpointPolicy for IPv6. We
+            # probably shouldn't hard code the first one like this and just build
+            # 2 EndpointPolicies and append to the AdditionalArgs.
+            $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $ipv4Cidrs
+
+            $outboundException = [PSCustomObject]@{
+                Name = 'EndpointPolicy'
+                Value = [PSCustomObject]@{
+                    Type = 'OutBoundNAT'
+                    ExceptionList = $ipv6Cidrs
+                }
+            }
+            $configJson.plugins[0].AdditionalArgs += $outboundException
+        } else {
+            $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $exceptionAddresses
+        }
     }
 
     if ($IsDualStackEnabled){
@@ -23507,19 +23486,6 @@ var _k8sWindowscnifuncPs1 = []byte(`function Get-HnsPsm1
     DownloadFileOverHttp -Url $HnsUrl -DestinationPath "$HNSModule"
 }
 
-function Update-WinCNI
-{
-    Param(
-        [string]
-        $WinCniUrl = "https://github.com/Microsoft/SDN/raw/master/Kubernetes/flannel/l2bridge/cni/win-bridge.exe",
-        [Parameter(Mandatory=$true)][string]
-        $CNIPath
-    )
-    $wincni = "win-bridge.exe"
-    $wincniFile = [Io.path]::Combine($CNIPath, $wincni)
-    DownloadFileOverHttp -Url $WinCniUrl -DestinationPath $wincniFile
-}
-
 function Install-SdnBridge
 {
     Param(
@@ -23594,95 +23560,6 @@ function Set-Explorer
     New-ItemProperty -Path HKLM:"\\SOFTWARE\\Policies\\Microsoft\\Internet Explorer\\Main" -Name "Start Page" -Type String -Value http://bing.com
 }
 
-function Install-Docker
-{
-    Param(
-        [Parameter(Mandatory=$true)][string]
-        $DockerVersion
-    )
-
-    # DOCKER_API_VERSION needs to be set for Docker versions older than 18.09.0 EE
-    # due to https://github.com/kubernetes/kubernetes/issues/69996
-    # this issue was fixed by https://github.com/kubernetes/kubernetes/issues/69996#issuecomment-438499024
-    # Note: to get a list of all versions, use this snippet
-    # $versions = (curl.exe -L "https://go.microsoft.com/fwlink/?LinkID=825636&clcid=0x409" | ConvertFrom-Json).Versions | Get-Member -Type NoteProperty | Select-Object Name
-    # Docker version to API version decoder: https://docs.docker.com/develop/sdk/#api-version-matrix
-
-    switch ($DockerVersion.Substring(0,5))
-    {
-        "17.06" {
-            Write-Log "Docker 17.06 found, setting DOCKER_API_VERSION to 1.30"
-            [System.Environment]::SetEnvironmentVariable('DOCKER_API_VERSION', '1.30', [System.EnvironmentVariableTarget]::Machine)
-        }
-
-        "18.03" {
-            Write-Log "Docker 18.03 found, setting DOCKER_API_VERSION to 1.37"
-            [System.Environment]::SetEnvironmentVariable('DOCKER_API_VERSION', '1.37', [System.EnvironmentVariableTarget]::Machine)
-        }
-
-        default {
-            Write-Log "Docker version $DockerVersion found, clearing DOCKER_API_VERSION"
-            [System.Environment]::SetEnvironmentVariable('DOCKER_API_VERSION', $null, [System.EnvironmentVariableTarget]::Machine)
-        }
-    }
-
-    try {
-        $installDocker = $true
-        $dockerService = Get-Service | ? Name -like 'docker'
-        if ($dockerService.Count -eq 0) {
-            Write-Log "Docker is not installed. Install docker version($DockerVersion)."
-        }
-        else {
-            $dockerServerVersion = docker version --format '{{.Server.Version}}'
-            Write-Log "Docker service is installed with docker version($dockerServerVersion)."
-            if ($dockerServerVersion -eq $DockerVersion) {
-                $installDocker = $false
-                Write-Log "Same version docker installed will skip installing docker version($dockerServerVersion)."
-            }
-            else {
-                Write-Log "Same version docker is not installed. Will install docker version($DockerVersion)."
-            }
-        }
-
-        if ($installDocker) {
-            Find-Package -Name Docker -ProviderName DockerMsftProvider -RequiredVersion $DockerVersion -ErrorAction Stop
-            Write-Log "Found version $DockerVersion. Installing..."
-            Install-Package -Name Docker -ProviderName DockerMsftProvider -Update -Force -RequiredVersion $DockerVersion
-            net start docker
-            Write-Log "Installed version $DockerVersion"
-        }
-    } catch {
-        Write-Log "Error while installing package: $_.Exception.Message"
-        $currentDockerVersion = (Get-Package -Name Docker -ProviderName DockerMsftProvider).Version
-        Write-Log "Not able to install docker version. Using default version $currentDockerVersion"
-    }
-}
-
-function Set-DockerLogFileOptions {
-    Write-Log "Updating log file options in docker config"
-    $dockerConfigPath = "C:\ProgramData\docker\config\daemon.json"
-
-    if (-not (Test-Path $dockerConfigPath)) {
-        "{}" | Out-File $dockerConfigPath
-    }
-
-    $dockerConfig = Get-Content $dockerConfigPath | ConvertFrom-Json
-    $dockerConfig | Add-Member -Name "log-driver" -Value "json-file" -MemberType NoteProperty
-    $logOpts = @{ "max-size" = "50m"; "max-file" = "5" }
-    $dockerConfig | Add-Member -Name "log-opts" -Value $logOpts -MemberType NoteProperty
-    $dockerConfig = $dockerConfig | ConvertTo-Json -Depth 10
-
-    Write-Log "New docker config:"
-    Write-Log $dockerConfig
-
-    # daemon.json MUST be encoded as UTF8-no-BOM!
-    Remove-Item $dockerConfigPath
-    $fileEncoding = New-Object System.Text.UTF8Encoding $false
-    [IO.File]::WriteAllLInes($dockerConfigPath, $dockerConfig, $fileEncoding)
-
-    Restart-Service docker
-}
-
 # Pagefile adjustments
 function Adjust-PageFileSize()
 {
@@ -23707,13 +23584,9 @@ function Adjust-DynamicPortRange()
 # Service start actions. These should be split up later and included in each install step
 function Update-ServiceFailureActions
 {
-    Param(
-        [Parameter(Mandatory = $true)][string]
-        $ContainerRuntime
-    )
     sc.exe failure "kubelet" actions= restart/60000/restart/60000/restart/60000 reset= 900
     sc.exe failure "kubeproxy" actions= restart/60000/restart/60000/restart/60000 reset= 900
-    sc.exe failure $ContainerRuntime actions= restart/60000/restart/60000/restart/60000 reset= 900
+    sc.exe failure "containerd" actions= restart/60000/restart/60000/restart/60000 reset= 900
 }
 
 function Add-SystemPathEntry
@@ -23788,10 +23661,27 @@ function RegisterContainerDService {
   & "$KubeDir\nssm.exe" set containerd AppRotateSeconds 86400 | RemoveNulls
   & "$KubeDir\nssm.exe" set containerd AppRotateBytes 10485760 | RemoveNulls
 
-  $svc = Get-Service -Name "containerd" -ErrorAction SilentlyContinue
-  if ($svc.Status -ne "Running") {
+  $retryCount=0
+  $retryInterval=10
+  $maxRetryCount=6 # 1 minutes
+
+  do {
+    $svc = Get-Service -Name "containerd" -ErrorAction SilentlyContinue
+    if ($null -eq $svc) {
+      throw "Error: containerd.exe did not get installed as a service correctly."
+    }
+    if ($svc.Status -eq "Running") {
+      break
+    }
+    Write-Log "Starting containerd, current status: $svc.Status"
     Start-Service containerd
-  }
+    $retryCount++
+    Write-Log "Retry $retryCount : Sleep $retryInterval and check containerd status"
+    Sleep $retryInterval
+  } while ($retryCount -lt $maxRetryCount)
+  
+  if ($svc.Status -ne "Running") {
+    throw "Eror: containerd service is not running"
 }
 
 function CreateHypervisorRuntime {
@@ -24178,9 +24068,7 @@ Write-AzureConfig {
         [Parameter(Mandatory = $true)][string]
         $KubeDir,
         [Parameter(Mandatory = $true)][string]
-        $TargetEnvironment,
-        [Parameter(Mandatory = $false)][bool]
-        $UseContainerD = $false
+        $TargetEnvironment
     )
 
     if ( -Not $PrimaryAvailabilitySetName -And -Not $PrimaryScaleSetName ) {
@@ -24278,9 +24166,7 @@ Test-ContainerImageExists {
         [Parameter(Mandatory = $true)][string]
         $Image,
         [Parameter(Mandatory = $false)][string]
-        $Tag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $Tag
     )
 
     $target = $Image
@@ -24288,35 +24174,7 @@ Test-ContainerImageExists {
         $target += ":$Tag"
     }
 
-    if ($ContainerRuntime -eq "docker") {
-        $images = docker image list $target --format "{{json .}}"
-        return $images.Count -gt 0
-    }
-    else {
-        return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
-    }
-}
-
-function
-Build-PauseContainer {
-    Param(
-        [Parameter(Mandatory = $true)][string]
-        $WindowsBase,
-        $DestinationTag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
-    )
-    # Future work: This needs to build wincat - see https://github.com/Azure/aks-engine/issues/1461
-    # Otherwise, delete this code and require a prebuilt pause image (or override with one from an Azure Container Registry instance)
-    # ContainerD can't build, so doing the builds outside of node deployment is probably the right long-term solution.
-    "FROM $($WindowsBase)" | Out-File -encoding ascii -FilePath Dockerfile
-    "CMD cmd /c ping -t localhost" | Out-File -encoding ascii -FilePath Dockerfile -Append
-    if ($ContainerRuntime -eq "docker") {
-        Invoke-Executable -Executable "docker" -ArgList @("build", "-t", "$DestinationTag", ".")
-    }
-    else {
-        throw "Cannot build pause container without Docker"
-    }
+    return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
 }
 
 function
@@ -24324,9 +24182,7 @@ New-InfraContainer {
     Param(
         [Parameter(Mandatory = $true)][string]
         $KubeDir,
-        $DestinationTag = "kubletwin/pause",
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $DestinationTag = "kubletwin/pause"
     )
     cd $KubeDir
     $windowsVersion = (Get-ItemProperty "HKLM:\SOFTWARE\Microsoft\Windows NT\CurrentVersion").ReleaseId
@@ -24340,47 +24196,11 @@ New-InfraContainer {
     $pauseImageVersions = @("1809", "1903", "1909", "2004", "2009", "20h2", "ltsc2022")
 
     if ($pauseImageVersions -icontains $windowsVersion) {
-        if ($ContainerRuntime -eq "docker") {
-            if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
-                Invoke-Executable -Executable "docker" -ArgList @("pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
-            }
-            Invoke-Executable -Executable "docker" -ArgList @("tag", "$defaultPauseImage", "$DestinationTag")
+        # containerd
+        if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
+            Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
         }
-        else {
-            # containerd
-            if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
-                Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
-            }
-            Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
-        }
-    }
-    else {
-        Build-PauseContainer -WindowsBase "mcr.microsoft.com/nanoserver-insider" -DestinationTag $DestinationTag -ContainerRuntime $ContainerRuntime
-    }
-}
-
-function
-Test-ContainerImageExists {
-    Param(
-        [Parameter(Mandatory = $true)][string]
-        $Image,
-        [Parameter(Mandatory = $false)][string]
-        $Tag,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
-    )
-
-    $target = $Image
-    if ($Tag) {
-        $target += ":$Tag"
-    }
-
-    if ($ContainerRuntime -eq "docker") {
-        $images = docker image list $target --format "{{json .}}"
-        return $images.Count -gt 0
-    }
-    else {
-        return ( (ctr.exe -n k8s.io images list) | Select-String $target) -ne $Null
+        Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
     }
 }
 
@@ -24404,6 +24224,7 @@ Get-KubePackage {
         }
     }
     Expand-Archive -path $zipfile -DestinationPath C:\
+    Remove-Item $zipfile
 }
 
 function
@@ -24452,12 +24273,10 @@ New-NSSMService {
         $KubeletStartFile,
         [string]
         [Parameter(Mandatory = $true)]
-        $KubeProxyStartFile,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $KubeProxyStartFile
     )
 
-    $kubeletDependOnServices = $ContainerRuntime
+    $kubeletDependOnServices = "containerd"
     if ($global:EnableCsiProxy) {
         $kubeletDependOnServices += " csi-proxy"
     }
@@ -24512,9 +24331,7 @@ function
 Install-KubernetesServices {
     param(
         [Parameter(Mandatory = $true)][string]
-        $KubeDir,
-        [Parameter(Mandatory = $false)][string]
-        $ContainerRuntime = "docker"
+        $KubeDir
     )
 
     # TODO ksbrmnn fix callers to this function
@@ -24524,8 +24341,7 @@ Install-KubernetesServices {
 
     New-NSSMService -KubeDir $KubeDir ` + "`" + `
         -KubeletStartFile $KubeletStartFile ` + "`" + `
-        -KubeProxyStartFile $KubeProxyStartFile ` + "`" + `
-        -ContainerRuntime $ContainerRuntime
+        -KubeProxyStartFile $KubeProxyStartFile
 }
 `)
 

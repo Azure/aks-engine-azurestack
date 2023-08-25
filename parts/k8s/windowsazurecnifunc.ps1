@@ -1,23 +1,4 @@
-
-
-# TODO: remove - dead code?
-function
-Set-VnetPluginMode()
-{
-    Param(
-        [Parameter(Mandatory=$true)][string]
-        $AzureCNIConfDir,
-        [Parameter(Mandatory=$true)][string]
-        $Mode
-    )
-    # Sets Azure VNET CNI plugin operational mode.
-    $fileName  = [Io.path]::Combine("$AzureCNIConfDir", "10-azure.conflist")
-    (Get-Content $fileName) | %{$_ -replace "`"mode`":.*", "`"mode`": `"$Mode`","} | Out-File -encoding ASCII -filepath $fileName
-}
-
-
-function
-Install-VnetPlugins
+function Install-VnetPlugins
 {
     Param(
         [Parameter(Mandatory=$true)][string]
@@ -44,16 +25,7 @@ Install-VnetPlugins
     move $AzureCNIBinDir/*.conflist $AzureCNIConfDir
 }
 
-# TODO: remove - dead code?
-function
-Set-AzureNetworkPlugin()
-{
-    # Azure VNET network policy requires tunnel (hairpin) mode because policy is enforced in the host.
-    Set-VnetPluginMode "tunnel"
-}
-
-function
-Set-AzureCNIConfig
+function Set-AzureCNIConfig
 {
     Param(
         [Parameter(Mandatory=$true)][string]
@@ -98,7 +70,35 @@ Set-AzureCNIConfig
         $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $processedExceptions
     }
     else {
-        $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $exceptionAddresses
+        if ($IsDualStackEnabled) {
+            $ipv4Cidrs = @()
+            $ipv6Cidrs = @()
+            foreach ($cidr in $exceptionAddresses) {
+                # this is the pwsh way of strings.Count(s, ":") >= 2
+                if (($cidr -split ":").Count -ge 3) {
+                    $ipv6Cidrs += $cidr
+                } else {
+                    $ipv4Cidrs += $cidr
+                }
+            }
+
+            # we just assume the first entry in additional Args is the exception
+            # list for IPv4 and then append a new EnpointPolicy for IPv6. We
+            # probably shouldn't hard code the first one like this and just build
+            # 2 EndpointPolicies and append to the AdditionalArgs.
+            $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $ipv4Cidrs
+
+            $outboundException = [PSCustomObject]@{
+                Name = 'EndpointPolicy'
+                Value = [PSCustomObject]@{
+                    Type = 'OutBoundNAT'
+                    ExceptionList = $ipv6Cidrs
+                }
+            }
+            $configJson.plugins[0].AdditionalArgs += $outboundException
+        } else {
+            $configJson.plugins.AdditionalArgs[0].Value.ExceptionList = $exceptionAddresses
+        }
     }
 
     if ($IsDualStackEnabled){

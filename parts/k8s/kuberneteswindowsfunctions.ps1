@@ -235,7 +235,7 @@ function Write-KubeClusterConfig {
     $Global:ClusterConfiguration = [PSCustomObject]@{ }
 
     $Global:ClusterConfiguration | Add-Member -MemberType NoteProperty -Name Cri -Value @{
-        Name   = $global:ContainerRuntime;
+        Name   = "containerd";
         Images = @{
             # e.g. "mcr.microsoft.com/oss/kubernetes/pause:3.8"
             "Pause" = $global:WindowsPauseImageURL
@@ -298,10 +298,8 @@ function Update-DefenderPreferences {
     Add-MpPreference -ExclusionProcess "c:\k\kubelet.exe"
 
     if ($global:EnableCsiProxy) {
-        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy-server.exe"
+        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy.exe"
     }
 
-    if ($global:ContainerRuntime -eq 'containerd') {
-        Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
-    }
+    Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
 }
