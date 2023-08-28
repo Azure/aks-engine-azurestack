@@ -22251,7 +22251,7 @@ try
         $infraContainerTimer.Stop()
         $global:AppInsightsClient.TrackMetric("New-InfraContainer", $infraContainerTimer.Elapsed.TotalSeconds)
 
-        if (-not (Test-ContainerImageExists -Image "kubletwin/pause")) {
+        if (-not (Test-ContainerImageExists -Image "kubletwin/pause)) {
             Write-Log "Could not find container with name kubletwin/pause"
             $o = ctr -n k8s.io image list
             Write-Log $o
@@ -23023,9 +23023,7 @@ func k8sRotateCertsSh() (*asset, error) {
 	return a, nil
 }
 
-var _k8sWindowsazurecnifuncPs1 = []byte(`
-
-function Install-VnetPlugins
+var _k8sWindowsazurecnifuncPs1 = []byte(`function Install-VnetPlugins
 {
     Param(
         [Parameter(Mandatory=$true)][string]
@@ -23679,9 +23677,10 @@ function RegisterContainerDService {
     Write-Log "Retry $retryCount : Sleep $retryInterval and check containerd status"
     Sleep $retryInterval
   } while ($retryCount -lt $maxRetryCount)
-  
+
   if ($svc.Status -ne "Running") {
     throw "Eror: containerd service is not running"
+  }
 }
 
 function CreateHypervisorRuntime {
@@ -24197,7 +24196,7 @@ New-InfraContainer {
 
     if ($pauseImageVersions -icontains $windowsVersion) {
         # containerd
-        if (-not (Test-ContainerImageExists -Image $defaultPauseImage -ContainerRuntime $ContainerRuntime) -or $global:AlwaysPullWindowsPauseImage) {
+        if (-not (Test-ContainerImageExists -Image $defaultPauseImage) -or $global:AlwaysPullWindowsPauseImage) {
             Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "pull", "$defaultPauseImage") -Retries 5 -RetryDelaySeconds 30
         }
         Invoke-Executable -Executable "ctr" -ArgList @("-n", "k8s.io", "image", "tag", "$defaultPauseImage", "$DestinationTag")
@@ -24342,8 +24341,7 @@ Install-KubernetesServices {
     New-NSSMService -KubeDir $KubeDir ` + "`" + `
         -KubeletStartFile $KubeletStartFile ` + "`" + `
         -KubeProxyStartFile $KubeProxyStartFile
-}
-`)
+}`)
 
 func k8sWindowskubeletfuncPs1Bytes() ([]byte, error) {
 	return _k8sWindowskubeletfuncPs1, nil
@@ -24933,13 +24931,11 @@ var _bindata = map[string]func() (*asset, error){
 // directory embedded in the file by go-bindata.
 // For example if you run go-bindata on data/... and data contains the
 // following hierarchy:
-//
-//	data/
-//	  foo.txt
-//	  img/
-//	    a.png
-//	    b.png
-//
+//     data/
+//       foo.txt
+//       img/
+//         a.png
+//         b.png
 // then AssetDir("data") would return []string{"foo.txt", "img"}
 // AssetDir("data/img") would return []string{"a.png", "b.png"}
 // AssetDir("foo.txt") and AssetDir("notexist") would return an error
