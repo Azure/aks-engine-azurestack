@@ -22251,7 +22251,7 @@ try
         $infraContainerTimer.Stop()
         $global:AppInsightsClient.TrackMetric("New-InfraContainer", $infraContainerTimer.Elapsed.TotalSeconds)
 
-        if (-not (Test-ContainerImageExists -Image "kubletwin/pause)) {
+        if (-not (Test-ContainerImageExists -Image "kubletwin/pause")) {
             Write-Log "Could not find container with name kubletwin/pause"
             $o = ctr -n k8s.io image list
             Write-Log $o

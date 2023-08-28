@@ -177,7 +177,6 @@ New-InfraContainer {
     }
 }
 
-
 # TODO: Deprecate this and replace with methods that get individual components instead of zip containing everything
 # This expects the ZIP file created by Azure Pipelines.
 function
