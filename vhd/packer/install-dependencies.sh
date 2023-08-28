@@ -210,7 +210,7 @@ loadContainerImage ${BUSYBOX_IMAGE}
 echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
-1.26.6
+1.26.8
 1.25.7
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
