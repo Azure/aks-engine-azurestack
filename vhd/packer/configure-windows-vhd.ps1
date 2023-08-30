@@ -53,7 +53,9 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.25.9",
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.26.10",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0",
+                "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0-windows-hp",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5",
+                "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5-windows-hp",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.4.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.6.2",
                 "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.5.0",
@@ -124,7 +126,7 @@ function Get-FilesToCacheOnVHD {
             $global:containerdPackageUrl
         );
         "c:\akse-cache\csi-proxy\"    = @(
-            "https://kubernetesartifacts.azureedge.net/csi-proxy/v0.2.2/binaries/csi-proxy-v0.2.2.tar.gz"
+            "https://kubernetesartifacts.azureedge.net/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
             "https://kubernetesartifacts.azureedge.net/kubernetes/v1.25.13/windowszip/v1.25.13-1int.zip",
