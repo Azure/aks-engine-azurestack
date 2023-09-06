@@ -690,6 +690,13 @@ func GetAllByPrefix(prefix, namespace string) ([]Pod, error) {
 	return pods, nil
 }
 
+func DeleteAllByLabel(labelKey, labelVal, namespace string) {
+	pods, _ := GetAllByLabel(labelKey, labelVal, namespace)
+	for _, p := range pods {
+		p.Delete(util.DefaultDeleteRetries)
+	}
+}
+
 // GetAllRunningByLabelAsync wraps GetAllRunningByLabel with a struct response for goroutine + channel usage
 func GetAllRunningByLabelAsync(labelKey, labelVal, namespace string) GetPodsResult {
 	pods, err := GetAllRunningByLabel(labelKey, labelVal, namespace)
