@@ -334,6 +334,21 @@ ensureContainerd() {
   systemctlEnableAndStart containerd || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
   enableCRISystemdMonitor
 }
+
+ensureNoBridgeDocker0 () {
+  # Define the name of the bridge you want to check and potentially delete
+  BRIDGE_NAME="docker0"
+  # Check if the bridge exists
+  if ip link show "$BRIDGE_NAME" &> /dev/null; then
+      # The bridge exists, so delete it
+      echo "Deleting bridge network $BRIDGE_NAME"
+      retrycmd 120 5 25 ip link delete "$BRIDGE_NAME" type bridge || exit {{GetCSEErrorCode "ERR_REMOVE_DOCKER_BRIDGE_FAIL"}}
+  else
+      # The bridge does not exist
+      echo "Bridge network $BRIDGE_NAME does not exist"
+  fi
+}
+
 {{end}}
 {{- if IsDockerContainerRuntime}}
 ensureDocker() {

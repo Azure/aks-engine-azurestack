@@ -80,6 +80,7 @@ var cseErrorCodes = map[string]int{
 	"ERR_DEB_DOWNLOAD_TIMEOUT":                   184,
 	"ERR_DEB_PKG_ADD_FAIL":                       185,
 	"ERR_VHD_FILE_NOT_FOUND":                     186,
+	"ERR_REMOVE_DOCKER_BRIDGE_FAIL":              187,
 }
 
 func GetCSEErrorCode(errorType string) int {
