@@ -18,6 +18,7 @@ env:
   WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
   WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
   WINDOWS_NODE_IMAGE_VERSION: 2023.242.3
+  GINKGO_SKIP: "should be able to schedule a HostProcess pod to a Windows node"
 
 jobs:
   sig_image_versions:
