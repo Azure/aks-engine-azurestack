@@ -123,16 +123,7 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 									AutoUpgradeMinorVersion: to.BoolPtr(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
-										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-								Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
+										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 						},
 					},
 				},
@@ -462,31 +453,6 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 		},
 	}
 
-	aksBillingExtension := VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]",
-			},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{},
-			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
-			Tags:     map[string]*string{}},
-	}
-
 	expected := []interface{}{
 		agentVM,
 		masterAvSet,
@@ -497,7 +463,6 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 		networkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap := resourceSliceToMap(expected)
@@ -557,16 +522,7 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 				AutoUpgradeMinorVersion: to.BoolPtr(true),
 				Settings:                map[string]interface{}{},
 				ProtectedSettings: map[string]interface{}{
-					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-			Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-			VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                map[string]interface{}{},
-			},
-		},
+					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 	}
 
 	userAssignedID := UserAssignedIdentitiesARM{
@@ -816,30 +772,6 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		},
 	}
 
-	aksBillingExtension := VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('agentpool1Count'), variables('agentpool1Offset'))]",
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				"[concat('Microsoft.Compute/virtualMachines/', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]",
-			},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{}},
-			Name:     to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')), '/computeAksLinuxBilling')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
-		},
-	}
-
 	cseExtension := VirtualMachineExtensionARM{
 		ARMResource: ARMResource{
 			APIVersion: "[variables('apiVersionCompute')]",
@@ -964,28 +896,6 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				"poolName":           to.StringPtr("master"),
 				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
 			},
-		},
-	}
-
-	masterAKSBillingExtension := VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-				"name":  "vmLoopNode"}, DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{},
-			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
-			Tags:     map[string]*string{},
 		},
 	}
 
@@ -1235,11 +1145,9 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 	expected := []interface{}{
 		agentNIC,
 		agentVMASVM,
-		aksBillingExtension,
 		cseExtension,
 		masterNIC,
 		masterVM,
-		masterAKSBillingExtension,
 		masterCSEVMExtension,
 		agentStorageAccount,
 		agentAvailabilitySet,
@@ -1359,16 +1267,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 									AutoUpgradeMinorVersion: to.BoolPtr(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
-										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-								Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
+										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 						},
 					},
 				},
@@ -1718,31 +1617,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		},
 	}
 
-	aksBillingExtension := VirtualMachineExtensionARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionCompute')]",
-			Copy: map[string]string{
-				"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
-				"name":  "vmLoopNode",
-			},
-			DependsOn: []string{
-				"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]",
-			},
-		},
-		VirtualMachineExtension: compute.VirtualMachineExtension{
-			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.AKS"),
-				Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-				TypeHandlerVersion:      to.StringPtr("1.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
-				Settings:                &map[string]interface{}{},
-			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/computeAksLinuxBilling')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
-			Tags:     map[string]*string{}},
-	}
-
 	expected := []interface{}{
 		agentVM,
 		masterAvSet,
@@ -1753,7 +1627,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		networkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap := resourceSliceToMap(expected)
@@ -1807,7 +1680,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		privateClusterMasterNetworkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap = resourceSliceToMap(expected)
@@ -1984,16 +1856,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 									AutoUpgradeMinorVersion: to.BoolPtr(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
-										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}}, {
-								Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), '-computeAksLinuxBilling')]"),
-								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.AKS"),
-									Type:                    to.StringPtr("Compute.AKS-Engine.Linux.Billing"),
-									TypeHandlerVersion:      to.StringPtr("1.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
-									Settings:                map[string]interface{}{},
-								},
-							},
+										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
 						},
 					},
 				},
@@ -2012,7 +1875,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		networkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap = resourceSliceToMap(expected)
@@ -2097,7 +1959,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		networkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap = resourceSliceToMap(expected)
@@ -2140,7 +2001,6 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		networkInterface,
 		masterVM,
 		masterVMExtension,
-		aksBillingExtension,
 	}
 
 	expectedMap = resourceSliceToMap(expected)

@@ -856,6 +856,23 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
+		It("should be able to schedule a HostProcess pod to a Windows node", func() {
+			if eng.HasWindowsAgents() {
+				name, ns := "windows-hostprocess", "default"
+				yamlPath := filepath.Join(WorkloadDir, fmt.Sprintf("%s.yaml", name))
+				By("deleting existing HostProcess pods")
+				pod.DeleteAllByLabel("test", name, ns)
+				By("deploying new HostProcess pod")
+				_, err := pod.CreatePodFromFile(yamlPath, name, ns, 1*time.Second, 20*time.Second)
+				Expect(err).NotTo(HaveOccurred())
+				running, err := pod.WaitOnSuccesses(name, ns, 4, false, 4*time.Second, 30*time.Second)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(running).To(Equal(true))
+			} else {
+				Skip("no Windows nodes")
+			}
+		})
+
 		It("should have core kube-system addons running the correct version", func() {
 			if eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.CustomKubeProxyImage == "" {
 				By(fmt.Sprintf("Ensuring that the %s addon image matches orchestrator version", common.KubeProxyAddonName))

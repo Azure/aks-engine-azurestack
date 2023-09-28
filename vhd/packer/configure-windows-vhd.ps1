@@ -53,11 +53,14 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.25.9",
                 "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.26.10",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0",
+                "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0-windows-hp",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5",
+                "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5-windows-hp",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.4.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.6.2",
                 "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.5.0",
-                "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.8.0")
+                "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.8.0",
+                "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
         }
         '2004' {
             $imagesToPull = @(
@@ -113,11 +116,11 @@ function Get-FilesToCacheOnVHD {
             $global:containerdPackageUrl
         );
         "c:\akse-cache\csi-proxy\"    = @(
-            "https://kubernetesartifacts.azureedge.net/csi-proxy/v0.2.2/binaries/csi-proxy-v0.2.2.tar.gz"
+            "https://kubernetesartifacts.azureedge.net/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.25.7/windowszip/v1.25.7-1int.zip",
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.26.6/windowszip/v1.26.6-1int.zip"
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.25.13/windowszip/v1.25.13-1int.zip",
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.26.8/windowszip/v1.26.8-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://kubernetesartifacts.azureedge.net/azure-cni/v1.4.32/binaries/azure-vnet-cni-singletenancy-windows-amd64-v1.4.32.zip"

@@ -314,6 +314,10 @@ else
   fi
 fi
 
+{{- if NeedsContainerd}}
+ensureNoBridgeDocker0
+{{end}}
+
 echo "CSE finished successfully"
 echo $(date),$(hostname), endcustomscript >>/opt/m
 mkdir -p /opt/azure/containers && touch /opt/azure/containers/provision.complete

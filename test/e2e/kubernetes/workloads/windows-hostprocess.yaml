@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: windows-hostprocess
+  labels:
+    test: windows-hostprocess
+spec: 
+  containers:
+    - name: is-admin-role
+      image: mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0
+      command:
+        - powershell.exe
+        - "-command"
+        - 'if (([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]"Administrator") -eq $True) { Start-Sleep -Seconds 2147483 } else { exit 1 };'
+  securityContext:
+    runAsNonRoot: false
+    windowsOptions:
+      hostProcess: true
+      runAsUserName: "NT AUTHORITY\\SYSTEM"
+  hostNetwork: true
+  nodeSelector:
+    "kubernetes.io/os": windows
