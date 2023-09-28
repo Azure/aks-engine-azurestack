@@ -31,6 +31,5 @@ if [ -z "$package_version" ]; then
 fi
 
 # urls from pkg/api/azenvtypes.go
-validate_package "https://kubernetesartifacts.azureedge.net/aks-engine/windows/provisioning/signedscripts-${package_version}.zip"
-validate_package "https://mirror.azk8s.cn/aks-engine/windows/provisioning/signedscripts-${package_version}.zip"
+validate_package "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-${package_version}.zip"
 

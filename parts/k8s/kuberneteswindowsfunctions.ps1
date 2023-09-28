@@ -200,7 +200,7 @@ function Get-LogCollectionScripts {
     DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/debug/stoppacketcapture.cmd' -DestinationPath 'c:\k\debug\stoppacketcapture.cmd'
     DownloadFileOverHttp -Url 'https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/debug/VFP.psm1' -DestinationPath 'c:\k\debug\VFP.psm1'
     DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/helper.psm1' -DestinationPath 'c:\k\debug\helper.psm1'
-    DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.psm1' -DestinationPath 'c:\k\debug\hns.psm1'
+    DownloadFileOverHttp -Url 'https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.v2.psm1' -DestinationPath 'c:\k\debug\hns.v2.psm1'
 }
 
 function Register-LogsCleanupScriptTask {
@@ -235,7 +235,7 @@ function Write-KubeClusterConfig {
     $Global:ClusterConfiguration = [PSCustomObject]@{ }
 
     $Global:ClusterConfiguration | Add-Member -MemberType NoteProperty -Name Cri -Value @{
-        Name   = $global:ContainerRuntime;
+        Name   = "containerd";
         Images = @{
             # e.g. "mcr.microsoft.com/oss/kubernetes/pause:3.8"
             "Pause" = $global:WindowsPauseImageURL
@@ -298,10 +298,8 @@ function Update-DefenderPreferences {
     Add-MpPreference -ExclusionProcess "c:\k\kubelet.exe"
 
     if ($global:EnableCsiProxy) {
-        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy-server.exe"
+        Add-MpPreference -ExclusionProcess "c:\k\csi-proxy.exe"
     }
 
-    if ($global:ContainerRuntime -eq 'containerd') {
-        Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
-    }
+    Add-MpPreference -ExclusionProcess "c:\program files\containerd\containerd.exe"
 }
