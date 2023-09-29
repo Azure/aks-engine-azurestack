@@ -461,6 +461,9 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       tolerations:
         - operator: "Exists"
       containers:
@@ -523,6 +526,7 @@ spec:
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
+            - "--get-nodeid-from-imds=false"
           ports:
             - containerPort: 29603
               name: healthz
