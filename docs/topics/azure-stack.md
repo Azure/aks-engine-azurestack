@@ -203,7 +203,8 @@ If the data persisted in the underlying Azure disks should be preserved, then th
 The following script uses `Helm` to install the Azure Disk CSI Driver:
 
 ```bash
-DRIVER_VERSION=v1.26.5
+DRIVER_VERSION=v1.26.5 # if using k8s v1.26
+DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -278,7 +279,8 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 
 ```bash
 # Install CSI Driver
-DRIVER_VERSION=v1.26.5
+DRIVER_VERSION=v1.26.5 # if using k8s v1.26
+DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --set node.supportZone=false --set windows.getNodeInfoFromLabels=true --set linux.getNodeInfoFromLabels=true --version ${DRIVER_VERSION}
 
