@@ -265,6 +265,9 @@ spec:
       nodeSelector:
         kubernetes.io/os: windows
       priorityClassName: system-node-critical
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       tolerations:
         - key: "node.kubernetes.io/os"
           operator: "Exists"
@@ -333,10 +336,10 @@ spec:
             - "--v=5"
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--nodeid=$(KUBE_NODE_NAME)"
-            - "--metrics-address=0.0.0.0:29605"
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
+            - "--get-nodeid-from-imds=false"
           ports:
             - containerPort: 29603
               name: healthz
