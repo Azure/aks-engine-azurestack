@@ -346,6 +346,7 @@ var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string
 			common.MetricsServerAddonName:                     "oss/kubernetes/metrics-server:v0.5.2",
 			common.AddonManagerComponentName:                  "oss/kubernetes/kube-addon-manager:v9.1.5",
 			common.ClusterAutoscalerAddonName:                 "oss/kubernetes/autoscaler/cluster-autoscaler:v1.22.1",
+		},
 		"1.21": {
 			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v3.0.0",
 			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v3.3.0",
