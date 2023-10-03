@@ -7628,9 +7628,11 @@ spec:
       nodeSelector:
         kubernetes.io/os: windows
       priorityClassName: system-node-critical
+{{- if IsKubernetesVersionGe "1.27.0"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+{{- end}}
       tolerations:
         - key: "node.kubernetes.io/os"
           operator: "Exists"
@@ -7699,10 +7701,15 @@ spec:
             - "--v=5"
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--nodeid=$(KUBE_NODE_NAME)"
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+            - "--metrics-address=0.0.0.0:29605"
+{{- end}}
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
+{{- if IsKubernetesVersionGe "1.27.0"}}
             - "--get-nodeid-from-imds=false"
+{{- end}}
           ports:
             - containerPort: 29603
               name: healthz
@@ -7824,9 +7831,11 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
+{{- if IsKubernetesVersionGe "1.27.0"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+{{- end}}
       tolerations:
         - operator: "Exists"
       containers:
@@ -7889,7 +7898,9 @@ spec:
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
+{{- if IsKubernetesVersionGe "1.27.0"}}
             - "--get-nodeid-from-imds=false"
+{{- end}}
           ports:
             - containerPort: 29603
               name: healthz
@@ -8005,9 +8016,11 @@ spec:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: ""
       priorityClassName: system-cluster-critical
+{{- if IsKubernetesVersionGe "1.27.0"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+{{- end}}
       tolerations:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
@@ -8028,8 +8041,8 @@ spec:
             - "--worker-threads=40"
             - "--extra-create-metadata=true"
             - "--strict-topology=true"
-            - "--kube-api-qps=200"
-            - "--kube-api-burst=400"
+            - "--kube-api-qps=50"
+            - "--kube-api-burst=100"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -8051,9 +8064,16 @@ spec:
             - "-timeout=1200s"
             - "-leader-election"
             - "--leader-election-namespace=kube-system"
+{{- if IsKubernetesVersionGe "1.27.0"}}
+            - "-worker-threads=1000"
+            - "-kube-api-qps=200"
+            - "-kube-api-burst=400"
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
             - "-worker-threads=500"
             - "-kube-api-qps=50"
             - "-kube-api-burst=100"
+{{- end}}
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -8137,8 +8157,10 @@ spec:
             - "--metrics-address=0.0.0.0:29604"
             - "--user-agent-suffix=aks-engine"
             - "--vmss-cache-ttl-seconds=-1"
+{{- if IsKubernetesVersionGe "1.27.0"}}
             - "--enable-traffic-manager=false"
             - "--traffic-manager-port=7788"
+{{- end}}
           ports:
             - containerPort: 29602
               name: healthz
@@ -8208,6 +8230,7 @@ spec:
   selector:
     matchLabels:
       app: csi-snapshot-controller
+{{- if IsKubernetesVersionGe "1.27.0"}}
   # the snapshot controller won't be marked as ready if the v1 CRDs are unavailable
   # in #504 the snapshot-controller will exit after around 7.5 seconds if it
   # can't find the v1 CRDs so this value should be greater than that
@@ -8217,6 +8240,7 @@ spec:
       maxSurge: 0
       maxUnavailable: 1
     type: RollingUpdate
+{{- end}}
   template:
     metadata:
       labels:
@@ -8227,9 +8251,11 @@ spec:
         kubernetes.io/os: linux
         kubernetes.io/role: master
       priorityClassName: system-cluster-critical
+{{- if IsKubernetesVersionGe "1.27.0"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+{{- end}}
       tolerations:
         - key: "node-role.kubernetes.io/master"
           operator: "Equal"
@@ -8341,8 +8367,14 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+{{- if IsKubernetesVersionGe "1.27.0"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    controller-gen.kubebuilder.io/version: v0.4.0
+    api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
+{{- end}}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
   creationTimestamp: null
@@ -8635,7 +8667,12 @@ spec:
         required:
         - spec
         type: object
+{{- if IsKubernetesVersionGe "1.27.0"}}
     served: false
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    served: true
+{{- end}}
     storage: false
     subresources:
       status: {}
@@ -8651,8 +8688,14 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+{{- if IsKubernetesVersionGe "1.27.0"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    controller-gen.kubebuilder.io/version: v0.4.0
+    api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
+{{- end}}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
   creationTimestamp: null
@@ -8773,7 +8816,12 @@ spec:
         - deletionPolicy
         - driver
         type: object
+{{- if IsKubernetesVersionGe "1.27.0"}}
     served: false
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    served: true
+{{- end}}
     storage: false
     subresources: {}
 status:
@@ -8788,8 +8836,14 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
+{{- if IsKubernetesVersionGe "1.27.0"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    controller-gen.kubebuilder.io/version: v0.4.0
+    api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
+{{- end}}
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
   creationTimestamp: null
@@ -8902,12 +8956,14 @@ spec:
                 oneOf:
                 - required: ["snapshotHandle"]
                 - required: ["volumeHandle"]
+{{- if IsKubernetesVersionGe "1.27.0"}}
               sourceVolumeMode:
                 description: SourceVolumeMode is the mode of the volume whose snapshot
                   is taken. Can be either “Filesystem” or “Block”. If not specified,
                   it indicates the source volume's mode is unknown. This field is
                   immutable. This field is an alpha field.
                 type: string
+{{- end}}
               volumeSnapshotClassName:
                 description: name of the VolumeSnapshotClass from which this snapshot
                   was (or will be) created. Note that after provisioning, the VolumeSnapshotClass
@@ -9168,7 +9224,12 @@ spec:
         required:
         - spec
         type: object
+{{- if IsKubernetesVersionGe "1.27.0"}}
     served: false
+{{- end}}
+{{- if not (IsKubernetesVersionGe "1.27.0")}}
+    served: true
+{{- end}}
     storage: false
     subresources:
       status: {}
