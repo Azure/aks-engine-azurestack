@@ -7628,7 +7628,7 @@ spec:
       nodeSelector:
         kubernetes.io/os: windows
       priorityClassName: system-node-critical
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -7701,13 +7701,13 @@ spec:
             - "--v=5"
             - "--endpoint=$(CSI_ENDPOINT)"
             - "--nodeid=$(KUBE_NODE_NAME)"
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
             - "--metrics-address=0.0.0.0:29605"
 {{- end}}
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
             - "--get-nodeid-from-imds=false"
 {{- end}}
           ports:
@@ -7831,7 +7831,7 @@ spec:
       nodeSelector:
         kubernetes.io/os: linux
       priorityClassName: system-node-critical
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -7898,7 +7898,7 @@ spec:
             - "--user-agent-suffix=aks-engine"
             - "--support-zone=false"
             - "--get-node-info-from-labels=true"
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
             - "--get-nodeid-from-imds=false"
 {{- end}}
           ports:
@@ -8016,7 +8016,7 @@ spec:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: ""
       priorityClassName: system-cluster-critical
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -8064,12 +8064,12 @@ spec:
             - "-timeout=1200s"
             - "-leader-election"
             - "--leader-election-namespace=kube-system"
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
             - "-worker-threads=1000"
             - "-kube-api-qps=200"
             - "-kube-api-burst=400"
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
             - "-worker-threads=500"
             - "-kube-api-qps=50"
             - "-kube-api-burst=100"
@@ -8157,7 +8157,7 @@ spec:
             - "--metrics-address=0.0.0.0:29604"
             - "--user-agent-suffix=aks-engine"
             - "--vmss-cache-ttl-seconds=-1"
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
             - "--enable-traffic-manager=false"
             - "--traffic-manager-port=7788"
 {{- end}}
@@ -8230,7 +8230,7 @@ spec:
   selector:
     matchLabels:
       app: csi-snapshot-controller
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
   # the snapshot controller won't be marked as ready if the v1 CRDs are unavailable
   # in #504 the snapshot-controller will exit after around 7.5 seconds if it
   # can't find the v1 CRDs so this value should be greater than that
@@ -8251,7 +8251,7 @@ spec:
         kubernetes.io/os: linux
         kubernetes.io/role: master
       priorityClassName: system-cluster-critical
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -8367,11 +8367,11 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     controller-gen.kubebuilder.io/version: v0.4.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
 {{- end}}
@@ -8667,10 +8667,10 @@ spec:
         required:
         - spec
         type: object
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     served: false
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     served: true
 {{- end}}
     storage: false
@@ -8688,11 +8688,11 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     controller-gen.kubebuilder.io/version: v0.4.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
 {{- end}}
@@ -8816,10 +8816,10 @@ spec:
         - deletionPolicy
         - driver
         type: object
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     served: false
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     served: true
 {{- end}}
     storage: false
@@ -8836,11 +8836,11 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     controller-gen.kubebuilder.io/version: v0.8.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/665"
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     controller-gen.kubebuilder.io/version: v0.4.0
     api-approved.kubernetes.io: "https://github.com/kubernetes-csi/external-snapshotter/pull/419"
 {{- end}}
@@ -8956,7 +8956,7 @@ spec:
                 oneOf:
                 - required: ["snapshotHandle"]
                 - required: ["volumeHandle"]
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
               sourceVolumeMode:
                 description: SourceVolumeMode is the mode of the volume whose snapshot
                   is taken. Can be either “Filesystem” or “Block”. If not specified,
@@ -9224,10 +9224,10 @@ spec:
         required:
         - spec
         type: object
-{{- if IsKubernetesVersionGe "1.27.0"}}
+{{- if IsAzureDiskCSIDriverVersionGe "1.28.3"}}
     served: false
 {{- end}}
-{{- if not (IsKubernetesVersionGe "1.27.0")}}
+{{- if not (IsAzureDiskCSIDriverVersionGe "1.28.3")}}
     served: true
 {{- end}}
     storage: false
