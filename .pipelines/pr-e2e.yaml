@@ -74,6 +74,7 @@ jobs:
       msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
       windowsVHDBuild: $(WINDOWS_VHD_BUILD)
       linuxVHDBuild: $(LINUX_VHD_BUILD)
+      testPVC: true
 
   - template: e2e-job-template.yaml
     parameters:
@@ -93,6 +94,7 @@ jobs:
       msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
       windowsVHDBuild: $(WINDOWS_VHD_BUILD)
       linuxVHDBuild: $(LINUX_VHD_BUILD)
+      testPVC: true
 
   - template: e2e-job-template.yaml
     parameters:
@@ -112,3 +114,4 @@ jobs:
       msiId: $(MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E)
       windowsVHDBuild: $(WINDOWS_VHD_BUILD)
       linuxVHDBuild: $(LINUX_VHD_BUILD)
+      testPVC: true
