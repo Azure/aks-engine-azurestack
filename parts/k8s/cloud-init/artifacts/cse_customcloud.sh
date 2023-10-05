@@ -90,14 +90,6 @@ configureK8sCustomCloud() {
   timeout 10 nc -vz ${LOGIN_ENDPOINT} 443 \
   && echo "login endpoint reachable: ${LOGIN_ENDPOINT}" \
   || echo "error: login endpoint not reachable: ${LOGIN_ENDPOINT}"
-
-  {{- if not IsAzureCNI}}
-  # Decrease eth0 MTU to mitigate Azure Stack's NRP issue
-  echo "iface eth0 inet dhcp" | sudo tee -a /etc/network/interfaces
-  echo "    post-up /sbin/ifconfig eth0 mtu 1350" | sudo tee -a /etc/network/interfaces
-  ifconfig eth0 mtu 1350
-  {{end}}
-
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
