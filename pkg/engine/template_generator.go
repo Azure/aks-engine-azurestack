@@ -9,7 +9,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"regexp"
 	"runtime/debug"
 	"sort"
 	"strings"
@@ -247,12 +246,6 @@ func getContainerServiceFuncMap(cs *api.ContainerService) template.FuncMap {
 		},
 		"IsKubernetesVersionLt": func(version string) bool {
 			return !common.IsKubernetesVersionGe(cs.Properties.OrchestratorProfile.OrchestratorVersion, version)
-		},
-		"IsAzureDiskCSIDriverVersionGe": func(version string) bool {
-			return common.IsKubernetesVersionGe(getAzureDiskCSIDriverVersion(cs), version)
-		},
-		"IsAzureDiskCSIDriverVersionLt": func(version string) bool {
-			return !common.IsKubernetesVersionGe(getAzureDiskCSIDriverVersion(cs), version)
 		},
 		"GetMasterKubernetesLabels": func(rg string) string {
 			return common.GetMasterKubernetesLabels(rg, false)
@@ -859,23 +852,6 @@ version = 2
 			return common.IndentString(original, spaces)
 		},
 	}
-}
-
-func getAzureDiskCSIDriverVersion(cs *api.ContainerService) string {
-	for _, addon := range cs.Properties.OrchestratorProfile.KubernetesConfig.Addons {
-		if addon.Name == "azuredisk-csi-driver" && addon.Enabled != nil && to.Bool(addon.Enabled) {
-			for _, container := range addon.Containers {
-				if container.Name == "azuredisk-csi" {
-					re := regexp.MustCompile(`^mcr\.microsoft\.com/oss/kubernetes-csi/azuredisk-csi:v(\d+\.\d+\.\d+)$`)
-					matches := re.FindStringSubmatch(container.Image)
-					if len(matches) == 2 {
-						return matches[1]
-					}
-				}
-			}
-		}
-	}
-	return ""
 }
 
 func (t *TemplateGenerator) GenerateTemplateV2(containerService *api.ContainerService, generatorCode string, acsengineVersion string) (templateRaw string, parametersRaw string, err error) {

@@ -54,8 +54,6 @@ func TestGetTemplateFuncMap(t *testing.T) {
 		"IsIPMasqAgentEnabled",
 		"IsKubernetesVersionGe",
 		"IsKubernetesVersionLt",
-		"IsAzureDiskCSIDriverVersionGe",
-		"IsAzureDiskCSIDriverVersionLt",
 		"GetMasterKubernetesLabels",
 		"GetAgentKubernetesLabels",
 		"GetKubeletConfigKeyVals",
@@ -1938,60 +1936,6 @@ func TestGenerateUserAssignedIdentityClientIDParameterForWindows(t *testing.T) {
 			t.Parallel()
 			if ret := generateUserAssignedIdentityClientIDParameterForWindows(c.isUserAssignedIdentity); ret != c.expected {
 				t.Fatalf("generateUserAssignedIdentityClientIDParameter(%t) returned %s, expected %s", c.isUserAssignedIdentity, ret, c.expected)
-			}
-		})
-	}
-}
-
-func TestGetAzureDiskCSIDriverVersion(t *testing.T) {
-	// Define a test case with a mock AKS Engine API model
-	testCases := []struct {
-		name           string
-		containerImage string
-		expectedResult string
-	}{
-		{
-			name:           "valid version",
-			containerImage: "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0",
-			expectedResult: "1.10.0",
-		},
-		{
-			name:           "invalid version",
-			containerImage: "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:latest",
-			expectedResult: "",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Create a mock AKS Engine API model with the specified container image
-			cs := &api.ContainerService{
-				Properties: &api.Properties{
-					OrchestratorProfile: &api.OrchestratorProfile{
-						KubernetesConfig: &api.KubernetesConfig{
-							Addons: []api.KubernetesAddon{
-								{
-									Name:    "azuredisk-csi-driver",
-									Enabled: to.BoolPtr(true),
-									Containers: []api.KubernetesContainerSpec{
-										{
-											Name:  "azuredisk-csi",
-											Image: tc.containerImage,
-										},
-									},
-								},
-							},
-						},
-					},
-				},
-			}
-
-			// Call the getAzureDiskCSIDriverVersion function with the mock AKS Engine API model
-			actualResult := getAzureDiskCSIDriverVersion(cs)
-
-			// Check that the actual result matches the expected result
-			if actualResult != tc.expectedResult {
-				t.Errorf("Expected result %s, but got %s", tc.expectedResult, actualResult)
 			}
 		})
 	}
