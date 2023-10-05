@@ -185,6 +185,7 @@ The [in-tree volume provisioner](https://kubernetes.io/blog/2019/12/09/kubernete
 AKS Engine will **not** enable any CSI driver by default on Azure Stack Hub. For workloads that require a CSI driver, it is possible to either:
 
 * For AKS Engine versions 0.75.3 and above: explicitly enable the `azuredisk-csi-driver` [addon](../topics/clusterdefinitions.md#addons) (Linux and/or Windows cluster)
+  * If you are using Windows HostProcess containers in your workloads, do not use the addon. Instead use `Helm` to [install the `azuredisk-csi-driver` chart](#1-install-azure-disk-csi-driver-manually) and set the following value: `--set windows.useHostProcessContainers=true`.
 * For AKS Engine versions 0.70.0 and above: explicitly enable the `azuredisk-csi-driver` [addon](../topics/clusterdefinitions.md#addons) (Linux cluster only)
 * For AKS Engine versions 0.70.0 and above: use `Helm` to [install the `azuredisk-csi-driver` chart](#1-install-azure-disk-csi-driver-manually) (Linux and/or Windows clusters).
 
@@ -203,7 +204,8 @@ If the data persisted in the underlying Azure disks should be preserved, then th
 The following script uses `Helm` to install the Azure Disk CSI Driver:
 
 ```bash
-DRIVER_VERSION=v1.26.5
+DRIVER_VERSION=v1.26.5 # if using k8s v1.26
+DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -212,6 +214,7 @@ helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --set node.supportZone=false \
   --set windows.getNodeInfoFromLabels=true \
   --set linux.getNodeInfoFromLabels=true \
+  # --set windows.useHostProcessContainers=true \ # if using Windows HostProcess containers
   --version ${DRIVER_VERSION}
 ```
 
@@ -278,9 +281,18 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 
 ```bash
 # Install CSI Driver
-DRIVER_VERSION=v1.26.5
+DRIVER_VERSION=v1.26.5 # if using k8s v1.26
+DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
-helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver --namespace kube-system --set cloud=AzureStackCloud --set controller.runOnMaster=true --set node.supportZone=false --set windows.getNodeInfoFromLabels=true --set linux.getNodeInfoFromLabels=true --version ${DRIVER_VERSION}
+helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
+  --namespace kube-system \
+  --set cloud=AzureStackCloud \
+  --set controller.runOnMaster=true \
+  --set node.supportZone=false \
+  --set windows.getNodeInfoFromLabels=true \
+  --set linux.getNodeInfoFromLabels=true \
+  # --set windows.useHostProcessContainers=true \ # if using Windows HostProcess containers
+  --version ${DRIVER_VERSION}
 
 # Deploy Storage Class
 kubectl apply -f https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/deploy/example/storageclass-azuredisk-csi-azurestack.yaml
