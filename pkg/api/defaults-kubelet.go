@@ -105,6 +105,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--streaming-connection-idle-timeout": "5m", // STIG Rule ID: SV-245541r879622_rule
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
+		"--seccomp-default":                   "true",
 	}
 
 	// Set --non-masquerade-cidr if ip-masq-agent is disabled on AKS or
