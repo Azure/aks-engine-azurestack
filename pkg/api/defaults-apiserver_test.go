@@ -657,7 +657,7 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
 	a["--feature-gates"] = "ControllerManagerLeaderMigration=true"
 	cs.setAPIServerConfig()
-	if a["--feature-gates"] != "" {
+	if a["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
 			a["--feature-gates"], "1.27.0")
 	}
@@ -669,7 +669,7 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
 	a["--feature-gates"] = "ControllerManagerLeaderMigration=true"
 	cs.setAPIServerConfig()
-	if a["--feature-gates"] != "ControllerManagerLeaderMigration=true" {
+	if a["--feature-gates"] != "ControllerManagerLeaderMigration=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
 			a["--feature-gates"], "1.26.0")
 	}

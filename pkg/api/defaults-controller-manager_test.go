@@ -177,7 +177,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "LocalStorageCapacityIsolation=true" {
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true\": %s",
 			cm["--feature-gates"])
 	}
@@ -188,7 +188,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "LocalStorageCapacityIsolation=true,ControllerManagerLeaderMigration=true" {
+	if cm["--feature-gates"] != "ControllerManagerLeaderMigration=true,LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,ControllerManagerLeaderMigration=true\": %s",
 			cm["--feature-gates"])
 	}

@@ -976,7 +976,8 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	}
 
 	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
-	cs = CreateMockContainerService("testcluster", common.RationalizeReleaseAndVersion(Kubernetes, "1.28", "", false, false, false), 3, 2, false)
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = "ControllerManagerLeaderMigration=true"
 	cs.setKubeletConfig(false)
