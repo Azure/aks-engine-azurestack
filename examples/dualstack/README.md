@@ -1,5 +1,7 @@
 # AKS Engine - Dual-stack clusters
 
+> The "dual-stack" feature is not supported on Azure Stack Hub clouds.
+
 ## Overview
 
 AKS Engine enables you to create dual-stack (IPv4 *and* IPv6) Kubernetes clusters on Microsoft Azure.
