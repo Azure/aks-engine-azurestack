@@ -171,24 +171,24 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 			cm["--feature-gates"])
 	}
 
-	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
 	cs.setControllerManagerConfig()
 	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true\": %s",
 			cm["--feature-gates"])
 	}
 
-	// test user-overrides, no removal of ControllerManagerLeaderMigration for k8s versions < 1.27
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "ControllerManagerLeaderMigration=true,LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
+	if cm["--feature-gates"] != "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,ControllerManagerLeaderMigration=true\": %s",
 			cm["--feature-gates"])
 	}

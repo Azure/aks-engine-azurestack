@@ -650,26 +650,26 @@ func TestAPIServerFeatureGates(t *testing.T) {
 			a["--feature-gates"], "1.19.0")
 	}
 
-	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	a["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
 	cs.setAPIServerConfig()
 	if a["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
 			a["--feature-gates"], "1.27.0")
 	}
 
-	// test user-overrides, no removal of ControllerManagerLeaderMigration for k8s versions < 1.27
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	a["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
 	cs.setAPIServerConfig()
-	if a["--feature-gates"] != "ControllerManagerLeaderMigration=true,PodSecurity=true" {
+	if a["--feature-gates"] != "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
 			a["--feature-gates"], "1.26.0")
 	}

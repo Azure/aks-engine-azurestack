@@ -73,6 +73,9 @@ func (cs *ContainerService) setCloudControllerManagerConfig() {
 		// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
 		// Reference: https://github.com/kubernetes/kubernetes/pull/113534
 		invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
+		// Remove --feature-gate ExpandCSIVolumes, ExpandInUsePersistentVolumes, ExpandPersistentVolumes starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113942
+		invalidFeatureGates = append(invalidFeatureGates, "ExpandCSIVolumes", "ExpandInUsePersistentVolumes", "ExpandPersistentVolumes")
 	}
 	removeInvalidFeatureGates(o.KubernetesConfig.CloudControllerManagerConfig, invalidFeatureGates)
 

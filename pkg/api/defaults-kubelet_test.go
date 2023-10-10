@@ -975,11 +975,11 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 			k["--feature-gates"])
 	}
 
-	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	k["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	k["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
 	cs.setKubeletConfig(false)
 	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
