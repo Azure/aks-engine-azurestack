@@ -178,16 +178,30 @@ On Azure Stack Hub, starting from Kubernetes v1.21, AKS Engine-based clusters wi
 
 > **Upgrade considerations:** the process of upgrading a Kubernetes cluster from v1.20 (or lower version) to v1.21 (or greater version) will cause downtime to workloads relying on the `kubernetes.io/azure-disk` in-tree volume provisioner. Before upgrading to Kubernetes v1.21+, it is **highly recommended** to perform a full backup of the application data and validate in a **pre-production environment** that the cluster storage resources (PV and PVC) can be migrated to the a new volume provisioner. Learn how to migrate to the Azure Disk CSI driver [here](#migrate-persistent-storage-to-the-azure-disk-csi-driver).
 
-### Volume Provisioners
+## Volume Provisioners: Container Storage Interface Drivers (Azure Disk CSI Driver)
 
-The [in-tree volume provisioner](https://kubernetes.io/blog/2019/12/09/kubernetes-1-17-feature-csi-migration-beta/) is only compatible with the in-tree cloud provider. Therefore, a v1.21+ cluster has to include a Container Storage Interface (CSI) Driver if user workloads rely on persistent storage. A few solutions available on Azure Stack Hub are listed [below](#volume-provisioner-container-storage-interface-drivers-preview).
+The [in-tree volume provisioner](https://kubernetes.io/blog/2019/12/09/kubernetes-1-17-feature-csi-migration-beta/) is only compatible with the in-tree cloud provider. Therefore, a v1.21+ cluster has to include a Container Storage Interface (CSI) Driver if user workloads rely on persistent storage.
 
 AKS Engine will **not** enable any CSI driver by default on Azure Stack Hub. For workloads that require a CSI driver, it is possible to either:
 
 * For AKS Engine versions 0.75.3 and above: explicitly enable the `azuredisk-csi-driver` [addon](../topics/clusterdefinitions.md#addons) (Linux and/or Windows cluster)
-  * If you are using Windows HostProcess containers in your workloads, do not use the addon. Instead use `Helm` to [install the `azuredisk-csi-driver` chart](#1-install-azure-disk-csi-driver-manually) and set the following value: `--set windows.useHostProcessContainers=true`.
+  * If you are using Windows HostProcess containers in your workloads, do not use the addon. Instead use `Helm` to [install the `azuredisk-csi-driver` chart](#1-install-azure-disk-csi-driver-manually) and set the following value: `--set windows.useHostProcessContainers=true`. (Windows cluster only)
 * For AKS Engine versions 0.70.0 and above: explicitly enable the `azuredisk-csi-driver` [addon](../topics/clusterdefinitions.md#addons) (Linux cluster only)
 * For AKS Engine versions 0.70.0 and above: use `Helm` to [install the `azuredisk-csi-driver` chart](#1-install-azure-disk-csi-driver-manually) (Linux and/or Windows clusters).
+
+### Azure Disk CSI Driver: Version Mapping
+The following table shows the supported Azure Disk CSI Driver version for each Kubernetes version.
+- If using addon, the Azure Disk CSI Driver version is automatically selected based on the cluster's Kubernetes version. 
+- If using Helm, the Azure Disk CSI Driver version has to be specified manually based on the cluster's Kubernetes version.
+
+| Kubernetes Version | Azure Disk CSI Driver Version |
+| ------------------ | ----------------------------- |
+| <= 1.25            | 1.10.0                        |
+| 1.26               | 1.26.5                        |
+| >= 1.27            | 1.28.3                        |
+
+* Exception: For AKS Engine v0.77.0, kubernetes version 1.25 uses Azure Disk CSI Driver version v1.26.5
+* Note: Only the versions in the mapping have been tested. While other version combinations may work, they are not officially supported.
 
 ### Migrate Persistent Storage to the Azure Disk CSI driver
 
@@ -205,7 +219,7 @@ The following script uses `Helm` to install the Azure Disk CSI Driver:
 
 ```bash
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
-DRIVER_VERSION=v1.28.3 # if using k8s v1.27
+DRIVER_VERSION=v1.28.3 # if using k8s >= v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -248,7 +262,7 @@ The following migration [script](../../examples/azure-stack/migratepv.sh) is pro
 
 > After running the migration script, if the pod is stuck with error "Unable to attach or mount volumes", make sure [Azure Disk CSI Driver was installed](#1-install-azure-disk-csi-driver-manually) and [storage classes were recreated](#2-replace-storage-classes).
 
-## Volume Provisioner: Container Storage Interface Drivers
+### Azure Disk CSI Driver: Details
 
 As a [replacement of the current in-tree volume provisioner](https://kubernetes.io/blog/2019/12/09/kubernetes-1-17-feature-csi-migration-beta/), Azure Disk Container Storage Interface (CSI) Driver is available on Azure Stack Hub. Please find details in the following table.
 
@@ -265,7 +279,7 @@ As a [replacement of the current in-tree volume provisioner](https://kubernetes.
 
 > To deploy a CSI driver to an air-gapped cluster, make sure that your `helm` chart is referencing container images that are reachable from the cluster nodes.
 
-### Requirements
+### Azure Disk CSI Driver: Requirements
 
 * Azure Stack build 2011 and later.
 * AKS Engine version v0.60.1 and later.
@@ -273,16 +287,14 @@ As a [replacement of the current in-tree volume provisioner](https://kubernetes.
 * Since the Controller server of CSI Drivers requires 2 replicas, a single node master pool is not recommended.
 * [Helm 3](https://helm.sh/docs/intro/install/)
 
-### CSI Driver Examples
+### Azure Disk CSI Driver: Examples
 
 In this section, please follow the example commands to deploy a StatefulSet application consuming CSI Driver.
-
-#### Azure Disk CSI Driver
 
 ```bash
 # Install CSI Driver
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
-DRIVER_VERSION=v1.28.3 # if using k8s v1.27
+DRIVER_VERSION=v1.28.3 # if using k8s >= v1.27
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
