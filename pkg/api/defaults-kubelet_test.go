@@ -974,6 +974,16 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
 			k["--feature-gates"])
 	}
+
+	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", common.RationalizeReleaseAndVersion(Kubernetes, "1.28", "", false, false, false), 3, 2, false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	k["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
+		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
+			k["--feature-gates"])
+	}
 }
 
 func TestKubeletStrongCipherSuites(t *testing.T) {

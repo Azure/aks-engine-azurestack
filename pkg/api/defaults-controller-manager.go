@@ -129,5 +129,10 @@ func (cs *ContainerService) setControllerManagerConfig() {
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
 		invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113534
+		invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.ControllerManagerConfig, invalidFeatureGates)
 }

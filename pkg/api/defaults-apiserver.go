@@ -209,11 +209,18 @@ func getDefaultAdmissionControls(cs *ContainerService) (string, string) {
 func (cs *ContainerService) overrideAPIServerConfig() {
 	o := cs.Properties.OrchestratorProfile
 
+	invalidFeatureGates := []string{}
 	// Remove --feature-gate VolumeSnapshotDataSource starting with 1.22
 	// Reference: https://github.com/kubernetes/kubernetes/pull/101531
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
-		removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, []string{"VolumeSnapshotDataSource"})
+		invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113534
+		invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
+	}
+	removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, invalidFeatureGates)
 
 	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
 		curPlugins := o.KubernetesConfig.APIServerConfig["--enable-admission-plugins"]

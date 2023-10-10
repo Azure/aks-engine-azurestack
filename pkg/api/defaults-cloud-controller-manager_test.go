@@ -73,4 +73,28 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"VolumeSnapshotDataSource=true\": %s for k8s v%s",
 			ccm["--feature-gates"], "1.19.0")
 	}
+
+	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+			ccm["--feature-gates"], "1.27.0")
+	}
+
+	// test user-overrides, no removal of ControllerManagerLeaderMigration for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != "ControllerManagerLeaderMigration=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+			ccm["--feature-gates"], "1.26.0")
+	}
 }

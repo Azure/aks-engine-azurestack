@@ -170,6 +170,28 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,VolumeSnapshotDataSource=true\": %s",
 			cm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of ControllerManagerLeaderMigration for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "LocalStorageCapacityIsolation=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true\": %s",
+			cm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of ControllerManagerLeaderMigration for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true"
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "LocalStorageCapacityIsolation=true,ControllerManagerLeaderMigration=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,ControllerManagerLeaderMigration=true\": %s",
+			cm["--feature-gates"])
+	}
 }
 
 func TestControllerManagerDefaultConfig(t *testing.T) {
