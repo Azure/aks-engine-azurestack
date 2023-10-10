@@ -2,7 +2,7 @@
 
 Seccomp stands for secure computing mode and has been a feature of the Linux kernel since version 2.6.12. It can be used to sandbox the privileges of a process, restricting the calls it is able to make from userspace into the kernel. Kubernetes lets you automatically apply seccomp profiles loaded onto a node to your Pods and containers.
 
-Starting from Kubernetes v1.27, the `--seccomp-default` flag will be automatically enabled for each node in the cluster. See [Kubernetes v1.27 Release Notes](https://kubernetes.io/blog/2023/04/11/kubernetes-v1-27-release/#seccompdefault-graduates-to-stable)
+Starting from Kubernetes v1.27, AKS engine will automatically enable the `--seccomp-default` flag for each node in the cluster. See [Kubernetes v1.27 Release Notes](https://kubernetes.io/blog/2023/04/11/kubernetes-v1-27-release/#seccompdefault-graduates-to-stable)
 
 With it enabled, kubelet will use the `RuntimeDefault` seccomp profile by default, which is defined by the container runtime, instead of using the `Unconfined` (seccomp disabled) mode. The default profiles aim to provide a strong set of security defaults while preserving the functionality of the workload.
 
