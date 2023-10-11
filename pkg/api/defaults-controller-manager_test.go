@@ -268,3 +268,41 @@ func TestControllerManagerInsecureFlag(t *testing.T) {
 	}
 
 }
+
+func TestControllerManagerEnableTaintManagerFlag(t *testing.T) {
+	type controllerManagerTest struct {
+		version string
+		found   bool
+	}
+
+	controllerManagerTestsForceDelete := []controllerManagerTest{
+		{
+			version: "1.26.0",
+			found:   true,
+		},
+		{
+			version: "1.27.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range controllerManagerTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = map[string]string{
+			"--enable-taint-manager": "true",
+			"--pod-eviction-timeout": "5m0s",
+		}
+		cs.setControllerManagerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+
+		_, found := a["--enable-taint-manager"]
+		if found != tt.found {
+			t.Fatalf("got --enable-taint-manager found %t want %t", found, tt.found)
+		}
+		_, found = a["--pod-eviction-timeout"]
+		if found != tt.found {
+			t.Fatalf("got --pod-eviction-timeout found %t want %t", found, tt.found)
+		}
+	}
+
+}
