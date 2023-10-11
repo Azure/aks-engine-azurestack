@@ -655,10 +655,10 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setAPIServerConfig()
 	if a["--feature-gates"] != "PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
 			a["--feature-gates"], "1.27.0")
 	}
 
@@ -667,10 +667,10 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setAPIServerConfig()
-	if a["--feature-gates"] != "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+	if a["--feature-gates"] != "CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,ControllerManagerLeaderMigration=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,PodSecurity=true,StatefulSetMinReadySeconds=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
 			a["--feature-gates"], "1.26.0")
 	}
 }

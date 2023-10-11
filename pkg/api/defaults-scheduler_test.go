@@ -154,10 +154,10 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
 	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	s["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
+	s["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setSchedulerConfig()
 	if s["--feature-gates"] != "PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for \"--feature-gates\": %s for k8s v%s",
 			s["--feature-gates"], "1.27.0")
 	}
 
@@ -166,10 +166,10 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
 	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	s["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
+	s["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setSchedulerConfig()
-	if s["--feature-gates"] != "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"ControllerManagerLeaderMigration=true\": %s for k8s v%s",
+	if s["--feature-gates"] != "CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,ControllerManagerLeaderMigration=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,PodSecurity=true,StatefulSetMinReadySeconds=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
 			s["--feature-gates"], "1.26.0")
 	}
 }

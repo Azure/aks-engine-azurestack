@@ -979,7 +979,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	k["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true"
+	k["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setKubeletConfig(false)
 	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
