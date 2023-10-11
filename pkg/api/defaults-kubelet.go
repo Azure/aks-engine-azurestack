@@ -376,6 +376,13 @@ func removeKubeletFlags(k map[string]string, v string) {
 			delete(k, key)
 		}
 	}
+
+	// Get rid of values not supported in v1.27 and up
+	if common.IsKubernetesVersionGe(v, "1.27.0") {
+		for _, key := range []string{"--master-service-namespace"} {
+			delete(k, key)
+		}
+	}
 }
 
 func setMissingKubeletValues(p *KubernetesConfig, d map[string]string) {

@@ -762,6 +762,39 @@ func TestAPIServerInsecureFlag(t *testing.T) {
 
 }
 
+func TestAPIServerMasterServiceNamespaceFlag(t *testing.T) {
+	type apiServerTest struct {
+		version string
+		found   bool
+	}
+
+	apiTestsForceDelete := []apiServerTest{
+		{
+			version: "1.26.0",
+			found:   true,
+		},
+		{
+			version: "1.27.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range apiTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+			"--master-service-namespace": "default",
+		}
+		cs.setAPIServerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+
+		_, found := a["--master-service-namespace"]
+		if found != tt.found {
+			t.Fatalf("got --master-service-namespace found %t want %t", found, tt.found)
+		}
+	}
+
+}
+
 func TestAPIServerIPv6Only(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.Properties.FeatureFlags = &FeatureFlags{EnableIPv6Only: true}

@@ -2449,6 +2449,17 @@ func TestRemoveKubeletFlags(t *testing.T) {
 			},
 			version: "1.24.0-alpha",
 		},
+		{
+			name: "v1.27.0",
+			kubeletConfig: map[string]string{
+				"--pod-max-pids":             "100",
+				"--master-service-namespace": "default",
+			},
+			expected: map[string]string{
+				"--pod-max-pids": "100",
+			},
+			version: "1.27.0",
+		},
 	}
 
 	for _, c := range cases {

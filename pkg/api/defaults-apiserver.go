@@ -173,6 +173,14 @@ func (cs *ContainerService) setAPIServerConfig() {
 		}
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// https://github.com/kubernetes/kubernetes/pull/114446
+		removedFlags127 := []string{"--master-service-namespace"}
+		for _, key := range removedFlags127 {
+			delete(o.KubernetesConfig.APIServerConfig, key)
+		}
+	}
+
 	// Set bind address to prefer IPv6 address for single stack IPv6 cluster
 	// Remove --advertise-address so that --bind-address will be used
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6Only") {
