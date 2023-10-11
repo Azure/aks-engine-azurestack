@@ -170,6 +170,28 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,VolumeSnapshotDataSource=true\": %s",
 			cm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": %s",
+			cm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,ControllerManagerLeaderMigration=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,IdentifyPodOS=true,LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,PodSecurity=true,StatefulSetMinReadySeconds=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": %s",
+			cm["--feature-gates"])
+	}
 }
 
 func TestControllerManagerDefaultConfig(t *testing.T) {
@@ -242,6 +264,44 @@ func TestControllerManagerInsecureFlag(t *testing.T) {
 		_, found = a["--port"]
 		if found != tt.found {
 			t.Fatalf("got --port found %t want %t", found, tt.found)
+		}
+	}
+
+}
+
+func TestControllerManagerEnableTaintManagerFlag(t *testing.T) {
+	type controllerManagerTest struct {
+		version string
+		found   bool
+	}
+
+	controllerManagerTestsForceDelete := []controllerManagerTest{
+		{
+			version: "1.26.0",
+			found:   true,
+		},
+		{
+			version: "1.27.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range controllerManagerTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = map[string]string{
+			"--enable-taint-manager": "true",
+			"--pod-eviction-timeout": "5m0s",
+		}
+		cs.setControllerManagerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+
+		_, found := a["--enable-taint-manager"]
+		if found != tt.found {
+			t.Fatalf("got --enable-taint-manager found %t want %t", found, tt.found)
+		}
+		_, found = a["--pod-eviction-timeout"]
+		if found != tt.found {
+			t.Fatalf("got --pod-eviction-timeout found %t want %t", found, tt.found)
 		}
 	}
 

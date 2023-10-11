@@ -173,6 +173,14 @@ func (cs *ContainerService) setAPIServerConfig() {
 		}
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// https://github.com/kubernetes/kubernetes/pull/114446
+		removedFlags127 := []string{"--master-service-namespace"}
+		for _, key := range removedFlags127 {
+			delete(o.KubernetesConfig.APIServerConfig, key)
+		}
+	}
+
 	// Set bind address to prefer IPv6 address for single stack IPv6 cluster
 	// Remove --advertise-address so that --bind-address will be used
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6Only") {
@@ -209,11 +217,24 @@ func getDefaultAdmissionControls(cs *ContainerService) (string, string) {
 func (cs *ContainerService) overrideAPIServerConfig() {
 	o := cs.Properties.OrchestratorProfile
 
+	invalidFeatureGates := []string{}
 	// Remove --feature-gate VolumeSnapshotDataSource starting with 1.22
 	// Reference: https://github.com/kubernetes/kubernetes/pull/101531
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
-		removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, []string{"VolumeSnapshotDataSource"})
+		invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113534
+		invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
+		// Remove --feature-gate ExpandCSIVolumes, ExpandInUsePersistentVolumes, ExpandPersistentVolumes starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113942
+		invalidFeatureGates = append(invalidFeatureGates, "ExpandCSIVolumes", "ExpandInUsePersistentVolumes", "ExpandPersistentVolumes")
+		// Remove --feature-gate CSIInlineVolume, CSIMigration, CSIMigrationAzureDisk, DaemonSetUpdateSurge, EphemeralContainers, IdentifyPodOS, LocalStorageCapacityIsolation, NetworkPolicyEndPort, StatefulSetMinReadySeconds starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/114410
+		invalidFeatureGates = append(invalidFeatureGates, "CSIInlineVolume", "CSIMigration", "CSIMigrationAzureDisk", "DaemonSetUpdateSurge", "EphemeralContainers", "IdentifyPodOS", "LocalStorageCapacityIsolation", "NetworkPolicyEndPort", "StatefulSetMinReadySeconds")
+	}
+	removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, invalidFeatureGates)
 
 	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
 		curPlugins := o.KubernetesConfig.APIServerConfig["--enable-admission-plugins"]

@@ -96,7 +96,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.ContainerRuntime = Containerd
 	cs.setKubeletConfig(false)
-	expected["--container-runtime"] = "remote"
+	expected["--container-runtime"] = "remote" // todo: remove when default kubernetes version >= 1.27
 	expected["--runtime-request-timeout"] = "15m"
 	expected["--container-runtime-endpoint"] = "unix:///run/containerd/containerd.sock"
 	for key, val := range linuxProfileKubeletConfig {
@@ -130,7 +130,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 				key, val, expected[key])
 		}
 	}
-	delete(expected, "--container-runtime")
+	delete(expected, "--container-runtime") // todo: remove when default kubernetes version >= 1.27
 	delete(expected, "--runtime-request-timeout")
 	delete(expected, "--container-runtime-endpoint")
 
@@ -969,6 +969,17 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", common.RationalizeReleaseAndVersion(Kubernetes, "1.22", "", false, false, false), 3, 2, false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = "VolumeSnapshotDataSource=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
+		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
+			k["--feature-gates"])
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	k["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
 	cs.setKubeletConfig(false)
 	if k["--feature-gates"] != "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
@@ -2437,6 +2448,18 @@ func TestRemoveKubeletFlags(t *testing.T) {
 				"--pod-max-pids": "100",
 			},
 			version: "1.24.0-alpha",
+		},
+		{
+			name: "v1.27.0",
+			kubeletConfig: map[string]string{
+				"--pod-max-pids":             "100",
+				"--master-service-namespace": "default",
+				"--container-runtime":        "remote",
+			},
+			expected: map[string]string{
+				"--pod-max-pids": "100",
+			},
+			version: "1.27.0",
 		},
 	}
 

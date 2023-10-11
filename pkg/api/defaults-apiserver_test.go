@@ -649,6 +649,30 @@ func TestAPIServerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": \"VolumeSnapshotDataSource=true\": %s for k8s v%s",
 			a["--feature-gates"], "1.19.0")
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
+			a["--feature-gates"], "1.27.0")
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.26.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,ControllerManagerLeaderMigration=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,PodSecurity=true,StatefulSetMinReadySeconds=true" {
+		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
+			a["--feature-gates"], "1.26.0")
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {
@@ -733,6 +757,39 @@ func TestAPIServerInsecureFlag(t *testing.T) {
 		_, found = a["--insecure-port"]
 		if found != tt.found {
 			t.Fatalf("got --insecure-port found %t want %t", found, tt.found)
+		}
+	}
+
+}
+
+func TestAPIServerMasterServiceNamespaceFlag(t *testing.T) {
+	type apiServerTest struct {
+		version string
+		found   bool
+	}
+
+	apiTestsForceDelete := []apiServerTest{
+		{
+			version: "1.26.0",
+			found:   true,
+		},
+		{
+			version: "1.27.0",
+			found:   false,
+		},
+	}
+
+	for _, tt := range apiTestsForceDelete {
+		cs := CreateMockContainerService("testcluster", tt.version, 3, 2, false)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+			"--master-service-namespace": "default",
+		}
+		cs.setAPIServerConfig()
+		a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+
+		_, found := a["--master-service-namespace"]
+		if found != tt.found {
+			t.Fatalf("got --master-service-namespace found %t want %t", found, tt.found)
 		}
 	}
 

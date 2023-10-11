@@ -69,6 +69,17 @@ func (cs *ContainerService) setCloudControllerManagerConfig() {
 	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
 		invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+		// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113534
+		invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
+		// Remove --feature-gate ExpandCSIVolumes, ExpandInUsePersistentVolumes, ExpandPersistentVolumes starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/113942
+		invalidFeatureGates = append(invalidFeatureGates, "ExpandCSIVolumes", "ExpandInUsePersistentVolumes", "ExpandPersistentVolumes")
+		// Remove --feature-gate CSIInlineVolume, CSIMigration, CSIMigrationAzureDisk, DaemonSetUpdateSurge, EphemeralContainers, IdentifyPodOS, LocalStorageCapacityIsolation, NetworkPolicyEndPort, StatefulSetMinReadySeconds starting with 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/pull/114410
+		invalidFeatureGates = append(invalidFeatureGates, "CSIInlineVolume", "CSIMigration", "CSIMigrationAzureDisk", "DaemonSetUpdateSurge", "EphemeralContainers", "IdentifyPodOS", "LocalStorageCapacityIsolation", "NetworkPolicyEndPort", "StatefulSetMinReadySeconds")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.CloudControllerManagerConfig, invalidFeatureGates)
 
 	// TODO add RBAC support
