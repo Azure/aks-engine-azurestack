@@ -131,7 +131,11 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	}
 
 	if o.KubernetesConfig.NeedsContainerd() {
-		defaultKubeletConfig["--container-runtime"] = "remote"
+		// Kubelet flag --container-runtime has been removed from k8s 1.27
+		// Reference: https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.27.md#other-cleanup-or-flake
+		if !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
+			defaultKubeletConfig["--container-runtime"] = "remote"
+		}
 		defaultKubeletConfig["--runtime-request-timeout"] = "15m"
 		defaultKubeletConfig["--container-runtime-endpoint"] = "unix:///run/containerd/containerd.sock"
 	}
@@ -379,7 +383,7 @@ func removeKubeletFlags(k map[string]string, v string) {
 
 	// Get rid of values not supported in v1.27 and up
 	if common.IsKubernetesVersionGe(v, "1.27.0") {
-		for _, key := range []string{"--master-service-namespace"} {
+		for _, key := range []string{"--master-service-namespace", "--container-runtime"} {
 			delete(k, key)
 		}
 	}

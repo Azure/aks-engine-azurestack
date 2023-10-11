@@ -96,7 +96,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.ContainerRuntime = Containerd
 	cs.setKubeletConfig(false)
-	expected["--container-runtime"] = "remote"
+	expected["--container-runtime"] = "remote" // todo: remove when default kubernetes version >= 1.27
 	expected["--runtime-request-timeout"] = "15m"
 	expected["--container-runtime-endpoint"] = "unix:///run/containerd/containerd.sock"
 	for key, val := range linuxProfileKubeletConfig {
@@ -130,7 +130,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 				key, val, expected[key])
 		}
 	}
-	delete(expected, "--container-runtime")
+	delete(expected, "--container-runtime") // todo: remove when default kubernetes version >= 1.27
 	delete(expected, "--runtime-request-timeout")
 	delete(expected, "--container-runtime-endpoint")
 
@@ -2454,6 +2454,7 @@ func TestRemoveKubeletFlags(t *testing.T) {
 			kubeletConfig: map[string]string{
 				"--pod-max-pids":             "100",
 				"--master-service-namespace": "default",
+				"--container-runtime":        "remote",
 			},
 			expected: map[string]string{
 				"--pod-max-pids": "100",
