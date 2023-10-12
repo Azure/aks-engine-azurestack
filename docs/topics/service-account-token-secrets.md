@@ -6,13 +6,13 @@ You can mount service account tokens as Kubernetes Secrets in Pods. These tokens
 
 ## Autogeneration
 
-Previously, these Secret-based service account tokens were auto generated for ServiceAccounts. In Kubernetes v1.27 and later, Kubernetes forced the `LegacyServiceAccountTokenNoAutoGeneration`` feature gate to true, preventing Kubernetes from automatically creating these service account token secrets for ServiceAccounts.
+Previously, these Secret-based service account tokens were auto generated for ServiceAccounts. In Kubernetes v1.27 and later, Kubernetes forced the `LegacyServiceAccountTokenNoAutoGeneration` feature gate value to true, preventing Kubernetes from automatically creating these service account token secrets for ServiceAccounts.
 
 As a result, if using AKS Engine >= v0.79 with Kubernetes >= v1.27, Kubernetes will not automatically create these tokens.
 
 ## Switch to alternative methods in k8s v1.27+
 
-The `LegacyServiceAccountTokenNoAutoGeneration`` feature gate is [forced by Kubernetes to true](https://github.com/kubernetes/kubernetes/pull/114522) in Kubernetes v1.27+. When enabled, Secret API objects containing service account tokens are no longer auto-generated for every ServiceAccount.
+The `LegacyServiceAccountTokenNoAutoGeneration` feature gate value is [forced by Kubernetes to true](https://github.com/kubernetes/kubernetes/pull/114522) in Kubernetes v1.27+. When enabled, Secret API objects containing service account tokens are no longer auto-generated for every ServiceAccount.
 
 Alternatives:
 
