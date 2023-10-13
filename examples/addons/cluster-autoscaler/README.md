@@ -1,5 +1,7 @@
 # Cluster Autoscaler addon for VMSS pools
 
+> The Cluster Autoscaler addon is not supported on Azure Stack Hub clouds.
+
 [Cluster Autoscaler](https://github.com/kubernetes/autoscaler/tree/master/cluster-autoscaler) is a tool that automatically adjusts the size of the Kubernetes cluster when one of the following conditions is true:
 
 - there are pods that failed to run in the cluster due to insufficient resources,
