@@ -210,8 +210,8 @@ loadContainerImage ${BUSYBOX_IMAGE}
 echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
+1.27.6
 1.26.9
-1.25.13
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -224,16 +224,25 @@ for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
 done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
-CLOUD_MANAGER_VERSIONS="
+CLOUD_CONTROLLER_MANAGER_VERSIONS="
+1.27.9
 1.26.10
-1.25.9
 "
-for CLOUD_MANAGER_VERSION in ${CLOUD_MANAGER_VERSIONS}; do
-  for COMPONENT in azure-cloud-controller-manager azure-cloud-node-manager; do
-    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/${COMPONENT}:v${CLOUD_MANAGER_VERSION}"
-    loadContainerImage ${CONTAINER_IMAGE}
-    echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-  done
+for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
+  loadContainerImage ${CONTAINER_IMAGE}
+  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
+done
+
+# Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
+CLOUD_NODE_MANAGER_VERSIONS="
+1.27.4
+1.26.10
+"
+for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
+  loadContainerImage ${CONTAINER_IMAGE}
+  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 AZUREDISK_CSI_VERSIONS="
