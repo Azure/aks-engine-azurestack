@@ -84,6 +84,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setControllerManagerConfig()
 	cm := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	// todo: when default kubernetes version becomes v1.27, remove feature gate LegacyServiceAccountTokenNoAutoGeneration
 	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true\": %s",
 			cm["--feature-gates"])
@@ -144,6 +145,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "TaintBasedEvictions=true"
 	cs.setControllerManagerConfig()
+	// todo: when default kubernetes version becomes v1.27, remove feature gate LegacyServiceAccountTokenNoAutoGeneration
 	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true\": %s",
 			cm["--feature-gates"])
@@ -175,9 +177,9 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true"
+	cm["--feature-gates"] = "ControllerManagerLeaderMigration=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,StatefulSetMinReadySeconds=true,LegacyServiceAccountTokenNoAutoGeneration=false"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,PodSecurity=true" {
+	if cm["--feature-gates"] != "PodSecurity=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": %s",
 			cm["--feature-gates"])
 	}
