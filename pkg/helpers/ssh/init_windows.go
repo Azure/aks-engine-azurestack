@@ -6,9 +6,12 @@ package ssh
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func init() {
-	khpath = filepath.Join(os.Getenv("UserProfile"), ".ssh", "known_hosts")
-	lineBreak = "\r\n"
+	khsource = filepath.Join(os.Getenv("UserProfile"), ".ssh", knownHostFileName)
+	khpath = filepath.Join(os.Getenv("UserProfile"), ".aks-engine-azurestack", knownHostFileName)
+	khpath = strings.Replace(khpath, "\\", "/", -1)
+	copyKnownHosts()
 }

@@ -9,6 +9,7 @@ import (
 )
 
 func init() {
-	khpath = filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts")
-	lineBreak = "\n"
+	khsource = filepath.Join(os.Getenv("HOME"), ".ssh", knownHostFileName)
+	khpath = filepath.Join(os.Getenv("HOME"), ".aks-engine-azurestack", knownHostFileName)
+	copyKnownHosts()
 }

@@ -44,7 +44,7 @@ func (arm *ARMClientWrapper) GetVirtualMachinePowerState(resourceGroup, vmName s
 		defer cancel()
 		status, err = arm.client.GetVirtualMachinePowerState(ctx, resourceGroup, vmName)
 		if err != nil {
-			return errors.Errorf("fetching virtual machine resource")
+			return errors.Wrap(err, "fetching virtual machine resource")
 		}
 		return nil
 	})
@@ -60,7 +60,7 @@ func (arm *ARMClientWrapper) GetVirtualMachineScaleSetInstancePowerState(resourc
 		defer cancel()
 		status, err = arm.client.GetVirtualMachineScaleSetInstancePowerState(ctx, resourceGroup, vmssName, instanceID)
 		if err != nil {
-			return errors.Errorf("fetching virtual machine resource")
+			return errors.Wrap(err, "fetching virtual machine resource")
 		}
 		return nil
 	})
@@ -74,7 +74,7 @@ func (arm *ARMClientWrapper) RestartVirtualMachine(resourceGroup, vmName string)
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 		if err = arm.client.RestartVirtualMachine(ctx, resourceGroup, vmName); err != nil {
-			return errors.Errorf("restarting virtual machine")
+			return errors.Wrap(err, "restarting virtual machine")
 		}
 		return nil
 	})
@@ -88,7 +88,7 @@ func (arm *ARMClientWrapper) RestartVirtualMachineScaleSets(resourceGroup, vmssN
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 		if err = arm.client.RestartVirtualMachineScaleSets(ctx, resourceGroup, vmssName, nil); err != nil {
-			return errors.Errorf("restarting virtual machine")
+			return errors.Wrap(err, "restarting virtual machine")
 		}
 		return nil
 	})

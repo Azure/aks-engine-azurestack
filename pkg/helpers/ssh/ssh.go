@@ -164,8 +164,8 @@ func clientConfigAuth(authConfig *AuthConfig) ([]ssh.AuthMethod, error) {
 	return []ssh.AuthMethod{ssh.Password(authConfig.Password)}, nil
 }
 
-// knownHostsHostKeyCallback returns a host key callback that uses file
-// ${HOME}/.ssh/known_hosts to store known host keys
+// knownHostsHostKeyCallback returns a host key callback that uses
+// a known_hosts file to store known host keys
 func knownHostsHostKeyCallback() (ssh.HostKeyCallback, error) {
 	err := ensuresKnownHosts()
 	if err != nil {
@@ -178,7 +178,7 @@ func knownHostsHostKeyCallback() (ssh.HostKeyCallback, error) {
 	return khCallback, nil
 }
 
-// ensuresKnownHosts creates file ${HOME}/.ssh/known_hosts if it does not exist
+// ensuresKnownHosts creates the known_hosts file if it does not exist
 func ensuresKnownHosts() error {
 	if err := os.MkdirAll(path.Dir(khpath), 0700); err != nil {
 		return errors.Wrap(err, "creating .ssh directory")
@@ -196,7 +196,7 @@ func hostKeyString(k ssh.PublicKey) string {
 	return fmt.Sprintf("%s %s", k.Type(), base64.StdEncoding.EncodeToString(k.Marshal()))
 }
 
-// addHostKey adds an entry to ${HOME}/.ssh/known_hosts
+// addHostKey adds an entry to the known_hosts file
 func addHostKey(hostname string, pubKey ssh.PublicKey) error {
 	f, err := os.OpenFile(khpath, os.O_APPEND|os.O_WRONLY, 0600)
 	if err != nil {
@@ -204,7 +204,7 @@ func addHostKey(hostname string, pubKey ssh.PublicKey) error {
 	}
 	defer f.Close()
 	// append blank line
-	if _, err = f.WriteString(lineBreak); err != nil {
+	if _, err = f.WriteString(fmt.Sprintln()); err != nil {
 		return errors.Wrap(err, "appending blank line to known_hosts file")
 	}
 	// append host key line

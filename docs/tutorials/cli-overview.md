@@ -119,42 +119,6 @@ We generally recommend that you manage node pool scaling dynamically using the `
 
 Detailed documentation on `aks-engine-azurestack scale` can be found [here](../topics/scale.md).
 
-### `aks-engine-azurestack update`
-
-The `aks-engine-azurestack update` command will update the VMSS model of a node pool according to a modified configuration of the aks-engine-generated `apimodel.json`. The updated node configuration will not take affect on any existing nodes, but will be applied to all future, new nodes created by VMSS scale out operations. Use this command to update the node configuration (such as the OS configuration, VM SKU, or Kubernetes kubelet configuration) of an existing VMSS node pool.
-
-Note: `aks-engine-azurestack update` **can not** be used to update the control plane! To update control plane VM configuration, see [`aks-engine-azurestack upgrade --control-plane-only` documentation here](../topics/upgrade.md#when-should-i-use-aks-engine-upgrade---control-plane-only).
-
-
-```sh
-$ aks-engine-azurestack update --help
-Update an existing AKS Engine-created VMSS node pool in a Kubernetes cluster by updating its VMSS model
-
-Usage:
-  aks-engine-azurestack update [flags]
-
-Flags:
-  -m, --api-model string            path to the generated apimodel.json file
-      --auth-method client_secret   auth method (default:client_secret, `cli`, `client_certificate`, `device`) (default "cli")
-      --azure-env string            the target Azure cloud (default "AzurePublicCloud")
-      --certificate-path string     path to client certificate (used with --auth-method=client_certificate)
-      --client-id string            client id (used with --auth-method=[client_secret|client_certificate])
-      --client-secret string        client secret (used with --auth-method=client_secret)
-  -h, --help                        help for update
-      --identity-system azure_ad    identity system (default:azure_ad, `adfs`) (default "azure_ad")
-      --language string             language to return error messages in (default "en-us")
-  -l, --location string             location the cluster is deployed in
-      --node-pool string            node pool to scale
-      --private-key-path string     path to private key (used with --auth-method=client_certificate)
-  -g, --resource-group string       the resource group where the cluster is deployed
-  -s, --subscription-id string      azure subscription id (required)
-
-Global Flags:
-      --debug   enable verbose debug logs
-```
-
-Detailed documentation on `aks-engine-azurestack update` can be found [here](../topics/update.md).
-
 ### `aks-engine-azurestack addpool`
 
 The `aks-engine-azurestack addpool` command will add a new node pool to an existing AKS Engine-created cluster. Using a JSON file to define a the new node pool's configuration, and referencing the aks-engine-generated `apimodel.json`, you can add new nodes to your cluster. Use this command to add a specific number of new nodes using a discrete configuration compared to existing nodes participating in your cluster.
@@ -262,7 +226,7 @@ Detailed documentation on `aks-engine-azurestack generate` can be found [here](.
 
 ### `aks-engine-azurestack rotate-certs`
 
-The `aks-engine-azurestack rotate-certs` command is currently experimental and not recommended for use on production clusters.
+Detailed documentation on `aks-engine-azurestack rotate-certs` can be found [here](../topics/rotate-certs.md).
 
 ### `aks-engine-azurestack get-logs`
 

@@ -103,6 +103,10 @@ This helps protect against man-in-the-middle attacks, where an attacker may atte
 Starting with AKS Engine v0.77.0, `StrictHostKeyChecking` will be enforced during the execution of the `aks-engine-azurestack rotate-certs` command.
 Hence, new entries will be appended to the local `known_hosts` file if no SSH sessions to the remove host were established in the past.
 
+Starting with AKS Engine v0.79.0, file `~/.ssh/known_hosts` is kept unchanged.
+Instead, AKS Engine creates a copy in `~/.aks-engine-azurestack/known_hosts` and new entries are added to this file.
+Every AKS Engine command execution refreshes the content of `~/.aks-engine-azurestack/known_hosts`.
+
 ### Generating certificates
 
 `aks-engine-azurestack rotate-certs` is able to generate the new set of certificates that will be deployed to the cluster based on the information found in the API model.
