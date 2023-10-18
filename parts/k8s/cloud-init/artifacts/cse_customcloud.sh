@@ -84,12 +84,10 @@ configureK8sCustomCloud() {
 
   {{/* Log whether the custom login endpoint is reachable to simplify troubleshooting. */}}
   {{/* CSE will finish successfully but kubelet will error out if not reachable. */}}
-  LOGIN_ENDPOINT=$(jq -r .activeDirectoryEndpoint /etc/kubernetes/azurestackcloud.json)
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT#'https://'}
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT%'/'}
-  timeout 10 nc -vz ${LOGIN_ENDPOINT} 443 \
-  && echo "login endpoint reachable: ${LOGIN_ENDPOINT}" \
-  || echo "error: login endpoint not reachable: ${LOGIN_ENDPOINT}"
+  LOGIN_EP=$(jq -r '.activeDirectoryEndpoint | sub("^https://"; "") | sub("/$"; "")' /etc/kubernetes/azurestackcloud.json)
+  timeout 10 nc -vz ${LOGIN_EP} 443 \
+  && echo "login endpoint reachable: ${LOGIN_EP}" \
+  || echo "error: login endpoint not reachable: ${LOGIN_EP}"
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
