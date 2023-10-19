@@ -16825,29 +16825,29 @@ installNetworkPlugin() {
   installAzureCNI
 {{end}}
   installCNI
-  rm -rf $CNI_DOWNLOADS_DIR &
+  rm -rf $CNI_DL_DIR &
 }
 installCNI() {
   CNI_TGZ_TMP=${CNI_PLUGINS_URL##*/}
-  if [[ ! -f "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ]]; then
+  if [[ ! -f "$CNI_DL_DIR/${CNI_TGZ_TMP}" ]]; then
     downloadCNI
   fi
   mkdir -p $CNI_BIN_DIR
-  tar -xzf "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
+  tar -xzf "$CNI_DL_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
   chown -R root:root $CNI_BIN_DIR
   chmod -R 755 $CNI_BIN_DIR
 }
 {{- if IsAzureCNI}}
 installAzureCNI() {
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
-  if [[ ! -f "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ]]; then
+  if [[ ! -f "$CNI_DL_DIR/${CNI_TGZ_TMP}" ]]; then
     downloadAzureCNI
   fi
-  mkdir -p $CNI_CONFIG_DIR
-  chown -R root:root $CNI_CONFIG_DIR
-  chmod 755 $CNI_CONFIG_DIR
+  mkdir -p $CNI_CFG_DIR
+  chown -R root:root $CNI_CFG_DIR
+  chmod 755 $CNI_CFG_DIR
   mkdir -p $CNI_BIN_DIR
-  tar -xzf "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
+  tar -xzf "$CNI_DL_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
 }
 {{end}}
 configureCNI() {
@@ -16864,31 +16864,31 @@ configureCNI() {
   if [[ ${NETWORK_PLUGIN} == "azure" ]]; then
     {{/* set environment to mas when using Azure CNI on Azure Stack */}}
     {{/* shellcheck disable=SC2002,SC2005 */}}
-    echo $(cat "$CNI_CONFIG_DIR/10-azure.conflist" | jq '.plugins[0].ipam.environment = "mas"') >"$CNI_CONFIG_DIR/10-azure.conflist"
+    echo $(cat "$CNI_CFG_DIR/10-azure.conflist" | jq '.plugins[0].ipam.environment = "mas"') >"$CNI_CFG_DIR/10-azure.conflist"
   fi
 {{end}}
 }
 configureAzureCNI() {
   local tmpDir=$(mktemp -d "$(pwd)/XXX")
   if [[ "${NETWORK_PLUGIN}" == "azure" ]]; then
-    mv $CNI_BIN_DIR/10-azure.conflist $CNI_CONFIG_DIR/
-    chmod 600 $CNI_CONFIG_DIR/10-azure.conflist
+    mv $CNI_BIN_DIR/10-azure.conflist $CNI_CFG_DIR/
+    chmod 600 $CNI_CFG_DIR/10-azure.conflist
 {{- if IsIPv6DualStackFeatureEnabled}}
-    jq '.plugins[0].ipv6Mode="ipv6nat"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-    mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+    jq '.plugins[0].ipv6Mode="ipv6nat"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+    mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
 {{- end}}
     if [[ {{GetKubeProxyMode}} == "ipvs" ]]; then
       serviceCidrs={{GetServiceCidr}}
-      jq --arg serviceCidrs $serviceCidrs '.plugins[0]+={serviceCidrs: $serviceCidrs}' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-      mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+      jq --arg serviceCidrs $serviceCidrs '.plugins[0]+={serviceCidrs: $serviceCidrs}' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+      mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
     fi
     if [[ "${NETWORK_MODE}" == "bridge" ]]; then
-      jq '.plugins[0].mode="bridge"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
+      jq '.plugins[0].mode="bridge"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
       jq '.plugins[0].bridge="azure0"' "$tmpDir/tmp" > $tmpDir/tmp2
-      mv $tmpDir/tmp2 $CNI_CONFIG_DIR/10-azure.conflist
+      mv $tmpDir/tmp2 $CNI_CFG_DIR/10-azure.conflist
     else
-      jq '.plugins[0].mode="transparent"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-      mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+      jq '.plugins[0].mode="transparent"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+      mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
     fi
     /sbin/ebtables -t nat --list
   fi
@@ -17072,11 +17072,11 @@ ensureAddons() {
   {{end}}
   {{if HasAntreaNetworkPolicy}}
   if [[ "${NETWORK_PLUGIN}" = "azure" ]]; then
-    while ! $(grep -sq "antrea" $CNI_CONFIG_DIR/10-azure.conflist); do
+    while ! $(grep -sq "antrea" $CNI_CFG_DIR/10-azure.conflist); do
       sleep 3
     done
   else
-    while [ ! -f $CNI_CONFIG_DIR/10-antrea.conflist ]; do
+    while [ ! -f $CNI_CFG_DIR/10-antrea.conflist ]; do
       sleep 3
     done
   fi
@@ -17239,10 +17239,10 @@ configGPUDrivers() {
   echo blacklist nouveau >>/etc/modprobe.d/blacklist.conf
   retrycmd_no_stats 120 5 25 update-initramfs -u || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   wait_for_apt_locks
-  for apt_package in $NVIDIA_PACKAGES; do
-    dpkg -i ${PERMANENT_CACHE_DIR}${apt_package}* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
+  for apt_package in $NVIDIA_PKGS; do
+    dpkg -i ${PERM_CACHE_DIR}${apt_package}* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   done
-  dpkg -i ${PERMANENT_CACHE_DIR}nvidia-container-runtime* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
+  dpkg -i ${PERM_CACHE_DIR}nvidia-container-runtime* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   mkdir -p $GPU_DEST/lib64 $GPU_DEST/overlay-workdir
   retrycmd 120 5 25 mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=${GPU_DEST}/lib64,workdir=${GPU_DEST}/overlay-workdir none /usr/lib/x86_64-linux-gnu || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   export -f installNvidiaDrivers
@@ -17254,7 +17254,7 @@ configGPUDrivers() {
   retrycmd 120 5 25 nvidia-modprobe -u -c0 || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
   retrycmd 120 5 25 nvidia-smi || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
   retrycmd 120 5 25 ldconfig || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
-  rm -Rf ${PERMANENT_CACHE_DIR}
+  rm -Rf ${PERM_CACHE_DIR}
 }
 ensureGPUDrivers() {
   configGPUDrivers
@@ -17315,7 +17315,7 @@ cleanUpGPUDrivers() {
   apt-key del $(apt-key list | grep NVIDIA -B 1 | head -n 1 | cut -d "/" -f 2 | cut -d " " -f 1)
 }
 cleanUpContainerd() {
-  rm -Rf $CONTAINERD_DOWNLOADS_DIR
+  rm -Rf $CTRD_DL_DIR
 }
 {{end}}
 removeEtcd() {
@@ -17403,15 +17403,8 @@ configureK8sCustomCloud() {
   #}
   if [[ ${AUTHENTICATION_METHOD,,} == "client_certificate" ]]; then
     SPN_DECODED=$(echo ${SERVICE_PRINCIPAL_CLIENT_SECRET} | base64 --decode)
-    SPN_CERT=$(echo $SPN_DECODED | jq .data)
-    SPN_PWD=$(echo $SPN_DECODED | jq .password)
-
-    # trim the starting and ending "
-    SPN_CERT=${SPN_CERT#'"'}
-    SPN_CERT=${SPN_CERT%'"'}
-
-    SPN_PWD=${SPN_PWD#'"'}
-    SPN_PWD=${SPN_PWD%'"'}
+    SPN_CERT=$(echo $SPN_DECODED | jq -r '.data | sub("^\"|\"$"; "")')
+    SPN_PWD=$(echo $SPN_DECODED | jq -r '.password | sub("^\"|\"$"; "")')
 
     K8S_CLIENT_CERT="$(dirname ${azure_json_path})/k8s_auth_certificate.pfx"
     echo $SPN_CERT | base64 --decode >$K8S_CLIENT_CERT
@@ -17431,12 +17424,10 @@ configureK8sCustomCloud() {
 
   {{/* Log whether the custom login endpoint is reachable to simplify troubleshooting. */}}
   {{/* CSE will finish successfully but kubelet will error out if not reachable. */}}
-  LOGIN_ENDPOINT=$(jq -r .activeDirectoryEndpoint /etc/kubernetes/azurestackcloud.json)
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT#'https://'}
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT%'/'}
-  timeout 10 nc -vz ${LOGIN_ENDPOINT} 443 \
-  && echo "login endpoint reachable: ${LOGIN_ENDPOINT}" \
-  || echo "error: login endpoint not reachable: ${LOGIN_ENDPOINT}"
+  LOGIN_EP=$(jq -r '.activeDirectoryEndpoint | sub("^https://"; "") | sub("/$"; "")' /etc/kubernetes/azurestackcloud.json)
+  timeout 10 nc -vz ${LOGIN_EP} 443 \
+  && echo "login endpoint reachable: ${LOGIN_EP}" \
+  || echo "error: login endpoint not reachable: ${LOGIN_EP}"
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
@@ -17514,7 +17505,7 @@ if ! [[ $(echo -n "$PRIVATE_IP" | grep -c '^') == 1 ]]; then
 fi
 export PRIVATE_IP
 APT_CACHE_DIR=/var/cache/apt/archives/
-PERMANENT_CACHE_DIR=/root/aptcache/
+PERM_CACHE_DIR=/root/aptcache/
 
 configure_prerequisites() {
   ip_forward_path=/proc/sys/net/ipv4/ip_forward
@@ -17783,14 +17774,14 @@ func k8sCloudInitArtifactsCse_helpersSh() (*asset, error) {
 
 var _k8sCloudInitArtifactsCse_installSh = []byte(`#!/bin/bash
 
-CNI_CONFIG_DIR="/etc/cni/net.d"
+CNI_CFG_DIR="/etc/cni/net.d"
 CNI_BIN_DIR="/opt/cni/bin"
-CNI_DOWNLOADS_DIR="/opt/cni/downloads"
-CONTAINERD_DOWNLOADS_DIR="/opt/containerd/downloads"
-APMZ_DOWNLOADS_DIR="/opt/apmz/downloads"
+CNI_DL_DIR="/opt/cni/downloads"
+CTRD_DL_DIR="/opt/containerd/downloads"
+APMZ_DL_DIR="/opt/apmz/downloads"
 UBUNTU_RELEASE=$(lsb_release -r -s)
 UBUNTU_CODENAME=$(lsb_release -c -s)
-NVIDIA_PACKAGES="libnvidia-container1 libnvidia-container-tools nvidia-container-toolkit"
+NVIDIA_PKGS="libnvidia-container1 libnvidia-container-tools nvidia-container-toolkit"
 NVIDIA_CONTAINER_TOOLKIT_VER=1.6.0
 NVIDIA_RUNTIME_VER=3.6.0
 
@@ -17858,10 +17849,10 @@ installDeps() {
   fi
 }
 gpuDriversDownloaded() {
-  for apt_package in $NVIDIA_PACKAGES; do
-    ls ${PERMANENT_CACHE_DIR}${apt_package}* || return 1
+  for apt_package in $NVIDIA_PKGS; do
+    ls ${PERM_CACHE_DIR}${apt_package}* || return 1
   done
-  ls ${PERMANENT_CACHE_DIR}nvidia-container-runtime* || return 1
+  ls ${PERM_CACHE_DIR}nvidia-container-runtime* || return 1
 }
 downloadGPUDrivers() {
   mkdir -p $GPU_DEST/tmp
@@ -17874,13 +17865,13 @@ downloadGPUDrivers() {
   retrycmd_no_stats 120 5 25 cat $GPU_DEST/tmp/nvidia-docker.list >/etc/apt/sources.list.d/nvidia-docker.list || exit 85
   apt_get_update
   retrycmd 30 5 60 curl -fLS https://us.download.nvidia.com/tesla/$GPU_DV/NVIDIA-Linux-x86_64-${GPU_DV}.run -o ${GPU_DEST}/nvidia-drivers-${GPU_DV} || exit 85
-  mkdir -p $PERMANENT_CACHE_DIR
-  for apt_package in $NVIDIA_PACKAGES; do
+  mkdir -p $PERM_CACHE_DIR
+  for apt_package in $NVIDIA_PKGS; do
     apt_get_download 20 30 "${apt_package}=${NVIDIA_CONTAINER_TOOLKIT_VER}*" || exit 85
-    cp -al ${APT_CACHE_DIR}${apt_package}_${NVIDIA_CONTAINER_TOOLKIT_VER}* $PERMANENT_CACHE_DIR || exit 85
+    cp -al ${APT_CACHE_DIR}${apt_package}_${NVIDIA_CONTAINER_TOOLKIT_VER}* $PERM_CACHE_DIR || exit 85
   done
   apt_get_download 20 30 nvidia-container-runtime=${NVIDIA_RUNTIME_VER}* || exit 85
-  cp -al ${APT_CACHE_DIR}nvidia-container-runtime_${NVIDIA_RUNTIME_VER}* $PERMANENT_CACHE_DIR || exit 85
+  cp -al ${APT_CACHE_DIR}nvidia-container-runtime_${NVIDIA_RUNTIME_VER}* $PERM_CACHE_DIR || exit 85
 }
 removeMoby() {
   apt_get_purge moby-engine moby-cli || exit 27
@@ -17921,18 +17912,18 @@ installMoby() {
   fi
 }
 downloadCNI() {
-  mkdir -p $CNI_DOWNLOADS_DIR
+  mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${CNI_PLUGINS_URL##*/}
-  retrycmd_get_tarball 120 5 "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ${CNI_PLUGINS_URL} || exit 41
+  retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${CNI_PLUGINS_URL} || exit 41
 }
 downloadAzureCNI() {
-  mkdir -p $CNI_DOWNLOADS_DIR
+  mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
-  retrycmd_get_tarball 120 5 "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
+  retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
 }
 ensureAPMZ() {
   local ver=$1 v
-  local d="$APMZ_DOWNLOADS_DIR/$ver"
+  local d="$APMZ_DL_DIR/$ver"
   local url="https://upstreamartifacts.azureedge.net/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
     fp="/opt/bin/apmz"
