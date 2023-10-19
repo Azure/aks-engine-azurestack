@@ -1,13 +1,13 @@
 #!/bin/bash
 
-CNI_CONFIG_DIR="/etc/cni/net.d"
+CNI_CFG_DIR="/etc/cni/net.d"
 CNI_BIN_DIR="/opt/cni/bin"
-CNI_DOWNLOADS_DIR="/opt/cni/downloads"
-CONTAINERD_DOWNLOADS_DIR="/opt/containerd/downloads"
-APMZ_DOWNLOADS_DIR="/opt/apmz/downloads"
+CNI_DL_DIR="/opt/cni/downloads"
+CTRD_DL_DIR="/opt/containerd/downloads"
+APMZ_DL_DIR="/opt/apmz/downloads"
 UBUNTU_RELEASE=$(lsb_release -r -s)
 UBUNTU_CODENAME=$(lsb_release -c -s)
-NVIDIA_PACKAGES="libnvidia-container1 libnvidia-container-tools nvidia-container-toolkit"
+NVIDIA_PKGS="libnvidia-container1 libnvidia-container-tools nvidia-container-toolkit"
 NVIDIA_CONTAINER_TOOLKIT_VER=1.6.0
 NVIDIA_RUNTIME_VER=3.6.0
 
@@ -75,10 +75,10 @@ installDeps() {
   fi
 }
 gpuDriversDownloaded() {
-  for apt_package in $NVIDIA_PACKAGES; do
-    ls ${PERMANENT_CACHE_DIR}${apt_package}* || return 1
+  for apt_package in $NVIDIA_PKGS; do
+    ls ${PERM_CACHE_DIR}${apt_package}* || return 1
   done
-  ls ${PERMANENT_CACHE_DIR}nvidia-container-runtime* || return 1
+  ls ${PERM_CACHE_DIR}nvidia-container-runtime* || return 1
 }
 downloadGPUDrivers() {
   mkdir -p $GPU_DEST/tmp
@@ -91,13 +91,13 @@ downloadGPUDrivers() {
   retrycmd_no_stats 120 5 25 cat $GPU_DEST/tmp/nvidia-docker.list >/etc/apt/sources.list.d/nvidia-docker.list || exit 85
   apt_get_update
   retrycmd 30 5 60 curl -fLS https://us.download.nvidia.com/tesla/$GPU_DV/NVIDIA-Linux-x86_64-${GPU_DV}.run -o ${GPU_DEST}/nvidia-drivers-${GPU_DV} || exit 85
-  mkdir -p $PERMANENT_CACHE_DIR
-  for apt_package in $NVIDIA_PACKAGES; do
+  mkdir -p $PERM_CACHE_DIR
+  for apt_package in $NVIDIA_PKGS; do
     apt_get_download 20 30 "${apt_package}=${NVIDIA_CONTAINER_TOOLKIT_VER}*" || exit 85
-    cp -al ${APT_CACHE_DIR}${apt_package}_${NVIDIA_CONTAINER_TOOLKIT_VER}* $PERMANENT_CACHE_DIR || exit 85
+    cp -al ${APT_CACHE_DIR}${apt_package}_${NVIDIA_CONTAINER_TOOLKIT_VER}* $PERM_CACHE_DIR || exit 85
   done
   apt_get_download 20 30 nvidia-container-runtime=${NVIDIA_RUNTIME_VER}* || exit 85
-  cp -al ${APT_CACHE_DIR}nvidia-container-runtime_${NVIDIA_RUNTIME_VER}* $PERMANENT_CACHE_DIR || exit 85
+  cp -al ${APT_CACHE_DIR}nvidia-container-runtime_${NVIDIA_RUNTIME_VER}* $PERM_CACHE_DIR || exit 85
 }
 removeMoby() {
   apt_get_purge moby-engine moby-cli || exit 27
@@ -138,18 +138,18 @@ installMoby() {
   fi
 }
 downloadCNI() {
-  mkdir -p $CNI_DOWNLOADS_DIR
+  mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${CNI_PLUGINS_URL##*/}
-  retrycmd_get_tarball 120 5 "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ${CNI_PLUGINS_URL} || exit 41
+  retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${CNI_PLUGINS_URL} || exit 41
 }
 downloadAzureCNI() {
-  mkdir -p $CNI_DOWNLOADS_DIR
+  mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
-  retrycmd_get_tarball 120 5 "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
+  retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
 }
 ensureAPMZ() {
   local ver=$1 v
-  local d="$APMZ_DOWNLOADS_DIR/$ver"
+  local d="$APMZ_DL_DIR/$ver"
   local url="https://upstreamartifacts.azureedge.net/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
     fp="/opt/bin/apmz"

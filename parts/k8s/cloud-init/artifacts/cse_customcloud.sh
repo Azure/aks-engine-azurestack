@@ -56,15 +56,8 @@ configureK8sCustomCloud() {
   #}
   if [[ ${AUTHENTICATION_METHOD,,} == "client_certificate" ]]; then
     SPN_DECODED=$(echo ${SERVICE_PRINCIPAL_CLIENT_SECRET} | base64 --decode)
-    SPN_CERT=$(echo $SPN_DECODED | jq .data)
-    SPN_PWD=$(echo $SPN_DECODED | jq .password)
-
-    # trim the starting and ending "
-    SPN_CERT=${SPN_CERT#'"'}
-    SPN_CERT=${SPN_CERT%'"'}
-
-    SPN_PWD=${SPN_PWD#'"'}
-    SPN_PWD=${SPN_PWD%'"'}
+    SPN_CERT=$(echo $SPN_DECODED | jq -r '.data | sub("^\"|\"$"; "")')
+    SPN_PWD=$(echo $SPN_DECODED | jq -r '.password | sub("^\"|\"$"; "")')
 
     K8S_CLIENT_CERT="$(dirname ${azure_json_path})/k8s_auth_certificate.pfx"
     echo $SPN_CERT | base64 --decode >$K8S_CLIENT_CERT
@@ -84,12 +77,10 @@ configureK8sCustomCloud() {
 
   {{/* Log whether the custom login endpoint is reachable to simplify troubleshooting. */}}
   {{/* CSE will finish successfully but kubelet will error out if not reachable. */}}
-  LOGIN_ENDPOINT=$(jq -r .activeDirectoryEndpoint /etc/kubernetes/azurestackcloud.json)
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT#'https://'}
-  LOGIN_ENDPOINT=${LOGIN_ENDPOINT%'/'}
-  timeout 10 nc -vz ${LOGIN_ENDPOINT} 443 \
-  && echo "login endpoint reachable: ${LOGIN_ENDPOINT}" \
-  || echo "error: login endpoint not reachable: ${LOGIN_ENDPOINT}"
+  LOGIN_EP=$(jq -r '.activeDirectoryEndpoint | sub("^https://"; "") | sub("/$"; "")' /etc/kubernetes/azurestackcloud.json)
+  timeout 10 nc -vz ${LOGIN_EP} 443 \
+  && echo "login endpoint reachable: ${LOGIN_EP}" \
+  || echo "error: login endpoint not reachable: ${LOGIN_EP}"
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
