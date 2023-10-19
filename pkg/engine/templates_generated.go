@@ -7361,7 +7361,7 @@ func k8sAddonsAzurePolicyDeploymentYaml() (*asset, error) {
 }
 
 var _k8sAddonsAzurediskCsiDriverDeploymentYaml = []byte(`---
-# Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-controller.yaml */ -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -7370,7 +7370,7 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 ---
-# Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-node.yaml
+{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-node.yaml */ -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -7379,7 +7379,7 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7415,7 +7415,7 @@ rules:
     resources: ["volumesnapshotcontents"]
     verbs: ["get", "list"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7442,7 +7442,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7472,7 +7472,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7500,7 +7500,7 @@ rules:
     resources: ["pods"]
     verbs: ["get", "list", "watch"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7513,7 +7513,7 @@ rules:
     resources: ["secrets"]
     verbs: ["get", "list"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7530,7 +7530,7 @@ roleRef:
   name: azuredisk-external-provisioner-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7547,7 +7547,7 @@ roleRef:
   name: azuredisk-external-attacher-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7564,7 +7564,7 @@ roleRef:
   name: azuredisk-external-snapshotter-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7581,7 +7581,7 @@ roleRef:
   name: azuredisk-external-resizer-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7602,7 +7602,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 {{if and (IsKubernetesVersionGe "1.18.0") HasWindows}}
 ---
-# Source: azuredisk-csi-driver/templates/csi-azuredisk-node-windows.yaml
+{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-node-windows.yaml */ -}}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -7803,7 +7803,7 @@ spec:
 {{end}}
 {{if HasLinux}}
 ---
-# Source: azuredisk-csi-driver/templates/csi-azuredisk-node.yaml
+{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-node.yaml */ -}}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -7991,7 +7991,7 @@ spec:
         {{end}}
 {{end}}
 ---
-# Source: azuredisk-csi-driver/templates/csi-azuredisk-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-controller.yaml */ -}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -8216,7 +8216,7 @@ spec:
         {{end}}
 {{if ShouldEnableCSISnapshotFeature "azuredisk-csi-driver"}}
 ---
-# Source: azuredisk-csi-driver/templates/csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/csi-snapshot-controller.yaml */ -}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -8279,7 +8279,7 @@ spec:
               cpu: {{ContainerCPUReqs "csi-snapshot-controller"}}
               memory: {{ContainerMemReqs "csi-snapshot-controller"}}
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8315,7 +8315,7 @@ rules:
     resources: ["volumesnapshots/status"]
     verbs: ["update", "patch"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8328,7 +8328,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8344,7 +8344,7 @@ roleRef:
   name: csi-snapshot-controller-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8361,7 +8361,7 @@ roleRef:
   name: csi-snapshot-controller-leaderelection-role
   apiGroup: rbac.authorization.k8s.io
 ---
-# Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml
+{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -8427,13 +8427,13 @@ spec:
         description: VolumeSnapshot is a user's request for either creating a point-in-time snapshot of a persistent volume, or binding to a pre-existing snapshot.
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           spec:
-            description: 'spec defines the desired characteristics of a snapshot requested by a user. More info: https://kubernetes.io/docs/concepts/storage/volume-snapshots#volumesnapshots Required.'
+            description: 'More info: https://kubernetes.io/docs/concepts/storage/volume-snapshots#volumesnapshots Required.'
             properties:
               source:
                 description: source specifies where a snapshot will be created from. This field is immutable after creation. Required.
@@ -8534,13 +8534,13 @@ spec:
         description: VolumeSnapshot is a user's request for either creating a point-in-time snapshot of a persistent volume, or binding to a pre-existing snapshot.
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           spec:
-            description: 'spec defines the desired characteristics of a snapshot requested by a user. More info: https://kubernetes.io/docs/concepts/storage/volume-snapshots#volumesnapshots Required.'
+            description: 'More info: https://kubernetes.io/docs/concepts/storage/volume-snapshots#volumesnapshots Required.'
             properties:
               source:
                 description: source specifies where a snapshot will be created from. This field is immutable after creation. Required.
@@ -8607,7 +8607,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-# Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml
+{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -8653,7 +8653,7 @@ spec:
         description: VolumeSnapshotClass specifies parameters that a underlying storage system uses when creating a volume snapshot. A specific VolumeSnapshotClass is used by specifying its name in a VolumeSnapshot object. VolumeSnapshotClasses are non-namespaced
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           deletionPolicy:
             description: deletionPolicy determines whether a VolumeSnapshotContent created through the VolumeSnapshotClass should be deleted when its bound VolumeSnapshot is deleted. Supported values are "Retain" and "Delete". "Retain" means that the VolumeSnapshotContent and its physical snapshot on underlying storage system are kept. "Delete" means that the VolumeSnapshotContent and its physical snapshot on underlying storage system are deleted. Required.
@@ -8665,7 +8665,7 @@ spec:
             description: driver is the name of the storage driver that handles this VolumeSnapshotClass. Required.
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           parameters:
             additionalProperties:
@@ -8701,7 +8701,7 @@ spec:
         description: VolumeSnapshotClass specifies parameters that a underlying storage system uses when creating a volume snapshot. A specific VolumeSnapshotClass is used by specifying its name in a VolumeSnapshot object. VolumeSnapshotClasses are non-namespaced
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           deletionPolicy:
             description: deletionPolicy determines whether a VolumeSnapshotContent created through the VolumeSnapshotClass should be deleted when its bound VolumeSnapshot is deleted. Supported values are "Retain" and "Delete". "Retain" means that the VolumeSnapshotContent and its physical snapshot on underlying storage system are kept. "Delete" means that the VolumeSnapshotContent and its physical snapshot on underlying storage system are deleted. Required.
@@ -8713,7 +8713,7 @@ spec:
             description: driver is the name of the storage driver that handles this VolumeSnapshotClass. Required.
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           parameters:
             additionalProperties:
@@ -8739,7 +8739,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-# Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml
+{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -8803,10 +8803,10 @@ spec:
         description: VolumeSnapshotContent represents the actual "on-disk" snapshot object in the underlying storage system
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           spec:
             description: spec defines properties of a VolumeSnapshotContent created by the underlying storage system. Required.
@@ -8851,19 +8851,19 @@ spec:
                     description: 'If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.'
                     type: string
                   kind:
-                    description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                    description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                     type: string
                   name:
-                    description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                     type: string
                   namespace:
-                    description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                     type: string
                   resourceVersion:
-                    description: 'Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
+                    description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                     type: string
                   uid:
-                    description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
                     type: string
                 type: object
             required:
@@ -8952,10 +8952,10 @@ spec:
         description: VolumeSnapshotContent represents the actual "on-disk" snapshot object in the underlying storage system
         properties:
           apiVersion:
-            description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
             type: string
           kind:
-            description: 'Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
             type: string
           spec:
             description: spec defines properties of a VolumeSnapshotContent created by the underlying storage system. Required.
@@ -8992,19 +8992,19 @@ spec:
                     description: 'If referring to a piece of an object instead of an entire object, this string should contain a valid JSON/Go field access statement, such as desiredState.manifest.containers[2]. For example, if the object reference is to a container within a pod, this would take on a value like: "spec.containers{name}" (where "name" refers to the name of the container that triggered the event) or if no container name is specified "spec.containers[2]" (container with index 2 in this pod). This syntax is chosen only to have some well-defined way of referencing a part of an object. TODO: this design is not final and this field is subject to change in the future.'
                     type: string
                   kind:
-                    description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                    description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                     type: string
                   name:
-                    description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                     type: string
                   namespace:
-                    description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                     type: string
                   resourceVersion:
-                    description: 'Specific resourceVersion to which this reference is made, if any. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
+                    description: 'More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#concurrency-control-and-consistency'
                     type: string
                   uid:
-                    description: 'UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
+                    description: 'More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#uids'
                     type: string
                 type: object
             required:
@@ -9062,7 +9062,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-# Source: azuredisk-csi-driver/templates/serviceaccount-csi-snapshot-controller.yaml
+{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-snapshot-controller.yaml */ -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -9072,7 +9072,7 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 {{end}}
 ---
-# Source: azuredisk-csi-driver/templates/csi-azuredisk-driver.yaml
+{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-driver.yaml */ -}}
 apiVersion: storage.k8s.io/v1
 kind: CSIDriver
 metadata:
