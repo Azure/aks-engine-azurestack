@@ -233,29 +233,29 @@ installNetworkPlugin() {
   installAzureCNI
 {{end}}
   installCNI
-  rm -rf $CNI_DOWNLOADS_DIR &
+  rm -rf $CNI_DL_DIR &
 }
 installCNI() {
   CNI_TGZ_TMP=${CNI_PLUGINS_URL##*/}
-  if [[ ! -f "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ]]; then
+  if [[ ! -f "$CNI_DL_DIR/${CNI_TGZ_TMP}" ]]; then
     downloadCNI
   fi
   mkdir -p $CNI_BIN_DIR
-  tar -xzf "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
+  tar -xzf "$CNI_DL_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
   chown -R root:root $CNI_BIN_DIR
   chmod -R 755 $CNI_BIN_DIR
 }
 {{- if IsAzureCNI}}
 installAzureCNI() {
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
-  if [[ ! -f "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" ]]; then
+  if [[ ! -f "$CNI_DL_DIR/${CNI_TGZ_TMP}" ]]; then
     downloadAzureCNI
   fi
-  mkdir -p $CNI_CONFIG_DIR
-  chown -R root:root $CNI_CONFIG_DIR
-  chmod 755 $CNI_CONFIG_DIR
+  mkdir -p $CNI_CFG_DIR
+  chown -R root:root $CNI_CFG_DIR
+  chmod 755 $CNI_CFG_DIR
   mkdir -p $CNI_BIN_DIR
-  tar -xzf "$CNI_DOWNLOADS_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
+  tar -xzf "$CNI_DL_DIR/${CNI_TGZ_TMP}" -C $CNI_BIN_DIR
 }
 {{end}}
 configureCNI() {
@@ -272,31 +272,31 @@ configureCNI() {
   if [[ ${NETWORK_PLUGIN} == "azure" ]]; then
     {{/* set environment to mas when using Azure CNI on Azure Stack */}}
     {{/* shellcheck disable=SC2002,SC2005 */}}
-    echo $(cat "$CNI_CONFIG_DIR/10-azure.conflist" | jq '.plugins[0].ipam.environment = "mas"') >"$CNI_CONFIG_DIR/10-azure.conflist"
+    echo $(cat "$CNI_CFG_DIR/10-azure.conflist" | jq '.plugins[0].ipam.environment = "mas"') >"$CNI_CFG_DIR/10-azure.conflist"
   fi
 {{end}}
 }
 configureAzureCNI() {
   local tmpDir=$(mktemp -d "$(pwd)/XXX")
   if [[ "${NETWORK_PLUGIN}" == "azure" ]]; then
-    mv $CNI_BIN_DIR/10-azure.conflist $CNI_CONFIG_DIR/
-    chmod 600 $CNI_CONFIG_DIR/10-azure.conflist
+    mv $CNI_BIN_DIR/10-azure.conflist $CNI_CFG_DIR/
+    chmod 600 $CNI_CFG_DIR/10-azure.conflist
 {{- if IsIPv6DualStackFeatureEnabled}}
-    jq '.plugins[0].ipv6Mode="ipv6nat"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-    mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+    jq '.plugins[0].ipv6Mode="ipv6nat"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+    mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
 {{- end}}
     if [[ {{GetKubeProxyMode}} == "ipvs" ]]; then
       serviceCidrs={{GetServiceCidr}}
-      jq --arg serviceCidrs $serviceCidrs '.plugins[0]+={serviceCidrs: $serviceCidrs}' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-      mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+      jq --arg serviceCidrs $serviceCidrs '.plugins[0]+={serviceCidrs: $serviceCidrs}' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+      mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
     fi
     if [[ "${NETWORK_MODE}" == "bridge" ]]; then
-      jq '.plugins[0].mode="bridge"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
+      jq '.plugins[0].mode="bridge"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
       jq '.plugins[0].bridge="azure0"' "$tmpDir/tmp" > $tmpDir/tmp2
-      mv $tmpDir/tmp2 $CNI_CONFIG_DIR/10-azure.conflist
+      mv $tmpDir/tmp2 $CNI_CFG_DIR/10-azure.conflist
     else
-      jq '.plugins[0].mode="transparent"' "$CNI_CONFIG_DIR/10-azure.conflist" > $tmpDir/tmp
-      mv $tmpDir/tmp $CNI_CONFIG_DIR/10-azure.conflist
+      jq '.plugins[0].mode="transparent"' "$CNI_CFG_DIR/10-azure.conflist" > $tmpDir/tmp
+      mv $tmpDir/tmp $CNI_CFG_DIR/10-azure.conflist
     fi
     /sbin/ebtables -t nat --list
   fi
@@ -480,11 +480,11 @@ ensureAddons() {
   {{end}}
   {{if HasAntreaNetworkPolicy}}
   if [[ "${NETWORK_PLUGIN}" = "azure" ]]; then
-    while ! $(grep -sq "antrea" $CNI_CONFIG_DIR/10-azure.conflist); do
+    while ! $(grep -sq "antrea" $CNI_CFG_DIR/10-azure.conflist); do
       sleep 3
     done
   else
-    while [ ! -f $CNI_CONFIG_DIR/10-antrea.conflist ]; do
+    while [ ! -f $CNI_CFG_DIR/10-antrea.conflist ]; do
       sleep 3
     done
   fi
@@ -647,10 +647,10 @@ configGPUDrivers() {
   echo blacklist nouveau >>/etc/modprobe.d/blacklist.conf
   retrycmd_no_stats 120 5 25 update-initramfs -u || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   wait_for_apt_locks
-  for apt_package in $NVIDIA_PACKAGES; do
-    dpkg -i ${PERMANENT_CACHE_DIR}${apt_package}* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
+  for apt_package in $NVIDIA_PKGS; do
+    dpkg -i ${PERM_CACHE_DIR}${apt_package}* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   done
-  dpkg -i ${PERMANENT_CACHE_DIR}nvidia-container-runtime* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
+  dpkg -i ${PERM_CACHE_DIR}nvidia-container-runtime* || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   mkdir -p $GPU_DEST/lib64 $GPU_DEST/overlay-workdir
   retrycmd 120 5 25 mount -t overlay -o lowerdir=/usr/lib/x86_64-linux-gnu,upperdir=${GPU_DEST}/lib64,workdir=${GPU_DEST}/overlay-workdir none /usr/lib/x86_64-linux-gnu || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_CONFIG"}}
   export -f installNvidiaDrivers
@@ -662,7 +662,7 @@ configGPUDrivers() {
   retrycmd 120 5 25 nvidia-modprobe -u -c0 || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
   retrycmd 120 5 25 nvidia-smi || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
   retrycmd 120 5 25 ldconfig || exit {{GetCSEErrorCode "ERR_GPU_DRIVERS_START_FAIL"}}
-  rm -Rf ${PERMANENT_CACHE_DIR}
+  rm -Rf ${PERM_CACHE_DIR}
 }
 ensureGPUDrivers() {
   configGPUDrivers
@@ -723,7 +723,7 @@ cleanUpGPUDrivers() {
   apt-key del $(apt-key list | grep NVIDIA -B 1 | head -n 1 | cut -d "/" -f 2 | cut -d " " -f 1)
 }
 cleanUpContainerd() {
-  rm -Rf $CONTAINERD_DOWNLOADS_DIR
+  rm -Rf $CTRD_DL_DIR
 }
 {{end}}
 removeEtcd() {
