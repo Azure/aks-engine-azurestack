@@ -7361,7 +7361,7 @@ func k8sAddonsAzurePolicyDeploymentYaml() (*asset, error) {
 }
 
 var _k8sAddonsAzurediskCsiDriverDeploymentYaml = []byte(`---
-{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-controller.yaml */}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -7370,7 +7370,7 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 ---
-{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-node.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/serviceaccount-csi-azuredisk-node.yaml */}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -7379,7 +7379,7 @@ metadata:
   labels:
     addonmanager.kubernetes.io/mode: Reconcile
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7415,7 +7415,7 @@ rules:
     resources: ["volumesnapshotcontents"]
     verbs: ["get", "list"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7442,7 +7442,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7472,7 +7472,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7500,7 +7500,7 @@ rules:
     resources: ["pods"]
     verbs: ["get", "list", "watch"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7513,7 +7513,7 @@ rules:
     resources: ["secrets"]
     verbs: ["get", "list"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7530,7 +7530,7 @@ roleRef:
   name: azuredisk-external-provisioner-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7547,7 +7547,7 @@ roleRef:
   name: azuredisk-external-attacher-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7564,7 +7564,7 @@ roleRef:
   name: azuredisk-external-snapshotter-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7581,7 +7581,7 @@ roleRef:
   name: azuredisk-external-resizer-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-azuredisk-secret.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -7602,7 +7602,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 {{if and (IsKubernetesVersionGe "1.18.0") HasWindows}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-node-windows.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/csi-azuredisk-node-windows.yaml */}}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -7803,7 +7803,7 @@ spec:
 {{end}}
 {{if HasLinux}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-node.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/csi-azuredisk-node.yaml */}}
 kind: DaemonSet
 apiVersion: apps/v1
 metadata:
@@ -7991,7 +7991,7 @@ spec:
         {{end}}
 {{end}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/csi-azuredisk-controller.yaml */}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -8216,7 +8216,7 @@ spec:
         {{end}}
 {{if ShouldEnableCSISnapshotFeature "azuredisk-csi-driver"}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/csi-snapshot-controller.yaml */}}
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -8279,7 +8279,7 @@ spec:
               cpu: {{ContainerCPUReqs "csi-snapshot-controller"}}
               memory: {{ContainerMemReqs "csi-snapshot-controller"}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8315,7 +8315,7 @@ rules:
     resources: ["volumesnapshots/status"]
     verbs: ["update", "patch"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */}}
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8328,7 +8328,7 @@ rules:
     resources: ["leases"]
     verbs: ["get", "watch", "list", "delete", "update", "create", "patch"]
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8344,7 +8344,7 @@ roleRef:
   name: csi-snapshot-controller-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/rbac-csi-snapshot-controller.yaml */}}
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -8361,7 +8361,7 @@ roleRef:
   name: csi-snapshot-controller-leaderelection-role
   apiGroup: rbac.authorization.k8s.io
 ---
-{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -8607,7 +8607,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -8739,7 +8739,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-{{- /* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/crd-csi-snapshot.yaml */}}
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
@@ -9062,7 +9062,7 @@ status:
   conditions: []
   storedVersions: []
 ---
-{{- /* Source: azuredisk-csi-driver/templates/serviceaccount-csi-snapshot-controller.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/serviceaccount-csi-snapshot-controller.yaml */}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -9072,7 +9072,7 @@ metadata:
     addonmanager.kubernetes.io/mode: Reconcile
 {{end}}
 ---
-{{- /* Source: azuredisk-csi-driver/templates/csi-azuredisk-driver.yaml */ -}}
+{{/* Source: azuredisk-csi-driver/templates/csi-azuredisk-driver.yaml */}}
 apiVersion: storage.k8s.io/v1
 kind: CSIDriver
 metadata:
