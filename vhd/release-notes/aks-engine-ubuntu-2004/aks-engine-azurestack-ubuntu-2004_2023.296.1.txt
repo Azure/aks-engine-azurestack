@@ -1,4 +1,4 @@
-Starting build on  Fri Oct 20 21:20:19 UTC 2023
+Starting build on  Mon Oct 23 18:36:55 UTC 2023
 Components downloaded in this VHD build (some of the below components might get deleted during cluster provisioning if they are not needed):
 apt packages:
   - apt-transport-https
@@ -843,8 +843,8 @@ xz-utils/focal-updates,focal-security,now 5.2.4-1ubuntu1.1 amd64 [installed]
 zerofree/focal,now 1.1.1-1 amd64 [installed,automatic]
 zip/focal,now 3.0-11build1 amd64 [installed]
 zlib1g/focal-updates,focal-security,now 1:1.2.11.dfsg-2ubuntu1.5 amd64 [installed,automatic]
-Install completed successfully on  Fri Oct 20 21:44:42 UTC 2023
-VSTS Build NUMBER: 2023.293.1
-VSTS Build ID: 81607456
+Install completed successfully on  Mon Oct 23 19:00:24 UTC 2023
+VSTS Build NUMBER: 2023.296.1
+VSTS Build ID: 81712051
 Commit: 897da5973e129cd168a2a5d023f6438ce310b1d2
 Feature flags: 
