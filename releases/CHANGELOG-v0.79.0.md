@@ -5,11 +5,14 @@
 # Attention!
 
 Notable changes in this release:
-- The `--seccomp-default` flag is now automatically enabled for each node in the cluster. See [Seccomp Profile](../docs/topics/seccomp-profile.md) for more details.
-- Kubernetes v1.27+ no longer auto generates service account token secrets for ServiceAccounts. See [Service account token secrets](../docs/topics/service-account-token-secrets.md) for more details.
+- The `--seccomp-default` flag is now automatically enabled for each node in the cluster.
+  - See [Seccomp Profile](../docs/topics/seccomp-profile.md) for more details.
+- Kubernetes v1.27+ no longer auto generates service account token secrets for ServiceAccounts.
+  - See [Service account token secrets](../docs/topics/service-account-token-secrets.md) for more details.
 - MTU is set to 1500 (instead of 1350) for Kubenet CNI ([#192](https://github.com/Azure/aks-engine-azurestack/issues/192))
 - Fixed `aks-engine-azurestack rotate-certs` command ([#204](https://github.com/Azure/aks-engine-azurestack/issues/204))
-- Use the new AzureDisk CSI Driver v1.28.3 for k8s v1.27+. Use AzureDisk CSI Driver v1.26.5 for k8s v1.26. See [Azure Disk CSI Driver: Version Mapping](../docs/topics/azure-stack.md#azure-disk-csi-driver-version-mapping) for more details.
+- Use the new AzureDisk CSI Driver v1.28.3 for k8s v1.27+. Use AzureDisk CSI Driver v1.26.5 for k8s v1.26.
+  - See [Azure Disk CSI Driver: Version Mapping](../docs/topics/azure-stack.md#azure-disk-csi-driver-version-mapping) for more details.
 
 ### Bug Fixes 🐞
 - shorten custom data in cloud init files and azure disk csi driver addon ([#205](https://github.com/Azure/aks-engine-azurestack/issues/205))
