@@ -118,7 +118,7 @@ checkDesiredVersion() {
 checkAKSEInstalledVersion() {
   if [[ -f "${AKSE_INSTALL_DIR}/${PROJECT_NAME}" ]]; then
     local version
-    version=$(aks-engine version | grep 'Version' | cut -d' ' -f2)
+    version=$(aks-engine-azurestack version | grep 'Version' | cut -d' ' -f2)
     if [[ "$version" == "$TAG" ]]; then
       echo "AKS-Engine ${version} is already ${DESIRED_VERSION:-latest}"
       return 0
