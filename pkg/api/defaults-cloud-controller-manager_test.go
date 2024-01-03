@@ -97,4 +97,31 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
 			ccm["--feature-gates"], "1.26.0")
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.28
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	featuregate128 := "AdvancedAuditing=true,CSIMigrationGCE=true,CSIStorageCapacity=true,DelegateFSGroupToCSIDriver=true,DevicePlugins=true,DisableAcceleratorUsageMetrics=true,DryRun=true,EndpointSliceTerminatingCondition=true,KubeletCredentialProviders=true,MixedProtocolLBService=true,NetworkPolicyStatus=true,PodHasNetworkCondition=true,PodSecurity=true,ServiceIPStaticSubrange=true,ServiceInternalTrafficPolicy=true,UserNamespacesStatelessPodsSupport=true,WindowsHostProcessContainers=true"
+	ccm["--feature-gates"] = featuregate128
+	featuregate128Sanitized := ""
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != featuregate128Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.28.0", featuregate128, ccm["--feature-gates"], featuregate128Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = featuregate128
+	featuregate127Sanitized := featuregate128
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != featuregate127Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.27.0", featuregate128, ccm["--feature-gates"], featuregate127Sanitized)
+	}
 }

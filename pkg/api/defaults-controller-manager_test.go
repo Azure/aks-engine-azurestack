@@ -194,6 +194,33 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": %s",
 			cm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.28
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	featuregate128 := "AdvancedAuditing=true,CSIMigrationGCE=true,CSIStorageCapacity=true,DelegateFSGroupToCSIDriver=true,DevicePlugins=true,DisableAcceleratorUsageMetrics=true,DryRun=true,EndpointSliceTerminatingCondition=true,KubeletCredentialProviders=true,MixedProtocolLBService=true,NetworkPolicyStatus=true,PodHasNetworkCondition=true,PodSecurity=true,ServiceIPStaticSubrange=true,ServiceInternalTrafficPolicy=true,UserNamespacesStatelessPodsSupport=true,WindowsHostProcessContainers=true"
+	cm["--feature-gates"] = featuregate128
+	featuregate128Sanitized := ""
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != featuregate128Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.28.0", featuregate128, cm["--feature-gates"], featuregate128Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = featuregate128
+	featuregate127Sanitized := featuregate128
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != featuregate127Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.27.0", featuregate128, cm["--feature-gates"], featuregate127Sanitized)
+	}
 }
 
 func TestControllerManagerDefaultConfig(t *testing.T) {

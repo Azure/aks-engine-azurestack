@@ -4611,7 +4611,7 @@ func TestValidateCustomCloudProfile(t *testing.T) {
 				Location: "testlocation",
 				Properties: &Properties{
 					CustomCloudProfile: &CustomCloudProfile{
-						IdentitySystem: "invalidIdentySytem",
+						IdentitySystem: "invalidIdentySystem",
 						PortalURL:      "https://portal.testlocation.cotoso.com",
 					},
 				},

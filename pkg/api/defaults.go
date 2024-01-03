@@ -1157,6 +1157,19 @@ func removeInvalidFeatureGates(m map[string]string, invalidFeatureGates []string
 	m["--feature-gates"] = removeKeys(m["--feature-gates"], invalidFeatureGates)
 }
 
+// removeInvalidFeatureGates removes specified invalid --feature-gates
+func replaceFlags(m map[string]string, replacedflags map[string]string) {
+	for old, new := range replacedflags {
+		if v, ok := m[old]; ok {
+			// Create the new flag name
+			m[new] = v
+
+			// Remove the old flag name
+			delete(m, old)
+		}
+	}
+}
+
 // removeKeys takes a input of strings matching a pattern []string{"foo=bar","key=val"}
 // removes from this input the given input keys e.g.: "foo"
 // and returns a single, comma-delimited, concatenated string of all remaining key/val string values, e.g.: "key=val"

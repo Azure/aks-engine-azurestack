@@ -41,6 +41,57 @@ func TestSchedulerUserConfig(t *testing.T) {
 	}
 }
 
+func TestSchedulerFlagReplacement(t *testing.T) {
+	cs := CreateMockContainerService("testcluster", "", 3, 2, true)
+
+	// Verify that the flag is replaced after 1.28
+	flagChange := map[string]string{}
+	// The deprecated flag --lock-object-namespace and --lock-object-name have been removed from kube-scheduler.
+	// Please use --leader-elect-resource-namespace and --leader-elect-resource-name or ComponentConfig instead to configure those parameters. (#119130, @SataQiu) [SIG Scheduling]
+	flagChange["--lock-object-namespace"] = "--leader-elect-resource-namespace"
+	flagChange["--lock-object-name"] = "--leader-elect-resource-name"
+
+	assignmentMap := map[string]string{
+		"--lock-object-namespace": "system-lock",
+		"--lock-object-name":      "leader",
+		"--scheduler-name":        "my-custom-name",
+	}
+
+	assignment128MapSanitized := map[string]string{
+		"--leader-elect-resource-namespace": "system-lock",
+		"--leader-elect-resource-name":      "leader",
+		"--scheduler-name":                  "my-custom-name",
+	}
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = assignmentMap
+	cs.setSchedulerConfig()
+	for key, val := range assignment128MapSanitized {
+		if val != cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig[key] {
+			t.Fatalf("got unexpected kube-scheduler config value for %s. Expected %s, got %s",
+				key, val, cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig[key])
+		}
+	}
+
+	for key, val := range flagChange {
+		if _, ok := cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig[key]; ok {
+			t.Fatalf("got unexpected kube-scheduler config value. The flag should be replaced from %s to %s",
+				key, val)
+		}
+	}
+
+	// Verify that the flag is not replaced before 1.28
+	cs = CreateMockContainerService("testcluster", "", 3, 2, true)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = assignmentMap
+	cs.setSchedulerConfig()
+	for key, val := range assignmentMap {
+		if val != cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig[key] {
+			t.Fatalf("got unexpected kube-scheduler config value for %s. Expected %s, got %s",
+				key, val, cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig[key])
+		}
+	}
+}
+
 func TestSchedulerStaticConfig(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = map[string]string{
@@ -171,5 +222,32 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	if s["--feature-gates"] != "CSIInlineVolume=true,CSIMigration=true,CSIMigrationAzureDisk=true,ControllerManagerLeaderMigration=true,DaemonSetUpdateSurge=true,EphemeralContainers=true,ExpandCSIVolumes=true,ExpandInUsePersistentVolumes=true,ExpandPersistentVolumes=true,IdentifyPodOS=true,LocalStorageCapacityIsolation=true,NetworkPolicyEndPort=true,PodSecurity=true,StatefulSetMinReadySeconds=true" {
 		t.Fatalf("got unexpected '--feature-gates' API server config value for \"--feature-gates\": %s for k8s v%s",
 			s["--feature-gates"], "1.26.0")
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.28
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate128 := "AdvancedAuditing=true,CSIMigrationGCE=true,CSIStorageCapacity=true,DelegateFSGroupToCSIDriver=true,DevicePlugins=true,DisableAcceleratorUsageMetrics=true,DryRun=true,EndpointSliceTerminatingCondition=true,KubeletCredentialProviders=true,MixedProtocolLBService=true,NetworkPolicyStatus=true,PodHasNetworkCondition=true,PodSecurity=true,ServiceIPStaticSubrange=true,ServiceInternalTrafficPolicy=true,UserNamespacesStatelessPodsSupport=true,WindowsHostProcessContainers=true"
+	s["--feature-gates"] = featuregate128
+	featuregate128Sanitized := ""
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate128Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.28.0", featuregate128, s["--feature-gates"], featuregate128Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.27
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.27.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate128
+	featuregate127Sanitized := featuregate128
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate127Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
+			"1.27.0", featuregate128, s["--feature-gates"], featuregate127Sanitized)
 	}
 }
