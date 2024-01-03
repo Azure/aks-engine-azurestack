@@ -78,10 +78,10 @@ jobs:
       - name: print git status after build
         run: |
           git status
-      - name: Validate 1.26 + containerd E2E
+      - name: Validate 1.27 + containerd E2E
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.26"
+          ORCHESTRATOR_RELEASE: "1.27"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
@@ -100,10 +100,10 @@ jobs:
           AZURE_CORE_ONLY_SHOW_ERRORS: true
           DISTRO: "aks-ubuntu-20.04"
         run: make test-kubernetes
-      - name: Validate 1.27 + containerd E2E
+      - name: Validate 1.28 + containerd E2E
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.27"
+          ORCHESTRATOR_RELEASE: "1.28"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}

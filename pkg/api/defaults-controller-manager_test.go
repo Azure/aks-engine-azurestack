@@ -84,9 +84,8 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setControllerManagerConfig()
 	cm := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	// todo: when default kubernetes version becomes v1.27, remove feature gate LegacyServiceAccountTokenNoAutoGeneration
-	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true\": %s",
+	if cm["--feature-gates"] != "PodSecurity=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"PodSecurity=true\": %s",
 			cm["--feature-gates"])
 	}
 
@@ -145,9 +144,8 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "TaintBasedEvictions=true"
 	cs.setControllerManagerConfig()
-	// todo: when default kubernetes version becomes v1.27, remove feature gate LegacyServiceAccountTokenNoAutoGeneration
-	if cm["--feature-gates"] != "LegacyServiceAccountTokenNoAutoGeneration=false,LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"LocalStorageCapacityIsolation=true,PodSecurity=true,TaintBasedEvictions=true\": %s",
+	if cm["--feature-gates"] != "PodSecurity=true,TaintBasedEvictions=true" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"PodSecurity=true,TaintBasedEvictions=true\": %s",
 			cm["--feature-gates"])
 	}
 
@@ -231,9 +229,8 @@ func TestControllerManagerDefaultConfig(t *testing.T) {
 	if cm["--node-monitor-grace-period"] != string(DefaultKubernetesCtrlMgrNodeMonitorGracePeriod) {
 		t.Fatalf("expected controller-manager to have node-monitor-grace-period set to its default value")
 	}
-	if cm["--pod-eviction-timeout"] != string(DefaultKubernetesCtrlMgrPodEvictionTimeout) {
-		t.Fatalf("expected controller-manager to have pod-eviction-timeout set to its default value")
-	}
+	// --pod-eviction-timeout is removed after 1.27
+
 	if cm["--route-reconciliation-period"] != string(DefaultKubernetesCtrlMgrRouteReconciliationPeriod) {
 		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
 	}
@@ -252,9 +249,8 @@ func TestControllerManagerDefaultConfig(t *testing.T) {
 	if cm["--node-monitor-grace-period"] != string(DefaultAzureStackKubernetesCtrlMgrNodeMonitorGracePeriod) {
 		t.Fatalf("expected controller-manager to have node-monitor-grace-period set to its default value")
 	}
-	if cm["--pod-eviction-timeout"] != string(DefaultAzureStackKubernetesCtrlMgrPodEvictionTimeout) {
-		t.Fatalf("expected controller-manager to have pod-eviction-timeout set to its default value")
-	}
+	// --pod-eviction-timeout is removed after 1.27
+
 	if cm["--route-reconciliation-period"] != string(DefaultAzureStackKubernetesCtrlMgrRouteReconciliationPeriod) {
 		t.Fatalf("expected controller-manager to have route-reconciliation-period set to its default value")
 	}
