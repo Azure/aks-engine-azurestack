@@ -154,5 +154,40 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		invalidFeatureGates = append(invalidFeatureGates, "LegacyServiceAccountTokenNoAutoGeneration")
 
 	}
+
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.28.0") {
+		// Remove --feature-gate AdvancedAuditing starting with 1.28
+		invalidFeatureGates = append(invalidFeatureGates, "AdvancedAuditing", "DisableAcceleratorUsageMetrics", "DryRun", "PodSecurity")
+
+		invalidFeatureGates = append(invalidFeatureGates, "NetworkPolicyStatus", "PodHasNetworkCondition", "UserNamespacesStatelessPodsSupport")
+
+		// Remove --feature-gate CSIMigrationGCE starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/117055
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationGCE")
+
+		// Remove --feature-gate CSIStorageCapacity starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/118018
+		invalidFeatureGates = append(invalidFeatureGates, "CSIStorageCapacity")
+
+		// Remove --feature-gate DelegateFSGroupToCSIDriver starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/117655
+		invalidFeatureGates = append(invalidFeatureGates, "DelegateFSGroupToCSIDriver")
+
+		// Remove --feature-gate DevicePlugins starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/117656
+		invalidFeatureGates = append(invalidFeatureGates, "DevicePlugins")
+
+		// Remove --feature-gate KubeletCredentialProviders starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/116901
+		invalidFeatureGates = append(invalidFeatureGates, "KubeletCredentialProviders")
+
+		// Remove --feature-gate MixedProtocolLBService, ServiceInternalTrafficPolicy, ServiceIPStaticSubrange, EndpointSliceTerminatingCondition  starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/117237
+		invalidFeatureGates = append(invalidFeatureGates, "MixedProtocolLBService", "ServiceInternalTrafficPolicy", "ServiceIPStaticSubrange", "EndpointSliceTerminatingCondition")
+
+		// Remove --feature-gate WindowsHostProcessContainers starting with 1.28
+		// Reference: https://github.com/kubernetes/kubernetes/pull/117570
+		invalidFeatureGates = append(invalidFeatureGates, "WindowsHostProcessContainers")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.ControllerManagerConfig, invalidFeatureGates)
 }
