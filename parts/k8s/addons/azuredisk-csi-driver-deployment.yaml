@@ -669,7 +669,11 @@ spec:
         - name: csi-provisioner
           image: {{ContainerImage "csi-provisioner"}}
           args:
+{{- if IsKubernetesVersionGe "1.28.0"}}
+            - "--feature-gates=Topology=true,HonorPVReclaimPolicy=true"
+{{- else }}
             - "--feature-gates=Topology=true"
+{{- end}}
             - "--csi-address=$(ADDRESS)"
             - "--v=2"
             - "--timeout=30s"
