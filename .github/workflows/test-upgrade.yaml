@@ -56,10 +56,10 @@ jobs:
           sudo chmod +x /usr/local/bin/k
       - name: Build aks-engine-azurestack binary
         run: make build-binary
-      - name: Validate 1.26 scenario, deploy and test suite after deploy
+      - name: Validate 1.27 scenario, deploy and test suite after deploy
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.26"
+          ORCHESTRATOR_RELEASE: "1.27"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
@@ -85,7 +85,7 @@ jobs:
           LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
           LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
         run: make test-kubernetes
-      - name: Validate 1.26 scenario, upgrade
+      - name: Validate 1.27 scenario, upgrade
         run : |
           RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
           REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
@@ -100,17 +100,17 @@ jobs:
           --vm-timeout 20 \
           --client-id ${{ secrets.TEST_AZURE_SP_ID }} \
           --client-secret ${{ secrets.TEST_AZURE_SP_PW }}
-      - name: Validate 1.26 scenario, remove known hosts
+      - name: Validate 1.27 scenario, remove known hosts
         run : |
           RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
           REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
           CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
           TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
           ssh-keygen -f ~/.ssh/known_hosts -R ${RESOURCE_GROUP}.${REGION}.cloudapp.azure.com
-      - name: Validate 1.26 scenario, test suite after upgrade
+      - name: Validate 1.27 scenario, test suite after upgrade
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.26"
+          ORCHESTRATOR_RELEASE: "1.27"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
@@ -128,10 +128,10 @@ jobs:
         run : |
           export NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2);\
           make test-kubernetes
-      - name: Validate 1.27 scenario, deploy and test suite after deploy
+      - name: Validate 1.28 scenario, deploy and test suite after deploy
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.27"
+          ORCHESTRATOR_RELEASE: "1.28"
           CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
           SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
           CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
