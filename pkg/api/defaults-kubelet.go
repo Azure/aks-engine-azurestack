@@ -283,23 +283,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		}
 
 		removeKubeletFlags(cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig, o.OrchestratorVersion)
-
-		invalidFeatureGates := []string{}
-		// Remove --feature-gate VolumeSnapshotDataSource starting with 1.22
-		if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.22.0-alpha.1") {
-			invalidFeatureGates = append(invalidFeatureGates, "VolumeSnapshotDataSource")
-		}
-		if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.27.0") {
-			// Remove --feature-gate ControllerManagerLeaderMigration starting with 1.27
-			// Reference: https://github.com/kubernetes/kubernetes/pull/113534
-			invalidFeatureGates = append(invalidFeatureGates, "ControllerManagerLeaderMigration")
-			// Remove --feature-gate ExpandCSIVolumes, ExpandInUsePersistentVolumes, ExpandPersistentVolumes starting with 1.27
-			// Reference: https://github.com/kubernetes/kubernetes/pull/113942
-			invalidFeatureGates = append(invalidFeatureGates, "ExpandCSIVolumes", "ExpandInUsePersistentVolumes", "ExpandPersistentVolumes")
-			// Remove --feature-gate CSIInlineVolume, CSIMigration, CSIMigrationAzureDisk, DaemonSetUpdateSurge, EphemeralContainers, IdentifyPodOS, LocalStorageCapacityIsolation, NetworkPolicyEndPort, StatefulSetMinReadySeconds starting with 1.27
-			// Reference: https://github.com/kubernetes/kubernetes/pull/114410
-			invalidFeatureGates = append(invalidFeatureGates, "CSIInlineVolume", "CSIMigration", "CSIMigrationAzureDisk", "DaemonSetUpdateSurge", "EphemeralContainers", "IdentifyPodOS", "LocalStorageCapacityIsolation", "NetworkPolicyEndPort", "StatefulSetMinReadySeconds")
-		}
 		removeInvalidFeatureGates(cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 
 		if cs.Properties.AnyAgentIsLinux() {
@@ -365,6 +348,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		}
 
 		removeKubeletFlags(profile.KubernetesConfig.KubeletConfig, o.OrchestratorVersion)
+		removeInvalidFeatureGates(profile.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 		if cs.Properties.OrchestratorProfile.KubernetesConfig.IsAddonEnabled(common.AADPodIdentityAddonName) && !profile.IsWindows() {
 			if val, ok := profile.KubernetesConfig.KubeletConfig["--register-with-taints"]; !ok {
 				profile.KubernetesConfig.KubeletConfig["--register-with-taints"] = fmt.Sprintf("%s=true:NoSchedule", common.AADPodIdentityTaintKey)
