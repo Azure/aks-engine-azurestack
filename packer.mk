@@ -21,7 +21,6 @@ az-copy: az-login
 
 delete-sa: az-login
 	az storage account delete -n ${PACKER_TEMP_SA} -g ${PACKER_TEMP_GROUP} --yes
-
 generate-sas: az-login
 	az storage container generate-sas --name ubuntu --permissions lr --connection-string "${CLASSIC_SA_CONNECTION_STRING}" --start ${START_DATE} --expiry ${EXPIRY_DATE} | tr -d '"' | tee -a vhd-sas && cat vhd-sas
 

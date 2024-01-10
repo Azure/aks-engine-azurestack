@@ -10,11 +10,11 @@ on:
       LINUX_NODE_IMAGE_VERSION:
         description: 'What is the Linux SIG image version?'
         required: true
-        default: 2023.296.1
+        default: 2024.010.2
       WINDOWS_NODE_IMAGE_VERSION:
         description: 'What is the Windows SIG image version?'
         required: true
-        default: 2023.296.1
+        default: 2024.010.2
   workflow_call:
     inputs:
       from_branch:
@@ -108,7 +108,7 @@ jobs:
           CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
           TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
           ssh-keygen -f ~/.ssh/known_hosts -R ${RESOURCE_GROUP}.${REGION}.cloudapp.azure.com
-      - name: Validate 1.27 no-egress scenario, test suite after upgrade
+      - name: Validate 1.28 no-egress scenario, test suite after upgrade
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.27"
