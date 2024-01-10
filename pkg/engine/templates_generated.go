@@ -17616,10 +17616,7 @@ disableSshd() {
   systemctl_stop 20 5 10 sshd || exit 3
   retrycmd 120 5 25 systemctl disable sshd || exit 3
 }
-disableTimeSyncd() {
-  systemctl_stop 20 5 10 systemd-timesyncd || exit 3
-  retrycmd 120 5 25 systemctl disable systemd-timesyncd || exit 3
-}
+
 installEtcd() {
   local  v
   v=$(etcd --version | grep "etcd Version" | cut -d ":" -f 2 | tr -d '[:space:]')
@@ -17651,7 +17648,6 @@ installDeps() {
     retrycmd 10 5 10 cp /tmp/microsoft.gpg /etc/apt/trusted.gpg.d/ || exit 26
     aptmarkWALinuxAgent hold
     packages+=" cgroup-lite ceph-common glusterfs-client"
-    disableTimeSyncd
     packages+=" ntp ntpstat chrony"
     {{/* STIG SV-238200r653775_rule, SV-238231r653868_rule, SV-238230r653865_rule */}}
     packages+=" vlock opensc-pkcs11 libpam-pkcs11"
