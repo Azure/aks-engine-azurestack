@@ -10,11 +10,11 @@ on:
       LINUX_NODE_IMAGE_VERSION:
         description: 'What is the Linux SIG image version?'
         required: true
-        default: 2024.010.2
+        default: 2024.019.5
       WINDOWS_NODE_IMAGE_VERSION:
         description: 'What is the Windows SIG image version?'
         required: true
-        default: 2024.010.2
+        default: 2024.019.5
   workflow_call:
     inputs:
       from_branch:

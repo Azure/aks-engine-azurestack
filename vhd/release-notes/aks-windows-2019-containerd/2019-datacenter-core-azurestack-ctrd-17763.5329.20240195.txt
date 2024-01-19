@@ -1,10 +1,10 @@
-﻿Build Number: 2024.010.2
-Build Id:     85482297
+﻿Build Number: 2024.019.5
+Build Id:     86006799
 Build Repo:   
-Build Branch: users/honcao/buildvhd3
-Commit:       b737eb71bd715ee981fb9a7f918bd558b3ac4864
+Build Branch: master
+Commit:       bc8a17736051599eb87ba74c2d1c72d8b0faf7fe
 
-VHD ID:      aa281aab-679a-4ee7-abfd-21ef0d1c0ab1
+VHD ID:      f449a685-d625-4dec-a36e-3b9cb74bd17c
 
 System Info
 	OS Name        : Windows Server 2019 Datacenter
@@ -57,7 +57,7 @@ Installed QFEs
 
 Installed Updates
 	2024-01 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5034273)
-	Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.403.1926.0) - Current Channel (Broad)
+	Security Intelligence Update for Microsoft Defender Antivirus - KB2267602 (Version 1.403.2375.0) - Current Channel (Broad)
 
 Windows Update Registry Settings
 	https://docs.microsoft.com/en-us/windows/deployment/update/waas-wu-settings
