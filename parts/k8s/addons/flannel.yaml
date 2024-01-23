@@ -72,9 +72,11 @@ spec:
           operator: Exists
           effect: NoSchedule
         - key: node-role.kubernetes.io/master
-          operator: Equal
-          value: "true"
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
         - key: CriticalAddonsOnly
           operator: Exists
       serviceAccountName: flannel

@@ -74,8 +74,10 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
+        operator: "Exists"
+        effect: NoSchedule        
+      - key: node-role.kubernetes.io/control-plane
+        operator: "Exists"
         effect: NoSchedule
       - operator: "Exists"
         effect: NoExecute
@@ -168,8 +170,10 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
+        operator: "Exists"
+        effect: NoSchedule            
+      - key: node-role.kubernetes.io/control-plane
+        operator: "Exists"
         effect: NoSchedule
       - operator: "Exists"
         effect: NoExecute

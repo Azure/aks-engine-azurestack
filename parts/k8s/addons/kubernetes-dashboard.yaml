@@ -216,6 +216,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
 ---
 kind: Service
 apiVersion: v1
@@ -288,6 +292,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
       volumes:
         - name: tmp-volume
           emptyDir: {}

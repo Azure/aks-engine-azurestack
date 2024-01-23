@@ -329,7 +329,7 @@ const (
 // Node Taint consts
 const (
 	// MasterNodeTaint is the node taint we apply to all master nodes
-	MasterNodeTaint string = "node-role.kubernetes.io/master=true:NoSchedule"
+	MasterNodeTaint string = "node-role.kubernetes.io/control-plane=true:NoSchedule"
 	// AADPodIdentityTaintKey is the node taint key for AAD Pod Identity-enabled clusters before NMI daemonset is ready
 	AADPodIdentityTaintKey string = "node.kubernetes.io/aad-pod-identity-not-ready"
 )

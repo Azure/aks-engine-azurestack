@@ -278,8 +278,12 @@ spec:
             memory: 20Mi
       terminationGracePeriodSeconds: 10
       tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -329,5 +333,9 @@ spec:
             memory: 20Mi
       terminationGracePeriodSeconds: 10
       tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"

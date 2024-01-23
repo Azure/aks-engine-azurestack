@@ -532,6 +532,8 @@ func (uc *UpgradeCluster) upgradedNotReadyStream(client kubernetes.Client, backo
 }
 
 func (uc *UpgradeCluster) getUpgradedNotReady(client kubernetes.Client, upgraded []string) ([]string, error) {
+	//TODO, the controlplane node will have both node-role.kubernetes.io/master and node-role.kubernetes.io/control-plane label
+	// if node-role.kubernetes.io/master is removed in future change, also update the following label selector
 	cpNodes, err := client.ListNodesByOptions(metav1.ListOptions{LabelSelector: "node-role.kubernetes.io/master"})
 	if err != nil {
 		return nil, err

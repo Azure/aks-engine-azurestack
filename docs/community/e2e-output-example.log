@@ -448,7 +448,7 @@ Labels:             beta.kubernetes.io/arch=amd64
                     kubernetes.io/hostname=k8s-master-24731180-0
                     kubernetes.io/os=linux
                     kubernetes.io/role=master
-                    node-role.kubernetes.io/master=
+                    node-role.kubernetes.io/control-plane=
                     node.kubernetes.io/exclude-disruption=true
                     node.kubernetes.io/exclude-from-external-load-balancers=true
                     node.kubernetes.io/instance-type=Standard_D2_v3
@@ -457,7 +457,7 @@ Labels:             beta.kubernetes.io/arch=amd64
 Annotations:        node.alpha.kubernetes.io/ttl: 0
                     volumes.kubernetes.io/controller-managed-attach-detach: true
 CreationTimestamp:  Thu, 23 Apr 2020 17:03:09 +0000
-Taints:             node-role.kubernetes.io/master=true:NoSchedule
+Taints:             node-role.kubernetes.io/control-plane=true:NoSchedule
 Unschedulable:      false
 Lease:
   HolderIdentity:  k8s-master-24731180-0
@@ -1328,7 +1328,7 @@ Node-Selectors:  kubernetes.io/os=linux
 Tolerations:     :NoExecute
                  :NoSchedule
                  CriticalAddonsOnly
-                 node-role.kubernetes.io/master:NoSchedule
+                 node-role.kubernetes.io/control-plane:NoSchedule
 Events:
   Type     Reason     Age                    From                            Message
   ----     ------     ----                   ----                            -------
@@ -1411,7 +1411,7 @@ Node-Selectors:  kubernetes.io/os=linux
 Tolerations:     :NoExecute
                  :NoSchedule
                  CriticalAddonsOnly
-                 node-role.kubernetes.io/master:NoSchedule
+                 node-role.kubernetes.io/control-plane:NoSchedule
 Events:
   Type    Reason     Age    From                                         Message
   ----    ------     ----   ----                                         -------

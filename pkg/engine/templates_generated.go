@@ -4939,8 +4939,12 @@ spec:
       tolerations:
       - key: CriticalAddonsOnly
         operator: Exists
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        operator: "Exists"
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        operator: "Exists"
+        effect: NoSchedule
       volumes:
       - configMap:
           name: antrea-config-mc8h75hbgg
@@ -8024,6 +8028,9 @@ spec:
         - key: "node-role.kubernetes.io/master"
           operator: "Exists"
           effect: "NoSchedule"
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
+          effect: "NoSchedule"
         - key: "node-role.kubernetes.io/controlplane"
           operator: "Exists"
           effect: "NoSchedule"
@@ -8261,8 +8268,10 @@ spec:
 {{- end}}
       tolerations:
         - key: "node-role.kubernetes.io/master"
-          operator: "Equal"
-          value: "true"
+          operator: "Exists"
+          effect: "NoSchedule"      
+        - key: "node-role.kubernetes.io/control-plane"
+          operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/controlplane"
           operator: "Equal"
@@ -9717,6 +9726,9 @@ spec:
       priorityClassName: system-cluster-critical
       tolerations:
         - key: "node-role.kubernetes.io/master"
+          operator: "Exists"
+          effect: "NoSchedule"      
+        - key: "node-role.kubernetes.io/control-plane"
           operator: "Exists"
           effect: "NoSchedule"
         - key: "node-role.kubernetes.io/controlplane"
@@ -11703,8 +11715,10 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
+        operator: "Exists"
+        effect: NoSchedule        
+      - key: node-role.kubernetes.io/control-plane
+        operator: "Exists"
         effect: NoSchedule
       - operator: "Exists"
         effect: NoExecute
@@ -11797,8 +11811,10 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
+        operator: "Exists"
+        effect: NoSchedule            
+      - key: node-role.kubernetes.io/control-plane
+        operator: "Exists"
         effect: NoSchedule
       - operator: "Exists"
         effect: NoExecute
@@ -12036,10 +12052,12 @@ spec:
       priorityClassName: system-node-critical{{GetHostNetwork}}
       serviceAccountName: cluster-autoscaler
       tolerations:
-      - effect: NoSchedule
-        operator: "Equal"
-        value: "true"
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
       nodeSelector:
         kubernetes.azure.com/role: master
         kubernetes.io/os: linux
@@ -13210,6 +13228,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
         - key: CriticalAddonsOnly
           operator: "Exists"
         - operator: "Exists"
@@ -13390,6 +13412,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
         - key: CriticalAddonsOnly
           operator: "Exists"
         - operator: "Exists"
@@ -13506,9 +13532,11 @@ spec:
           operator: Exists
           effect: NoSchedule
         - key: node-role.kubernetes.io/master
-          operator: Equal
-          value: "true"
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
         - key: CriticalAddonsOnly
           operator: Exists
       serviceAccountName: flannel
@@ -13648,9 +13676,11 @@ spec:
       - key: CriticalAddonsOnly
         operator: Exists
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
         effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
       - operator: "Exists"
         effect: NoExecute
       - operator: "Exists"
@@ -14010,9 +14040,11 @@ spec:
       priorityClassName: system-node-critical
       tolerations:
       - key: node-role.kubernetes.io/master
-        operator: Equal
-        value: "true"
         effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
       - operator: "Exists"
         effect: NoExecute
       - operator: "Exists"
@@ -14307,6 +14339,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
 ---
 kind: Service
 apiVersion: v1
@@ -14379,6 +14415,10 @@ spec:
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
+          operator: "Exists"
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
+          operator: "Exists"
       volumes:
         - name: tmp-volume
           emptyDir: {}
@@ -15270,8 +15310,12 @@ spec:
             memory: 20Mi
       terminationGracePeriodSeconds: 10
       tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
@@ -15321,8 +15365,12 @@ spec:
             memory: 20Mi
       terminationGracePeriodSeconds: 10
       tolerations:
-      - effect: NoSchedule
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
 `)
 
 func k8sAddonsScheduledMaintenanceDeploymentYamlBytes() ([]byte, error) {
