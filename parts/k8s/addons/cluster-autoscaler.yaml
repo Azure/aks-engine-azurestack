@@ -170,10 +170,12 @@ spec:
       priorityClassName: system-node-critical{{GetHostNetwork}}
       serviceAccountName: cluster-autoscaler
       tolerations:
-      - effect: NoSchedule
-        operator: "Equal"
-        value: "true"
-        key: node-role.kubernetes.io/master
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+        operator: "Exists"
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+        operator: "Exists"
       nodeSelector:
         kubernetes.azure.com/role: master
         kubernetes.io/os: linux
