@@ -13,7 +13,7 @@ tolerations:
   effect: NoSchedule
 
 ```
-- Use the new AzureDisk CSI Driver v1.29.1 for k8s v1.28+. Use AzureDisk CSI Driver v1.26.5 for k8s v1.26.
+- Use the new AzureDisk CSI Driver v1.29.1 for k8s v1.28+. Use AzureDisk CSI Driver v1.28.3 for k8s v1.27. Use AzureDisk CSI Driver v1.26.5 for k8s v1.26.
   - See [Azure Disk CSI Driver: Version Mapping](../docs/topics/azure-stack.md#azure-disk-csi-driver-version-mapping) for more details.
 
 
