@@ -3,10 +3,20 @@
 # Attention!
 
 Notable changes in this release:
+
+- The control-plane nodes' taint has been changed from node-role.kubernetes.io/master to node-role.kubernetes.io/control-plane, requiring users to update tolerations in their applications to schedule pods on these nodes. Example:
+
+```
+tolerations:
+- key: node-role.kubernetes.io/control-plane
+  operator: "Exists"
+  effect: NoSchedule
+
+```
 - Use the new AzureDisk CSI Driver v1.29.1 for k8s v1.28+. Use AzureDisk CSI Driver v1.26.5 for k8s v1.26.
   - See [Azure Disk CSI Driver: Version Mapping](../docs/topics/azure-stack.md#azure-disk-csi-driver-version-mapping) for more details.
 
-  
+
 <a name="v0.80.1"></a>
 # [v0.80.1] - 2024-01-24
 
