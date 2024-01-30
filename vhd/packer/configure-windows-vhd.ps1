@@ -327,7 +327,7 @@ if (-not ($validContainerRuntimes -contains $containerRuntime)) {
 }
 
 $windowsServerVersion = $env:WindowsServerVersion
-$validWindowsServerContainers = @('2019', '2004')
+$validWindowsServerContainers = @('2022', '2019', '2004')
 if (-not ($validWindowsServerContainers -contains $windowsServerVersion)) {
     Write-Host "Unsupported Windows Server version: $windowsServerVersion"
     exit 1
