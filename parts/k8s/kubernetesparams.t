@@ -239,7 +239,7 @@
       "type": "string"
     },
     "containerdVersion": {
-      "defaultValue": "1.6.21",
+      "defaultValue": "1.6.28",
       "metadata": {
         "description": "The Azure containerd build version"
       },
@@ -261,7 +261,8 @@
          "1.5.11",
          "1.5.13",
          "1.5.16",
-         "1.6.21"
+         "1.6.21",
+         "1.6.28"
        ],
       "type": "string"
     },
