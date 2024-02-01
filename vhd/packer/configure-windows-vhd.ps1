@@ -50,8 +50,8 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/oss/kubernetes/pause:1.4.1",
                 "mcr.microsoft.com/oss/kubernetes/pause:3.4.1",
                 "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-                "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.27.4",
-                "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.28.0",
+                "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.27.13",
+                "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.28.5",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0-windows-hp",
                 "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5",
@@ -125,8 +125,8 @@ function Get-FilesToCacheOnVHD {
             "https://kubernetesartifacts.azureedge.net/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.28.5/windowszip/v1.28.5-1int.zip",
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.27.9/windowszip/v1.27.9-1int.zip"
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.28.6/windowszip/v1.28.6-1int.zip",
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.27.10/windowszip/v1.27.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://kubernetesartifacts.azureedge.net/azure-cni/v1.4.32/binaries/azure-vnet-cni-singletenancy-windows-amd64-v1.4.32.zip"
