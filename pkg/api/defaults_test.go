@@ -6185,9 +6185,9 @@ func ExampleContainerService_setOrchestratorDefaults() {
 
 	// Output:
 	// level=warning msg="Moby will be upgraded to version 20.10.14\n"
-	// level=warning msg="containerd will be upgraded to version 1.6.21\n"
+	// level=warning msg="containerd will be upgraded to version 1.6.28\n"
 	// level=warning msg="Any new nodes will have Moby version 20.10.14\n"
-	// level=warning msg="Any new nodes will have containerd version 1.6.21\n"
+	// level=warning msg="Any new nodes will have containerd version 1.6.28\n"
 }
 
 func TestCombineValues(t *testing.T) {
