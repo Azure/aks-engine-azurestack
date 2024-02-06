@@ -12,6 +12,8 @@ on:
 jobs:
   create-release-branch:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write 
     steps:
       - name: validate version
         run: echo "${{github.event.inputs.release_version}}" | grep -E 'v[0-9]+\.[0-9]+\.[0-9]+$'
@@ -26,6 +28,8 @@ jobs:
   generate-release-changelog:
     needs: create-release-branch
     runs-on: ubuntu-latest
+    permissions: 
+      contents: write 
     steps:
       - uses: actions/checkout@v3
         with:
