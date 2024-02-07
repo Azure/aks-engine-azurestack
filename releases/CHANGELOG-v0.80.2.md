@@ -18,7 +18,7 @@ tolerations:
 <a name="v0.80.2"></a>
 # [v0.80.2] - 2024-02-06
 ### Maintenance 🔧
-- update Linux and Windows VHDs for Janurary 2024 ([#230](https://github.com/Azure/aks-engine-azurestack/issues/230))
+- update Linux and Windows VHDs for February 2024 ([#230](https://github.com/Azure/aks-engine-azurestack/issues/230))
 - update containerd version to 1.6.28 and runc version to 1.1.12 ([#229](https://github.com/Azure/aks-engine-azurestack/issues/229))
 - support Kubernetes v1.27.10 and 1.28.6 ([#228](https://github.com/Azure/aks-engine-azurestack/issues/228))
 
