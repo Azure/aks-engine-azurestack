@@ -1,5 +1,4 @@
 name: Test VHD No Egress
-
 on:
   workflow_dispatch:
     inputs:
@@ -26,14 +25,24 @@ on:
       WINDOWS_NODE_IMAGE_VERSION:
         type: string
         required: true
+permissions:
+  id-token: write
+  contents: read
 jobs:
   e2e:
+    environment: e2e
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: ${{inputs.from_branch}}
+      - name: Log into Azure
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -61,11 +70,10 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.27"
           CLUSTER_DEFINITION: "examples/no_outbound.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           LOCATION: "eastus"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          TENANT_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           CLEANUP_ON_EXIT: false
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
@@ -75,34 +83,35 @@ jobs:
           RETAIN_SSH: true
           BLOCK_OUTBOUND_INTERNET: true
           CONTAINER_RUNTIME: containerd
-          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
           WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
           WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
           WINDOWS_NODE_IMAGE_VERSION: ${{inputs.WINDOWS_NODE_IMAGE_VERSION}}
-          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
           LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
           LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
           LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
+          USE_MANAGED_IDENTITY: true
+          MSI_USER_ASSIGNED_ID: ${{ secrets.AZURE_UAI_ID }}
         run: make test-kubernetes
       - name: Validate 1.27 no-egress scenario, upgrade
-        run : |
+        run: |
           RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
           REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
           CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
           TARGET_VERSION=$(bin/aks-engine-azurestack get-versions | grep -E "^${CURRENT_VERSION}" | xargs | cut -d" " -f2); \
           ./bin/aks-engine-azurestack upgrade --force \
-          --subscription-id ${{ secrets.TEST_AZURE_SUB_ID }} \
+          --subscription-id ${{ secrets.AZURE_SUBSCRIPTION_ID }} \
           --api-model _output/$RESOURCE_GROUP/apimodel.json \
           --location $REGION \
           --resource-group $RESOURCE_GROUP \
           --upgrade-version $TARGET_VERSION \
           --vm-timeout 20 \
-          --client-id ${{ secrets.TEST_AZURE_SP_ID }} \
-          --client-secret ${{ secrets.TEST_AZURE_SP_PW }}
+          --client-id ${{ secrets.AZURE_CLIENT_ID }}
       - name: Validate 1.27 no-egress scenario, remove known hosts
-        run : |
+        run: |
           RESOURCE_GROUP=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2); \
           REGION=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2 | cut -d- -f2); \
           CURRENT_VERSION=$(jq -r .properties.orchestratorProfile.orchestratorVersion _output/${RESOURCE_GROUP}/apimodel.json); \
@@ -113,11 +122,10 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.27"
           CLUSTER_DEFINITION: "examples/no_outbound.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           LOCATION: "eastus"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          TENANT_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
@@ -127,7 +135,7 @@ jobs:
           RETAIN_SSH: false
           BLOCK_OUTBOUND_INTERNET: true
           CONTAINER_RUNTIME: containerd
-        run : |
+        run: |
           export NAME=$(ls -dt1 _output/* | head -n 1 | cut -d/ -f2);\
           make test-kubernetes
       - name: Validate 1.28 no-egress scenario, deploy and test suite after deploy
@@ -135,11 +143,10 @@ jobs:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.28"
           CLUSTER_DEFINITION: "examples/no_outbound.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+          SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           LOCATION: "eastus"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          TENANT_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
@@ -149,15 +156,17 @@ jobs:
           RETAIN_SSH: false
           BLOCK_OUTBOUND_INTERNET: true
           CONTAINER_RUNTIME: containerd
-          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
           WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
           WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
           WINDOWS_NODE_IMAGE_VERSION: ${{inputs.WINDOWS_NODE_IMAGE_VERSION}}
-          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+          LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
           LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
           LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
           LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
           LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
+          USE_MANAGED_IDENTITY: true
+          MSI_USER_ASSIGNED_ID: ${{ secrets.AZURE_UAI_ID }}
         run: |
           make test-kubernetes
