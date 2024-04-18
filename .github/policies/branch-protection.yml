@@ -34,6 +34,9 @@ configuration:
       requiresStrictStatusChecks: true
       # Indicates whether there are restrictions on who can push. boolean. Should be set with whoCanPush.
       restrictsPushes: true
+      # Requires restrictsPushes. The user / team must have at least write (push) permissions otherwise it will be omitted in the applied rule
+      whoCanPush:
+      - aks-engine-azurestack # https://github.com/orgs/Azure/teams/aks-engine-azurestack
       # Restrict who can dismiss pull request reviews. boolean
       restrictsReviewDismissals: false
 
@@ -68,6 +71,9 @@ configuration:
       requiresStrictStatusChecks: false
       # Indicates whether there are restrictions on who can push. boolean. Should be set with whoCanPush.
       restrictsPushes: true
+      # Requires restrictsPushes. The user / team must have at least write (push) permissions otherwise it will be omitted in the applied rule
+      whoCanPush:
+      - aks-engine-azurestack # https://github.com/orgs/Azure/teams/aks-engine-azurestack
       # Restrict who can dismiss pull request reviews. boolean
       restrictsReviewDismissals: false
 
