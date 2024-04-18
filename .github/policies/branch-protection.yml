@@ -37,7 +37,7 @@ configuration:
       # Restrict who can dismiss pull request reviews. boolean
       restrictsReviewDismissals: false
 
-    - branchNamePattern: master
+    - branchNamePattern: "~default~"
       # Specifies whether this branch can be deleted. boolean
       allowsDeletions: false
       # Specifies whether forced pushes are allowed on this branch. boolean
