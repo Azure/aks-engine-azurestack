@@ -72,7 +72,7 @@ configuration:
       - pr-e2e
       - GitOps/AdvancedSecurity
       # Require branches to be up to date before merging. boolean
-      requiresStrictStatusChecks: true
+      requiresStrictStatusChecks: false
       # Indicates whether there are restrictions on who can push. boolean. Should be set with whoCanPush.
       restrictsPushes: true
       # Requires restrictsPushes. The user / team must have at least write (push) permissions otherwise it will be omitted in the applied rule
