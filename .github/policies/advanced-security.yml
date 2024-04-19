@@ -1,0 +1,9 @@
+name: Advanced Security Settings
+description: SDL Requirements
+resource: repository
+configuration:
+    advancedSecurity:
+        secretScanning: true
+        secretScanningPushProtection: true
+        enablePrCheck: true
+        failOnSeverity: Moderate
