@@ -163,4 +163,4 @@ In summary, when creating single clusters, and especially when maintaining Kuber
 
 ### Can I re-run `aks-engine-azurestack deploy` on an existing cluster to update the cluster configuration?
 
-No. See [addpool](addpool.md), [update](update.md), [scale](scale.md), and [upgrade](upgrade.md) for documentation describing how to continue to use AKS Engine to maintain your cluster configuration over time.
+No. See [addpool](addpool.md), [scale](scale.md), and [upgrade](upgrade.md) for documentation describing how to continue to use AKS Engine to maintain your cluster configuration over time.

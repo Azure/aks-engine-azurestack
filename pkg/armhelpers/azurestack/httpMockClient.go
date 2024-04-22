@@ -43,7 +43,6 @@ const (
 	offer                                      = "DefaultOffer"
 	version                                    = "DefaultVersion"
 	filePathTokenResponse                      = "httpMockClientData/tokenResponse.json"
-	filePathListLocations                      = "httpMockClientData/listLocations.json"
 	filePathListVirtualMachineScaleSets        = "httpMockClientData/listVirtualMachineScaleSets.json"
 	filePathListVirtualMachineScaleSetVMs      = "httpMockClientData/listVirtualMachineScaleSetVMs.json"
 	filePathListVirtualMachines                = "httpMockClientData/listVirtualMachines.json"
@@ -89,7 +88,6 @@ type HTTPMockClient struct {
 	Sku                                        string
 	Offer                                      string
 	Version                                    string
-	ResponseListLocations                      string
 	ResponseListVirtualMachineScaleSets        string
 	ResponseListVirtualMachineScaleSetVMs      string
 	ResponseListVirtualMachines                string
@@ -214,11 +212,6 @@ func NewHTTPMockClient() (HTTPMockClient, error) {
 		return client, err
 	}
 
-	client.ResponseListLocations, err = readFromFile(filePathListLocations)
-	if err != nil {
-		return client, err
-	}
-
 	return client, nil
 }
 
@@ -315,18 +308,6 @@ func (mc HTTPMockClient) RegisterListVirtualMachines() {
 	})
 }
 
-// RegisterListLocations registers the mock response for ListVirtualMachines
-func (mc HTTPMockClient) RegisterListLocations() {
-	pattern := fmt.Sprintf("/subscriptions/%s/locations", mc.SubscriptionID)
-	mc.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("api-version") != mc.SubscriptionsAPIVersion {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			_, _ = fmt.Fprint(w, mc.ResponseListLocations)
-		}
-	})
-}
-
 // RegisterGetAvailabilitySet registers the mock response for GetAvailabilitySet.
 func (mc HTTPMockClient) RegisterGetAvailabilitySet() {
 	pattern := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Compute/availabilitySets/vmavailabilitysetName", mc.SubscriptionID, mc.ResourceGroup)
@@ -349,11 +330,6 @@ func (mc HTTPMockClient) RegisterGetAvailabilitySetFaultDomainCount() {
 			_, _ = fmt.Fprint(w, mc.ResponseGetAvailabilitySet)
 		}
 	})
-}
-
-// RegisterListResourceSkus registers a mock response for ListResourceSkus.
-func (mc HTTPMockClient) RegisterListResourceSkus() {
-	// Not implemented on Azure Stack.
 }
 
 // RegisterVirtualMachineEndpoint registers mock responses for the Microsoft.Compute/virtualMachines endpoint
