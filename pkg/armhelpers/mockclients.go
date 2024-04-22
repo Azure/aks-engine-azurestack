@@ -20,7 +20,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2016-06-01/subscriptions"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/go-autorest/autorest"
@@ -611,23 +610,12 @@ func (mc *MockAKSEngineClient) DeployTemplate(ctx context.Context, resourceGroup
 	}
 }
 
-// ListLocations mock
-func (mc *MockAKSEngineClient) ListLocations(ctx context.Context) (*[]subscriptions.Location, error) {
-	locations := []subscriptions.Location{}
-	return &locations, nil
-}
-
 // EnsureResourceGroup mock
 func (mc *MockAKSEngineClient) EnsureResourceGroup(ctx context.Context, resourceGroup, location string, managedBy *string) (*resources.Group, error) {
 	if mc.FailEnsureResourceGroup {
 		return nil, errors.New("EnsureResourceGroup failed")
 	}
 
-	return nil, nil
-}
-
-// ListResourceSkus mock
-func (mc *MockAKSEngineClient) ListResourceSkus(ctx context.Context, filter string) (ResourceSkusResultPage, error) {
 	return nil, nil
 }
 

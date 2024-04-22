@@ -74,11 +74,8 @@ func NewRootCmd() *cobra.Command {
 	rootCmd.AddCommand(newOrchestratorsCmd())
 	rootCmd.AddCommand(newUpgradeCmd())
 	rootCmd.AddCommand(newScaleCmd())
-	rootCmd.AddCommand(newUpdateCmd())
 	rootCmd.AddCommand(newRotateCertsCmd())
 	rootCmd.AddCommand(newAddPoolCmd())
-	rootCmd.AddCommand(newGetLocationsCmd())
-	rootCmd.AddCommand(newGetSkusCmd())
 	rootCmd.AddCommand(getCompletionCmd(rootCmd))
 
 	return rootCmd
