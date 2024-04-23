@@ -5,6 +5,7 @@
             "kubernetesConfig": {
                 "useCloudControllerManager": true,
                 "useManagedIdentity": true,
+                "userAssignedID": "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourceGroups/AKSeVHDs/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akse-e2e-uai",
                 "containerRuntime": "containerd",
                 "addons": [
                     {
