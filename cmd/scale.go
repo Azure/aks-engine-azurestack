@@ -15,7 +15,6 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
-	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
@@ -226,11 +225,6 @@ func (sc *scaleCmd) load() error {
 		}
 	}
 
-	// Back-compat logic to populate the VMSSName property for clusters built prior to VMSSName being a part of the API model spec
-	if sc.agentPool.IsVirtualMachineScaleSets() && sc.agentPool.VMSSName == "" {
-		sc.agentPool.VMSSName = sc.containerService.Properties.GetAgentVMPrefix(sc.agentPool, sc.agentPoolIndex)
-	}
-
 	//allows to identify VMs in the resource group that belong to this cluster.
 	sc.nameSuffix = sc.containerService.Properties.GetClusterID()
 	log.Debugf("Cluster ID used in all agent pools: %s", sc.nameSuffix)
@@ -409,40 +403,6 @@ func (sc *scaleCmd) run(cmd *cobra.Command, args []string) error {
 
 			if sc.persistAPIModel {
 				return sc.saveAPIModel()
-			}
-		}
-	} else {
-		for vmssListPage, err := sc.client.ListVirtualMachineScaleSets(ctx, sc.resourceGroupName); vmssListPage.NotDone(); err = vmssListPage.NextWithContext(ctx) {
-			if err != nil {
-				return errors.Wrap(err, "failed to get VMSS list in the resource group")
-			}
-			for _, vmss := range vmssListPage.Values() {
-				vmssName := to.String(vmss.Name)
-				if sc.agentPool.VMSSName == vmssName {
-					log.Infof("found VMSS %s in resource group %s that correlates with node pool %s", vmssName, sc.resourceGroupName, sc.agentPoolToScale)
-				} else {
-					continue
-				}
-
-				if vmss.Sku != nil {
-					currentNodeCount = int(*vmss.Sku.Capacity)
-					if int(*vmss.Sku.Capacity) == sc.newDesiredAgentCount && !sc.updateVMSSModel {
-						sc.printScaleTargetEqualsExisting(currentNodeCount)
-						return nil
-					} else if int(*vmss.Sku.Capacity) > sc.newDesiredAgentCount {
-						log.Warnf("VMSS scale down is an alpha feature: VMSS VM nodes will not be cordoned and drained before scaling down!")
-					}
-				} else {
-					// Fall back to comparing against the known count value in the api model
-					if sc.agentPool.Count == sc.newDesiredAgentCount {
-						sc.printScaleTargetEqualsExisting(currentNodeCount)
-						return nil
-					}
-				}
-
-				currentNodeCount = int(*vmss.Sku.Capacity)
-				highestUsedIndex = 0
-				break
 			}
 		}
 	}
