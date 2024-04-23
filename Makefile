@@ -129,16 +129,11 @@ checksum:
 clean: tools-clean
 	@rm -rf $(BINDIR) ./_dist ./pkg/helpers/unit_tests
 
-GIT_BASEDIR    = $(shell git rev-parse --show-toplevel 2>/dev/null)
-ifneq ($(GIT_BASEDIR),)
-	LDFLAGS += -X github.com/Azure/aks-engine-azurestack/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
-endif
-
 ginkgoBuild: generate
 	make -C ./test/e2e ginkgo-build
 
 test: generate
-	ginkgo -mod=vendor -skipPackage test/e2e -failFast -r -v -tags=fast -ldflags '$(LDFLAGS)' .
+	ginkgo -mod=vendor -junit-report -skip-package test/e2e -fail-fast -r -v -tags=fast .
 
 .PHONY: test-style
 test-style: validate-go validate-shell validate-copyright-headers
