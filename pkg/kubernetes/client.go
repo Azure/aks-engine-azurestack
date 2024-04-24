@@ -225,7 +225,9 @@ func (c *ClientSetClient) WaitForDelete(logger *log.Entry, pods []v1.Pod, usingE
 	if usingEviction {
 		verbStr = "evicted"
 	}
-	err := wait.PollImmediate(c.interval, c.timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), c.timeout)
+	defer cancel()
+	err := wait.PollUntilContextCancel(ctx, c.interval, true, func(ctx context.Context) (bool, error) {
 		pendingPods := []v1.Pod{}
 		for i, pod := range pods {
 			p, err := c.getPod(pod.Namespace, pod.Name)
