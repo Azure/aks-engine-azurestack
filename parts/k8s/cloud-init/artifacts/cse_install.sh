@@ -41,9 +41,9 @@ installDeps() {
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
-    retrycmd_no_stats 120 5 25 curl ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/prod.list >/tmp/microsoft-prod.list || exit 25
+    retrycmd_no_stats 120 5 25 curl -L ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/prod.list >/tmp/microsoft-prod.list || exit 25
     retrycmd 10 5 10 cp /tmp/microsoft-prod.list /etc/apt/sources.list.d/ || exit 25
-    retrycmd_no_stats 120 5 25 curl ${MS_APT_REPO}/keys/microsoft.asc -L | gpg --dearmor >/tmp/microsoft.gpg || exit 26
+    retrycmd_no_stats 120 5 25 curl -L ${MS_APT_REPO}/keys/microsoft.asc | gpg --dearmor >/tmp/microsoft.gpg || exit 26
     retrycmd 10 5 10 cp /tmp/microsoft.gpg /etc/apt/trusted.gpg.d/ || exit 26
     aptmarkWALinuxAgent hold
     packages+=" cgroup-lite ceph-common glusterfs-client"
