@@ -4,6 +4,7 @@
 package rotatecerts
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -26,7 +27,9 @@ func waitForNodesCondition(client internal.KubeClient, condition nodesCondition,
 	var nl *v1.NodeList
 	var err error
 	var successesCount int
-	err = wait.PollImmediate(interval, timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err = wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 		nl, err = client.ListNodes()
 		if err != nil {
 			return false, err
@@ -82,7 +85,9 @@ func waitForPodsCondition(client internal.KubeClient, namespace string, conditio
 	var listErr, condErr error
 	var successesCount int
 	var pl *v1.PodList
-	err := wait.PollImmediate(interval, timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 		pl, listErr = client.ListPods(namespace, metav1.ListOptions{})
 		if listErr != nil {
 			return false, listErr
@@ -176,7 +181,9 @@ func waitForDaemonSetCondition(client internal.KubeClient, namespace string, con
 	var listErr, condErr error
 	var successesCount int
 	var dsl *appsv1.DaemonSetList
-	err := wait.PollImmediate(interval, timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 		dsl, listErr = client.ListDaemonSets(namespace, metav1.ListOptions{})
 		if listErr != nil {
 			return false, listErr
@@ -222,7 +229,9 @@ func waitForDeploymentCondition(client internal.KubeClient, namespace string, co
 	var listErr, condErr error
 	var successesCount int
 	var dl *appsv1.DeploymentList
-	err := wait.PollImmediate(interval, timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 		dl, listErr = client.ListDeployments(namespace, metav1.ListOptions{})
 		if listErr != nil {
 			return false, listErr
@@ -265,7 +274,9 @@ func allDeploymentReplicasUpdatedCondition(dsl *appsv1.DeploymentList) error {
 func WaitForVMsRunning(client internal.ARMClient, resourceGroupName string, requiredVMs []string, interval, timeout time.Duration) error {
 	var err error
 	var successesCount int
-	err = wait.PollImmediate(interval, timeout, func() (bool, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+	err = wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 		allRunning := true
 		for _, vm := range requiredVMs {
 			var state string

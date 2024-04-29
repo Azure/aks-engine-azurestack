@@ -21,7 +21,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/golang/mock/gomock"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -55,7 +55,7 @@ func TestUpgradeCluster(t *testing.T) {
 	RunSpecsWithReporters(t, "kubernetesupgrade", "Server Suite")
 }
 
-var _ = Describe("Upgrade Kubernetes cluster tests", func() {
+var _ = Describe("Upgrade Kubernetes cluster tests", Serial, func() {
 	initialVersion := common.RationalizeReleaseAndVersion(common.Kubernetes, "", "", false, false, false)
 	versionSplit := strings.Split(initialVersion, ".")
 	minorVersion, _ := strconv.Atoi(versionSplit[1])

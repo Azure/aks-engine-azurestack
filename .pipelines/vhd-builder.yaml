@@ -2,7 +2,7 @@ name: $(Year:yyyy).$(DayOfYear).$(Rev:r)_Ubuntu_$(UBUNTU_SKU)
 trigger: none
 
 variables:
-  CONTAINER_IMAGE: 'mcr.microsoft.com/oss/azcu/go-dev:v1.36.2'
+  CONTAINER_IMAGE: 'mcr.microsoft.com/oss/azcu/go-dev:v1.38.3'
 
 pool:
   vmImage: 'Ubuntu 20.04'

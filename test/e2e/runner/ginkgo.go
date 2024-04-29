@@ -42,12 +42,18 @@ func (g *Ginkgo) Run() error {
 	// use the test bin rather than compile the directory b/c the compile will happen in a sub dir which is another module
 	testFile := fmt.Sprintf("test/e2e/%s/%s.test", g.Config.Orchestrator, g.Config.Orchestrator)
 
-	args := []string{"-slowSpecThreshold", "180", "-r", "-v"}
+	args := []string{"-poll-progress-after", "180s", "-poll-progress-interval", "60s", "-r", "-v"}
+	args = append(args, "-junit-report")
+	if g.Config.GinkgoJUnitReportPath == "" {
+		args = append(args, "test/e2e/kubernetes/junit.xml")
+	} else {
+		args = append(args, g.Config.GinkgoJUnitReportPath)
+	}
 	if g.Config.GinkgoParallel {
 		args = append(args, "-p")
 	}
 	if g.Config.GinkgoFailFast {
-		args = append(args, "-failFast")
+		args = append(args, "-fail-fast")
 	}
 	if g.Config.GinkgoFocus != "" {
 		args = append(args, "-focus")

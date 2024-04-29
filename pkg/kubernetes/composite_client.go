@@ -5,6 +5,7 @@ package kubernetes
 
 import (
 	"crypto/x509"
+	"errors"
 	"net/url"
 	"time"
 
@@ -63,7 +64,7 @@ type listPodsResult struct {
 
 // ListPods returns Pods based on the passed in list options.
 func (c *CompositeClientSet) ListPods(namespace string, opts metav1.ListOptions) (*v1.PodList, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listPodsResult {
 		stream := make(chan listPodsResult)
 		exec := func(client internal.Client) {
@@ -98,7 +99,7 @@ type listNodesResult struct {
 
 // ListNodes returns a list of Nodes registered in the api server.
 func (c *CompositeClientSet) ListNodes() (x *v1.NodeList, err error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listNodesResult {
 		stream := make(chan listNodesResult)
 		exec := func(client internal.Client) {
@@ -133,7 +134,7 @@ type listServiceAccountsResult struct {
 
 // ListServiceAccounts returns a list of Service Accounts in the provided namespace.
 func (c *CompositeClientSet) ListServiceAccounts(namespace string, opts metav1.ListOptions) (*v1.ServiceAccountList, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listServiceAccountsResult {
 		stream := make(chan listServiceAccountsResult)
 		exec := func(client internal.Client) {
@@ -168,7 +169,7 @@ type listDeploymentsResult struct {
 
 // ListDeployments returns a list of deployments in the provided namespace.
 func (c *CompositeClientSet) ListDeployments(namespace string, opts metav1.ListOptions) (*appsv1.DeploymentList, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listDeploymentsResult {
 		stream := make(chan listDeploymentsResult)
 		exec := func(client internal.Client) {
@@ -203,7 +204,7 @@ type listDaemonSetsResult struct {
 
 // ListDaemonSets returns a list of daemonsets in the provided namespace.
 func (c *CompositeClientSet) ListDaemonSets(namespace string, opts metav1.ListOptions) (*appsv1.DaemonSetList, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listDaemonSetsResult {
 		stream := make(chan listDaemonSetsResult)
 		exec := func(client internal.Client) {
@@ -238,7 +239,7 @@ type listSecretsResult struct {
 
 // ListSecrets returns a list of secrets in the provided namespace.
 func (c *CompositeClientSet) ListSecrets(namespace string, opts metav1.ListOptions) (*v1.SecretList, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan listSecretsResult {
 		stream := make(chan listSecretsResult)
 		exec := func(client internal.Client) {
@@ -273,7 +274,7 @@ type deploymentResult struct {
 
 // GetDeployment blah.
 func (c *CompositeClientSet) GetDeployment(namespace, name string) (*appsv1.Deployment, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan deploymentResult {
 		stream := make(chan deploymentResult)
 		exec := func(client internal.Client) {
@@ -303,7 +304,7 @@ func (c *CompositeClientSet) GetDeployment(namespace, name string) (*appsv1.Depl
 
 // PatchDeployment applies a JSON patch to a deployment in the provided namespace.
 func (c *CompositeClientSet) PatchDeployment(namespace, name, jsonPatch string) (*appsv1.Deployment, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan deploymentResult {
 		stream := make(chan deploymentResult)
 		exec := func(client internal.Client) {
@@ -338,7 +339,7 @@ type daemonsetResult struct {
 
 // PatchDaemonSet applies a JSON patch to a daemonset in the provided namespace.
 func (c *CompositeClientSet) PatchDaemonSet(namespace, name, jsonPatch string) (*appsv1.DaemonSet, error) {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan daemonsetResult {
 		stream := make(chan daemonsetResult)
 		exec := func(client internal.Client) {
@@ -368,7 +369,7 @@ func (c *CompositeClientSet) PatchDaemonSet(namespace, name, jsonPatch string) (
 
 // DeletePods deletes all pods in a namespace that match the option filters.
 func (c *CompositeClientSet) DeletePods(namespace string, opts metav1.ListOptions) error {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan error {
 		stream := make(chan error)
 		exec := func(client internal.Client) {
@@ -398,7 +399,7 @@ func (c *CompositeClientSet) DeletePods(namespace string, opts metav1.ListOption
 
 // DeleteServiceAccount deletes the passed in service account.
 func (c *CompositeClientSet) DeleteServiceAccount(serviceAccount *v1.ServiceAccount) error {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan error {
 		stream := make(chan error)
 		exec := func(client internal.Client) {
@@ -428,7 +429,7 @@ func (c *CompositeClientSet) DeleteServiceAccount(serviceAccount *v1.ServiceAcco
 
 // DeleteSecret deletes the passed in secret.
 func (c *CompositeClientSet) DeleteSecret(secret *v1.Secret) error {
-	lastError := wait.ErrWaitTimeout
+	lastError := wait.ErrorInterrupted(errors.New("timed out waiting for the condition"))
 	result := func(oldCAClient, newCAClient internal.Client) <-chan error {
 		stream := make(chan error)
 		exec := func(client internal.Client) {

@@ -1,6 +1,6 @@
 {
 	"name": "Go for aks-engine-azurestack",
-	"image": "mcr.microsoft.com/oss/azcu/go-dev:v1.36.2",
+	"image": "mcr.microsoft.com/oss/azcu/go-dev:v1.38.3",
 	"customizations": {
 		"vscode": {
 			"extensions": [

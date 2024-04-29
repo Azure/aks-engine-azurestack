@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
