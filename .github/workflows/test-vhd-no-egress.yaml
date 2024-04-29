@@ -66,6 +66,8 @@ jobs:
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          USE_MANAGED_IDENTITY: true
+          MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
           CLEANUP_ON_EXIT: false
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
@@ -118,6 +120,8 @@ jobs:
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          USE_MANAGED_IDENTITY: true
+          MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
@@ -140,6 +144,8 @@ jobs:
           CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
           LOCATION: "eastus"
           TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+          USE_MANAGED_IDENTITY: true
+          MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
           CLEANUP_ON_EXIT: true
           CLEANUP_IF_FAIL: true
           SKIP_LOGS_COLLECTION: true
