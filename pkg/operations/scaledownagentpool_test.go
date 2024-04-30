@@ -7,14 +7,16 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
-	. "github.com/Azure/aks-engine-azurestack/pkg/test"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	log "github.com/sirupsen/logrus"
 )
 
 func TestOperations(t *testing.T) {
-	RunSpecsWithReporters(t, "operations", "Server Suite")
+	RegisterFailHandler(Fail)
+	_, reporterConfig := GinkgoConfiguration()
+	reporterConfig.JUnitReport = "junit.xml"
+	RunSpecs(t, "Server Suite", reporterConfig)
 }
 
 var _ = Describe("Scale down vms operation tests", func() {

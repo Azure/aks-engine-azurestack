@@ -38,12 +38,6 @@ type ARMClient interface {
 	// RestartVirtualMachine restarts the specified virtual machine.
 	RestartVirtualMachine(resourceGroup, vmName string) error
 
-	// RestartVirtualMachineScaleSets restarts the specified virtual machine scale set.
-	RestartVirtualMachineScaleSets(resourceGroup, vmssName string) error
-
 	// GetVirtualMachinePowerState returns the virtual machine's Power state.
 	GetVirtualMachinePowerState(resourceGroup, vmName string) (string, error)
-
-	// GetVirtualMachineScaleSetInstancePowerState returns the virtual machine's Power state.
-	GetVirtualMachineScaleSetInstancePowerState(resourceGroup, vmssName, instanceID string) (string, error)
 }

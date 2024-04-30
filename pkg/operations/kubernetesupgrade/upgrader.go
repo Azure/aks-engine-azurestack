@@ -7,7 +7,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"math/rand"
 	"strings"
 	"time"
 
@@ -104,20 +103,13 @@ func (ku *Upgrader) RunUpgrade() error {
 	}
 
 	var numNodesToUpgrade int
-	for _, pool := range ku.ClusterTopology.AgentPoolScaleSetsToUpgrade {
-		numNodesToUpgrade += len(pool.VMsToUpgrade)
-	}
 	nodesUpgradeTimeout := perNodeUpgradeTimeout
 	if numNodesToUpgrade > 0 {
 		nodesUpgradeTimeout = perNodeUpgradeTimeout * time.Duration(numNodesToUpgrade)
 	}
 	ctxNodes, cancelNodes := context.WithTimeout(context.Background(), nodesUpgradeTimeout)
 	defer cancelNodes()
-	if err := ku.upgradeAgentScaleSets(ctxNodes); err != nil {
-		return err
-	}
 
-	//This is handling VMAS VMs only, not VMSS
 	return ku.upgradeAgentPools(ctxNodes)
 }
 
@@ -573,185 +565,6 @@ func (ku *Upgrader) upgradeAgentPools(ctx context.Context) error {
 	return nil
 }
 
-func (ku *Upgrader) upgradeAgentScaleSets(ctx context.Context) error {
-	agentPoolMap := make(map[string]*api.AgentPoolProfile)
-	for _, app := range ku.ClusterTopology.DataModel.Properties.AgentPoolProfiles {
-		agentPoolMap[app.Name] = app
-	}
-
-	if len(ku.ClusterTopology.AgentPoolScaleSetsToUpgrade) > 0 {
-		// need to apply the ARM template with target Kubernetes version to the VMSS first in order that the new VMSS instances
-		// created can get the expected Kubernetes version. Otherwise the new instances created still have old Kubernetes version
-		// if the topology doesn't have master nodes (so there are no ARM deployments in previous upgradeMasterNodes step)
-		templateMap, parametersMap, err := ku.generateUpgradeTemplate(ku.ClusterTopology.DataModel, ku.AKSEngineVersion)
-		if err != nil {
-			ku.logger.Errorf("error generating upgrade template in upgradeAgentScaleSets: %v", err)
-			return err
-		}
-
-		transformer := &transform.Transformer{
-			Translator: ku.Translator,
-		}
-
-		if ku.ClusterTopology.DataModel.Properties.OrchestratorProfile.KubernetesConfig.PrivateJumpboxProvision() {
-			err = transformer.RemoveJumpboxResourcesFromTemplate(ku.logger, templateMap)
-			if err != nil {
-				return ku.Translator.Errorf("error removing jumpbox resources from template: %s", err.Error())
-			}
-		}
-
-		if err = transformer.NormalizeMasterResourcesForVMSSPoolUpgrade(ku.logger, templateMap); err != nil {
-			return err
-		}
-
-		if ku.DataModel.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.StandardLoadBalancerSku {
-			ku.logger.Infof("upgradeAgentScaleSets SLB...")
-			err = transformer.NormalizeForK8sSLBScalingOrUpgrade(ku.logger, templateMap)
-			if err != nil {
-				return ku.Translator.Errorf("error normalizing upgrade template for SLB: %s", err.Error())
-			}
-		}
-
-		transformer.RemoveImmutableResourceProperties(ku.logger, templateMap)
-
-		random := rand.New(rand.NewSource(time.Now().UnixNano()))
-		deploymentSuffix := random.Int31()
-		deploymentName := fmt.Sprintf("k8s-upgrade-update-vmss-pools-%s-%d", time.Now().Format("06-01-02T15.04.05"), deploymentSuffix)
-
-		ku.logger.Infof("Deploying ARM template to update all VMSS node pools...")
-		_, err = ku.Client.DeployTemplate(
-			ctx,
-			ku.ClusterTopology.ResourceGroup,
-			deploymentName,
-			templateMap,
-			parametersMap)
-
-		if err != nil {
-			ku.logger.Errorf("error applying upgrade template in upgradeAgentScaleSets: %v", err)
-			return err
-		}
-	}
-
-	ku.logger.Infof("Will now perform a rolling upgrade of each VMSS, one node (VM instance) at a time...")
-
-	for _, vmssToUpgrade := range ku.ClusterTopology.AgentPoolScaleSetsToUpgrade {
-		ku.logger.Infof("Upgrading VMSS %s", vmssToUpgrade.Name)
-
-		if len(vmssToUpgrade.VMsToUpgrade) == 0 {
-			ku.logger.Infof("No VMs to upgrade for VMSS %s, skipping", vmssToUpgrade.Name)
-			continue
-		}
-
-		newCapacity := *vmssToUpgrade.Sku.Capacity + 1
-		ku.logger.Infof(
-			"VMSS %s current capacity is %d and new capacity will be %d while each node is swapped",
-			vmssToUpgrade.Name,
-			*vmssToUpgrade.Sku.Capacity,
-			newCapacity,
-		)
-
-		*vmssToUpgrade.Sku.Capacity = newCapacity
-
-		for _, vmToUpgrade := range vmssToUpgrade.VMsToUpgrade {
-			if err := ku.Client.SetVirtualMachineScaleSetCapacity(
-				ctx,
-				ku.ClusterTopology.ResourceGroup,
-				vmssToUpgrade.Name,
-				vmssToUpgrade.Sku,
-				vmssToUpgrade.Location,
-			); err != nil {
-				ku.logger.Errorf("Failure to set capacity for VMSS %s", vmssToUpgrade.Name)
-				return err
-			}
-
-			ku.logger.Infof("Successfully set capacity for VMSS %s", vmssToUpgrade.Name)
-
-			var cordonDrainTimeout time.Duration
-			if ku.cordonDrainTimeout == nil {
-				cordonDrainTimeout = defaultCordonDrainTimeout
-			} else {
-				cordonDrainTimeout = *ku.cordonDrainTimeout
-			}
-
-			// Before we can delete the node we should safely and responsibly drain it
-			client, err := ku.getKubernetesClient(cordonDrainTimeout)
-			if err != nil {
-				ku.logger.Errorf("Error getting Kubernetes client: %v", err)
-				return err
-			}
-
-			ku.logger.Infof("Draining node %s", vmToUpgrade.Name)
-			err = operations.SafelyDrainNodeWithClient(
-				client,
-				ku.logger,
-				vmToUpgrade.Name,
-				cordonDrainTimeout,
-			)
-			if err != nil {
-				ku.logger.Errorf("Error draining VM in VMSS: %v", err)
-				// Continue even if there's an error in draining the node.
-			}
-
-			ku.logger.Infof(
-				"Deleting VM %s in VMSS %s",
-				vmToUpgrade.Name,
-				vmssToUpgrade.Name,
-			)
-
-			// copy custom properties from old node to new node if the PreserveNodesProperties in AgentPoolProfile is not set to false explicitly.
-			preserveNodesProperties := api.DefaultPreserveNodesProperties
-			var poolName string
-			if vmssToUpgrade.IsWindows {
-				poolName, _ = utils.WindowsVmssNameParts(vmssToUpgrade.Name)
-			} else {
-				poolName, _, _ = utils.VmssNameParts(vmssToUpgrade.Name)
-			}
-			if agentPool, ok := agentPoolMap[poolName]; ok {
-				if agentPool != nil && agentPool.PreserveNodesProperties != nil {
-					preserveNodesProperties = *agentPool.PreserveNodesProperties
-				}
-			}
-
-			if preserveNodesProperties {
-				newNodeName, err := ku.getLastVMNameInVMSS(ctx, ku.ClusterTopology.ResourceGroup, vmssToUpgrade.Name)
-				if err != nil {
-					return err
-				}
-
-				ku.logger.Infof("Copying custom annotations, labels, taints from old node %s to new node %s...", vmToUpgrade.Name, newNodeName)
-				err = ku.copyCustomPropertiesToNewNode(client, strings.ToLower(vmToUpgrade.Name), strings.ToLower(newNodeName))
-				if err != nil {
-					ku.logger.Warningf("Failed to copy custom annotations, labels, taints from old node %s to new node %s: %v", vmToUpgrade.Name, newNodeName, err)
-				}
-			}
-
-			// At this point we have our buffer node that will replace the node to delete
-			// so we can just remove this current node then
-			if err := ku.Client.DeleteVirtualMachineScaleSetVM(
-				ctx,
-				ku.ClusterTopology.ResourceGroup,
-				vmssToUpgrade.Name,
-				vmToUpgrade.InstanceID,
-			); err != nil {
-				ku.logger.Errorf(
-					"Failed to delete VM %s in VMSS %s",
-					vmToUpgrade.Name,
-					vmssToUpgrade.Name)
-				return err
-			}
-			ku.logger.Infof(
-				"Successfully deleted VM %s in VMSS %s",
-				vmToUpgrade.Name,
-				vmssToUpgrade.Name)
-		}
-		ku.logger.Infof("Completed upgrading VMSS %s", vmssToUpgrade.Name)
-	}
-
-	ku.logger.Infoln("Completed upgrading all VMSS")
-
-	return nil
-}
-
 func (ku *Upgrader) generateUpgradeTemplate(upgradeContainerService *api.ContainerService, aksEngineVersion string) (map[string]interface{}, map[string]interface{}, error) {
 	var err error
 	ctx := engine.Context{
@@ -795,27 +608,6 @@ func (ku *Upgrader) generateUpgradeTemplate(upgradeContainerService *api.Contain
 	parametersMap := parameters.(map[string]interface{})
 
 	return templateMap, parametersMap, nil
-}
-
-func (ku *Upgrader) getLastVMNameInVMSS(ctx context.Context, resourceGroup string, vmScaleSetName string) (string, error) {
-	lastVMName := ""
-	for vmScaleSetVMsPage, err := ku.Client.ListVirtualMachineScaleSetVMs(ctx, resourceGroup, vmScaleSetName); vmScaleSetVMsPage.NotDone(); err = vmScaleSetVMsPage.Next() {
-		if err != nil {
-			return "", err
-		}
-
-		vms := vmScaleSetVMsPage.Values()
-		if len(vms) > 0 {
-			vm := vms[len(vms)-1]
-			lastVMName = *vm.VirtualMachineScaleSetVMProperties.OsProfile.ComputerName
-		}
-	}
-
-	if lastVMName == "" {
-		return "", errors.Errorf("failed to get the last VM name in Scale Set %s", vmScaleSetName)
-	}
-
-	return lastVMName, nil
 }
 
 func (ku *Upgrader) copyCustomPropertiesToNewNode(client kubernetes.Client, oldNodeName string, newNodeName string) error {

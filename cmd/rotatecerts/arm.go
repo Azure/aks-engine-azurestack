@@ -51,22 +51,6 @@ func (arm *ARMClientWrapper) GetVirtualMachinePowerState(resourceGroup, vmName s
 	return status, err
 }
 
-// GetVirtualMachineScaleSetInstancePowerState restarts the specified scale set virtual machine instance
-func (arm *ARMClientWrapper) GetVirtualMachineScaleSetInstancePowerState(resourceGroup, vmssName, instanceID string) (string, error) {
-	var err error
-	status := ""
-	err = retry.OnError(arm.backoff, arm.retryFunc, func() error {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-		defer cancel()
-		status, err = arm.client.GetVirtualMachineScaleSetInstancePowerState(ctx, resourceGroup, vmssName, instanceID)
-		if err != nil {
-			return errors.Wrap(err, "fetching virtual machine resource")
-		}
-		return nil
-	})
-	return status, err
-}
-
 // RestartVirtualMachine returns the virtual machine's Power state
 func (arm *ARMClientWrapper) RestartVirtualMachine(resourceGroup, vmName string) error {
 	var err error
@@ -74,20 +58,6 @@ func (arm *ARMClientWrapper) RestartVirtualMachine(resourceGroup, vmName string)
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 		if err = arm.client.RestartVirtualMachine(ctx, resourceGroup, vmName); err != nil {
-			return errors.Wrap(err, "restarting virtual machine")
-		}
-		return nil
-	})
-	return err
-}
-
-// RestartVirtualMachineScaleSets returns the scale set virtual machine instance's Power state
-func (arm *ARMClientWrapper) RestartVirtualMachineScaleSets(resourceGroup, vmssName string) error {
-	var err error
-	err = retry.OnError(arm.backoff, arm.retryFunc, func() error {
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-		defer cancel()
-		if err = arm.client.RestartVirtualMachineScaleSets(ctx, resourceGroup, vmssName, nil); err != nil {
 			return errors.Wrap(err, "restarting virtual machine")
 		}
 		return nil

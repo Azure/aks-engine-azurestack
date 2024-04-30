@@ -20,7 +20,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/operations"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -144,16 +143,6 @@ func (apc *addPoolCmd) load() error {
 		return errors.Wrap(err, "error parsing the agent pool")
 	}
 
-	// Assign VMSSName property based on the new pool being added to the end of the existing AgentPoolProfiles array
-	if apc.nodePool.IsVirtualMachineScaleSets() {
-		numExistingPools := len(apc.containerService.Properties.AgentPoolProfiles)
-		// we can reuse the value of numExistingPools due to array index beginning at "0"
-		apc.nodePool.VMSSName = apc.containerService.Properties.GetAgentVMPrefix(apc.nodePool, numExistingPools)
-		if apc.nodePool.VMSSName == "" {
-			return errors.Errorf("unable to compute a VMSSName property value from new pool definition")
-		}
-	}
-
 	if apc.containerService.Properties.IsCustomCloudProfile() {
 		if err = writeCustomCloudProfile(apc.containerService); err != nil {
 			return errors.Wrap(err, "error writing custom cloud profile")
@@ -216,18 +205,6 @@ func (apc *addPoolCmd) run(cmd *cobra.Command, args []string) error {
 	orchestratorInfo := apc.containerService.Properties.OrchestratorProfile
 	winPoolIndex := -1
 
-	if apc.nodePool.IsVirtualMachineScaleSets() {
-		for vmssListPage, err := apc.client.ListVirtualMachineScaleSets(ctx, apc.resourceGroupName); vmssListPage.NotDone(); err = vmssListPage.NextWithContext(ctx) {
-			if err != nil {
-				return errors.Wrap(err, "failed to get VMSS list in the resource group")
-			}
-			for _, vmss := range vmssListPage.Values() {
-				if apc.nodePool.VMSSName == to.String(vmss.Name) {
-					return errors.New("A VMSS node pool with the given name already exists in the cluster")
-				}
-			}
-		}
-	}
 	translator := engine.Context{
 		Translator: &i18n.Translator{
 			Locale: apc.locale,
@@ -288,17 +265,9 @@ func (apc *addPoolCmd) run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if apc.nodePool.IsVirtualMachineScaleSets() {
-		err = transformer.NormalizeForK8sVMASScalingUp(apc.logger, templateJSON)
-		if err != nil {
-			return errors.Wrapf(err, "error transforming the template for scaling template %s", apc.apiModelPath)
-		}
-		addValue(parametersJSON, apc.nodePool.Name+"Count", 0)
-	} else {
-		err = transformer.NormalizeForK8sAddVMASPool(apc.logger, templateJSON)
-		if err != nil {
-			return errors.Wrap(err, "error transforming the template to add a VMAS node pool")
-		}
+	err = transformer.NormalizeForK8sAddVMASPool(apc.logger, templateJSON)
+	if err != nil {
+		return errors.Wrap(err, "error transforming the template to add a VMAS node pool")
 	}
 
 	random := rand.New(rand.NewSource(time.Now().UnixNano()))

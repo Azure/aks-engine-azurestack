@@ -5,7 +5,6 @@ package rotatecerts
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/cmd/rotatecerts/internal"
@@ -281,36 +280,6 @@ func WaitForVMsRunning(client internal.ARMClient, resourceGroupName string, requ
 		for _, vm := range requiredVMs {
 			var state string
 			state, err = client.GetVirtualMachinePowerState(resourceGroupName, vm)
-			if err != nil {
-				return false, nil
-			}
-			running := isVirtualMachineRunning(state)
-			if err != nil {
-				return false, err
-			}
-			allRunning = allRunning && running
-		}
-		if !allRunning {
-			return false, nil
-		}
-		successesCount++
-		if successesCount < 1 {
-			return false, nil
-		}
-		return true, nil
-	})
-	return err
-}
-
-// WaitForVMSSIntancesRunning checks that all required scale set VMs are running
-func WaitForVMSSIntancesRunning(client internal.ARMClient, resourceGroupName, vmssName string, count int, interval, timeout time.Duration) error {
-	var err error
-	var successesCount int
-	err = wait.PollImmediate(interval, timeout, func() (bool, error) {
-		allRunning := true
-		for i := 0; i < count; i++ {
-			var state string
-			state, err = client.GetVirtualMachineScaleSetInstancePowerState(resourceGroupName, vmssName, fmt.Sprint(i))
 			if err != nil {
 				return false, nil
 			}

@@ -52,83 +52,6 @@ func (az *AzureClient) DeleteVirtualMachine(ctx context.Context, resourceGroup, 
 	return err
 }
 
-// ListVirtualMachineScaleSets returns (the first page of) the VMSS resources in the specified resource group.
-func (az *AzureClient) ListVirtualMachineScaleSets(ctx context.Context, resourceGroup string) (VirtualMachineScaleSetListResultPage, error) {
-	page, err := az.virtualMachineScaleSetsClient.List(ctx, resourceGroup)
-	return &page, err
-}
-
-// RestartVirtualMachineScaleSets restarts the specified VMSS
-func (az *AzureClient) RestartVirtualMachineScaleSets(ctx context.Context, resourceGroup string, virtualMachineScaleSet string, instanceIDs *compute.VirtualMachineScaleSetVMInstanceIDs) error {
-	future, err := az.virtualMachineScaleSetsClient.Restart(ctx, resourceGroup, virtualMachineScaleSet, instanceIDs)
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
-// ListVirtualMachineScaleSetVMs returns the list of VMs per VMSS
-func (az *AzureClient) ListVirtualMachineScaleSetVMs(ctx context.Context, resourceGroup, virtualMachineScaleSet string) (VirtualMachineScaleSetVMListResultPage, error) {
-	page, err := az.virtualMachineScaleSetVMsClient.List(ctx, resourceGroup, virtualMachineScaleSet, "", "", "")
-	return &page, err
-}
-
-// DeleteVirtualMachineScaleSetVM deletes a VM in a VMSS
-func (az *AzureClient) DeleteVirtualMachineScaleSetVM(ctx context.Context, resourceGroup, virtualMachineScaleSet, instanceID string) error {
-	future, err := az.virtualMachineScaleSetVMsClient.Delete(ctx, resourceGroup, virtualMachineScaleSet, instanceID)
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetVMsClient.Client); err != nil {
-		return err
-	}
-
-	_, err = future.Result(az.virtualMachineScaleSetVMsClient)
-	return err
-}
-
-// DeleteVirtualMachineScaleSet deletes an entire VM Scale Set.
-func (az *AzureClient) DeleteVirtualMachineScaleSet(ctx context.Context, resourceGroup, vmssName string) error {
-	future, err := az.virtualMachineScaleSetsClient.Delete(ctx, resourceGroup, vmssName)
-	if err != nil {
-		return err
-	}
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
-// SetVirtualMachineScaleSetCapacity sets the VMSS capacity
-func (az *AzureClient) SetVirtualMachineScaleSetCapacity(ctx context.Context, resourceGroup, virtualMachineScaleSet string, sku compute.Sku, location string) error {
-	future, err := az.virtualMachineScaleSetsClient.CreateOrUpdate(
-		ctx,
-		resourceGroup,
-		virtualMachineScaleSet,
-		compute.VirtualMachineScaleSet{
-			Location: &location,
-			Sku:      &sku,
-		})
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
 // GetAvailabilitySet retrieves the specified VM availability set.
 func (az *AzureClient) GetAvailabilitySet(ctx context.Context, resourceGroup, availabilitySetName string) (compute.AvailabilitySet, error) {
 	return az.availabilitySetsClient.Get(ctx, resourceGroup, availabilitySetName)
@@ -159,20 +82,6 @@ func (az *AzureClient) GetVirtualMachinePowerState(ctx context.Context, resource
 		return "", errors.Wrapf(err, "fetching virtual machine resource")
 	}
 	for _, status := range *vm.VirtualMachineProperties.InstanceView.Statuses {
-		if strings.HasPrefix(*status.Code, "PowerState") {
-			return *status.Code, nil
-		}
-	}
-	return "", nil
-}
-
-// GetVirtualMachineScaleSetInstancePowerState returns the virtual machine's PowerState status code
-func (az *AzureClient) GetVirtualMachineScaleSetInstancePowerState(ctx context.Context, resourceGroup, name, instanceID string) (string, error) {
-	vm, err := az.virtualMachineScaleSetVMsClient.Get(ctx, resourceGroup, name, instanceID, compute.InstanceView)
-	if err != nil {
-		return "", errors.Wrapf(err, "fetching virtual machine resource")
-	}
-	for _, status := range *vm.VirtualMachineScaleSetVMProperties.InstanceView.Statuses {
 		if strings.HasPrefix(*status.Code, "PowerState") {
 			return *status.Code, nil
 		}
