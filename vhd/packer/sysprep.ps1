@@ -2,10 +2,10 @@
 # If deploying an Azure VM the agents will be re-added to the VMs at deployment time
 Stop-Service WindowsAzureGuestAgent
 Stop-Service WindowsAzureNetAgentSvc
-Stop-Service RdAgent
+#Stop-Service RdAgent
 & sc.exe delete WindowsAzureGuestAgent
 & sc.exe delete WindowsAzureNetAgentSvc
-& sc.exe delete RdAgent
+#& sc.exe delete RdAgent
 
 # Remove the WindowsAzureGuestAgent registry key for sysprep 
 # This removes AzureGuestAgent from participating in sysprep 
