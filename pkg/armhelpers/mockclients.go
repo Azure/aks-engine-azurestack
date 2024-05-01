@@ -773,6 +773,33 @@ func (mc *MockAKSEngineClient) ListDeploymentOperationsNextResults(lastResults r
 	return resources.DeploymentOperationsListResult{}, nil
 }
 
+// DeleteRoleAssignmentByID deletes a roleAssignment via its unique identifier
+func (mc *MockAKSEngineClient) DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentID string) (authorization.RoleAssignment, error) {
+	if mc.FailDeleteRoleAssignment {
+		return authorization.RoleAssignment{}, errors.New("DeleteRoleAssignmentByID failed")
+	}
+
+	return authorization.RoleAssignment{}, nil
+}
+
+// ListRoleAssignmentsForPrincipal (e.g. a VM) via the scope and the unique identifier of the principal
+func (mc *MockAKSEngineClient) ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error) {
+	roleAssignments := []authorization.RoleAssignment{}
+
+	if mc.ShouldSupportVMIdentity {
+		var assignmentID = "role-assignment-id"
+		var assignment = authorization.RoleAssignment{
+			ID: &assignmentID}
+		roleAssignments = append(roleAssignments, assignment)
+	}
+
+	return &MockRoleAssignmentListResultPage{
+		Ralr: authorization.RoleAssignmentListResult{
+			Value: &roleAssignments,
+		},
+	}, nil
+}
+
 // EnsureDefaultLogAnalyticsWorkspace mock
 func (mc *MockAKSEngineClient) EnsureDefaultLogAnalyticsWorkspace(ctx context.Context, resourceGroup, location string) (workspaceResourceID string, err error) {
 	if mc.FailEnsureDefaultLogAnalyticsWorkspace {

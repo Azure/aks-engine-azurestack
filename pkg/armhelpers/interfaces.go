@@ -133,6 +133,11 @@ type AKSEngineClient interface {
 	// DeleteNetworkInterface deletes the specified network interface.
 	DeleteNetworkInterface(ctx context.Context, resourceGroup, nicName string) error
 
+	//
+	// RBAC
+	DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentNameID string) (authorization.RoleAssignment, error)
+	ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error)
+
 	// MANAGED DISKS
 	DeleteManagedDisk(ctx context.Context, resourceGroupName string, diskName string) error
 	ListManagedDisksByResourceGroup(ctx context.Context, resourceGroupName string) (result DiskListPage, err error)
