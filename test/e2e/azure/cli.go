@@ -18,8 +18,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
-
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 )
@@ -173,7 +172,7 @@ func (a *Account) CreateGroupWithRetry(name, location string, sleep, timeout tim
 }
 
 // CreateGroup will create a resource group in a given location
-//--tags "type=${RESOURCE_GROUP_TAG_TYPE:-}" "now=$(date +%s)" "job=${JOB_BASE_NAME:-}" "buildno=${BUILD_NUM:-}"
+// --tags "type=${RESOURCE_GROUP_TAG_TYPE:-}" "now=$(date +%s)" "job=${JOB_BASE_NAME:-}" "buildno=${BUILD_NUM:-}"
 func (a *Account) CreateGroup(name, location string) error {
 	now := fmt.Sprintf("now=%v", time.Now().Unix())
 	var cmd *exec.Cmd

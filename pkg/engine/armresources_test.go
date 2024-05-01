@@ -8,18 +8,14 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
 	"github.com/Azure/azure-sdk-for-go/services/preview/authorization/mgmt/2018-09-01-preview/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
-	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2018-02-01/storage"
-
-	"github.com/google/go-cmp/cmp"
-
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
-
+	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2019-06-01/storage"
 	"github.com/Azure/go-autorest/autorest/to"
-
-	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
@@ -284,7 +280,7 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 							BackendPort:          to.Int32Ptr(443),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
@@ -1428,7 +1424,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 							BackendPort:          to.Int32Ptr(443),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
@@ -1448,7 +1444,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 							BackendPort:          to.Int32Ptr(1123),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},

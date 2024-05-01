@@ -31,224 +31,6 @@ import (
 // The package's fully qualified name.
 const fqdn = "github.com/Azure/azure-sdk-for-go/services/cosmos-db/mgmt/2015-04-08/documentdb"
 
-// ConflictResolutionMode enumerates the values for conflict resolution mode.
-type ConflictResolutionMode string
-
-const (
-	// Custom ...
-	Custom ConflictResolutionMode = "Custom"
-	// LastWriterWins ...
-	LastWriterWins ConflictResolutionMode = "LastWriterWins"
-)
-
-// PossibleConflictResolutionModeValues returns an array of possible values for the ConflictResolutionMode const type.
-func PossibleConflictResolutionModeValues() []ConflictResolutionMode {
-	return []ConflictResolutionMode{Custom, LastWriterWins}
-}
-
-// ConnectorOffer enumerates the values for connector offer.
-type ConnectorOffer string
-
-const (
-	// Small ...
-	Small ConnectorOffer = "Small"
-)
-
-// PossibleConnectorOfferValues returns an array of possible values for the ConnectorOffer const type.
-func PossibleConnectorOfferValues() []ConnectorOffer {
-	return []ConnectorOffer{Small}
-}
-
-// DatabaseAccountKind enumerates the values for database account kind.
-type DatabaseAccountKind string
-
-const (
-	// GlobalDocumentDB ...
-	GlobalDocumentDB DatabaseAccountKind = "GlobalDocumentDB"
-	// MongoDB ...
-	MongoDB DatabaseAccountKind = "MongoDB"
-	// Parse ...
-	Parse DatabaseAccountKind = "Parse"
-)
-
-// PossibleDatabaseAccountKindValues returns an array of possible values for the DatabaseAccountKind const type.
-func PossibleDatabaseAccountKindValues() []DatabaseAccountKind {
-	return []DatabaseAccountKind{GlobalDocumentDB, MongoDB, Parse}
-}
-
-// DatabaseAccountOfferType enumerates the values for database account offer type.
-type DatabaseAccountOfferType string
-
-const (
-	// Standard ...
-	Standard DatabaseAccountOfferType = "Standard"
-)
-
-// PossibleDatabaseAccountOfferTypeValues returns an array of possible values for the DatabaseAccountOfferType const type.
-func PossibleDatabaseAccountOfferTypeValues() []DatabaseAccountOfferType {
-	return []DatabaseAccountOfferType{Standard}
-}
-
-// DataType enumerates the values for data type.
-type DataType string
-
-const (
-	// LineString ...
-	LineString DataType = "LineString"
-	// MultiPolygon ...
-	MultiPolygon DataType = "MultiPolygon"
-	// Number ...
-	Number DataType = "Number"
-	// Point ...
-	Point DataType = "Point"
-	// Polygon ...
-	Polygon DataType = "Polygon"
-	// String ...
-	String DataType = "String"
-)
-
-// PossibleDataTypeValues returns an array of possible values for the DataType const type.
-func PossibleDataTypeValues() []DataType {
-	return []DataType{LineString, MultiPolygon, Number, Point, Polygon, String}
-}
-
-// DefaultConsistencyLevel enumerates the values for default consistency level.
-type DefaultConsistencyLevel string
-
-const (
-	// BoundedStaleness ...
-	BoundedStaleness DefaultConsistencyLevel = "BoundedStaleness"
-	// ConsistentPrefix ...
-	ConsistentPrefix DefaultConsistencyLevel = "ConsistentPrefix"
-	// Eventual ...
-	Eventual DefaultConsistencyLevel = "Eventual"
-	// Session ...
-	Session DefaultConsistencyLevel = "Session"
-	// Strong ...
-	Strong DefaultConsistencyLevel = "Strong"
-)
-
-// PossibleDefaultConsistencyLevelValues returns an array of possible values for the DefaultConsistencyLevel const type.
-func PossibleDefaultConsistencyLevelValues() []DefaultConsistencyLevel {
-	return []DefaultConsistencyLevel{BoundedStaleness, ConsistentPrefix, Eventual, Session, Strong}
-}
-
-// IndexingMode enumerates the values for indexing mode.
-type IndexingMode string
-
-const (
-	// Consistent ...
-	Consistent IndexingMode = "Consistent"
-	// Lazy ...
-	Lazy IndexingMode = "Lazy"
-	// None ...
-	None IndexingMode = "None"
-)
-
-// PossibleIndexingModeValues returns an array of possible values for the IndexingMode const type.
-func PossibleIndexingModeValues() []IndexingMode {
-	return []IndexingMode{Consistent, Lazy, None}
-}
-
-// IndexKind enumerates the values for index kind.
-type IndexKind string
-
-const (
-	// Hash ...
-	Hash IndexKind = "Hash"
-	// Range ...
-	Range IndexKind = "Range"
-	// Spatial ...
-	Spatial IndexKind = "Spatial"
-)
-
-// PossibleIndexKindValues returns an array of possible values for the IndexKind const type.
-func PossibleIndexKindValues() []IndexKind {
-	return []IndexKind{Hash, Range, Spatial}
-}
-
-// KeyKind enumerates the values for key kind.
-type KeyKind string
-
-const (
-	// Primary ...
-	Primary KeyKind = "primary"
-	// PrimaryReadonly ...
-	PrimaryReadonly KeyKind = "primaryReadonly"
-	// Secondary ...
-	Secondary KeyKind = "secondary"
-	// SecondaryReadonly ...
-	SecondaryReadonly KeyKind = "secondaryReadonly"
-)
-
-// PossibleKeyKindValues returns an array of possible values for the KeyKind const type.
-func PossibleKeyKindValues() []KeyKind {
-	return []KeyKind{Primary, PrimaryReadonly, Secondary, SecondaryReadonly}
-}
-
-// PartitionKind enumerates the values for partition kind.
-type PartitionKind string
-
-const (
-	// PartitionKindHash ...
-	PartitionKindHash PartitionKind = "Hash"
-	// PartitionKindRange ...
-	PartitionKindRange PartitionKind = "Range"
-)
-
-// PossiblePartitionKindValues returns an array of possible values for the PartitionKind const type.
-func PossiblePartitionKindValues() []PartitionKind {
-	return []PartitionKind{PartitionKindHash, PartitionKindRange}
-}
-
-// PrimaryAggregationType enumerates the values for primary aggregation type.
-type PrimaryAggregationType string
-
-const (
-	// PrimaryAggregationTypeAverage ...
-	PrimaryAggregationTypeAverage PrimaryAggregationType = "Average"
-	// PrimaryAggregationTypeLast ...
-	PrimaryAggregationTypeLast PrimaryAggregationType = "Last"
-	// PrimaryAggregationTypeMaximum ...
-	PrimaryAggregationTypeMaximum PrimaryAggregationType = "Maximum"
-	// PrimaryAggregationTypeMinimum ...
-	PrimaryAggregationTypeMinimum PrimaryAggregationType = "Minimum"
-	// PrimaryAggregationTypeNone ...
-	PrimaryAggregationTypeNone PrimaryAggregationType = "None"
-	// PrimaryAggregationTypeTotal ...
-	PrimaryAggregationTypeTotal PrimaryAggregationType = "Total"
-)
-
-// PossiblePrimaryAggregationTypeValues returns an array of possible values for the PrimaryAggregationType const type.
-func PossiblePrimaryAggregationTypeValues() []PrimaryAggregationType {
-	return []PrimaryAggregationType{PrimaryAggregationTypeAverage, PrimaryAggregationTypeLast, PrimaryAggregationTypeMaximum, PrimaryAggregationTypeMinimum, PrimaryAggregationTypeNone, PrimaryAggregationTypeTotal}
-}
-
-// UnitType enumerates the values for unit type.
-type UnitType string
-
-const (
-	// Bytes ...
-	Bytes UnitType = "Bytes"
-	// BytesPerSecond ...
-	BytesPerSecond UnitType = "BytesPerSecond"
-	// Count ...
-	Count UnitType = "Count"
-	// CountPerSecond ...
-	CountPerSecond UnitType = "CountPerSecond"
-	// Milliseconds ...
-	Milliseconds UnitType = "Milliseconds"
-	// Percent ...
-	Percent UnitType = "Percent"
-	// Seconds ...
-	Seconds UnitType = "Seconds"
-)
-
-// PossibleUnitTypeValues returns an array of possible values for the UnitType const type.
-func PossibleUnitTypeValues() []UnitType {
-	return []UnitType{Bytes, BytesPerSecond, Count, CountPerSecond, Milliseconds, Percent, Seconds}
-}
-
 // Capability cosmos DB capability object
 type Capability struct {
 	// Name - Name of the Cosmos DB capability. For example, "name": "EnableCassandra". Current values also include "EnableTable" and "EnableGremlin".
@@ -1059,6 +841,42 @@ type DatabaseAccountProperties struct {
 	EnableCassandraConnector *bool `json:"enableCassandraConnector,omitempty"`
 	// ConnectorOffer - The cassandra connector offer type for the Cosmos DB database C* account. Possible values include: 'Small'
 	ConnectorOffer ConnectorOffer `json:"connectorOffer,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for DatabaseAccountProperties.
+func (dap DatabaseAccountProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if dap.ProvisioningState != nil {
+		objectMap["provisioningState"] = dap.ProvisioningState
+	}
+	if dap.IPRangeFilter != nil {
+		objectMap["ipRangeFilter"] = dap.IPRangeFilter
+	}
+	if dap.IsVirtualNetworkFilterEnabled != nil {
+		objectMap["isVirtualNetworkFilterEnabled"] = dap.IsVirtualNetworkFilterEnabled
+	}
+	if dap.EnableAutomaticFailover != nil {
+		objectMap["enableAutomaticFailover"] = dap.EnableAutomaticFailover
+	}
+	if dap.ConsistencyPolicy != nil {
+		objectMap["consistencyPolicy"] = dap.ConsistencyPolicy
+	}
+	if dap.Capabilities != nil {
+		objectMap["capabilities"] = dap.Capabilities
+	}
+	if dap.VirtualNetworkRules != nil {
+		objectMap["virtualNetworkRules"] = dap.VirtualNetworkRules
+	}
+	if dap.EnableMultipleWriteLocations != nil {
+		objectMap["enableMultipleWriteLocations"] = dap.EnableMultipleWriteLocations
+	}
+	if dap.EnableCassandraConnector != nil {
+		objectMap["enableCassandraConnector"] = dap.EnableCassandraConnector
+	}
+	if dap.ConnectorOffer != "" {
+		objectMap["connectorOffer"] = dap.ConnectorOffer
+	}
+	return json.Marshal(objectMap)
 }
 
 // DatabaseAccountRegenerateKeyParameters parameters to regenerate the keys within the database account.
@@ -2018,6 +1836,18 @@ type FailoverPolicy struct {
 	FailoverPriority *int32 `json:"failoverPriority,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for FailoverPolicy.
+func (fp FailoverPolicy) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if fp.LocationName != nil {
+		objectMap["locationName"] = fp.LocationName
+	}
+	if fp.FailoverPriority != nil {
+		objectMap["failoverPriority"] = fp.FailoverPriority
+	}
+	return json.Marshal(objectMap)
+}
+
 // GremlinDatabase an Azure Cosmos DB Gremlin database.
 type GremlinDatabase struct {
 	autorest.Response `json:"-"`
@@ -2452,6 +2282,24 @@ type Location struct {
 	IsZoneRedundant *bool `json:"isZoneRedundant,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for Location.
+func (l Location) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if l.LocationName != nil {
+		objectMap["locationName"] = l.LocationName
+	}
+	if l.ProvisioningState != nil {
+		objectMap["provisioningState"] = l.ProvisioningState
+	}
+	if l.FailoverPriority != nil {
+		objectMap["failoverPriority"] = l.FailoverPriority
+	}
+	if l.IsZoneRedundant != nil {
+		objectMap["isZoneRedundant"] = l.IsZoneRedundant
+	}
+	return json.Marshal(objectMap)
+}
+
 // Metric metric data
 type Metric struct {
 	// StartTime - READ-ONLY; The start time for the metric (ISO-8601 format).
@@ -2466,6 +2314,15 @@ type Metric struct {
 	Name *MetricName `json:"name,omitempty"`
 	// MetricValues - READ-ONLY; The metric values for the specified time window and timestep.
 	MetricValues *[]MetricValue `json:"metricValues,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for Metric.
+func (mVar Metric) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if mVar.Unit != "" {
+		objectMap["unit"] = mVar.Unit
+	}
+	return json.Marshal(objectMap)
 }
 
 // MetricAvailability the availability of the metric.
@@ -2488,6 +2345,15 @@ type MetricDefinition struct {
 	ResourceURI *string `json:"resourceUri,omitempty"`
 	// Name - READ-ONLY; The name information for the metric.
 	Name *MetricName `json:"name,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for MetricDefinition.
+func (md MetricDefinition) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if md.Unit != "" {
+		objectMap["unit"] = md.Unit
+	}
+	return json.Marshal(objectMap)
 }
 
 // MetricDefinitionsListResult the response to a list metric definitions request.
@@ -3045,10 +2911,15 @@ func (olr OperationListResult) IsEmpty() bool {
 	return olr.Value == nil || len(*olr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (olr OperationListResult) hasNextLink() bool {
+	return olr.NextLink != nil && len(*olr.NextLink) != 0
+}
+
 // operationListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (olr OperationListResult) operationListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if olr.NextLink == nil || len(to.String(olr.NextLink)) < 1 {
+	if !olr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -3076,11 +2947,16 @@ func (page *OperationListResultPage) NextWithContext(ctx context.Context) (err e
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.olr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.olr)
+		if err != nil {
+			return err
+		}
+		page.olr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.olr = next
 	return nil
 }
 
@@ -3110,8 +2986,11 @@ func (page OperationListResultPage) Values() []Operation {
 }
 
 // Creates a new instance of the OperationListResultPage type.
-func NewOperationListResultPage(getNextPage func(context.Context, OperationListResult) (OperationListResult, error)) OperationListResultPage {
-	return OperationListResultPage{fn: getNextPage}
+func NewOperationListResultPage(cur OperationListResult, getNextPage func(context.Context, OperationListResult) (OperationListResult, error)) OperationListResultPage {
+	return OperationListResultPage{
+		fn:  getNextPage,
+		olr: cur,
+	}
 }
 
 // PartitionMetric the metric values for a single partition.
@@ -3132,6 +3011,15 @@ type PartitionMetric struct {
 	Name *MetricName `json:"name,omitempty"`
 	// MetricValues - READ-ONLY; The metric values for the specified time window and timestep.
 	MetricValues *[]MetricValue `json:"metricValues,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for PartitionMetric.
+func (pm PartitionMetric) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if pm.Unit != "" {
+		objectMap["unit"] = pm.Unit
+	}
+	return json.Marshal(objectMap)
 }
 
 // PartitionMetricListResult the response to a list partition metrics request.
@@ -3159,6 +3047,15 @@ type PartitionUsage struct {
 	CurrentValue *int64 `json:"currentValue,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for PartitionUsage.
+func (pu PartitionUsage) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if pu.Unit != "" {
+		objectMap["unit"] = pu.Unit
+	}
+	return json.Marshal(objectMap)
+}
+
 // PartitionUsagesResult the response to a list partition level usage request.
 type PartitionUsagesResult struct {
 	autorest.Response `json:"-"`
@@ -3180,6 +3077,15 @@ type PercentileMetric struct {
 	Name *MetricName `json:"name,omitempty"`
 	// MetricValues - READ-ONLY; The percentile metric values for the specified time window and timestep.
 	MetricValues *[]PercentileMetricValue `json:"metricValues,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for PercentileMetric.
+func (pm PercentileMetric) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if pm.Unit != "" {
+		objectMap["unit"] = pm.Unit
+	}
+	return json.Marshal(objectMap)
 }
 
 // PercentileMetricListResult the response to a list percentile metrics request.
@@ -4003,6 +3909,15 @@ type Usage struct {
 	Limit *int64 `json:"limit,omitempty"`
 	// CurrentValue - READ-ONLY; Current value for this metric
 	CurrentValue *int64 `json:"currentValue,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for Usage.
+func (u Usage) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if u.Unit != "" {
+		objectMap["unit"] = u.Unit
+	}
+	return json.Marshal(objectMap)
 }
 
 // UsagesResult the response to a list usage request.

@@ -5,7 +5,7 @@ package engine
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
 	"github.com/Azure/go-autorest/autorest/to"
 )
 

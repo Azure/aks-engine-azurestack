@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/blang/semver"
 )
@@ -125,7 +125,7 @@ func CreateMasterLoadBalancer(prop *api.Properties, isVMSS bool) LoadBalancerARM
 					BackendPort:          to.Int32Ptr(443),
 					EnableFloatingIP:     to.BoolPtr(false),
 					IdleTimeoutInMinutes: to.Int32Ptr(5),
-					LoadDistribution:     network.Default,
+					LoadDistribution:     network.LoadDistributionDefault,
 					Probe: &network.SubResource{
 						ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 					},
@@ -160,7 +160,7 @@ func CreateMasterLoadBalancer(prop *api.Properties, isVMSS bool) LoadBalancerARM
 					BackendPort:          to.Int32Ptr(1123),
 					EnableFloatingIP:     to.BoolPtr(false),
 					IdleTimeoutInMinutes: to.Int32Ptr(5),
-					LoadDistribution:     network.Default,
+					LoadDistribution:     network.LoadDistributionDefault,
 					Probe: &network.SubResource{
 						ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 					},

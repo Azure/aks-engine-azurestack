@@ -7,7 +7,7 @@ import (
 	"bytes"
 	"context"
 
-	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2018-02-01/storage"
+	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2019-06-01/storage"
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -35,7 +35,7 @@ func (az *AzureClient) GetStorageClient(ctx context.Context, resourceGroup, acco
 }
 
 func (az *AzureClient) getStorageKeys(ctx context.Context, resourceGroup, accountName string) ([]storage.AccountKey, error) {
-	storageKeysResult, err := az.storageAccountsClient.ListKeys(ctx, resourceGroup, accountName)
+	storageKeysResult, err := az.storageAccountsClient.ListKeys(ctx, resourceGroup, accountName, storage.Kerb)
 	if err != nil {
 		return nil, err
 	}

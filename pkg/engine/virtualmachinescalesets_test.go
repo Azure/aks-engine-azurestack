@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 )
@@ -56,7 +56,7 @@ func TestCreateMasterVMSS(t *testing.T) {
 			Type: to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 				UpgradePolicy: &compute.UpgradePolicy{
-					Mode: compute.Manual,
+					Mode: compute.UpgradeModeManual,
 				},
 				Overprovision: to.BoolPtr(false),
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
@@ -279,7 +279,7 @@ func TestCreateAgentVMSS(t *testing.T) {
 				Overprovision:                          to.BoolPtr(true),
 				DoNotRunExtensionsOnOverprovisionedVMs: to.BoolPtr(true),
 				UpgradePolicy: &compute.UpgradePolicy{
-					Mode: compute.Manual,
+					Mode: compute.UpgradeModeManual,
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 
@@ -812,7 +812,7 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 				Overprovision: to.BoolPtr(false),
 				UpgradePolicy: &compute.UpgradePolicy{
-					Mode: compute.Manual,
+					Mode: compute.UpgradeModeManual,
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
@@ -918,7 +918,7 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 				SinglePlacementGroup: to.BoolPtr(true),
 				Overprovision:        to.BoolPtr(false),
 				UpgradePolicy: &compute.UpgradePolicy{
-					Mode: compute.Manual,
+					Mode: compute.UpgradeModeManual,
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 

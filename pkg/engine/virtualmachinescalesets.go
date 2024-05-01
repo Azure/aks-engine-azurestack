@@ -10,7 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
 
@@ -120,7 +120,7 @@ func CreateMasterVMSS(cs *api.ContainerService) VirtualMachineScaleSetARM {
 	vmProperties.SinglePlacementGroup = masterProfile.SinglePlacementGroup
 	vmProperties.Overprovision = to.BoolPtr(false)
 	vmProperties.UpgradePolicy = &compute.UpgradePolicy{
-		Mode: compute.Manual,
+		Mode: compute.UpgradeModeManual,
 	}
 
 	netintconfig := compute.VirtualMachineScaleSetNetworkConfiguration{
@@ -429,7 +429,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 		SinglePlacementGroup: profile.SinglePlacementGroup,
 		Overprovision:        profile.VMSSOverProvisioningEnabled,
 		UpgradePolicy: &compute.UpgradePolicy{
-			Mode: compute.Manual,
+			Mode: compute.UpgradeModeManual,
 		},
 	}
 

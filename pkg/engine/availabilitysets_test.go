@@ -6,11 +6,10 @@ package engine
 import (
 	"testing"
 
+	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
-
-	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 )
 
 func TestCreateAvailabilitySet(t *testing.T) {
