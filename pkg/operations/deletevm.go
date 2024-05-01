@@ -5,7 +5,6 @@ package operations
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
@@ -89,29 +88,6 @@ func CleanDeleteVirtualMachine(az armhelpers.AKSEngineClient, logger *log.Entry,
 			logger.Infof("deleting managed disk %s in resource group %s ...", *osDiskName, resourceGroup)
 			if err = az.DeleteManagedDisk(ctx, resourceGroup, *osDiskName); err != nil {
 				return err
-			}
-		}
-	}
-
-	if vm.Identity != nil && vm.Identity.PrincipalID != nil {
-		// Role assignments are not deleted if the VM is destroyed, so we must cleanup ourselves!
-		// The role assignments should only be relevant if managed identities are used,
-		// but always cleaning them up is easier than adding rule based logic here and there.
-		scope := fmt.Sprintf(AADRoleResourceGroupScopeTemplate, subscriptionID, resourceGroup)
-		logger.Debugf("fetching role assignments: %s with principal %s", scope, *vm.Identity.PrincipalID)
-		for vmRoleAssignmentsPage, err := az.ListRoleAssignmentsForPrincipal(ctx, scope, *vm.Identity.PrincipalID); vmRoleAssignmentsPage.NotDone(); err = vmRoleAssignmentsPage.Next() {
-			if err != nil {
-				logger.Errorf("failed to list role assignments: %s/%s: %s", scope, *vm.Identity.PrincipalID, err)
-				return err
-			}
-
-			for _, roleAssignment := range vmRoleAssignmentsPage.Values() {
-				logger.Infof("deleting role assignment %s ...", *roleAssignment.ID)
-				_, deleteRoleAssignmentErr := az.DeleteRoleAssignmentByID(ctx, *roleAssignment.ID)
-				if deleteRoleAssignmentErr != nil {
-					logger.Errorf("failed to delete role assignment: %s: %s", *roleAssignment.ID, deleteRoleAssignmentErr.Error())
-					return deleteRoleAssignmentErr
-				}
 			}
 		}
 	}

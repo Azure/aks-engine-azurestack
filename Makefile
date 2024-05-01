@@ -133,7 +133,7 @@ ginkgoBuild: generate
 	make -C ./test/e2e ginkgo-build
 
 test: generate
-	ginkgo -mod=vendor -junit-report test/junit/junit.xml -skip-package test/e2e -fail-fast -r -v -tags=fast .
+	ginkgo -mod=vendor -junit-report junit.xml -skip-package test/e2e -fail-fast -r -v -tags=fast .
 
 .PHONY: test-style
 test-style: validate-go validate-shell validate-copyright-headers

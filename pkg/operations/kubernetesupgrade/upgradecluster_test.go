@@ -235,32 +235,6 @@ var _ = Describe("Upgrade Kubernetes cluster tests", Serial, func() {
 		Expect(err.Error()).To(Equal("DeleteNetworkInterface failed"))
 	})
 
-	It("Should return error message when failing to delete role assignment during upgrade operation", func() {
-		cs := api.CreateMockContainerService("testcluster", upgradeVersion, 3, 2, false)
-		cs.Properties.OrchestratorProfile.KubernetesConfig = &api.KubernetesConfig{}
-		cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
-		uc := UpgradeCluster{
-			Translator: &i18n.Translator{},
-			Logger:     log.NewEntry(log.New()),
-		}
-
-		mockClient := armhelpers.MockAKSEngineClient{}
-		mockClient.FailDeleteRoleAssignment = true
-		mockClient.ShouldSupportVMIdentity = true
-		uc.Client = &mockClient
-
-		uc.ClusterTopology = ClusterTopology{}
-		uc.SubscriptionID = "DEC923E3-1EF1-4745-9516-37906D56DEC4"
-		uc.ResourceGroup = "TestRg"
-		uc.DataModel = cs
-		uc.NameSuffix = "12345678"
-		uc.AgentPoolsToUpgrade = map[string]bool{"agentpool1": true}
-
-		err := uc.UpgradeCluster(&mockClient, "kubeConfig", TestAKSEngineVersion)
-		Expect(err).To(HaveOccurred())
-		Expect(err.Error()).To(Equal("DeleteRoleAssignmentByID failed"))
-	})
-
 	Context("When upgrading a cluster with AvailibilitySets VMs", func() {
 		var (
 			cs               *api.ContainerService

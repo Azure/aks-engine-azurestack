@@ -18,8 +18,6 @@ import (
 
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
-	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
-	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/go-autorest/autorest"
@@ -676,47 +674,6 @@ var validNicResourceName = "/subscriptions/DEC923E3-1EF1-4745-9516-37906D56DEC4/
 
 // Graph Mocks
 
-// CreateGraphApplication creates an application via the graphrbac client
-func (mc *MockAKSEngineClient) CreateGraphApplication(ctx context.Context, applicationCreateParameters graphrbac.ApplicationCreateParameters) (graphrbac.Application, error) {
-	return graphrbac.Application{}, nil
-}
-
-// CreateGraphPrincipal creates a service principal via the graphrbac client
-func (mc *MockAKSEngineClient) CreateGraphPrincipal(ctx context.Context, servicePrincipalCreateParameters graphrbac.ServicePrincipalCreateParameters) (graphrbac.ServicePrincipal, error) {
-	return graphrbac.ServicePrincipal{}, nil
-}
-
-// CreateApp is a simpler method for creating an application
-func (mc *MockAKSEngineClient) CreateApp(ctx context.Context, applicationName, applicationURL string, replyURLs *[]string, requiredResourceAccess *[]graphrbac.RequiredResourceAccess) (result graphrbac.Application, servicePrincipalObjectID, secret string, err error) {
-	return graphrbac.Application{
-		AppID: to.StringPtr("app-id"),
-	}, "client-id", "client-secret", nil
-}
-
-// DeleteApp is a simpler method for deleting an application
-func (mc *MockAKSEngineClient) DeleteApp(ctx context.Context, appName, applicationObjectID string) (response autorest.Response, err error) {
-	return response, nil
-}
-
-// User Assigned MSI
-
-// CreateUserAssignedID - Creates a user assigned msi.
-func (mc *MockAKSEngineClient) CreateUserAssignedID(location string, resourceGroup string, userAssignedID string) (*msi.Identity, error) {
-	return &msi.Identity{}, nil
-}
-
-// RBAC Mocks
-
-// CreateRoleAssignment creates a role assignment via the authorization client
-func (mc *MockAKSEngineClient) CreateRoleAssignment(ctx context.Context, scope string, roleAssignmentName string, parameters authorization.RoleAssignmentCreateParameters) (authorization.RoleAssignment, error) {
-	return authorization.RoleAssignment{}, nil
-}
-
-// CreateRoleAssignmentSimple is a wrapper around RoleAssignmentsClient.Create
-func (mc *MockAKSEngineClient) CreateRoleAssignmentSimple(ctx context.Context, applicationID, roleID string) error {
-	return nil
-}
-
 // DeleteManagedDisk is a wrapper around disksClient.Delete
 func (mc *MockAKSEngineClient) DeleteManagedDisk(ctx context.Context, resourceGroupName string, diskName string) error {
 	return nil
@@ -814,33 +771,6 @@ func (mc *MockAKSEngineClient) ListDeploymentOperations(ctx context.Context, res
 // ListDeploymentOperationsNextResults retrieves the next set of results, if any.
 func (mc *MockAKSEngineClient) ListDeploymentOperationsNextResults(lastResults resources.DeploymentOperationsListResult) (result resources.DeploymentOperationsListResult, err error) {
 	return resources.DeploymentOperationsListResult{}, nil
-}
-
-// DeleteRoleAssignmentByID deletes a roleAssignment via its unique identifier
-func (mc *MockAKSEngineClient) DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentID string) (authorization.RoleAssignment, error) {
-	if mc.FailDeleteRoleAssignment {
-		return authorization.RoleAssignment{}, errors.New("DeleteRoleAssignmentByID failed")
-	}
-
-	return authorization.RoleAssignment{}, nil
-}
-
-// ListRoleAssignmentsForPrincipal (e.g. a VM) via the scope and the unique identifier of the principal
-func (mc *MockAKSEngineClient) ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error) {
-	roleAssignments := []authorization.RoleAssignment{}
-
-	if mc.ShouldSupportVMIdentity {
-		var assignmentID = "role-assignment-id"
-		var assignment = authorization.RoleAssignment{
-			ID: &assignmentID}
-		roleAssignments = append(roleAssignments, assignment)
-	}
-
-	return &MockRoleAssignmentListResultPage{
-		Ralr: authorization.RoleAssignmentListResult{
-			Value: &roleAssignments,
-		},
-	}, nil
 }
 
 // EnsureDefaultLogAnalyticsWorkspace mock

@@ -19,9 +19,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/apimanagement/mgmt/2017-03-01/apimanagement"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
-	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
 	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2017-10-01/network"
-	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
 	"github.com/Azure/azure-sdk-for-go/services/preview/operationalinsights/mgmt/2015-11-01-preview/operationalinsights"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2016-06-01/subscriptions"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
@@ -52,27 +50,20 @@ type AzureClient struct {
 	environment     azure.Environment
 	subscriptionID  string
 
-	authorizationClient             authorization.RoleAssignmentsClient
-	deploymentsClient               resources.DeploymentsClient
-	deploymentOperationsClient      resources.DeploymentOperationsClient
-	msiClient                       msi.UserAssignedIdentitiesClient
-	resourcesClient                 apimanagement.GroupClient
-	storageAccountsClient           storage.AccountsClient
-	interfacesClient                network.InterfacesClient
-	groupsClient                    resources.GroupsClient
-	subscriptionsClient             subscriptions.Client
-	providersClient                 resources.ProvidersClient
-	virtualMachinesClient           compute.VirtualMachinesClient
-	virtualMachineScaleSetsClient   compute.VirtualMachineScaleSetsClient
-	virtualMachineScaleSetVMsClient compute.VirtualMachineScaleSetVMsClient
-	virtualMachineExtensionsClient  compute.VirtualMachineExtensionsClient
-	disksClient                     compute.DisksClient
-	availabilitySetsClient          compute.AvailabilitySetsClient
-	workspacesClient                operationalinsights.WorkspacesClient
-	virtualMachineImagesClient      compute.VirtualMachineImagesClient
-
-	applicationsClient      graphrbac.ApplicationsClient
-	servicePrincipalsClient graphrbac.ServicePrincipalsClient
+	authorizationClient        authorization.RoleAssignmentsClient
+	deploymentsClient          resources.DeploymentsClient
+	deploymentOperationsClient resources.DeploymentOperationsClient
+	apimanagement.GroupClient
+	storageAccountsClient      storage.AccountsClient
+	interfacesClient           network.InterfacesClient
+	groupsClient               resources.GroupsClient
+	subscriptionsClient        subscriptions.Client
+	providersClient            resources.ProvidersClient
+	virtualMachinesClient      compute.VirtualMachinesClient
+	disksClient                compute.DisksClient
+	availabilitySetsClient     compute.AvailabilitySetsClient
+	workspacesClient           operationalinsights.WorkspacesClient
+	virtualMachineImagesClient compute.VirtualMachineImagesClient
 }
 
 // GetKubernetesClient returns a KubernetesClient hooked up to the api server at the apiserverURL.
@@ -82,7 +73,7 @@ func (az *AzureClient) GetKubernetesClient(apiserverURL, kubeConfig string, inte
 
 // NewAzureClientWithClientSecret returns an AzureClient via client_id and client_secret
 func NewAzureClientWithClientSecret(env azure.Environment, subscriptionID, clientID, clientSecret string) (*AzureClient, error) {
-	oauthConfig, tenantID, err := getOAuthConfig(env, subscriptionID)
+	oauthConfig, err := getOAuthConfig(env, subscriptionID)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +90,7 @@ func NewAzureClientWithClientSecret(env azure.Environment, subscriptionID, clien
 		log.Error(err)
 	}
 
-	return getClient(env, subscriptionID, tenantID, autorest.NewBearerAuthorizer(armSpt), autorest.NewBearerAuthorizer(graphSpt)), nil
+	return getClient(env, subscriptionID, autorest.NewBearerAuthorizer(armSpt)), nil
 }
 
 // NewAzureClientWithClientSecretExternalTenant returns an AzureClient via client_id and client_secret from a tenant
@@ -113,15 +104,8 @@ func NewAzureClientWithClientSecretExternalTenant(env azure.Environment, subscri
 	if err != nil {
 		return nil, err
 	}
-	graphSpt, err := adal.NewServicePrincipalToken(*oauthConfig, clientID, clientSecret, env.GraphEndpoint)
-	if err != nil {
-		return nil, err
-	}
-	if err = graphSpt.Refresh(); err != nil {
-		log.Error(err)
-	}
 
-	return getClient(env, subscriptionID, tenantID, autorest.NewBearerAuthorizer(armSpt), autorest.NewBearerAuthorizer(graphSpt)), nil
+	return getClient(env, subscriptionID, autorest.NewBearerAuthorizer(armSpt)), nil
 }
 
 // NewAzureClientWithClientCertificateFile returns an AzureClient via client_id and jwt certificate assertion
@@ -156,12 +140,12 @@ func NewAzureClientWithClientCertificateFileExternalTenant(env azure.Environment
 
 // NewAzureClientWithClientCertificate returns an AzureClient via client_id and jwt certificate assertion
 func NewAzureClientWithClientCertificate(env azure.Environment, subscriptionID, clientID string, certificate *x509.Certificate, privateKey *rsa.PrivateKey) (*AzureClient, error) {
-	oauthConfig, tenantID, err := getOAuthConfig(env, subscriptionID)
+	oauthConfig, err := getOAuthConfig(env, subscriptionID)
 	if err != nil {
 		return nil, err
 	}
 
-	return newAzureClientWithCertificate(env, oauthConfig, subscriptionID, clientID, tenantID, certificate, privateKey)
+	return newAzureClientWithCertificate(env, oauthConfig, subscriptionID, clientID, certificate, privateKey)
 }
 
 // NewAzureClientWithClientCertificateExternalTenant returns an AzureClient via client_id and jwt certificate assertion against a 3rd party tenant
@@ -171,10 +155,10 @@ func NewAzureClientWithClientCertificateExternalTenant(env azure.Environment, su
 		return nil, err
 	}
 
-	return newAzureClientWithCertificate(env, oauthConfig, subscriptionID, clientID, tenantID, certificate, privateKey)
+	return newAzureClientWithCertificate(env, oauthConfig, subscriptionID, clientID, certificate, privateKey)
 }
 
-func newAzureClientWithCertificate(env azure.Environment, oauthConfig *adal.OAuthConfig, subscriptionID, clientID, tenantID string, certificate *x509.Certificate, privateKey *rsa.PrivateKey) (*AzureClient, error) {
+func newAzureClientWithCertificate(env azure.Environment, oauthConfig *adal.OAuthConfig, subscriptionID, clientID string, certificate *x509.Certificate, privateKey *rsa.PrivateKey) (*AzureClient, error) {
 	if certificate == nil {
 		return nil, errors.New("certificate should not be nil")
 	}
@@ -195,91 +179,71 @@ func newAzureClientWithCertificate(env azure.Environment, oauthConfig *adal.OAut
 		log.Error(err)
 	}
 
-	return getClient(env, subscriptionID, tenantID, autorest.NewBearerAuthorizer(armSpt), autorest.NewBearerAuthorizer(graphSpt)), nil
+	return getClient(env, subscriptionID, autorest.NewBearerAuthorizer(armSpt)), nil
 }
 
-func getOAuthConfig(env azure.Environment, subscriptionID string) (*adal.OAuthConfig, string, error) {
+func getOAuthConfig(env azure.Environment, subscriptionID string) (*adal.OAuthConfig, error) {
 	tenantID, err := engine.GetTenantID(env.ResourceManagerEndpoint, subscriptionID)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
 	oauthConfig, err := adal.NewOAuthConfig(env.ActiveDirectoryEndpoint, tenantID)
 	if err != nil {
-		return nil, "", err
+		return nil, err
 	}
 
-	return oauthConfig, tenantID, nil
+	return oauthConfig, nil
 }
 
-func getClient(env azure.Environment, subscriptionID, tenantID string, armAuthorizer autorest.Authorizer, graphAuthorizer autorest.Authorizer) *AzureClient {
+func getClient(env azure.Environment, subscriptionID string, armAuthorizer autorest.Authorizer) *AzureClient {
 	c := &AzureClient{
 		environment:    env,
 		subscriptionID: subscriptionID,
 
-		authorizationClient:             authorization.NewRoleAssignmentsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		deploymentsClient:               resources.NewDeploymentsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		deploymentOperationsClient:      resources.NewDeploymentOperationsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		msiClient:                       msi.NewUserAssignedIdentitiesClient(subscriptionID),
-		resourcesClient:                 apimanagement.NewGroupClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		storageAccountsClient:           storage.NewAccountsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		interfacesClient:                network.NewInterfacesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		groupsClient:                    resources.NewGroupsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		subscriptionsClient:             subscriptions.NewClientWithBaseURI(env.ResourceManagerEndpoint),
-		providersClient:                 resources.NewProvidersClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		virtualMachinesClient:           compute.NewVirtualMachinesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		virtualMachineScaleSetsClient:   compute.NewVirtualMachineScaleSetsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		virtualMachineScaleSetVMsClient: compute.NewVirtualMachineScaleSetVMsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		virtualMachineExtensionsClient:  compute.NewVirtualMachineExtensionsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		disksClient:                     compute.NewDisksClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		availabilitySetsClient:          compute.NewAvailabilitySetsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		workspacesClient:                operationalinsights.NewWorkspacesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-		virtualMachineImagesClient:      compute.NewVirtualMachineImagesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
-
-		applicationsClient:      graphrbac.NewApplicationsClientWithBaseURI(env.GraphEndpoint, tenantID),
-		servicePrincipalsClient: graphrbac.NewServicePrincipalsClientWithBaseURI(env.GraphEndpoint, tenantID),
+		authorizationClient:        authorization.NewRoleAssignmentsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		deploymentsClient:          resources.NewDeploymentsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		deploymentOperationsClient: resources.NewDeploymentOperationsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		storageAccountsClient:      storage.NewAccountsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		interfacesClient:           network.NewInterfacesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		groupsClient:               resources.NewGroupsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		subscriptionsClient:        subscriptions.NewClientWithBaseURI(env.ResourceManagerEndpoint),
+		providersClient:            resources.NewProvidersClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		virtualMachinesClient:      compute.NewVirtualMachinesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		disksClient:                compute.NewDisksClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		availabilitySetsClient:     compute.NewAvailabilitySetsClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		workspacesClient:           operationalinsights.NewWorkspacesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
+		virtualMachineImagesClient: compute.NewVirtualMachineImagesClientWithBaseURI(env.ResourceManagerEndpoint, subscriptionID),
 	}
 
 	c.authorizationClient.Authorizer = armAuthorizer
 	c.deploymentsClient.Authorizer = armAuthorizer
 	c.deploymentOperationsClient.Authorizer = armAuthorizer
-	c.msiClient.Authorizer = armAuthorizer
-	c.resourcesClient.Authorizer = armAuthorizer
 	c.storageAccountsClient.Authorizer = armAuthorizer
 	c.interfacesClient.Authorizer = armAuthorizer
 	c.groupsClient.Authorizer = armAuthorizer
 	c.subscriptionsClient.Authorizer = armAuthorizer
 	c.providersClient.Authorizer = armAuthorizer
 	c.virtualMachinesClient.Authorizer = armAuthorizer
-	c.virtualMachineScaleSetsClient.Authorizer = armAuthorizer
-	c.virtualMachineScaleSetVMsClient.Authorizer = armAuthorizer
 	c.disksClient.Authorizer = armAuthorizer
 	c.availabilitySetsClient.Authorizer = armAuthorizer
 	c.workspacesClient.Authorizer = armAuthorizer
 	c.virtualMachineImagesClient.Authorizer = armAuthorizer
 
 	c.deploymentsClient.PollingDelay = time.Second * 5
-	c.resourcesClient.PollingDelay = time.Second * 5
 
 	// Set permissive timeouts to accommodate long-running operations
 	c.deploymentsClient.PollingDuration = DefaultARMOperationTimeout
 	c.deploymentOperationsClient.PollingDuration = DefaultARMOperationTimeout
-	c.applicationsClient.PollingDuration = DefaultARMOperationTimeout
 	c.authorizationClient.PollingDuration = DefaultARMOperationTimeout
 	c.disksClient.PollingDuration = DefaultARMOperationTimeout
 	c.groupsClient.PollingDuration = DefaultARMOperationTimeout
 	c.subscriptionsClient.PollingDuration = DefaultARMOperationTimeout
 	c.interfacesClient.PollingDuration = DefaultARMOperationTimeout
 	c.providersClient.PollingDuration = DefaultARMOperationTimeout
-	c.resourcesClient.PollingDuration = DefaultARMOperationTimeout
 	c.storageAccountsClient.PollingDuration = DefaultARMOperationTimeout
-	c.virtualMachineScaleSetsClient.PollingDuration = DefaultARMOperationTimeout
-	c.virtualMachineScaleSetVMsClient.PollingDuration = DefaultARMOperationTimeout
 	c.virtualMachinesClient.PollingDuration = DefaultARMOperationTimeout
 	c.availabilitySetsClient.PollingDuration = DefaultARMOperationTimeout
-
-	c.applicationsClient.Authorizer = graphAuthorizer
-	c.servicePrincipalsClient.Authorizer = graphAuthorizer
 
 	return c
 }
@@ -371,18 +335,13 @@ func (az *AzureClient) AddAcceptLanguages(languages []string) {
 	az.deploymentOperationsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.deploymentsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.deploymentOperationsClient.Client.RequestInspector = az.addAcceptLanguages()
-	az.resourcesClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.storageAccountsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.interfacesClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.groupsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.subscriptionsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.providersClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.virtualMachinesClient.Client.RequestInspector = az.addAcceptLanguages()
-	az.virtualMachineScaleSetsClient.Client.RequestInspector = az.addAcceptLanguages()
 	az.disksClient.Client.RequestInspector = az.addAcceptLanguages()
-
-	az.applicationsClient.Client.RequestInspector = az.addAcceptLanguages()
-	az.servicePrincipalsClient.Client.RequestInspector = az.addAcceptLanguages()
 }
 
 func (az *AzureClient) addAcceptLanguages() autorest.PrepareDecorator {
@@ -435,16 +394,11 @@ func (az *AzureClient) AddAuxiliaryTokens(tokens []string) {
 	az.deploymentOperationsClient.Client.RequestInspector = requestWithTokens
 	az.deploymentsClient.Client.RequestInspector = requestWithTokens
 	az.deploymentOperationsClient.Client.RequestInspector = requestWithTokens
-	az.resourcesClient.Client.RequestInspector = requestWithTokens
 	az.storageAccountsClient.Client.RequestInspector = requestWithTokens
 	az.interfacesClient.Client.RequestInspector = requestWithTokens
 	az.groupsClient.Client.RequestInspector = requestWithTokens
 	az.subscriptionsClient.Client.RequestInspector = requestWithTokens
 	az.providersClient.Client.RequestInspector = requestWithTokens
 	az.virtualMachinesClient.Client.RequestInspector = requestWithTokens
-	az.virtualMachineScaleSetsClient.Client.RequestInspector = requestWithTokens
 	az.disksClient.Client.RequestInspector = requestWithTokens
-
-	az.applicationsClient.Client.RequestInspector = requestWithTokens
-	az.servicePrincipalsClient.Client.RequestInspector = requestWithTokens
 }

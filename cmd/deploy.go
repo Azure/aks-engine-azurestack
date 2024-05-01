@@ -28,7 +28,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/engine/transform"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
-	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/pkg/errors"
 )
@@ -348,33 +347,7 @@ func autofillApimodel(dc *deployCmd) error {
 	if !useManagedIdentity {
 		spp := dc.containerService.Properties.ServicePrincipalProfile
 		if spp != nil && spp.ClientID == "" && spp.Secret == "" && spp.KeyvaultSecretRef == nil && (dc.getAuthArgs().ClientID.String() == "" || dc.getAuthArgs().ClientID.String() == "00000000-0000-0000-0000-000000000000") && dc.getAuthArgs().ClientSecret == "" {
-			log.Warnln("apimodel: ServicePrincipalProfile was missing or empty, creating application...")
-
-			// TODO: consider caching the creds here so they persist between subsequent runs of 'deploy'
-			appName := dc.containerService.Properties.MasterProfile.DNSPrefix
-			appURL := fmt.Sprintf("https://%s/", appName)
-			var replyURLs *[]string
-			var requiredResourceAccess *[]graphrbac.RequiredResourceAccess
-			applicationResp, servicePrincipalObjectID, secret, createErr := dc.client.CreateApp(ctx, appName, appURL, replyURLs, requiredResourceAccess)
-			if createErr != nil {
-				return errors.Wrap(createErr, "apimodel invalid: ServicePrincipalProfile was empty, and we failed to create valid credentials")
-			}
-			applicationID := to.String(applicationResp.AppID)
-			log.Warnf("created application with applicationID (%s) and servicePrincipalObjectID (%s).", applicationID, servicePrincipalObjectID)
-
-			log.Warnln("apimodel: ServicePrincipalProfile was empty, assigning role to application...")
-
-			err = dc.client.CreateRoleAssignmentSimple(ctx, dc.resourceGroup, servicePrincipalObjectID)
-			if err != nil {
-				return errors.Wrap(err, "apimodel: could not create or assign ServicePrincipal")
-
-			}
-
-			dc.containerService.Properties.ServicePrincipalProfile = &api.ServicePrincipalProfile{
-				ClientID: applicationID,
-				Secret:   secret,
-				ObjectID: servicePrincipalObjectID,
-			}
+			log.Warnln("apimodel: ServicePrincipalProfile missing or empty...")
 		} else if (dc.containerService.Properties.ServicePrincipalProfile == nil || ((dc.containerService.Properties.ServicePrincipalProfile.ClientID == "" || dc.containerService.Properties.ServicePrincipalProfile.ClientID == "00000000-0000-0000-0000-000000000000") && dc.containerService.Properties.ServicePrincipalProfile.Secret == "")) && dc.getAuthArgs().ClientID.String() != "" && dc.getAuthArgs().ClientSecret != "" {
 			dc.containerService.Properties.ServicePrincipalProfile = &api.ServicePrincipalProfile{
 				ClientID: dc.getAuthArgs().ClientID.String(),
