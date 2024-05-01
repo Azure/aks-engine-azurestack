@@ -608,12 +608,6 @@ func (rcc *rotateCertsCmd) waitForVMsRunning(nodes []string) error {
 		if err := ops.WaitForVMsRunning(rcc.armClient, rcc.resourceGroupName, nodes, rotateCertsDefaultInterval, rotateCertsDefaultTimeout); err != nil {
 			return errors.Wrap(err, "waiting for VMs to reach the running state")
 		}
-	} else {
-		vmssName := fmt.Sprintf("%svmss", rcc.cs.Properties.GetMasterVMPrefix())
-		count := rcc.cs.Properties.MasterProfile.Count
-		if err := ops.WaitForVMSSIntancesRunning(rcc.armClient, rcc.resourceGroupName, vmssName, count, rotateCertsDefaultInterval, rotateCertsDefaultTimeout); err != nil {
-			return errors.Wrap(err, "waiting for VMs to reach the running state")
-		}
 	}
 	return nil
 }
@@ -639,11 +633,6 @@ func (rcc *rotateCertsCmd) rebootNodes(nodes ...string) error {
 			if err := rcc.armClient.RestartVirtualMachine(rcc.resourceGroupName, node); err != nil {
 				return errors.Wrapf(err, "rebooting host %s", node)
 			}
-		}
-	} else {
-		vmssName := fmt.Sprintf("%svmss", rcc.cs.Properties.GetMasterVMPrefix())
-		if err := rcc.armClient.RestartVirtualMachineScaleSets(rcc.resourceGroupName, vmssName); err != nil {
-			return errors.Wrapf(err, "rebooting vmss %s", vmssName)
 		}
 	}
 	return nil

@@ -9,14 +9,12 @@ import (
 	"os"
 	"path/filepath"
 
-	"regexp"
 	"strings"
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
-	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
@@ -390,7 +388,6 @@ func (uc *upgradeCmd) run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	upgradeCluster.IsVMSSToBeUpgraded = isVMSSNameInAgentPoolsArray
 	upgradeCluster.CurrentVersion = uc.currentVersion
 
 	if err = upgradeCluster.UpgradeCluster(uc.client, kubeConfig, BuildTag); err != nil {
@@ -421,26 +418,6 @@ func (uc *upgradeCmd) run(cmd *cobra.Command, args []string) error {
 	}
 	dir, file := filepath.Split(uc.apiModelPath)
 	return f.SaveFile(dir, file, b)
-}
-
-// isVMSSNameInAgentPoolsArray is a helper func to filter out any VMSS in the cluster resource group
-// that are not participating in the aks-engine-created Kubernetes cluster
-func isVMSSNameInAgentPoolsArray(vmss string, cs *api.ContainerService) bool {
-	for _, pool := range cs.Properties.AgentPoolProfiles {
-		if pool.AvailabilityProfile == api.VirtualMachineScaleSets {
-			if pool.OSType == api.Windows {
-				re := regexp.MustCompile(`^[0-9]{4}k8s[0]+`)
-				if re.FindString(vmss) != "" {
-					return true
-				}
-			} else {
-				if poolName, _, _ := utils.VmssNameParts(vmss); poolName == pool.Name {
-					return true
-				}
-			}
-		}
-	}
-	return false
 }
 
 // validateOSBaseImage checks if the OS image is available on the target cloud (ATM, Azure Stack only)

@@ -237,20 +237,6 @@ func (mr *MockARMClientMockRecorder) RestartVirtualMachine(resourceGroup, vmName
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RestartVirtualMachine", reflect.TypeOf((*MockARMClient)(nil).RestartVirtualMachine), resourceGroup, vmName)
 }
 
-// RestartVirtualMachineScaleSets mocks base method
-func (m *MockARMClient) RestartVirtualMachineScaleSets(resourceGroup, vmssName string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RestartVirtualMachineScaleSets", resourceGroup, vmssName)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
-
-// RestartVirtualMachineScaleSets indicates an expected call of RestartVirtualMachineScaleSets
-func (mr *MockARMClientMockRecorder) RestartVirtualMachineScaleSets(resourceGroup, vmssName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RestartVirtualMachineScaleSets", reflect.TypeOf((*MockARMClient)(nil).RestartVirtualMachineScaleSets), resourceGroup, vmssName)
-}
-
 // GetVirtualMachinePowerState mocks base method
 func (m *MockARMClient) GetVirtualMachinePowerState(resourceGroup, vmName string) (string, error) {
 	m.ctrl.T.Helper()
@@ -264,19 +250,4 @@ func (m *MockARMClient) GetVirtualMachinePowerState(resourceGroup, vmName string
 func (mr *MockARMClientMockRecorder) GetVirtualMachinePowerState(resourceGroup, vmName interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVirtualMachinePowerState", reflect.TypeOf((*MockARMClient)(nil).GetVirtualMachinePowerState), resourceGroup, vmName)
-}
-
-// GetVirtualMachineScaleSetInstancePowerState mocks base method
-func (m *MockARMClient) GetVirtualMachineScaleSetInstancePowerState(resourceGroup, vmssName, instanceID string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVirtualMachineScaleSetInstancePowerState", resourceGroup, vmssName, instanceID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetVirtualMachineScaleSetInstancePowerState indicates an expected call of GetVirtualMachineScaleSetInstancePowerState
-func (mr *MockARMClientMockRecorder) GetVirtualMachineScaleSetInstancePowerState(resourceGroup, vmssName, instanceID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVirtualMachineScaleSetInstancePowerState", reflect.TypeOf((*MockARMClient)(nil).GetVirtualMachineScaleSetInstancePowerState), resourceGroup, vmssName, instanceID)
 }

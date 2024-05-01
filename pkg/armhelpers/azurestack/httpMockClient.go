@@ -25,7 +25,6 @@ const (
 	subscriptionsAPIVersion                    = "2016-06-01"
 	deploymentName                             = "testDeplomentName"
 	deploymentStatus                           = "08586474508192185203"
-	virtualMachineScaleSetName                 = "vmscalesetName"
 	virtualMachineAvailabilitySetName          = "vmavailabilitysetName"
 	virtualMachineName                         = "testVirtualMachineName"
 	logAnalyticsDefaultResourceGroupEUS        = "DefaultResourceGroup-EUS"
@@ -43,9 +42,6 @@ const (
 	offer                                      = "DefaultOffer"
 	version                                    = "DefaultVersion"
 	filePathTokenResponse                      = "httpMockClientData/tokenResponse.json"
-	filePathListLocations                      = "httpMockClientData/listLocations.json"
-	filePathListVirtualMachineScaleSets        = "httpMockClientData/listVirtualMachineScaleSets.json"
-	filePathListVirtualMachineScaleSetVMs      = "httpMockClientData/listVirtualMachineScaleSetVMs.json"
 	filePathListVirtualMachines                = "httpMockClientData/listVirtualMachines.json"
 	filePathGetVirtualMachine                  = "httpMockClientData/getVirtualMachine.json"
 	fileDeployVirtualMachine                   = "httpMockClientData/deployVMResponse.json"
@@ -89,7 +85,6 @@ type HTTPMockClient struct {
 	Sku                                        string
 	Offer                                      string
 	Version                                    string
-	ResponseListLocations                      string
 	ResponseListVirtualMachineScaleSets        string
 	ResponseListVirtualMachineScaleSetVMs      string
 	ResponseListVirtualMachines                string
@@ -137,7 +132,6 @@ func NewHTTPMockClient() (HTTPMockClient, error) {
 		DeploymentAPIVersion:                deploymentAPIVersion,
 		DeploymentName:                      deploymentName,
 		DeploymentStatus:                    deploymentStatus,
-		VirtualMachineScaleSetName:          virtualMachineScaleSetName,
 		VirtualMachineName:                  virtualMachineName,
 		LogAnalyticsWorkspaceName:           logAnalyticsWorkspaceName,
 		LogAnalyticsDefaultResourceGroupEUS: logAnalyticsDefaultResourceGroupEUS,
@@ -157,14 +151,6 @@ func NewHTTPMockClient() (HTTPMockClient, error) {
 	}
 	var err error
 	client.TokenResponse, err = readFromFile(filePathTokenResponse)
-	if err != nil {
-		return client, err
-	}
-	client.ResponseListVirtualMachineScaleSets, err = readFromFile(filePathListVirtualMachineScaleSets)
-	if err != nil {
-		return client, err
-	}
-	client.ResponseListVirtualMachineScaleSetVMs, err = readFromFile(filePathListVirtualMachineScaleSetVMs)
 	if err != nil {
 		return client, err
 	}
@@ -210,11 +196,6 @@ func NewHTTPMockClient() (HTTPMockClient, error) {
 	}
 
 	client.ResponseListVirtualMachineImages, err = readFromFile(filePathListVirtualMachineImages)
-	if err != nil {
-		return client, err
-	}
-
-	client.ResponseListLocations, err = readFromFile(filePathListLocations)
 	if err != nil {
 		return client, err
 	}
@@ -279,30 +260,6 @@ func (mc HTTPMockClient) RegisterLogin() {
 	})
 }
 
-// RegisterListVirtualMachineScaleSets registers the mock response for ListVirtualMachineScaleSets
-func (mc HTTPMockClient) RegisterListVirtualMachineScaleSets() {
-	pattern := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Compute/virtualMachineScaleSets", mc.SubscriptionID, mc.ResourceGroup)
-	mc.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("api-version") != mc.ComputeAPIVersion {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			_, _ = fmt.Fprint(w, mc.ResponseListVirtualMachineScaleSets)
-		}
-	})
-}
-
-// RegisterListVirtualMachineScaleSetVMs registers the mock response for ListVirtualMachineScaleSetVMs
-func (mc HTTPMockClient) RegisterListVirtualMachineScaleSetVMs() {
-	pattern := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Compute/virtualMachineScaleSets/%s/virtualMachines", mc.SubscriptionID, mc.ResourceGroup, mc.VirtualMachineScaleSetName)
-	mc.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("api-version") != mc.ComputeAPIVersion {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			_, _ = fmt.Fprint(w, mc.ResponseListVirtualMachineScaleSetVMs)
-		}
-	})
-}
-
 // RegisterListVirtualMachines registers the mock response for ListVirtualMachines
 func (mc HTTPMockClient) RegisterListVirtualMachines() {
 	pattern := fmt.Sprintf("/subscriptions/%s/resourceGroups/%s/providers/Microsoft.Compute/virtualMachines", mc.SubscriptionID, mc.ResourceGroup)
@@ -311,18 +268,6 @@ func (mc HTTPMockClient) RegisterListVirtualMachines() {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			_, _ = fmt.Fprint(w, mc.ResponseListVirtualMachines)
-		}
-	})
-}
-
-// RegisterListLocations registers the mock response for ListVirtualMachines
-func (mc HTTPMockClient) RegisterListLocations() {
-	pattern := fmt.Sprintf("/subscriptions/%s/locations", mc.SubscriptionID)
-	mc.mux.HandleFunc(pattern, func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("api-version") != mc.SubscriptionsAPIVersion {
-			w.WriteHeader(http.StatusNotFound)
-		} else {
-			_, _ = fmt.Fprint(w, mc.ResponseListLocations)
 		}
 	})
 }
@@ -349,11 +294,6 @@ func (mc HTTPMockClient) RegisterGetAvailabilitySetFaultDomainCount() {
 			_, _ = fmt.Fprint(w, mc.ResponseGetAvailabilitySet)
 		}
 	})
-}
-
-// RegisterListResourceSkus registers a mock response for ListResourceSkus.
-func (mc HTTPMockClient) RegisterListResourceSkus() {
-	// Not implemented on Azure Stack.
 }
 
 // RegisterVirtualMachineEndpoint registers mock responses for the Microsoft.Compute/virtualMachines endpoint

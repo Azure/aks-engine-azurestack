@@ -41,6 +41,7 @@ jobs:
       SKIP_TEST: ${{ parameters.skipTest }}
       GINKGO_SKIP: ${{ parameters.skipTests }}
       RETAIN_SSH: false
+      USE_MANAGED_IDENTITY: true
       MSI_USER_ASSIGNED_ID: ${{ parameters.msiId }}
       ENABLE_KMS_ENCRYPTION: ${{ parameters.enableKMSEncryption }}
       CONTAINER_RUNTIME: ${{ parameters.containerRuntime }}

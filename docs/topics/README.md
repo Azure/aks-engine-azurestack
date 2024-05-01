@@ -19,7 +19,6 @@ Introductions to all the key parts of AKS Engine you’ll need to know.
 **Operations**
 
 - [Scaling Clusters](scale.md)
-- [Updating VMSS Node Pools](update.md)
 - [Adding Node Pools to Existing Clusters](addpool.md)
 - [Upgrading Clusters](upgrade.md)
 

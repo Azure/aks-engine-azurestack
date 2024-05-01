@@ -69,61 +69,6 @@ func (az *AzureClient) DeleteVirtualMachine(ctx context.Context, resourceGroup, 
 	return err
 }
 
-// ListVirtualMachineScaleSets returns (the first page of) the VMSS resources in the specified resource group.
-func (az *AzureClient) ListVirtualMachineScaleSets(ctx context.Context, resourceGroup string) (armhelpers.VirtualMachineScaleSetListResultPage, error) {
-	page, err := az.virtualMachineScaleSetsClient.List(ctx, resourceGroup)
-	c := VirtualMachineScaleSetListResultPageClient{
-		vmsslrp: page,
-		err:     err,
-	}
-	return &c, err
-}
-
-// RestartVirtualMachineScaleSets restarts the specified VMSS
-func (az *AzureClient) RestartVirtualMachineScaleSets(ctx context.Context, resourceGroup string, virtualMachineScaleSet string, instanceIDs *azcompute.VirtualMachineScaleSetVMInstanceIDs) error {
-	ids := compute.VirtualMachineScaleSetVMInstanceIDs{}
-	err := DeepCopy(&ids, instanceIDs)
-	if err != nil {
-		return fmt.Errorf("fail to convert instance IDs, %v", err)
-	}
-	future, err := az.virtualMachineScaleSetsClient.Restart(ctx, resourceGroup, virtualMachineScaleSet, &ids)
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
-// ListVirtualMachineScaleSetVMs returns the list of VMs per VMSS
-func (az *AzureClient) ListVirtualMachineScaleSetVMs(ctx context.Context, resourceGroup, virtualMachineScaleSet string) (armhelpers.VirtualMachineScaleSetVMListResultPage, error) {
-	page, err := az.virtualMachineScaleSetVMsClient.List(ctx, resourceGroup, virtualMachineScaleSet, "", "", "")
-	c := VirtualMachineScaleSetVMListResultPageClient{
-		vmssvlrp: page,
-		err:      err,
-	}
-	return &c, err
-}
-
-// DeleteVirtualMachineScaleSetVM deletes a VM in a VMSS
-func (az *AzureClient) DeleteVirtualMachineScaleSetVM(ctx context.Context, resourceGroup, virtualMachineScaleSet, instanceID string) error {
-	future, err := az.virtualMachineScaleSetVMsClient.Delete(ctx, resourceGroup, virtualMachineScaleSet, instanceID)
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetVMsClient.Client); err != nil {
-		return err
-	}
-
-	_, err = future.Result(az.virtualMachineScaleSetVMsClient)
-	return err
-}
-
 // DeleteVirtualMachineScaleSet deletes an entire VM Scale Set.
 func (az *AzureClient) DeleteVirtualMachineScaleSet(ctx context.Context, resourceGroup, vmssName string) error {
 	future, err := az.virtualMachineScaleSetsClient.Delete(ctx, resourceGroup, vmssName)
@@ -133,33 +78,6 @@ func (az *AzureClient) DeleteVirtualMachineScaleSet(ctx context.Context, resourc
 	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
 		return err
 	}
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
-// SetVirtualMachineScaleSetCapacity sets the VMSS capacity
-func (az *AzureClient) SetVirtualMachineScaleSetCapacity(ctx context.Context, resourceGroup, virtualMachineScaleSet string, sku azcompute.Sku, location string) error {
-	s := compute.Sku{}
-	err := DeepCopy(&s, sku)
-	if err != nil {
-		return fmt.Errorf("fail to convert SKU, %v", err)
-	}
-	future, err := az.virtualMachineScaleSetsClient.CreateOrUpdate(
-		ctx,
-		resourceGroup,
-		virtualMachineScaleSet,
-		compute.VirtualMachineScaleSet{
-			Location: &location,
-			Sku:      &s,
-		})
-	if err != nil {
-		return err
-	}
-
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-
 	_, err = future.Result(az.virtualMachineScaleSetsClient)
 	return err
 }
@@ -209,10 +127,4 @@ func (az *AzureClient) GetVirtualMachinePowerState(ctx context.Context, resource
 		}
 	}
 	return "", nil
-}
-
-// GetVirtualMachineScaleSetInstancePowerState returns the virtual machine's PowerState status code
-func (az *AzureClient) GetVirtualMachineScaleSetInstancePowerState(ctx context.Context, resourceGroup, name, instanceID string) (string, error) {
-	// TODO Pass compute.InstanceView once we upgrade azure stack compute's api version
-	return "", errors.Errorf("operation not supported")
 }

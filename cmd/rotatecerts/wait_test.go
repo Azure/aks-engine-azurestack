@@ -4,6 +4,7 @@
 package rotatecerts
 
 import (
+	"context"
 	"fmt"
 	"testing"
 	"time"
@@ -57,7 +58,7 @@ func TestWaitForNodesCondition(t *testing.T) {
 
 		_, err := waitForNodesCondition(mock, falseCond, 1, 500*time.Millisecond, 1*time.Second)
 		g.Expect(err).To(HaveOccurred())
-		g.Expect(fmt.Sprint(err)).To(Equal("timed out waiting for the condition"))
+		g.Expect(errors.Is(err, context.DeadlineExceeded)).To(BeTrue())
 	})
 }
 

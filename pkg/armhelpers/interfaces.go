@@ -12,7 +12,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2016-06-01/subscriptions"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
@@ -34,24 +33,6 @@ type VirtualMachineListResultPage interface {
 	NotDone() bool
 	Response() compute.VirtualMachineListResult
 	Values() []compute.VirtualMachine
-}
-
-// VirtualMachineScaleSetListResultPage is an interface for compute.VirtualMachineScaleSetListResultPage to aid in mocking
-type VirtualMachineScaleSetListResultPage interface {
-	Next() error
-	NextWithContext(ctx context.Context) (err error)
-	NotDone() bool
-	Response() compute.VirtualMachineScaleSetListResult
-	Values() []compute.VirtualMachineScaleSet
-}
-
-// VirtualMachineScaleSetVMListResultPage is an interface for compute.VirtualMachineScaleSetListResultPage to aid in mocking
-type VirtualMachineScaleSetVMListResultPage interface {
-	Next() error
-	NextWithContext(ctx context.Context) (err error)
-	NotDone() bool
-	Response() compute.VirtualMachineScaleSetVMListResult
-	Values() []compute.VirtualMachineScaleSetVM
 }
 
 // ProviderListResultPage is an interface for resources.ProviderListResultPage to aid in mocking
@@ -117,14 +98,8 @@ type AKSEngineClient interface {
 	// EnsureResourceGroup ensures the specified resource group exists in the specified location
 	EnsureResourceGroup(ctx context.Context, resourceGroup, location string, managedBy *string) (*resources.Group, error)
 
-	// ListLocations returns all the Azure locations to which AKS Engine can deploy
-	ListLocations(ctx context.Context) (*[]subscriptions.Location, error)
-
 	//
 	// COMPUTE
-
-	// ListResourceSkus lists Microsoft.Compute SKUs available for a subscription
-	ListResourceSkus(ctx context.Context, filter string) (ResourceSkusResultPage, error)
 
 	// ListVirtualMachines lists VM resources
 	ListVirtualMachines(ctx context.Context, resourceGroup string) (VirtualMachineListResultPage, error)
@@ -138,21 +113,6 @@ type AKSEngineClient interface {
 	// DeleteVirtualMachine deletes the specified virtual machine.
 	DeleteVirtualMachine(ctx context.Context, resourceGroup, name string) error
 
-	// ListVirtualMachineScaleSets lists the VMSS resources in the resource group
-	ListVirtualMachineScaleSets(ctx context.Context, resourceGroup string) (VirtualMachineScaleSetListResultPage, error)
-
-	// RestartVirtualMachineScaleSets restarts the specified VMSS
-	RestartVirtualMachineScaleSets(ctx context.Context, resourceGroup, virtualMachineScaleSet string, instanceIDs *compute.VirtualMachineScaleSetVMInstanceIDs) error
-
-	// ListVirtualMachineScaleSetVMs lists the virtual machines contained in a VMSS
-	ListVirtualMachineScaleSetVMs(ctx context.Context, resourceGroup, virtualMachineScaleSet string) (VirtualMachineScaleSetVMListResultPage, error)
-
-	// DeleteVirtualMachineScaleSetVM deletes a VM in a VMSS
-	DeleteVirtualMachineScaleSetVM(ctx context.Context, resourceGroup, virtualMachineScaleSet, instanceID string) error
-
-	// SetVirtualMachineScaleSetCapacity sets the VMSS capacity
-	SetVirtualMachineScaleSetCapacity(ctx context.Context, resourceGroup, virtualMachineScaleSet string, sku compute.Sku, location string) error
-
 	// GetAvailabilitySet retrieves the specified VM availability set.
 	GetAvailabilitySet(ctx context.Context, resourceGroup, availabilitySet string) (compute.AvailabilitySet, error)
 
@@ -162,9 +122,6 @@ type AKSEngineClient interface {
 
 	// GetVirtualMachinePowerState returns the virtual machine's PowerState status code
 	GetVirtualMachinePowerState(ctx context.Context, resourceGroup, name string) (string, error)
-
-	// GetVirtualMachineScaleSetInstancePowerState returns the virtual machine's PowerState status code
-	GetVirtualMachineScaleSetInstancePowerState(ctx context.Context, resourceGroup, name, instanceID string) (string, error)
 
 	//
 	// STORAGE

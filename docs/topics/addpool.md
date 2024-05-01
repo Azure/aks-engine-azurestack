@@ -65,13 +65,6 @@ Some important considerations:
 
 ## Frequently Asked Questions
 
-### Why would I use addpool instead of update to upgrade a VMSS node pool?
-
-Similar to `aks-engine-azurestack update`, you may use the `addpool` command to try out a new node configuration in your cluster without affecting existing nodes or production workloads (although if your new configuration is risky in any way you will want to taint those nodes so that no production workloads are scheduled, until you can validate the new configuration). The primary differences are:
-
-- Use `addpool` when the configuration delta compared to an existing node pool is significant enough where it makes sense to organize that new configuration discretely in its own pool. Especially if the new pool will only serve a particular type of traffic (e.g., GPU or confidential compute), a dedicated pool should be used for easy, discrete scaling in response to the specific load requirements of the specific workloads it will run.
-- Use `addpool` when you want to run operational tests immediately, and also especially if you know the specific number of net new nodes to add, and you need them immediately. The primary operational difference between `addpool` and `update` is that `addpool` actually adds new operational capacity to your cluster immediately, whereas `update` merely changes the VMSS model, so that *the next* scale out operation renders a node with the new configuration.
-
 ### Why would I use addpool instead of upgrade to install a newer version of Kubernetes on my cluster?
 
 If you're running a very large Kubernetes cluster, the one-node-at-a-time operation of `aks-engine-azurestack upgrade` will take many hours, even days, depending on the size of the cluster. Each one of those node deletions + node additions is subject to environmental failures, and so a deterministic upgrade can indeed take many days. Depending on your tolerance for temporary additional quota, you can upgrade your nodes more quickly, one pool at a time, and use your own validation criteria to inform the progression velocity through an entire cluster upgrade workflow. Let's demonstrate how that might work using a cluster with 3 node pools:

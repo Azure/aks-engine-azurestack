@@ -51,7 +51,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 

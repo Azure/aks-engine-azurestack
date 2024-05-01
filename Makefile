@@ -27,7 +27,7 @@ ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif
 
-DEV_ENV_IMAGE := mcr.microsoft.com/oss/azcu/go-dev:v1.36.2
+DEV_ENV_IMAGE := mcr.microsoft.com/oss/azcu/go-dev:v1.38.3
 DEV_ENV_WORK_DIR := /aks-engine-azurestack
 DEV_ENV_OPTS := --rm -v $(GOPATH)/pkg/mod:/go/pkg/mod -v $(CURDIR):$(DEV_ENV_WORK_DIR) -w $(DEV_ENV_WORK_DIR) $(DEV_ENV_VARS)
 DEV_ENV_CMD := docker run $(DEV_ENV_OPTS) $(DEV_ENV_IMAGE)
@@ -83,13 +83,6 @@ generate: bootstrap
 	@echo "$$(go-bindata --version)"
 	go generate $(GOFLAGS) -v ./... > /dev/null 2>&1
 
-.PHONY: generate-azure-constants
-generate-azure-constants: build-binary
-	$(BINARY_DEST_DIR)/aks-engine-azurestack get-locations -o code --client-id=$(AZURE_CLIENT_ID) --client-secret=$(AZURE_CLIENT_SECRET) --subscription-id=$(AZURE_SUBSCRIPTION_ID) \
-	  > pkg/helpers/azure_locations.go
-	$(BINARY_DEST_DIR)/aks-engine-azurestack get-skus -o code --client-id=$(AZURE_CLIENT_ID) --client-secret=$(AZURE_CLIENT_SECRET) --subscription-id=$(AZURE_SUBSCRIPTION_ID) \
-	  > pkg/helpers/azure_skus_const.go
-
 .PHONY: build
 build: generate go-build
 
@@ -136,16 +129,11 @@ checksum:
 clean: tools-clean
 	@rm -rf $(BINDIR) ./_dist ./pkg/helpers/unit_tests
 
-GIT_BASEDIR    = $(shell git rev-parse --show-toplevel 2>/dev/null)
-ifneq ($(GIT_BASEDIR),)
-	LDFLAGS += -X github.com/Azure/aks-engine-azurestack/pkg/test.JUnitOutDir=$(GIT_BASEDIR)/test/junit
-endif
-
 ginkgoBuild: generate
 	make -C ./test/e2e ginkgo-build
 
 test: generate
-	ginkgo -mod=vendor -skipPackage test/e2e -failFast -r -v -tags=fast -ldflags '$(LDFLAGS)' .
+	ginkgo -mod=vendor -junit-report test/junit/junit.xml -skip-package test/e2e -fail-fast -r -v -tags=fast .
 
 .PHONY: test-style
 test-style: validate-go validate-shell validate-copyright-headers
