@@ -69,19 +69,6 @@ func (az *AzureClient) DeleteVirtualMachine(ctx context.Context, resourceGroup, 
 	return err
 }
 
-// DeleteVirtualMachineScaleSet deletes an entire VM Scale Set.
-func (az *AzureClient) DeleteVirtualMachineScaleSet(ctx context.Context, resourceGroup, vmssName string) error {
-	future, err := az.virtualMachineScaleSetsClient.Delete(ctx, resourceGroup, vmssName)
-	if err != nil {
-		return err
-	}
-	if err = future.WaitForCompletionRef(ctx, az.virtualMachineScaleSetsClient.Client); err != nil {
-		return err
-	}
-	_, err = future.Result(az.virtualMachineScaleSetsClient)
-	return err
-}
-
 // GetAvailabilitySet retrieves the specified VM availability set.
 func (az *AzureClient) GetAvailabilitySet(ctx context.Context, resourceGroup, availabilitySetName string) (azcompute.AvailabilitySet, error) {
 	azVMAS := azcompute.AvailabilitySet{}

@@ -266,12 +266,6 @@ func TestValidate(t *testing.T) {
 	}
 }
 
-func TestAutofillApimodelWithoutManagedIdentityCreatesCreds(t *testing.T) {
-	t.Parallel()
-
-	testAutodeployCredentialHandling(t, false, "", "")
-}
-
 func TestAutofillApimodelWithManagedIdentitySkipsCreds(t *testing.T) {
 	t.Parallel()
 
@@ -476,57 +470,6 @@ func TestAPIModelWithoutServicePrincipalProfileAndWithoutClientIdAndSecretInCmd(
 
 	if deployCmd.containerService.Properties.ServicePrincipalProfile != nil {
 		t.Fatalf("expected service principal profile to be nil for unmanaged identity, where client id and secret are not supplied in api model and deployment command")
-	}
-
-}
-
-func TestAPIModelWithEmptyServicePrincipalProfileAndWithoutClientIdAndSecretInCmd(t *testing.T) {
-	t.Parallel()
-
-	apiloader := &api.Apiloader{
-		Translator: nil,
-	}
-
-	apimodel := getAPIModel(ExampleAPIModelWithDNSPrefix, false, "", "")
-
-	cs, ver, err := apiloader.DeserializeContainerService([]byte(apimodel), false, false, nil)
-	if err != nil {
-		t.Fatalf("unexpected error deserializing the example apimodel: %s", err)
-	}
-
-	outDir, del := makeTmpDir(t)
-	defer del()
-
-	deployCmd := &deployCmd{
-		apimodelPath:     "./this/is/unused.json",
-		outputDirectory:  outDir,
-		forceOverwrite:   true,
-		location:         "westus",
-		containerService: cs,
-		apiVersion:       ver,
-
-		client: &armhelpers.MockAKSEngineClient{},
-		authProvider: &mockAuthProvider{
-			authArgs: &authArgs{},
-		},
-	}
-	err = autofillApimodel(deployCmd)
-	if err != nil {
-		t.Fatalf("unexpected error autofilling the example apimodel: %s", err)
-	}
-
-	if deployCmd.containerService.Properties.ServicePrincipalProfile == nil {
-		t.Fatalf("expected service principal profile to be Empty and not nil for unmanaged identity, where client id and secret are not supplied in api model and deployment command")
-	}
-
-	// mockclient returns "app-id" for ClientID when empty
-	if deployCmd.containerService.Properties.ServicePrincipalProfile.ClientID != "app-id" {
-		t.Fatalf("expected service principal profile client id to be empty but got %s", deployCmd.containerService.Properties.ServicePrincipalProfile.ClientID)
-	}
-
-	// mockcliet returns "client-secret" when empty
-	if deployCmd.containerService.Properties.ServicePrincipalProfile.Secret != "client-secret" {
-		t.Fatalf("expected service principal profile client secret to be empty but got %s", deployCmd.containerService.Properties.ServicePrincipalProfile.Secret)
 	}
 
 }

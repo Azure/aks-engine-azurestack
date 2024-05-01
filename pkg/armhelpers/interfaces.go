@@ -10,12 +10,9 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
-	"github.com/Azure/azure-sdk-for-go/services/graphrbac/1.6/graphrbac"
-	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
-	"github.com/Azure/go-autorest/autorest"
 )
 
 // ResourceSkusResultPage
@@ -135,27 +132,6 @@ type AKSEngineClient interface {
 
 	// DeleteNetworkInterface deletes the specified network interface.
 	DeleteNetworkInterface(ctx context.Context, resourceGroup, nicName string) error
-
-	// GRAPH
-
-	// CreateGraphAppliction creates an application via the graphrbac client
-	CreateGraphApplication(ctx context.Context, applicationCreateParameters graphrbac.ApplicationCreateParameters) (graphrbac.Application, error)
-
-	// CreateGraphPrincipal creates a service principal via the graphrbac client
-	CreateGraphPrincipal(ctx context.Context, servicePrincipalCreateParameters graphrbac.ServicePrincipalCreateParameters) (graphrbac.ServicePrincipal, error)
-	CreateApp(ctx context.Context, applicationName, applicationURL string, replyURLs *[]string, requiredResourceAccess *[]graphrbac.RequiredResourceAccess) (result graphrbac.Application, servicePrincipalObjectID, secret string, err error)
-	DeleteApp(ctx context.Context, applicationName, applicationObjectID string) (autorest.Response, error)
-
-	// User Assigned MSI
-
-	// CreateUserAssignedID - Creates a user assigned msi.
-	CreateUserAssignedID(location string, resourceGroup string, userAssignedID string) (*msi.Identity, error)
-
-	// RBAC
-	CreateRoleAssignment(ctx context.Context, scope string, roleAssignmentName string, parameters authorization.RoleAssignmentCreateParameters) (authorization.RoleAssignment, error)
-	CreateRoleAssignmentSimple(ctx context.Context, applicationID, roleID string) error
-	DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentNameID string) (authorization.RoleAssignment, error)
-	ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error)
 
 	// MANAGED DISKS
 	DeleteManagedDisk(ctx context.Context, resourceGroupName string, diskName string) error

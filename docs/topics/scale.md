@@ -39,7 +39,7 @@ This command will re-use the `apimodel.json` file inside the output directory as
 |--node-pool|depends|Required if there is more than one node pool. Which node pool should be scaled.|
 |--new-node-count|yes|Desired number of nodes in the node pool.|
 |--apiserver|when scaling down|apiserver endpoint (required to cordon and drain nodes). This should be output as part of the create template or it can be found by looking at the public ip addresses in the resource group.|
-|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `cli`, `client_certificate`, and `device`.|
+|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `client_certificate`.|
 |--language|no|Language to return error message in. Default value is "en-us").|
 
 ## Frequently Asked Questions

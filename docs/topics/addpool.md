@@ -60,7 +60,7 @@ Some important considerations:
 |--client-secret|depends| The Service Principal Client secret. This is required if the auth-method is set to client_secret|
 |--certificate-path|depends| The path to the file which contains the client certificate. This is required if the auth-method is set to client_certificate|
 |--node-pool|yes|Path to JSON file expressing the `agentPoolProfile` spec of the new node pool.|
-|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `cli`, `client_certificate`, and `device`.|
+|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `client_certificate`.|
 |--language|no|Language to return error message in. Default value is "en-us").|
 
 ## Frequently Asked Questions

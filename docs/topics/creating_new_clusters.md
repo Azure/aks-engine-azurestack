@@ -36,7 +36,7 @@ A more detailed walk-through of `aks-engine-azurestack deploy` is in the [quicks
 |--client-secret|depends| The Service Principal Client secret. This is required if the auth-method is set to client_secret|
 |--certificate-path|depends| The path to the file which contains the client certificate. This is required if the auth-method is set to client_certificate|
 |--identity-system|no|Identity system (default is azure_ad)|
-|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `cli`, `client_certificate`, and `device`.|
+|--auth-method|no|The authentication method used. Default value is `client_secret`. Other supported values are: `client_certificate`.|
 |--private-key-path|no|Path to private key (used with --auth-method=client_certificate).|
 |--language|no|Language to return error message in. Default value is "en-us").|
 
