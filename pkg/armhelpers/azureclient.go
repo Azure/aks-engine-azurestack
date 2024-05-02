@@ -16,13 +16,13 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
-	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/authorization/mgmt/authorization"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/subscriptions"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
 	"github.com/Azure/azure-sdk-for-go/services/preview/operationalinsights/mgmt/2015-11-01-preview/operationalinsights"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2016-06-01/subscriptions"
-	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
-	"github.com/Azure/azure-sdk-for-go/services/storage/mgmt/2019-06-01/storage"
 	"github.com/Azure/go-autorest/autorest"
 	"github.com/Azure/go-autorest/autorest/adal"
 	"github.com/Azure/go-autorest/autorest/azure"
@@ -129,6 +129,21 @@ func NewAzureClientWithClientCertificateFile(env azure.Environment, subscription
 	}
 
 	return NewAzureClientWithClientCertificate(env, subscriptionID, clientID, certificate, privateKey)
+}
+
+// NewAzureClientWithClientCertificateFileExternalTenant returns an AzureClient via client_id and jwt certificate assertion a 3rd party tenant
+func NewAzureClientWithClientCertificateFileExternalTenant(env azure.Environment, subscriptionID, tenantID, clientID, certificatePath, privateKeyPath string) (*AzureClient, error) {
+	certificate, err := parseCertificate(certificatePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse certificate")
+	}
+
+	privateKey, err := parseRsaPrivateKey(privateKeyPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse rsa private key")
+	}
+
+	return NewAzureClientWithClientCertificateExternalTenant(env, subscriptionID, tenantID, clientID, certificate, privateKey)
 }
 
 // NewAzureClientWithClientCertificate returns an AzureClient via client_id and jwt certificate assertion
@@ -268,6 +283,24 @@ func (az *AzureClient) EnsureProvidersRegistered(subscriptionID string) error {
 		}
 	}
 	return nil
+}
+
+func parseCertificate(certificatePath string) (*x509.Certificate, error) {
+	certificateData, err := os.ReadFile(certificatePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to read certificate")
+	}
+
+	block, _ := pem.Decode(certificateData)
+	if block == nil {
+		return nil, errors.New("Failed to decode pem block from certificate")
+	}
+
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse certificate")
+	}
+	return certificate, nil
 }
 
 func parseRsaPrivateKey(path string) (*rsa.PrivateKey, error) {

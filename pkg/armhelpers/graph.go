@@ -7,7 +7,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/authorization/mgmt/authorization"
 )
 
 // DeleteRoleAssignmentByID deletes a roleAssignment via its unique identifier
