@@ -10,18 +10,17 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/google/uuid"
-	"github.com/pkg/errors"
-	"github.com/spf13/cobra"
-	"gopkg.in/ini.v1"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/testserver"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
+	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/google/uuid"
 	. "github.com/onsi/gomega"
+	"github.com/pkg/errors"
+	"github.com/spf13/cobra"
+	"gopkg.in/ini.v1"
 )
 
 // mockAuthProvider implements AuthProvider and allows in particular to stub out getClient()
@@ -456,7 +455,7 @@ func getMuxForIdentitySystem(authArgs *authArgs) *http.ServeMux {
 	switch authArgs.IdentitySystem {
 	case "azure_ad":
 		mux.HandleFunc(fmt.Sprintf("/subscriptions/%s", authArgs.SubscriptionID), func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "2016-06-01" {
+			if r.URL.Query().Get(apiVersion) != "2018-06-01" {
 				w.WriteHeader(http.StatusNotFound)
 			} else {
 				w.Header().Add("Www-Authenticate", fmt.Sprintf(`Bearer authorization_uri="https://login.windows.net/%s", error="invalid_token", error_description="The authentication failed because of missing 'Authorization' header."`, token))

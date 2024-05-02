@@ -206,9 +206,9 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 
 	if cs.Properties.IsCustomCloudProfile() {
 		if cs.Properties.IsAzureStackCloud() {
-			masterVars["apiVersionCompute"] = "2017-03-30"
-			masterVars["apiVersionStorage"] = "2017-10-01"
-			masterVars["apiVersionNetwork"] = "2017-10-01"
+			masterVars["apiVersionCompute"] = "2020-06-01"
+			masterVars["apiVersionStorage"] = "2019-06-01"
+			masterVars["apiVersionNetwork"] = "2018-11-01"
 			masterVars["apiVersionKeyVault"] = "2016-10-01"
 		}
 

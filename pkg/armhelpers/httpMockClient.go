@@ -10,7 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/testserver"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
+	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/azure"
 )
 
@@ -19,7 +19,7 @@ const (
 	tenantID                                   = "19590a3f-b1af-4e6b-8f63-f917cbf40711"
 	resourceGroup                              = "TestResourceGroup"
 	computeAPIVersion                          = "2020-06-01"
-	diskAPIVersion                             = "2020-05-01"
+	diskAPIVersion                             = "2019-07-01"
 	networkAPIVersion                          = "2018-11-01"
 	deploymentAPIVersion                       = "2018-05-01"
 	resourceGroupAPIVersion                    = "2018-05-01"
@@ -256,7 +256,7 @@ func (mc HTTPMockClient) GetEnvironment() azure.Environment {
 // RegisterLogin registers the mock response for login
 func (mc HTTPMockClient) RegisterLogin() {
 	mc.mux.HandleFunc(fmt.Sprintf("/subscriptions/%s", mc.SubscriptionID), func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Query().Get("api-version") != "2016-06-01" {
+		if r.URL.Query().Get("api-version") != "2018-06-01" {
 			w.WriteHeader(http.StatusNotFound)
 		} else {
 			w.Header().Add("Www-Authenticate", fmt.Sprintf(`Bearer authorization_uri="https://login.windows.net/%s", error="invalid_token", error_description="The authentication failed because of missing 'Authorization' header."`, mc.TenantID))

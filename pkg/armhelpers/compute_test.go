@@ -7,8 +7,8 @@ import (
 	"context"
 	"testing"
 
+	azcompute "github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
-	azcompute "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/google/go-cmp/cmp"
 )
 
