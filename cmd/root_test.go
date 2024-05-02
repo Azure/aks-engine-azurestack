@@ -18,7 +18,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
-	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/azurestack/testserver"
+	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/testserver"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	. "github.com/onsi/gomega"
@@ -285,7 +285,7 @@ func TestGetAzureStackClientWithClientSecret(t *testing.T) {
 				t.Fatalf("failed to write custom cloud profile: %v", err)
 			}
 
-			client, err := test.authArgs.getAzureStackClient()
+			client, err := test.authArgs.getAzureClient()
 			if isValidIdentitySystem(test.authArgs.IdentitySystem) {
 				if client == nil {
 					t.Fatalf("azure client was not created. error=%v", err)

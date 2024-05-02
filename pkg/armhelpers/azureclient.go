@@ -131,6 +131,21 @@ func NewAzureClientWithClientCertificateFile(env azure.Environment, subscription
 	return NewAzureClientWithClientCertificate(env, subscriptionID, clientID, certificate, privateKey)
 }
 
+// NewAzureClientWithClientCertificateFileExternalTenant returns an AzureClient via client_id and jwt certificate assertion a 3rd party tenant
+func NewAzureClientWithClientCertificateFileExternalTenant(env azure.Environment, subscriptionID, tenantID, clientID, certificatePath, privateKeyPath string) (*AzureClient, error) {
+	certificate, err := parseCertificate(certificatePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse certificate")
+	}
+
+	privateKey, err := parseRsaPrivateKey(privateKeyPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse rsa private key")
+	}
+
+	return NewAzureClientWithClientCertificateExternalTenant(env, subscriptionID, tenantID, clientID, certificate, privateKey)
+}
+
 // NewAzureClientWithClientCertificate returns an AzureClient via client_id and jwt certificate assertion
 func NewAzureClientWithClientCertificate(env azure.Environment, subscriptionID, clientID string, certificate *x509.Certificate, privateKey *rsa.PrivateKey) (*AzureClient, error) {
 	oauthConfig, err := getOAuthConfig(env, subscriptionID)
@@ -268,6 +283,24 @@ func (az *AzureClient) EnsureProvidersRegistered(subscriptionID string) error {
 		}
 	}
 	return nil
+}
+
+func parseCertificate(certificatePath string) (*x509.Certificate, error) {
+	certificateData, err := os.ReadFile(certificatePath)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to read certificate")
+	}
+
+	block, _ := pem.Decode(certificateData)
+	if block == nil {
+		return nil, errors.New("Failed to decode pem block from certificate")
+	}
+
+	certificate, err := x509.ParseCertificate(block.Bytes)
+	if err != nil {
+		return nil, errors.Wrap(err, "Failed to parse certificate")
+	}
+	return certificate, nil
 }
 
 func parseRsaPrivateKey(path string) (*rsa.PrivateKey, error) {
