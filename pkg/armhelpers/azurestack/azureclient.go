@@ -16,7 +16,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
-	"github.com/Azure/azure-sdk-for-go/services/apimanagement/mgmt/2017-03-01/apimanagement"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
 	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2017-10-01/network"
@@ -53,7 +52,6 @@ type AzureClient struct {
 	authorizationClient        authorization.RoleAssignmentsClient
 	deploymentsClient          resources.DeploymentsClient
 	deploymentOperationsClient resources.DeploymentOperationsClient
-	apimanagement.GroupClient
 	storageAccountsClient      storage.AccountsClient
 	interfacesClient           network.InterfacesClient
 	groupsClient               resources.GroupsClient

@@ -17,7 +17,7 @@ import (
 	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/Azure/go-autorest/autorest"
@@ -771,6 +771,33 @@ func (mc *MockAKSEngineClient) ListDeploymentOperations(ctx context.Context, res
 // ListDeploymentOperationsNextResults retrieves the next set of results, if any.
 func (mc *MockAKSEngineClient) ListDeploymentOperationsNextResults(lastResults resources.DeploymentOperationsListResult) (result resources.DeploymentOperationsListResult, err error) {
 	return resources.DeploymentOperationsListResult{}, nil
+}
+
+// DeleteRoleAssignmentByID deletes a roleAssignment via its unique identifier
+func (mc *MockAKSEngineClient) DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentID string) (authorization.RoleAssignment, error) {
+	if mc.FailDeleteRoleAssignment {
+		return authorization.RoleAssignment{}, errors.New("DeleteRoleAssignmentByID failed")
+	}
+
+	return authorization.RoleAssignment{}, nil
+}
+
+// ListRoleAssignmentsForPrincipal (e.g. a VM) via the scope and the unique identifier of the principal
+func (mc *MockAKSEngineClient) ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error) {
+	roleAssignments := []authorization.RoleAssignment{}
+
+	if mc.ShouldSupportVMIdentity {
+		var assignmentID = "role-assignment-id"
+		var assignment = authorization.RoleAssignment{
+			ID: &assignmentID}
+		roleAssignments = append(roleAssignments, assignment)
+	}
+
+	return &MockRoleAssignmentListResultPage{
+		Ralr: authorization.RoleAssignmentListResult{
+			Value: &roleAssignments,
+		},
+	}, nil
 }
 
 // EnsureDefaultLogAnalyticsWorkspace mock

@@ -9,7 +9,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/Azure/azure-sdk-for-go/services/authorization/mgmt/2015-07-01/authorization"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/azure-sdk-for-go/services/resources/mgmt/2018-05-01/resources"
 
 	azStorage "github.com/Azure/azure-sdk-for-go/storage"
@@ -132,6 +132,11 @@ type AKSEngineClient interface {
 
 	// DeleteNetworkInterface deletes the specified network interface.
 	DeleteNetworkInterface(ctx context.Context, resourceGroup, nicName string) error
+
+	//
+	// RBAC
+	DeleteRoleAssignmentByID(ctx context.Context, roleAssignmentNameID string) (authorization.RoleAssignment, error)
+	ListRoleAssignmentsForPrincipal(ctx context.Context, scope string, principalID string) (RoleAssignmentListResultPage, error)
 
 	// MANAGED DISKS
 	DeleteManagedDisk(ctx context.Context, resourceGroupName string, diskName string) error

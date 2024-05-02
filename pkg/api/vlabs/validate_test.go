@@ -11,7 +11,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/blang/semver"

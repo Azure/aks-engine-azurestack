@@ -31,570 +31,6 @@ import (
 // The package's fully qualified name.
 const fqdn = "github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2017-03-30/compute"
 
-// AccessLevel enumerates the values for access level.
-type AccessLevel string
-
-const (
-	// None ...
-	None AccessLevel = "None"
-	// Read ...
-	Read AccessLevel = "Read"
-)
-
-// PossibleAccessLevelValues returns an array of possible values for the AccessLevel const type.
-func PossibleAccessLevelValues() []AccessLevel {
-	return []AccessLevel{None, Read}
-}
-
-// CachingTypes enumerates the values for caching types.
-type CachingTypes string
-
-const (
-	// CachingTypesNone ...
-	CachingTypesNone CachingTypes = "None"
-	// CachingTypesReadOnly ...
-	CachingTypesReadOnly CachingTypes = "ReadOnly"
-	// CachingTypesReadWrite ...
-	CachingTypesReadWrite CachingTypes = "ReadWrite"
-)
-
-// PossibleCachingTypesValues returns an array of possible values for the CachingTypes const type.
-func PossibleCachingTypesValues() []CachingTypes {
-	return []CachingTypes{CachingTypesNone, CachingTypesReadOnly, CachingTypesReadWrite}
-}
-
-// ComponentNames enumerates the values for component names.
-type ComponentNames string
-
-const (
-	// MicrosoftWindowsShellSetup ...
-	MicrosoftWindowsShellSetup ComponentNames = "Microsoft-Windows-Shell-Setup"
-)
-
-// PossibleComponentNamesValues returns an array of possible values for the ComponentNames const type.
-func PossibleComponentNamesValues() []ComponentNames {
-	return []ComponentNames{MicrosoftWindowsShellSetup}
-}
-
-// DiskCreateOption enumerates the values for disk create option.
-type DiskCreateOption string
-
-const (
-	// Attach ...
-	Attach DiskCreateOption = "Attach"
-	// Copy ...
-	Copy DiskCreateOption = "Copy"
-	// Empty ...
-	Empty DiskCreateOption = "Empty"
-	// FromImage ...
-	FromImage DiskCreateOption = "FromImage"
-	// Import ...
-	Import DiskCreateOption = "Import"
-)
-
-// PossibleDiskCreateOptionValues returns an array of possible values for the DiskCreateOption const type.
-func PossibleDiskCreateOptionValues() []DiskCreateOption {
-	return []DiskCreateOption{Attach, Copy, Empty, FromImage, Import}
-}
-
-// DiskCreateOptionTypes enumerates the values for disk create option types.
-type DiskCreateOptionTypes string
-
-const (
-	// DiskCreateOptionTypesAttach ...
-	DiskCreateOptionTypesAttach DiskCreateOptionTypes = "Attach"
-	// DiskCreateOptionTypesEmpty ...
-	DiskCreateOptionTypesEmpty DiskCreateOptionTypes = "Empty"
-	// DiskCreateOptionTypesFromImage ...
-	DiskCreateOptionTypesFromImage DiskCreateOptionTypes = "FromImage"
-)
-
-// PossibleDiskCreateOptionTypesValues returns an array of possible values for the DiskCreateOptionTypes const type.
-func PossibleDiskCreateOptionTypesValues() []DiskCreateOptionTypes {
-	return []DiskCreateOptionTypes{DiskCreateOptionTypesAttach, DiskCreateOptionTypesEmpty, DiskCreateOptionTypesFromImage}
-}
-
-// InstanceViewTypes enumerates the values for instance view types.
-type InstanceViewTypes string
-
-const (
-	// InstanceView ...
-	InstanceView InstanceViewTypes = "instanceView"
-)
-
-// PossibleInstanceViewTypesValues returns an array of possible values for the InstanceViewTypes const type.
-func PossibleInstanceViewTypesValues() []InstanceViewTypes {
-	return []InstanceViewTypes{InstanceView}
-}
-
-// IPVersion enumerates the values for ip version.
-type IPVersion string
-
-const (
-	// IPv4 ...
-	IPv4 IPVersion = "IPv4"
-	// IPv6 ...
-	IPv6 IPVersion = "IPv6"
-)
-
-// PossibleIPVersionValues returns an array of possible values for the IPVersion const type.
-func PossibleIPVersionValues() []IPVersion {
-	return []IPVersion{IPv4, IPv6}
-}
-
-// MaintenanceOperationResultCodeTypes enumerates the values for maintenance operation result code types.
-type MaintenanceOperationResultCodeTypes string
-
-const (
-	// MaintenanceOperationResultCodeTypesMaintenanceAborted ...
-	MaintenanceOperationResultCodeTypesMaintenanceAborted MaintenanceOperationResultCodeTypes = "MaintenanceAborted"
-	// MaintenanceOperationResultCodeTypesMaintenanceCompleted ...
-	MaintenanceOperationResultCodeTypesMaintenanceCompleted MaintenanceOperationResultCodeTypes = "MaintenanceCompleted"
-	// MaintenanceOperationResultCodeTypesNone ...
-	MaintenanceOperationResultCodeTypesNone MaintenanceOperationResultCodeTypes = "None"
-	// MaintenanceOperationResultCodeTypesRetryLater ...
-	MaintenanceOperationResultCodeTypesRetryLater MaintenanceOperationResultCodeTypes = "RetryLater"
-)
-
-// PossibleMaintenanceOperationResultCodeTypesValues returns an array of possible values for the MaintenanceOperationResultCodeTypes const type.
-func PossibleMaintenanceOperationResultCodeTypesValues() []MaintenanceOperationResultCodeTypes {
-	return []MaintenanceOperationResultCodeTypes{MaintenanceOperationResultCodeTypesMaintenanceAborted, MaintenanceOperationResultCodeTypesMaintenanceCompleted, MaintenanceOperationResultCodeTypesNone, MaintenanceOperationResultCodeTypesRetryLater}
-}
-
-// OperatingSystemStateTypes enumerates the values for operating system state types.
-type OperatingSystemStateTypes string
-
-const (
-	// Generalized ...
-	Generalized OperatingSystemStateTypes = "Generalized"
-	// Specialized ...
-	Specialized OperatingSystemStateTypes = "Specialized"
-)
-
-// PossibleOperatingSystemStateTypesValues returns an array of possible values for the OperatingSystemStateTypes const type.
-func PossibleOperatingSystemStateTypesValues() []OperatingSystemStateTypes {
-	return []OperatingSystemStateTypes{Generalized, Specialized}
-}
-
-// OperatingSystemTypes enumerates the values for operating system types.
-type OperatingSystemTypes string
-
-const (
-	// Linux ...
-	Linux OperatingSystemTypes = "Linux"
-	// Windows ...
-	Windows OperatingSystemTypes = "Windows"
-)
-
-// PossibleOperatingSystemTypesValues returns an array of possible values for the OperatingSystemTypes const type.
-func PossibleOperatingSystemTypesValues() []OperatingSystemTypes {
-	return []OperatingSystemTypes{Linux, Windows}
-}
-
-// PassNames enumerates the values for pass names.
-type PassNames string
-
-const (
-	// OobeSystem ...
-	OobeSystem PassNames = "OobeSystem"
-)
-
-// PossiblePassNamesValues returns an array of possible values for the PassNames const type.
-func PossiblePassNamesValues() []PassNames {
-	return []PassNames{OobeSystem}
-}
-
-// ProtocolTypes enumerates the values for protocol types.
-type ProtocolTypes string
-
-const (
-	// HTTP ...
-	HTTP ProtocolTypes = "Http"
-	// HTTPS ...
-	HTTPS ProtocolTypes = "Https"
-)
-
-// PossibleProtocolTypesValues returns an array of possible values for the ProtocolTypes const type.
-func PossibleProtocolTypesValues() []ProtocolTypes {
-	return []ProtocolTypes{HTTP, HTTPS}
-}
-
-// ResourceIdentityType enumerates the values for resource identity type.
-type ResourceIdentityType string
-
-const (
-	// SystemAssigned ...
-	SystemAssigned ResourceIdentityType = "SystemAssigned"
-)
-
-// PossibleResourceIdentityTypeValues returns an array of possible values for the ResourceIdentityType const type.
-func PossibleResourceIdentityTypeValues() []ResourceIdentityType {
-	return []ResourceIdentityType{SystemAssigned}
-}
-
-// ResourceSkuCapacityScaleType enumerates the values for resource sku capacity scale type.
-type ResourceSkuCapacityScaleType string
-
-const (
-	// ResourceSkuCapacityScaleTypeAutomatic ...
-	ResourceSkuCapacityScaleTypeAutomatic ResourceSkuCapacityScaleType = "Automatic"
-	// ResourceSkuCapacityScaleTypeManual ...
-	ResourceSkuCapacityScaleTypeManual ResourceSkuCapacityScaleType = "Manual"
-	// ResourceSkuCapacityScaleTypeNone ...
-	ResourceSkuCapacityScaleTypeNone ResourceSkuCapacityScaleType = "None"
-)
-
-// PossibleResourceSkuCapacityScaleTypeValues returns an array of possible values for the ResourceSkuCapacityScaleType const type.
-func PossibleResourceSkuCapacityScaleTypeValues() []ResourceSkuCapacityScaleType {
-	return []ResourceSkuCapacityScaleType{ResourceSkuCapacityScaleTypeAutomatic, ResourceSkuCapacityScaleTypeManual, ResourceSkuCapacityScaleTypeNone}
-}
-
-// ResourceSkuRestrictionsReasonCode enumerates the values for resource sku restrictions reason code.
-type ResourceSkuRestrictionsReasonCode string
-
-const (
-	// NotAvailableForSubscription ...
-	NotAvailableForSubscription ResourceSkuRestrictionsReasonCode = "NotAvailableForSubscription"
-	// QuotaID ...
-	QuotaID ResourceSkuRestrictionsReasonCode = "QuotaId"
-)
-
-// PossibleResourceSkuRestrictionsReasonCodeValues returns an array of possible values for the ResourceSkuRestrictionsReasonCode const type.
-func PossibleResourceSkuRestrictionsReasonCodeValues() []ResourceSkuRestrictionsReasonCode {
-	return []ResourceSkuRestrictionsReasonCode{NotAvailableForSubscription, QuotaID}
-}
-
-// ResourceSkuRestrictionsType enumerates the values for resource sku restrictions type.
-type ResourceSkuRestrictionsType string
-
-const (
-	// Location ...
-	Location ResourceSkuRestrictionsType = "Location"
-)
-
-// PossibleResourceSkuRestrictionsTypeValues returns an array of possible values for the ResourceSkuRestrictionsType const type.
-func PossibleResourceSkuRestrictionsTypeValues() []ResourceSkuRestrictionsType {
-	return []ResourceSkuRestrictionsType{Location}
-}
-
-// RollingUpgradeActionType enumerates the values for rolling upgrade action type.
-type RollingUpgradeActionType string
-
-const (
-	// Cancel ...
-	Cancel RollingUpgradeActionType = "Cancel"
-	// Start ...
-	Start RollingUpgradeActionType = "Start"
-)
-
-// PossibleRollingUpgradeActionTypeValues returns an array of possible values for the RollingUpgradeActionType const type.
-func PossibleRollingUpgradeActionTypeValues() []RollingUpgradeActionType {
-	return []RollingUpgradeActionType{Cancel, Start}
-}
-
-// RollingUpgradeStatusCode enumerates the values for rolling upgrade status code.
-type RollingUpgradeStatusCode string
-
-const (
-	// Cancelled ...
-	Cancelled RollingUpgradeStatusCode = "Cancelled"
-	// Completed ...
-	Completed RollingUpgradeStatusCode = "Completed"
-	// Faulted ...
-	Faulted RollingUpgradeStatusCode = "Faulted"
-	// RollingForward ...
-	RollingForward RollingUpgradeStatusCode = "RollingForward"
-)
-
-// PossibleRollingUpgradeStatusCodeValues returns an array of possible values for the RollingUpgradeStatusCode const type.
-func PossibleRollingUpgradeStatusCodeValues() []RollingUpgradeStatusCode {
-	return []RollingUpgradeStatusCode{Cancelled, Completed, Faulted, RollingForward}
-}
-
-// SettingNames enumerates the values for setting names.
-type SettingNames string
-
-const (
-	// AutoLogon ...
-	AutoLogon SettingNames = "AutoLogon"
-	// FirstLogonCommands ...
-	FirstLogonCommands SettingNames = "FirstLogonCommands"
-)
-
-// PossibleSettingNamesValues returns an array of possible values for the SettingNames const type.
-func PossibleSettingNamesValues() []SettingNames {
-	return []SettingNames{AutoLogon, FirstLogonCommands}
-}
-
-// StatusLevelTypes enumerates the values for status level types.
-type StatusLevelTypes string
-
-const (
-	// Error ...
-	Error StatusLevelTypes = "Error"
-	// Info ...
-	Info StatusLevelTypes = "Info"
-	// Warning ...
-	Warning StatusLevelTypes = "Warning"
-)
-
-// PossibleStatusLevelTypesValues returns an array of possible values for the StatusLevelTypes const type.
-func PossibleStatusLevelTypesValues() []StatusLevelTypes {
-	return []StatusLevelTypes{Error, Info, Warning}
-}
-
-// StorageAccountTypes enumerates the values for storage account types.
-type StorageAccountTypes string
-
-const (
-	// PremiumLRS ...
-	PremiumLRS StorageAccountTypes = "Premium_LRS"
-	// StandardLRS ...
-	StandardLRS StorageAccountTypes = "Standard_LRS"
-)
-
-// PossibleStorageAccountTypesValues returns an array of possible values for the StorageAccountTypes const type.
-func PossibleStorageAccountTypesValues() []StorageAccountTypes {
-	return []StorageAccountTypes{PremiumLRS, StandardLRS}
-}
-
-// UpgradeMode enumerates the values for upgrade mode.
-type UpgradeMode string
-
-const (
-	// Automatic ...
-	Automatic UpgradeMode = "Automatic"
-	// Manual ...
-	Manual UpgradeMode = "Manual"
-	// Rolling ...
-	Rolling UpgradeMode = "Rolling"
-)
-
-// PossibleUpgradeModeValues returns an array of possible values for the UpgradeMode const type.
-func PossibleUpgradeModeValues() []UpgradeMode {
-	return []UpgradeMode{Automatic, Manual, Rolling}
-}
-
-// VirtualMachineScaleSetSkuScaleType enumerates the values for virtual machine scale set sku scale type.
-type VirtualMachineScaleSetSkuScaleType string
-
-const (
-	// VirtualMachineScaleSetSkuScaleTypeAutomatic ...
-	VirtualMachineScaleSetSkuScaleTypeAutomatic VirtualMachineScaleSetSkuScaleType = "Automatic"
-	// VirtualMachineScaleSetSkuScaleTypeNone ...
-	VirtualMachineScaleSetSkuScaleTypeNone VirtualMachineScaleSetSkuScaleType = "None"
-)
-
-// PossibleVirtualMachineScaleSetSkuScaleTypeValues returns an array of possible values for the VirtualMachineScaleSetSkuScaleType const type.
-func PossibleVirtualMachineScaleSetSkuScaleTypeValues() []VirtualMachineScaleSetSkuScaleType {
-	return []VirtualMachineScaleSetSkuScaleType{VirtualMachineScaleSetSkuScaleTypeAutomatic, VirtualMachineScaleSetSkuScaleTypeNone}
-}
-
-// VirtualMachineSizeTypes enumerates the values for virtual machine size types.
-type VirtualMachineSizeTypes string
-
-const (
-	// BasicA0 ...
-	BasicA0 VirtualMachineSizeTypes = "Basic_A0"
-	// BasicA1 ...
-	BasicA1 VirtualMachineSizeTypes = "Basic_A1"
-	// BasicA2 ...
-	BasicA2 VirtualMachineSizeTypes = "Basic_A2"
-	// BasicA3 ...
-	BasicA3 VirtualMachineSizeTypes = "Basic_A3"
-	// BasicA4 ...
-	BasicA4 VirtualMachineSizeTypes = "Basic_A4"
-	// StandardA0 ...
-	StandardA0 VirtualMachineSizeTypes = "Standard_A0"
-	// StandardA1 ...
-	StandardA1 VirtualMachineSizeTypes = "Standard_A1"
-	// StandardA10 ...
-	StandardA10 VirtualMachineSizeTypes = "Standard_A10"
-	// StandardA11 ...
-	StandardA11 VirtualMachineSizeTypes = "Standard_A11"
-	// StandardA1V2 ...
-	StandardA1V2 VirtualMachineSizeTypes = "Standard_A1_v2"
-	// StandardA2 ...
-	StandardA2 VirtualMachineSizeTypes = "Standard_A2"
-	// StandardA2mV2 ...
-	StandardA2mV2 VirtualMachineSizeTypes = "Standard_A2m_v2"
-	// StandardA2V2 ...
-	StandardA2V2 VirtualMachineSizeTypes = "Standard_A2_v2"
-	// StandardA3 ...
-	StandardA3 VirtualMachineSizeTypes = "Standard_A3"
-	// StandardA4 ...
-	StandardA4 VirtualMachineSizeTypes = "Standard_A4"
-	// StandardA4mV2 ...
-	StandardA4mV2 VirtualMachineSizeTypes = "Standard_A4m_v2"
-	// StandardA4V2 ...
-	StandardA4V2 VirtualMachineSizeTypes = "Standard_A4_v2"
-	// StandardA5 ...
-	StandardA5 VirtualMachineSizeTypes = "Standard_A5"
-	// StandardA6 ...
-	StandardA6 VirtualMachineSizeTypes = "Standard_A6"
-	// StandardA7 ...
-	StandardA7 VirtualMachineSizeTypes = "Standard_A7"
-	// StandardA8 ...
-	StandardA8 VirtualMachineSizeTypes = "Standard_A8"
-	// StandardA8mV2 ...
-	StandardA8mV2 VirtualMachineSizeTypes = "Standard_A8m_v2"
-	// StandardA8V2 ...
-	StandardA8V2 VirtualMachineSizeTypes = "Standard_A8_v2"
-	// StandardA9 ...
-	StandardA9 VirtualMachineSizeTypes = "Standard_A9"
-	// StandardD1 ...
-	StandardD1 VirtualMachineSizeTypes = "Standard_D1"
-	// StandardD11 ...
-	StandardD11 VirtualMachineSizeTypes = "Standard_D11"
-	// StandardD11V2 ...
-	StandardD11V2 VirtualMachineSizeTypes = "Standard_D11_v2"
-	// StandardD12 ...
-	StandardD12 VirtualMachineSizeTypes = "Standard_D12"
-	// StandardD12V2 ...
-	StandardD12V2 VirtualMachineSizeTypes = "Standard_D12_v2"
-	// StandardD13 ...
-	StandardD13 VirtualMachineSizeTypes = "Standard_D13"
-	// StandardD13V2 ...
-	StandardD13V2 VirtualMachineSizeTypes = "Standard_D13_v2"
-	// StandardD14 ...
-	StandardD14 VirtualMachineSizeTypes = "Standard_D14"
-	// StandardD14V2 ...
-	StandardD14V2 VirtualMachineSizeTypes = "Standard_D14_v2"
-	// StandardD15V2 ...
-	StandardD15V2 VirtualMachineSizeTypes = "Standard_D15_v2"
-	// StandardD1V2 ...
-	StandardD1V2 VirtualMachineSizeTypes = "Standard_D1_v2"
-	// StandardD2 ...
-	StandardD2 VirtualMachineSizeTypes = "Standard_D2"
-	// StandardD2V2 ...
-	StandardD2V2 VirtualMachineSizeTypes = "Standard_D2_v2"
-	// StandardD3 ...
-	StandardD3 VirtualMachineSizeTypes = "Standard_D3"
-	// StandardD3V2 ...
-	StandardD3V2 VirtualMachineSizeTypes = "Standard_D3_v2"
-	// StandardD4 ...
-	StandardD4 VirtualMachineSizeTypes = "Standard_D4"
-	// StandardD4V2 ...
-	StandardD4V2 VirtualMachineSizeTypes = "Standard_D4_v2"
-	// StandardD5V2 ...
-	StandardD5V2 VirtualMachineSizeTypes = "Standard_D5_v2"
-	// StandardDS1 ...
-	StandardDS1 VirtualMachineSizeTypes = "Standard_DS1"
-	// StandardDS11 ...
-	StandardDS11 VirtualMachineSizeTypes = "Standard_DS11"
-	// StandardDS11V2 ...
-	StandardDS11V2 VirtualMachineSizeTypes = "Standard_DS11_v2"
-	// StandardDS12 ...
-	StandardDS12 VirtualMachineSizeTypes = "Standard_DS12"
-	// StandardDS12V2 ...
-	StandardDS12V2 VirtualMachineSizeTypes = "Standard_DS12_v2"
-	// StandardDS13 ...
-	StandardDS13 VirtualMachineSizeTypes = "Standard_DS13"
-	// StandardDS13V2 ...
-	StandardDS13V2 VirtualMachineSizeTypes = "Standard_DS13_v2"
-	// StandardDS14 ...
-	StandardDS14 VirtualMachineSizeTypes = "Standard_DS14"
-	// StandardDS14V2 ...
-	StandardDS14V2 VirtualMachineSizeTypes = "Standard_DS14_v2"
-	// StandardDS15V2 ...
-	StandardDS15V2 VirtualMachineSizeTypes = "Standard_DS15_v2"
-	// StandardDS1V2 ...
-	StandardDS1V2 VirtualMachineSizeTypes = "Standard_DS1_v2"
-	// StandardDS2 ...
-	StandardDS2 VirtualMachineSizeTypes = "Standard_DS2"
-	// StandardDS2V2 ...
-	StandardDS2V2 VirtualMachineSizeTypes = "Standard_DS2_v2"
-	// StandardDS3 ...
-	StandardDS3 VirtualMachineSizeTypes = "Standard_DS3"
-	// StandardDS3V2 ...
-	StandardDS3V2 VirtualMachineSizeTypes = "Standard_DS3_v2"
-	// StandardDS4 ...
-	StandardDS4 VirtualMachineSizeTypes = "Standard_DS4"
-	// StandardDS4V2 ...
-	StandardDS4V2 VirtualMachineSizeTypes = "Standard_DS4_v2"
-	// StandardDS5V2 ...
-	StandardDS5V2 VirtualMachineSizeTypes = "Standard_DS5_v2"
-	// StandardF1 ...
-	StandardF1 VirtualMachineSizeTypes = "Standard_F1"
-	// StandardF16 ...
-	StandardF16 VirtualMachineSizeTypes = "Standard_F16"
-	// StandardF16s ...
-	StandardF16s VirtualMachineSizeTypes = "Standard_F16s"
-	// StandardF1s ...
-	StandardF1s VirtualMachineSizeTypes = "Standard_F1s"
-	// StandardF2 ...
-	StandardF2 VirtualMachineSizeTypes = "Standard_F2"
-	// StandardF2s ...
-	StandardF2s VirtualMachineSizeTypes = "Standard_F2s"
-	// StandardF4 ...
-	StandardF4 VirtualMachineSizeTypes = "Standard_F4"
-	// StandardF4s ...
-	StandardF4s VirtualMachineSizeTypes = "Standard_F4s"
-	// StandardF8 ...
-	StandardF8 VirtualMachineSizeTypes = "Standard_F8"
-	// StandardF8s ...
-	StandardF8s VirtualMachineSizeTypes = "Standard_F8s"
-	// StandardG1 ...
-	StandardG1 VirtualMachineSizeTypes = "Standard_G1"
-	// StandardG2 ...
-	StandardG2 VirtualMachineSizeTypes = "Standard_G2"
-	// StandardG3 ...
-	StandardG3 VirtualMachineSizeTypes = "Standard_G3"
-	// StandardG4 ...
-	StandardG4 VirtualMachineSizeTypes = "Standard_G4"
-	// StandardG5 ...
-	StandardG5 VirtualMachineSizeTypes = "Standard_G5"
-	// StandardGS1 ...
-	StandardGS1 VirtualMachineSizeTypes = "Standard_GS1"
-	// StandardGS2 ...
-	StandardGS2 VirtualMachineSizeTypes = "Standard_GS2"
-	// StandardGS3 ...
-	StandardGS3 VirtualMachineSizeTypes = "Standard_GS3"
-	// StandardGS4 ...
-	StandardGS4 VirtualMachineSizeTypes = "Standard_GS4"
-	// StandardGS5 ...
-	StandardGS5 VirtualMachineSizeTypes = "Standard_GS5"
-	// StandardH16 ...
-	StandardH16 VirtualMachineSizeTypes = "Standard_H16"
-	// StandardH16m ...
-	StandardH16m VirtualMachineSizeTypes = "Standard_H16m"
-	// StandardH16mr ...
-	StandardH16mr VirtualMachineSizeTypes = "Standard_H16mr"
-	// StandardH16r ...
-	StandardH16r VirtualMachineSizeTypes = "Standard_H16r"
-	// StandardH8 ...
-	StandardH8 VirtualMachineSizeTypes = "Standard_H8"
-	// StandardH8m ...
-	StandardH8m VirtualMachineSizeTypes = "Standard_H8m"
-	// StandardL16s ...
-	StandardL16s VirtualMachineSizeTypes = "Standard_L16s"
-	// StandardL32s ...
-	StandardL32s VirtualMachineSizeTypes = "Standard_L32s"
-	// StandardL4s ...
-	StandardL4s VirtualMachineSizeTypes = "Standard_L4s"
-	// StandardL8s ...
-	StandardL8s VirtualMachineSizeTypes = "Standard_L8s"
-	// StandardNC12 ...
-	StandardNC12 VirtualMachineSizeTypes = "Standard_NC12"
-	// StandardNC24 ...
-	StandardNC24 VirtualMachineSizeTypes = "Standard_NC24"
-	// StandardNC24r ...
-	StandardNC24r VirtualMachineSizeTypes = "Standard_NC24r"
-	// StandardNC6 ...
-	StandardNC6 VirtualMachineSizeTypes = "Standard_NC6"
-	// StandardNV12 ...
-	StandardNV12 VirtualMachineSizeTypes = "Standard_NV12"
-	// StandardNV24 ...
-	StandardNV24 VirtualMachineSizeTypes = "Standard_NV24"
-	// StandardNV6 ...
-	StandardNV6 VirtualMachineSizeTypes = "Standard_NV6"
-)
-
-// PossibleVirtualMachineSizeTypesValues returns an array of possible values for the VirtualMachineSizeTypes const type.
-func PossibleVirtualMachineSizeTypesValues() []VirtualMachineSizeTypes {
-	return []VirtualMachineSizeTypes{BasicA0, BasicA1, BasicA2, BasicA3, BasicA4, StandardA0, StandardA1, StandardA10, StandardA11, StandardA1V2, StandardA2, StandardA2mV2, StandardA2V2, StandardA3, StandardA4, StandardA4mV2, StandardA4V2, StandardA5, StandardA6, StandardA7, StandardA8, StandardA8mV2, StandardA8V2, StandardA9, StandardD1, StandardD11, StandardD11V2, StandardD12, StandardD12V2, StandardD13, StandardD13V2, StandardD14, StandardD14V2, StandardD15V2, StandardD1V2, StandardD2, StandardD2V2, StandardD3, StandardD3V2, StandardD4, StandardD4V2, StandardD5V2, StandardDS1, StandardDS11, StandardDS11V2, StandardDS12, StandardDS12V2, StandardDS13, StandardDS13V2, StandardDS14, StandardDS14V2, StandardDS15V2, StandardDS1V2, StandardDS2, StandardDS2V2, StandardDS3, StandardDS3V2, StandardDS4, StandardDS4V2, StandardDS5V2, StandardF1, StandardF16, StandardF16s, StandardF1s, StandardF2, StandardF2s, StandardF4, StandardF4s, StandardF8, StandardF8s, StandardG1, StandardG2, StandardG3, StandardG4, StandardG5, StandardGS1, StandardGS2, StandardGS3, StandardGS4, StandardGS5, StandardH16, StandardH16m, StandardH16mr, StandardH16r, StandardH8, StandardH8m, StandardL16s, StandardL32s, StandardL4s, StandardL8s, StandardNC12, StandardNC24, StandardNC24r, StandardNC6, StandardNV12, StandardNV24, StandardNV6}
-}
-
 // AccessURI a disk access SAS uri.
 type AccessURI struct {
 	autorest.Response `json:"-"`
@@ -924,10 +360,15 @@ func (aslr AvailabilitySetListResult) IsEmpty() bool {
 	return aslr.Value == nil || len(*aslr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (aslr AvailabilitySetListResult) hasNextLink() bool {
+	return aslr.NextLink != nil && len(*aslr.NextLink) != 0
+}
+
 // availabilitySetListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (aslr AvailabilitySetListResult) availabilitySetListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if aslr.NextLink == nil || len(to.String(aslr.NextLink)) < 1 {
+	if !aslr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -955,11 +396,16 @@ func (page *AvailabilitySetListResultPage) NextWithContext(ctx context.Context) 
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.aslr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.aslr)
+		if err != nil {
+			return err
+		}
+		page.aslr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.aslr = next
 	return nil
 }
 
@@ -989,8 +435,11 @@ func (page AvailabilitySetListResultPage) Values() []AvailabilitySet {
 }
 
 // Creates a new instance of the AvailabilitySetListResultPage type.
-func NewAvailabilitySetListResultPage(getNextPage func(context.Context, AvailabilitySetListResult) (AvailabilitySetListResult, error)) AvailabilitySetListResultPage {
-	return AvailabilitySetListResultPage{fn: getNextPage}
+func NewAvailabilitySetListResultPage(cur AvailabilitySetListResult, getNextPage func(context.Context, AvailabilitySetListResult) (AvailabilitySetListResult, error)) AvailabilitySetListResultPage {
+	return AvailabilitySetListResultPage{
+		fn:   getNextPage,
+		aslr: cur,
+	}
 }
 
 // AvailabilitySetProperties the instance view of a resource.
@@ -1003,6 +452,21 @@ type AvailabilitySetProperties struct {
 	VirtualMachines *[]SubResource `json:"virtualMachines,omitempty"`
 	// Statuses - READ-ONLY; The resource status information.
 	Statuses *[]InstanceViewStatus `json:"statuses,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for AvailabilitySetProperties.
+func (asp AvailabilitySetProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if asp.PlatformUpdateDomainCount != nil {
+		objectMap["platformUpdateDomainCount"] = asp.PlatformUpdateDomainCount
+	}
+	if asp.PlatformFaultDomainCount != nil {
+		objectMap["platformFaultDomainCount"] = asp.PlatformFaultDomainCount
+	}
+	if asp.VirtualMachines != nil {
+		objectMap["virtualMachines"] = asp.VirtualMachines
+	}
+	return json.Marshal(objectMap)
 }
 
 // BootDiagnostics boot Diagnostics is a debugging feature which allows you to view Console Output and
@@ -1305,10 +769,15 @@ func (dl DiskList) IsEmpty() bool {
 	return dl.Value == nil || len(*dl.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (dl DiskList) hasNextLink() bool {
+	return dl.NextLink != nil && len(*dl.NextLink) != 0
+}
+
 // diskListPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (dl DiskList) diskListPreparer(ctx context.Context) (*http.Request, error) {
-	if dl.NextLink == nil || len(to.String(dl.NextLink)) < 1 {
+	if !dl.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -1336,11 +805,16 @@ func (page *DiskListPage) NextWithContext(ctx context.Context) (err error) {
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.dl)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.dl)
+		if err != nil {
+			return err
+		}
+		page.dl = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.dl = next
 	return nil
 }
 
@@ -1370,8 +844,11 @@ func (page DiskListPage) Values() []Disk {
 }
 
 // Creates a new instance of the DiskListPage type.
-func NewDiskListPage(getNextPage func(context.Context, DiskList) (DiskList, error)) DiskListPage {
-	return DiskListPage{fn: getNextPage}
+func NewDiskListPage(cur DiskList, getNextPage func(context.Context, DiskList) (DiskList, error)) DiskListPage {
+	return DiskListPage{
+		fn: getNextPage,
+		dl: cur,
+	}
 }
 
 // DiskProperties disk resource properties.
@@ -1388,6 +865,24 @@ type DiskProperties struct {
 	EncryptionSettings *EncryptionSettings `json:"encryptionSettings,omitempty"`
 	// ProvisioningState - READ-ONLY; The disk provisioning state.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for DiskProperties.
+func (dp DiskProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if dp.OsType != "" {
+		objectMap["osType"] = dp.OsType
+	}
+	if dp.CreationData != nil {
+		objectMap["creationData"] = dp.CreationData
+	}
+	if dp.DiskSizeGB != nil {
+		objectMap["diskSizeGB"] = dp.DiskSizeGB
+	}
+	if dp.EncryptionSettings != nil {
+		objectMap["encryptionSettings"] = dp.EncryptionSettings
+	}
+	return json.Marshal(objectMap)
 }
 
 // DisksCreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
@@ -1482,6 +977,15 @@ type DiskSku struct {
 	Name StorageAccountTypes `json:"name,omitempty"`
 	// Tier - READ-ONLY; The sku tier.
 	Tier *string `json:"tier,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for DiskSku.
+func (ds DiskSku) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if ds.Name != "" {
+		objectMap["name"] = ds.Name
+	}
+	return json.Marshal(objectMap)
 }
 
 // DisksRevokeAccessFuture an abstraction for monitoring and retrieving the results of a long-running
@@ -1845,10 +1349,15 @@ func (ilr ImageListResult) IsEmpty() bool {
 	return ilr.Value == nil || len(*ilr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (ilr ImageListResult) hasNextLink() bool {
+	return ilr.NextLink != nil && len(*ilr.NextLink) != 0
+}
+
 // imageListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (ilr ImageListResult) imageListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if ilr.NextLink == nil || len(to.String(ilr.NextLink)) < 1 {
+	if !ilr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -1876,11 +1385,16 @@ func (page *ImageListResultPage) NextWithContext(ctx context.Context) (err error
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.ilr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.ilr)
+		if err != nil {
+			return err
+		}
+		page.ilr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.ilr = next
 	return nil
 }
 
@@ -1910,8 +1424,11 @@ func (page ImageListResultPage) Values() []Image {
 }
 
 // Creates a new instance of the ImageListResultPage type.
-func NewImageListResultPage(getNextPage func(context.Context, ImageListResult) (ImageListResult, error)) ImageListResultPage {
-	return ImageListResultPage{fn: getNextPage}
+func NewImageListResultPage(cur ImageListResult, getNextPage func(context.Context, ImageListResult) (ImageListResult, error)) ImageListResultPage {
+	return ImageListResultPage{
+		fn:  getNextPage,
+		ilr: cur,
+	}
 }
 
 // ImageOSDisk describes an Operating System disk.
@@ -1942,6 +1459,18 @@ type ImageProperties struct {
 	StorageProfile *ImageStorageProfile `json:"storageProfile,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for ImageProperties.
+func (IP ImageProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if IP.SourceVirtualMachine != nil {
+		objectMap["sourceVirtualMachine"] = IP.SourceVirtualMachine
+	}
+	if IP.StorageProfile != nil {
+		objectMap["storageProfile"] = IP.StorageProfile
+	}
+	return json.Marshal(objectMap)
 }
 
 // ImageReference specifies information about the image to use. You can specify information about platform
@@ -2170,10 +1699,15 @@ func (lur ListUsagesResult) IsEmpty() bool {
 	return lur.Value == nil || len(*lur.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (lur ListUsagesResult) hasNextLink() bool {
+	return lur.NextLink != nil && len(*lur.NextLink) != 0
+}
+
 // listUsagesResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (lur ListUsagesResult) listUsagesResultPreparer(ctx context.Context) (*http.Request, error) {
-	if lur.NextLink == nil || len(to.String(lur.NextLink)) < 1 {
+	if !lur.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -2201,11 +1735,16 @@ func (page *ListUsagesResultPage) NextWithContext(ctx context.Context) (err erro
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.lur)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.lur)
+		if err != nil {
+			return err
+		}
+		page.lur = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.lur = next
 	return nil
 }
 
@@ -2235,8 +1774,11 @@ func (page ListUsagesResultPage) Values() []Usage {
 }
 
 // Creates a new instance of the ListUsagesResultPage type.
-func NewListUsagesResultPage(getNextPage func(context.Context, ListUsagesResult) (ListUsagesResult, error)) ListUsagesResultPage {
-	return ListUsagesResultPage{fn: getNextPage}
+func NewListUsagesResultPage(cur ListUsagesResult, getNextPage func(context.Context, ListUsagesResult) (ListUsagesResult, error)) ListUsagesResultPage {
+	return ListUsagesResultPage{
+		fn:  getNextPage,
+		lur: cur,
+	}
 }
 
 // ListVirtualMachineExtensionImage ...
@@ -2607,10 +2149,15 @@ func (rsr ResourceSkusResult) IsEmpty() bool {
 	return rsr.Value == nil || len(*rsr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (rsr ResourceSkusResult) hasNextLink() bool {
+	return rsr.NextLink != nil && len(*rsr.NextLink) != 0
+}
+
 // resourceSkusResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (rsr ResourceSkusResult) resourceSkusResultPreparer(ctx context.Context) (*http.Request, error) {
-	if rsr.NextLink == nil || len(to.String(rsr.NextLink)) < 1 {
+	if !rsr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -2638,11 +2185,16 @@ func (page *ResourceSkusResultPage) NextWithContext(ctx context.Context) (err er
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.rsr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.rsr)
+		if err != nil {
+			return err
+		}
+		page.rsr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.rsr = next
 	return nil
 }
 
@@ -2672,8 +2224,11 @@ func (page ResourceSkusResultPage) Values() []ResourceSku {
 }
 
 // Creates a new instance of the ResourceSkusResultPage type.
-func NewResourceSkusResultPage(getNextPage func(context.Context, ResourceSkusResult) (ResourceSkusResult, error)) ResourceSkusResultPage {
-	return ResourceSkusResultPage{fn: getNextPage}
+func NewResourceSkusResultPage(cur ResourceSkusResult, getNextPage func(context.Context, ResourceSkusResult) (ResourceSkusResult, error)) ResourceSkusResultPage {
+	return ResourceSkusResultPage{
+		fn:  getNextPage,
+		rsr: cur,
+	}
 }
 
 // ResourceUpdate the Resource model definition.
@@ -2972,10 +2527,15 @@ func (rclr RunCommandListResult) IsEmpty() bool {
 	return rclr.Value == nil || len(*rclr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (rclr RunCommandListResult) hasNextLink() bool {
+	return rclr.NextLink != nil && len(*rclr.NextLink) != 0
+}
+
 // runCommandListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (rclr RunCommandListResult) runCommandListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if rclr.NextLink == nil || len(to.String(rclr.NextLink)) < 1 {
+	if !rclr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -3003,11 +2563,16 @@ func (page *RunCommandListResultPage) NextWithContext(ctx context.Context) (err 
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.rclr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.rclr)
+		if err != nil {
+			return err
+		}
+		page.rclr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.rclr = next
 	return nil
 }
 
@@ -3037,8 +2602,11 @@ func (page RunCommandListResultPage) Values() []RunCommandDocumentBase {
 }
 
 // Creates a new instance of the RunCommandListResultPage type.
-func NewRunCommandListResultPage(getNextPage func(context.Context, RunCommandListResult) (RunCommandListResult, error)) RunCommandListResultPage {
-	return RunCommandListResultPage{fn: getNextPage}
+func NewRunCommandListResultPage(cur RunCommandListResult, getNextPage func(context.Context, RunCommandListResult) (RunCommandListResult, error)) RunCommandListResultPage {
+	return RunCommandListResultPage{
+		fn:   getNextPage,
+		rclr: cur,
+	}
 }
 
 // RunCommandParameterDefinition describes the properties of a run command parameter.
@@ -3364,10 +2932,15 @@ func (sl SnapshotList) IsEmpty() bool {
 	return sl.Value == nil || len(*sl.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (sl SnapshotList) hasNextLink() bool {
+	return sl.NextLink != nil && len(*sl.NextLink) != 0
+}
+
 // snapshotListPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (sl SnapshotList) snapshotListPreparer(ctx context.Context) (*http.Request, error) {
-	if sl.NextLink == nil || len(to.String(sl.NextLink)) < 1 {
+	if !sl.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -3395,11 +2968,16 @@ func (page *SnapshotListPage) NextWithContext(ctx context.Context) (err error) {
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.sl)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.sl)
+		if err != nil {
+			return err
+		}
+		page.sl = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.sl = next
 	return nil
 }
 
@@ -3429,8 +3007,11 @@ func (page SnapshotListPage) Values() []Snapshot {
 }
 
 // Creates a new instance of the SnapshotListPage type.
-func NewSnapshotListPage(getNextPage func(context.Context, SnapshotList) (SnapshotList, error)) SnapshotListPage {
-	return SnapshotListPage{fn: getNextPage}
+func NewSnapshotListPage(cur SnapshotList, getNextPage func(context.Context, SnapshotList) (SnapshotList, error)) SnapshotListPage {
+	return SnapshotListPage{
+		fn: getNextPage,
+		sl: cur,
+	}
 }
 
 // SnapshotsCreateOrUpdateFuture an abstraction for monitoring and retrieving the results of a long-running
@@ -4247,6 +3828,36 @@ type VirtualMachineExtensionProperties struct {
 	InstanceView *VirtualMachineExtensionInstanceView `json:"instanceView,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for VirtualMachineExtensionProperties.
+func (vmep VirtualMachineExtensionProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmep.ForceUpdateTag != nil {
+		objectMap["forceUpdateTag"] = vmep.ForceUpdateTag
+	}
+	if vmep.Publisher != nil {
+		objectMap["publisher"] = vmep.Publisher
+	}
+	if vmep.Type != nil {
+		objectMap["type"] = vmep.Type
+	}
+	if vmep.TypeHandlerVersion != nil {
+		objectMap["typeHandlerVersion"] = vmep.TypeHandlerVersion
+	}
+	if vmep.AutoUpgradeMinorVersion != nil {
+		objectMap["autoUpgradeMinorVersion"] = vmep.AutoUpgradeMinorVersion
+	}
+	if vmep.Settings != nil {
+		objectMap["settings"] = vmep.Settings
+	}
+	if vmep.ProtectedSettings != nil {
+		objectMap["protectedSettings"] = vmep.ProtectedSettings
+	}
+	if vmep.InstanceView != nil {
+		objectMap["instanceView"] = vmep.InstanceView
+	}
+	return json.Marshal(objectMap)
+}
+
 // VirtualMachineExtensionsCreateOrUpdateFuture an abstraction for monitoring and retrieving the results of
 // a long-running operation.
 type VirtualMachineExtensionsCreateOrUpdateFuture struct {
@@ -4425,6 +4036,15 @@ type VirtualMachineIdentity struct {
 	TenantID *string `json:"tenantId,omitempty"`
 	// Type - The type of identity used for the virtual machine. Currently, the only supported type is 'SystemAssigned', which implicitly creates an identity. Possible values include: 'SystemAssigned'
 	Type ResourceIdentityType `json:"type,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineIdentity.
+func (vmi VirtualMachineIdentity) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmi.Type != "" {
+		objectMap["type"] = vmi.Type
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineImage describes a Virtual Machine Image.
@@ -4659,10 +4279,15 @@ func (vmlr VirtualMachineListResult) IsEmpty() bool {
 	return vmlr.Value == nil || len(*vmlr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmlr VirtualMachineListResult) hasNextLink() bool {
+	return vmlr.NextLink != nil && len(*vmlr.NextLink) != 0
+}
+
 // virtualMachineListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmlr VirtualMachineListResult) virtualMachineListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmlr.NextLink == nil || len(to.String(vmlr.NextLink)) < 1 {
+	if !vmlr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -4690,11 +4315,16 @@ func (page *VirtualMachineListResultPage) NextWithContext(ctx context.Context) (
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmlr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmlr)
+		if err != nil {
+			return err
+		}
+		page.vmlr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmlr = next
 	return nil
 }
 
@@ -4724,8 +4354,11 @@ func (page VirtualMachineListResultPage) Values() []VirtualMachine {
 }
 
 // Creates a new instance of the VirtualMachineListResultPage type.
-func NewVirtualMachineListResultPage(getNextPage func(context.Context, VirtualMachineListResult) (VirtualMachineListResult, error)) VirtualMachineListResultPage {
-	return VirtualMachineListResultPage{fn: getNextPage}
+func NewVirtualMachineListResultPage(cur VirtualMachineListResult, getNextPage func(context.Context, VirtualMachineListResult) (VirtualMachineListResult, error)) VirtualMachineListResultPage {
+	return VirtualMachineListResultPage{
+		fn:   getNextPage,
+		vmlr: cur,
+	}
 }
 
 // VirtualMachineProperties describes the properties of a Virtual Machine.
@@ -4750,6 +4383,33 @@ type VirtualMachineProperties struct {
 	LicenseType *string `json:"licenseType,omitempty"`
 	// VMID - READ-ONLY; Specifies the VM unique ID which is a 128-bits identifier that is encoded and stored in all Azure IaaS VMs SMBIOS and can be read using platform BIOS commands.
 	VMID *string `json:"vmId,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineProperties.
+func (vmp VirtualMachineProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmp.HardwareProfile != nil {
+		objectMap["hardwareProfile"] = vmp.HardwareProfile
+	}
+	if vmp.StorageProfile != nil {
+		objectMap["storageProfile"] = vmp.StorageProfile
+	}
+	if vmp.OsProfile != nil {
+		objectMap["osProfile"] = vmp.OsProfile
+	}
+	if vmp.NetworkProfile != nil {
+		objectMap["networkProfile"] = vmp.NetworkProfile
+	}
+	if vmp.DiagnosticsProfile != nil {
+		objectMap["diagnosticsProfile"] = vmp.DiagnosticsProfile
+	}
+	if vmp.AvailabilitySet != nil {
+		objectMap["availabilitySet"] = vmp.AvailabilitySet
+	}
+	if vmp.LicenseType != nil {
+		objectMap["licenseType"] = vmp.LicenseType
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineScaleSet describes a Virtual Machine Scale Set.
@@ -5066,10 +4726,15 @@ func (vmsselr VirtualMachineScaleSetExtensionListResult) IsEmpty() bool {
 	return vmsselr.Value == nil || len(*vmsselr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmsselr VirtualMachineScaleSetExtensionListResult) hasNextLink() bool {
+	return vmsselr.NextLink != nil && len(*vmsselr.NextLink) != 0
+}
+
 // virtualMachineScaleSetExtensionListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmsselr VirtualMachineScaleSetExtensionListResult) virtualMachineScaleSetExtensionListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmsselr.NextLink == nil || len(to.String(vmsselr.NextLink)) < 1 {
+	if !vmsselr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -5097,11 +4762,16 @@ func (page *VirtualMachineScaleSetExtensionListResultPage) NextWithContext(ctx c
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmsselr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmsselr)
+		if err != nil {
+			return err
+		}
+		page.vmsselr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmsselr = next
 	return nil
 }
 
@@ -5131,8 +4801,11 @@ func (page VirtualMachineScaleSetExtensionListResultPage) Values() []VirtualMach
 }
 
 // Creates a new instance of the VirtualMachineScaleSetExtensionListResultPage type.
-func NewVirtualMachineScaleSetExtensionListResultPage(getNextPage func(context.Context, VirtualMachineScaleSetExtensionListResult) (VirtualMachineScaleSetExtensionListResult, error)) VirtualMachineScaleSetExtensionListResultPage {
-	return VirtualMachineScaleSetExtensionListResultPage{fn: getNextPage}
+func NewVirtualMachineScaleSetExtensionListResultPage(cur VirtualMachineScaleSetExtensionListResult, getNextPage func(context.Context, VirtualMachineScaleSetExtensionListResult) (VirtualMachineScaleSetExtensionListResult, error)) VirtualMachineScaleSetExtensionListResultPage {
+	return VirtualMachineScaleSetExtensionListResultPage{
+		fn:      getNextPage,
+		vmsselr: cur,
+	}
 }
 
 // VirtualMachineScaleSetExtensionProfile describes a virtual machine scale set extension profile.
@@ -5160,6 +4833,33 @@ type VirtualMachineScaleSetExtensionProperties struct {
 	ProtectedSettings interface{} `json:"protectedSettings,omitempty"`
 	// ProvisioningState - READ-ONLY; The provisioning state, which only appears in the response.
 	ProvisioningState *string `json:"provisioningState,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetExtensionProperties.
+func (vmssep VirtualMachineScaleSetExtensionProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssep.ForceUpdateTag != nil {
+		objectMap["forceUpdateTag"] = vmssep.ForceUpdateTag
+	}
+	if vmssep.Publisher != nil {
+		objectMap["publisher"] = vmssep.Publisher
+	}
+	if vmssep.Type != nil {
+		objectMap["type"] = vmssep.Type
+	}
+	if vmssep.TypeHandlerVersion != nil {
+		objectMap["typeHandlerVersion"] = vmssep.TypeHandlerVersion
+	}
+	if vmssep.AutoUpgradeMinorVersion != nil {
+		objectMap["autoUpgradeMinorVersion"] = vmssep.AutoUpgradeMinorVersion
+	}
+	if vmssep.Settings != nil {
+		objectMap["settings"] = vmssep.Settings
+	}
+	if vmssep.ProtectedSettings != nil {
+		objectMap["protectedSettings"] = vmssep.ProtectedSettings
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineScaleSetExtensionsCreateOrUpdateFuture an abstraction for monitoring and retrieving the
@@ -5230,6 +4930,15 @@ type VirtualMachineScaleSetIdentity struct {
 	Type ResourceIdentityType `json:"type,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetIdentity.
+func (vmssi VirtualMachineScaleSetIdentity) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssi.Type != "" {
+		objectMap["type"] = vmssi.Type
+	}
+	return json.Marshal(objectMap)
+}
+
 // VirtualMachineScaleSetInstanceView the instance view of a virtual machine scale set.
 type VirtualMachineScaleSetInstanceView struct {
 	autorest.Response `json:"-"`
@@ -5239,6 +4948,15 @@ type VirtualMachineScaleSetInstanceView struct {
 	Extensions *[]VirtualMachineScaleSetVMExtensionsSummary `json:"extensions,omitempty"`
 	// Statuses - The resource status information.
 	Statuses *[]InstanceViewStatus `json:"statuses,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetInstanceView.
+func (vmssiv VirtualMachineScaleSetInstanceView) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssiv.Statuses != nil {
+		objectMap["statuses"] = vmssiv.Statuses
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineScaleSetInstanceViewStatusesSummary instance view statuses summary for virtual machines of
@@ -5412,10 +5130,15 @@ func (vmsslr VirtualMachineScaleSetListResult) IsEmpty() bool {
 	return vmsslr.Value == nil || len(*vmsslr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmsslr VirtualMachineScaleSetListResult) hasNextLink() bool {
+	return vmsslr.NextLink != nil && len(*vmsslr.NextLink) != 0
+}
+
 // virtualMachineScaleSetListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmsslr VirtualMachineScaleSetListResult) virtualMachineScaleSetListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmsslr.NextLink == nil || len(to.String(vmsslr.NextLink)) < 1 {
+	if !vmsslr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -5443,11 +5166,16 @@ func (page *VirtualMachineScaleSetListResultPage) NextWithContext(ctx context.Co
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmsslr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmsslr)
+		if err != nil {
+			return err
+		}
+		page.vmsslr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmsslr = next
 	return nil
 }
 
@@ -5477,8 +5205,11 @@ func (page VirtualMachineScaleSetListResultPage) Values() []VirtualMachineScaleS
 }
 
 // Creates a new instance of the VirtualMachineScaleSetListResultPage type.
-func NewVirtualMachineScaleSetListResultPage(getNextPage func(context.Context, VirtualMachineScaleSetListResult) (VirtualMachineScaleSetListResult, error)) VirtualMachineScaleSetListResultPage {
-	return VirtualMachineScaleSetListResultPage{fn: getNextPage}
+func NewVirtualMachineScaleSetListResultPage(cur VirtualMachineScaleSetListResult, getNextPage func(context.Context, VirtualMachineScaleSetListResult) (VirtualMachineScaleSetListResult, error)) VirtualMachineScaleSetListResultPage {
+	return VirtualMachineScaleSetListResultPage{
+		fn:     getNextPage,
+		vmsslr: cur,
+	}
 }
 
 // VirtualMachineScaleSetListSkusResult the Virtual Machine Scale Set List Skus operation response.
@@ -5559,10 +5290,15 @@ func (vmsslsr VirtualMachineScaleSetListSkusResult) IsEmpty() bool {
 	return vmsslsr.Value == nil || len(*vmsslsr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmsslsr VirtualMachineScaleSetListSkusResult) hasNextLink() bool {
+	return vmsslsr.NextLink != nil && len(*vmsslsr.NextLink) != 0
+}
+
 // virtualMachineScaleSetListSkusResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmsslsr VirtualMachineScaleSetListSkusResult) virtualMachineScaleSetListSkusResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmsslsr.NextLink == nil || len(to.String(vmsslsr.NextLink)) < 1 {
+	if !vmsslsr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -5590,11 +5326,16 @@ func (page *VirtualMachineScaleSetListSkusResultPage) NextWithContext(ctx contex
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmsslsr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmsslsr)
+		if err != nil {
+			return err
+		}
+		page.vmsslsr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmsslsr = next
 	return nil
 }
 
@@ -5624,8 +5365,11 @@ func (page VirtualMachineScaleSetListSkusResultPage) Values() []VirtualMachineSc
 }
 
 // Creates a new instance of the VirtualMachineScaleSetListSkusResultPage type.
-func NewVirtualMachineScaleSetListSkusResultPage(getNextPage func(context.Context, VirtualMachineScaleSetListSkusResult) (VirtualMachineScaleSetListSkusResult, error)) VirtualMachineScaleSetListSkusResultPage {
-	return VirtualMachineScaleSetListSkusResultPage{fn: getNextPage}
+func NewVirtualMachineScaleSetListSkusResultPage(cur VirtualMachineScaleSetListSkusResult, getNextPage func(context.Context, VirtualMachineScaleSetListSkusResult) (VirtualMachineScaleSetListSkusResult, error)) VirtualMachineScaleSetListSkusResultPage {
+	return VirtualMachineScaleSetListSkusResultPage{
+		fn:      getNextPage,
+		vmsslsr: cur,
+	}
 }
 
 // VirtualMachineScaleSetListWithLinkResult the List Virtual Machine operation response.
@@ -5706,10 +5450,15 @@ func (vmsslwlr VirtualMachineScaleSetListWithLinkResult) IsEmpty() bool {
 	return vmsslwlr.Value == nil || len(*vmsslwlr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmsslwlr VirtualMachineScaleSetListWithLinkResult) hasNextLink() bool {
+	return vmsslwlr.NextLink != nil && len(*vmsslwlr.NextLink) != 0
+}
+
 // virtualMachineScaleSetListWithLinkResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmsslwlr VirtualMachineScaleSetListWithLinkResult) virtualMachineScaleSetListWithLinkResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmsslwlr.NextLink == nil || len(to.String(vmsslwlr.NextLink)) < 1 {
+	if !vmsslwlr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -5737,11 +5486,16 @@ func (page *VirtualMachineScaleSetListWithLinkResultPage) NextWithContext(ctx co
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmsslwlr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmsslwlr)
+		if err != nil {
+			return err
+		}
+		page.vmsslwlr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmsslwlr = next
 	return nil
 }
 
@@ -5771,8 +5525,11 @@ func (page VirtualMachineScaleSetListWithLinkResultPage) Values() []VirtualMachi
 }
 
 // Creates a new instance of the VirtualMachineScaleSetListWithLinkResultPage type.
-func NewVirtualMachineScaleSetListWithLinkResultPage(getNextPage func(context.Context, VirtualMachineScaleSetListWithLinkResult) (VirtualMachineScaleSetListWithLinkResult, error)) VirtualMachineScaleSetListWithLinkResultPage {
-	return VirtualMachineScaleSetListWithLinkResultPage{fn: getNextPage}
+func NewVirtualMachineScaleSetListWithLinkResultPage(cur VirtualMachineScaleSetListWithLinkResult, getNextPage func(context.Context, VirtualMachineScaleSetListWithLinkResult) (VirtualMachineScaleSetListWithLinkResult, error)) VirtualMachineScaleSetListWithLinkResultPage {
+	return VirtualMachineScaleSetListWithLinkResultPage{
+		fn:       getNextPage,
+		vmsslwlr: cur,
+	}
 }
 
 // VirtualMachineScaleSetManagedDiskParameters describes the parameters of a ScaleSet managed disk.
@@ -5928,6 +5685,24 @@ type VirtualMachineScaleSetProperties struct {
 	UniqueID *string `json:"uniqueId,omitempty"`
 	// SinglePlacementGroup - When true this limits the scale set to a single placement group, of max size 100 virtual machines.
 	SinglePlacementGroup *bool `json:"singlePlacementGroup,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetProperties.
+func (vmssp VirtualMachineScaleSetProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssp.UpgradePolicy != nil {
+		objectMap["upgradePolicy"] = vmssp.UpgradePolicy
+	}
+	if vmssp.VirtualMachineProfile != nil {
+		objectMap["virtualMachineProfile"] = vmssp.VirtualMachineProfile
+	}
+	if vmssp.Overprovision != nil {
+		objectMap["overprovision"] = vmssp.Overprovision
+	}
+	if vmssp.SinglePlacementGroup != nil {
+		objectMap["singlePlacementGroup"] = vmssp.SinglePlacementGroup
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineScaleSetPublicIPAddressConfiguration describes a virtual machines scale set IP
@@ -6998,6 +6773,39 @@ type VirtualMachineScaleSetVMInstanceView struct {
 	PlacementGroupID *string `json:"placementGroupId,omitempty"`
 }
 
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetVMInstanceView.
+func (vmssviv VirtualMachineScaleSetVMInstanceView) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssviv.PlatformUpdateDomain != nil {
+		objectMap["platformUpdateDomain"] = vmssviv.PlatformUpdateDomain
+	}
+	if vmssviv.PlatformFaultDomain != nil {
+		objectMap["platformFaultDomain"] = vmssviv.PlatformFaultDomain
+	}
+	if vmssviv.RdpThumbPrint != nil {
+		objectMap["rdpThumbPrint"] = vmssviv.RdpThumbPrint
+	}
+	if vmssviv.VMAgent != nil {
+		objectMap["vmAgent"] = vmssviv.VMAgent
+	}
+	if vmssviv.Disks != nil {
+		objectMap["disks"] = vmssviv.Disks
+	}
+	if vmssviv.Extensions != nil {
+		objectMap["extensions"] = vmssviv.Extensions
+	}
+	if vmssviv.BootDiagnostics != nil {
+		objectMap["bootDiagnostics"] = vmssviv.BootDiagnostics
+	}
+	if vmssviv.Statuses != nil {
+		objectMap["statuses"] = vmssviv.Statuses
+	}
+	if vmssviv.PlacementGroupID != nil {
+		objectMap["placementGroupId"] = vmssviv.PlacementGroupID
+	}
+	return json.Marshal(objectMap)
+}
+
 // VirtualMachineScaleSetVMListResult the List Virtual Machine Scale Set VMs operation response.
 type VirtualMachineScaleSetVMListResult struct {
 	autorest.Response `json:"-"`
@@ -7076,10 +6884,15 @@ func (vmssvlr VirtualMachineScaleSetVMListResult) IsEmpty() bool {
 	return vmssvlr.Value == nil || len(*vmssvlr.Value) == 0
 }
 
+// hasNextLink returns true if the NextLink is not empty.
+func (vmssvlr VirtualMachineScaleSetVMListResult) hasNextLink() bool {
+	return vmssvlr.NextLink != nil && len(*vmssvlr.NextLink) != 0
+}
+
 // virtualMachineScaleSetVMListResultPreparer prepares a request to retrieve the next set of results.
 // It returns nil if no more results exist.
 func (vmssvlr VirtualMachineScaleSetVMListResult) virtualMachineScaleSetVMListResultPreparer(ctx context.Context) (*http.Request, error) {
-	if vmssvlr.NextLink == nil || len(to.String(vmssvlr.NextLink)) < 1 {
+	if !vmssvlr.hasNextLink() {
 		return nil, nil
 	}
 	return autorest.Prepare((&http.Request{}).WithContext(ctx),
@@ -7107,11 +6920,16 @@ func (page *VirtualMachineScaleSetVMListResultPage) NextWithContext(ctx context.
 			tracing.EndSpan(ctx, sc, err)
 		}()
 	}
-	next, err := page.fn(ctx, page.vmssvlr)
-	if err != nil {
-		return err
+	for {
+		next, err := page.fn(ctx, page.vmssvlr)
+		if err != nil {
+			return err
+		}
+		page.vmssvlr = next
+		if !next.hasNextLink() || !next.IsEmpty() {
+			break
+		}
 	}
-	page.vmssvlr = next
 	return nil
 }
 
@@ -7141,8 +6959,11 @@ func (page VirtualMachineScaleSetVMListResultPage) Values() []VirtualMachineScal
 }
 
 // Creates a new instance of the VirtualMachineScaleSetVMListResultPage type.
-func NewVirtualMachineScaleSetVMListResultPage(getNextPage func(context.Context, VirtualMachineScaleSetVMListResult) (VirtualMachineScaleSetVMListResult, error)) VirtualMachineScaleSetVMListResultPage {
-	return VirtualMachineScaleSetVMListResultPage{fn: getNextPage}
+func NewVirtualMachineScaleSetVMListResultPage(cur VirtualMachineScaleSetVMListResult, getNextPage func(context.Context, VirtualMachineScaleSetVMListResult) (VirtualMachineScaleSetVMListResult, error)) VirtualMachineScaleSetVMListResultPage {
+	return VirtualMachineScaleSetVMListResultPage{
+		fn:      getNextPage,
+		vmssvlr: cur,
+	}
 }
 
 // VirtualMachineScaleSetVMProfile describes a virtual machine scale set virtual machine profile.
@@ -7186,6 +7007,33 @@ type VirtualMachineScaleSetVMProperties struct {
 	ProvisioningState *string `json:"provisioningState,omitempty"`
 	// LicenseType - Specifies that the image or disk that is being used was licensed on-premises. This element is only used for images that contain the Windows Server operating system. <br><br> Possible values are: <br><br> Windows_Client <br><br> Windows_Server <br><br> If this element is included in a request for an update, the value must match the initial value. This value cannot be updated. <br><br> For more information, see [Azure Hybrid Use Benefit for Windows Server](https://docs.microsoft.com/azure/virtual-machines/virtual-machines-windows-hybrid-use-benefit-licensing?toc=%2fazure%2fvirtual-machines%2fwindows%2ftoc.json) <br><br> Minimum api-version: 2015-06-15
 	LicenseType *string `json:"licenseType,omitempty"`
+}
+
+// MarshalJSON is the custom marshaler for VirtualMachineScaleSetVMProperties.
+func (vmssvp VirtualMachineScaleSetVMProperties) MarshalJSON() ([]byte, error) {
+	objectMap := make(map[string]interface{})
+	if vmssvp.HardwareProfile != nil {
+		objectMap["hardwareProfile"] = vmssvp.HardwareProfile
+	}
+	if vmssvp.StorageProfile != nil {
+		objectMap["storageProfile"] = vmssvp.StorageProfile
+	}
+	if vmssvp.OsProfile != nil {
+		objectMap["osProfile"] = vmssvp.OsProfile
+	}
+	if vmssvp.NetworkProfile != nil {
+		objectMap["networkProfile"] = vmssvp.NetworkProfile
+	}
+	if vmssvp.DiagnosticsProfile != nil {
+		objectMap["diagnosticsProfile"] = vmssvp.DiagnosticsProfile
+	}
+	if vmssvp.AvailabilitySet != nil {
+		objectMap["availabilitySet"] = vmssvp.AvailabilitySet
+	}
+	if vmssvp.LicenseType != nil {
+		objectMap["licenseType"] = vmssvp.LicenseType
+	}
+	return json.Marshal(objectMap)
 }
 
 // VirtualMachineScaleSetVMsDeallocateFuture an abstraction for monitoring and retrieving the results of a

@@ -7,11 +7,9 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-
-	"github.com/google/go-cmp/cmp"
-
-	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-08-01/network"
+	"github.com/Azure/azure-sdk-for-go/services/network/mgmt/2018-11-01/network"
 	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/google/go-cmp/cmp"
 )
 
 func TestCreateMasterLoadBalancer(t *testing.T) {
@@ -70,7 +68,7 @@ func TestCreateMasterLoadBalancer(t *testing.T) {
 							BackendPort:          to.Int32Ptr(443),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
@@ -255,7 +253,7 @@ func TestCreateLoadBalancerStandard(t *testing.T) {
 							BackendPort:          to.Int32Ptr(443),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
@@ -275,7 +273,7 @@ func TestCreateLoadBalancerStandard(t *testing.T) {
 							BackendPort:          to.Int32Ptr(1123),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
@@ -379,7 +377,7 @@ func TestCreateLoadBalancerVMSS(t *testing.T) {
 							BackendPort:          to.Int32Ptr(443),
 							EnableFloatingIP:     to.BoolPtr(false),
 							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.Default,
+							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
 								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},

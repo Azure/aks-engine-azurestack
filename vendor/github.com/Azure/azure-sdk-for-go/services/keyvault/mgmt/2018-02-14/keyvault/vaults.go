@@ -117,7 +117,6 @@ func (client VaultsClient) CheckNameAvailabilitySender(req *http.Request) (*http
 func (client VaultsClient) CheckNameAvailabilityResponder(resp *http.Response) (result CheckNameAvailabilityResult, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -209,7 +208,6 @@ func (client VaultsClient) CreateOrUpdateSender(req *http.Request) (future Vault
 func (client VaultsClient) CreateOrUpdateResponder(resp *http.Response) (result Vault, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusCreated),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -285,7 +283,6 @@ func (client VaultsClient) DeleteSender(req *http.Request) (*http.Response, erro
 func (client VaultsClient) DeleteResponder(resp *http.Response) (result autorest.Response, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusNoContent),
 		autorest.ByClosing())
 	result.Response = resp
@@ -360,7 +357,6 @@ func (client VaultsClient) GetSender(req *http.Request) (*http.Response, error) 
 func (client VaultsClient) GetResponder(resp *http.Response) (result Vault, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -436,7 +432,6 @@ func (client VaultsClient) GetDeletedSender(req *http.Request) (*http.Response, 
 func (client VaultsClient) GetDeletedResponder(resp *http.Response) (result DeletedVault, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -476,6 +471,9 @@ func (client VaultsClient) List(ctx context.Context, top *int32) (result Resourc
 	if err != nil {
 		err = autorest.NewErrorWithError(err, "keyvault.VaultsClient", "List", resp, "Failure responding to request")
 	}
+	if result.rlr.hasNextLink() && result.rlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -514,7 +512,6 @@ func (client VaultsClient) ListSender(req *http.Request) (*http.Response, error)
 func (client VaultsClient) ListResponder(resp *http.Response) (result ResourceListResult, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -593,6 +590,9 @@ func (client VaultsClient) ListByResourceGroup(ctx context.Context, resourceGrou
 	if err != nil {
 		err = autorest.NewErrorWithError(err, "keyvault.VaultsClient", "ListByResourceGroup", resp, "Failure responding to request")
 	}
+	if result.vlr.hasNextLink() && result.vlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -631,7 +631,6 @@ func (client VaultsClient) ListByResourceGroupSender(req *http.Request) (*http.R
 func (client VaultsClient) ListByResourceGroupResponder(resp *http.Response) (result VaultListResult, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -708,6 +707,9 @@ func (client VaultsClient) ListBySubscription(ctx context.Context, top *int32) (
 	if err != nil {
 		err = autorest.NewErrorWithError(err, "keyvault.VaultsClient", "ListBySubscription", resp, "Failure responding to request")
 	}
+	if result.vlr.hasNextLink() && result.vlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -745,7 +747,6 @@ func (client VaultsClient) ListBySubscriptionSender(req *http.Request) (*http.Re
 func (client VaultsClient) ListBySubscriptionResponder(resp *http.Response) (result VaultListResult, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -820,6 +821,9 @@ func (client VaultsClient) ListDeleted(ctx context.Context) (result DeletedVault
 	if err != nil {
 		err = autorest.NewErrorWithError(err, "keyvault.VaultsClient", "ListDeleted", resp, "Failure responding to request")
 	}
+	if result.dvlr.hasNextLink() && result.dvlr.IsEmpty() {
+		err = result.NextWithContext(ctx)
+	}
 
 	return
 }
@@ -854,7 +858,6 @@ func (client VaultsClient) ListDeletedSender(req *http.Request) (*http.Response,
 func (client VaultsClient) ListDeletedResponder(resp *http.Response) (result DeletedVaultListResult, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -967,7 +970,6 @@ func (client VaultsClient) PurgeDeletedSender(req *http.Request) (future VaultsP
 func (client VaultsClient) PurgeDeletedResponder(resp *http.Response) (result autorest.Response, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusAccepted),
 		autorest.ByClosing())
 	result.Response = resp
@@ -1051,7 +1053,6 @@ func (client VaultsClient) UpdateSender(req *http.Request) (*http.Response, erro
 func (client VaultsClient) UpdateResponder(resp *http.Response) (result Vault, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusCreated),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())
@@ -1145,7 +1146,6 @@ func (client VaultsClient) UpdateAccessPolicySender(req *http.Request) (*http.Re
 func (client VaultsClient) UpdateAccessPolicyResponder(resp *http.Response) (result VaultAccessPolicyParameters, err error) {
 	err = autorest.Respond(
 		resp,
-		client.ByInspecting(),
 		azure.WithErrorUnlessStatusCode(http.StatusOK, http.StatusCreated),
 		autorest.ByUnmarshallingJSON(&result),
 		autorest.ByClosing())

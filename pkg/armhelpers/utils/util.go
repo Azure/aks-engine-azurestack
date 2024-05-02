@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )

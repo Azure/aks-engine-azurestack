@@ -7,7 +7,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2019-12-01/compute"
+	"github.com/Azure/azure-sdk-for-go/services/compute/mgmt/2020-06-01/compute"
 	"github.com/pkg/errors"
 )
 
@@ -39,7 +39,8 @@ func (az *AzureClient) RestartVirtualMachine(ctx context.Context, resourceGroup,
 
 // DeleteVirtualMachine handles deletion of a CRP/VMAS VM (aka, not a VMSS VM).
 func (az *AzureClient) DeleteVirtualMachine(ctx context.Context, resourceGroup, name string) error {
-	future, err := az.virtualMachinesClient.Delete(ctx, resourceGroup, name)
+	force := true
+	future, err := az.virtualMachinesClient.Delete(ctx, resourceGroup, name, &force)
 	if err != nil {
 		return err
 	}
