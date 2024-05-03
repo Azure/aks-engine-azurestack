@@ -87,22 +87,6 @@ jobs:
         uses: actions/setup-go@v3
         with:
           go-version-file: "go.mod"
-      - name: Setup SSH Keys and known_hosts
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: |
-          ssh-agent -a $SSH_AUTH_SOCK
-      - name: Install helm
-        run: |
-          curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
-          sudo apt-get install apt-transport-https --yes
-          echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-          sudo apt-get update
-          sudo apt-get install helm
-      - name: Install k
-        run: |
-          sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
-          sudo chmod +x /usr/local/bin/k
       - name: Build aks-engine-azurestack binary
         run: make build-binary
       - name: Validate 1.27 no-egress scenario
