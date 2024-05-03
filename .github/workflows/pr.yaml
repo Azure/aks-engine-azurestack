@@ -48,9 +48,6 @@ jobs:
     container:
       image: mcr.microsoft.com/oss/azcu/go-dev:v1.36.2
     env:
-      GOBIN: "$(GOPATH)/bin" # Go binaries path
-      GOROOT: "/usr/local/go" # Go installation path
-      GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
       TIMEOUT: 30m
       CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
       SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
