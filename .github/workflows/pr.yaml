@@ -91,6 +91,5 @@ jobs:
         run: make build-binary
       - name: Validate 1.27 no-egress scenario
         env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
           ORCHESTRATOR_RELEASE: "1.27"
         run: make test-kubernetes
