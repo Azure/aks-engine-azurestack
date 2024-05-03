@@ -3,19 +3,27 @@ name: Pull Request
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'git ref to checkout (default: master)'
+      from_branch:
+        description: 'Which branch are we testing? (if left blank, by default will use the branch used to trigger workflow)'
         required: false
-        default: 'master'
+        default: ''
+      LINUX_NODE_IMAGE_VERSION:
+        description: 'What is the Linux SIG image version?'
+        required: true
+        default: 2024.032.1
+      WINDOWS_NODE_IMAGE_VERSION:
+        description: 'What is the Windows SIG image version?'
+        required: true
+        default: 2024.032.1
 
 jobs:
   unit-tests:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          ref: ${{github.event.inputs.ref}}
+          ref: ${{inputs.from_branch}}
       - name: Set up Go
         uses: actions/setup-go@v3
         with:
@@ -34,7 +42,43 @@ jobs:
         run: make test
 
   e2e:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    env:
+      GOBIN: "$(GOPATH)/bin" # Go binaries path
+      GOROOT: "/usr/local/go" # Go installation path
+      GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
+      TIMEOUT: 30m
+      CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition-no-vnet.json"
+      SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+      CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
+      CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
+      LOCATION: "eastus"
+      TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
+      CREATE_VNET: false
+      CLEANUP_ON_EXIT: true
+      CLEANUP_IF_FAIL: true
+      SKIP_TEST: false
+      GINKGO_SKIP: ""
+      RETAIN_SSH: false
+      USE_MANAGED_IDENTITY: true
+      MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
+      ENABLE_KMS_ENCRYPTION: false
+      CONTAINER_RUNTIME: "containerd"
+      BLOCK_SSH: true
+      DISTRO: "aks-ubuntu-20.04"
+      AZURE_CORE_ONLY_SHOW_ERRORS: true
+      STABILITY_ITERATIONS: 0
+      WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+      WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
+      WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
+      WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
+      WINDOWS_NODE_IMAGE_VERSION: ${{inputs.WINDOWS_NODE_IMAGE_VERSION}}
+      LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
+      LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
+      LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
+      LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
+      LINUX_NODE_IMAGE_VERSION: ${{inputs.LINUX_NODE_IMAGE_VERSION}}
+      TEST_PVC: true
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -46,7 +90,7 @@ jobs:
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
         run: |
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+          ssh-agent -a $SSH_AUTH_SOCK
       - name: Install helm
         run: |
           curl https://baltocdn.com/helm/signing.asc | sudo apt-key add -
@@ -60,35 +104,8 @@ jobs:
           sudo chmod +x /usr/local/bin/k
       - name: Build aks-engine-azurestack binary
         run: make build-binary
-      - name: Validate 1.22 no-egress scenario
+      - name: Validate 1.27 no-egress scenario
         env:
-          ORCHESTRATOR_RELEASE: "1.22"
-          CLUSTER_DEFINITION: "examples/no_outbound.json"
-          TENANT_ID: '${{ secrets.TEST_AZURE_TENANT_ID }}'
-          SUBSCRIPTION_ID: '${{ secrets.TEST_AZURE_SUB_ID }}'
-          CLIENT_ID: '${{ secrets.TEST_AZURE_SP_ID }}'
-          CLIENT_SECRET: '${{ secrets.TEST_AZURE_SP_PW }}'
-          LOCATION: "eastus"
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          SKIP_TEST: true
-          BLOCK_SSH: true
-          SKIP_LOGS_COLLECTION: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
-        run: make test-kubernetes
-      - name: Validate 1.23 no-egress scenario
-        env:
-          ORCHESTRATOR_RELEASE: "1.23"
-          CLUSTER_DEFINITION: "examples/no_outbound.json"
-          TENANT_ID: '${{ secrets.TEST_AZURE_TENANT_ID }}'
-          SUBSCRIPTION_ID: '${{ secrets.TEST_AZURE_SUB_ID }}'
-          CLIENT_ID: '${{ secrets.TEST_AZURE_SP_ID }}'
-          CLIENT_SECRET: '${{ secrets.TEST_AZURE_SP_PW }}'
-          LOCATION: "eastus"
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          SKIP_TEST: true
-          BLOCK_SSH: true
-          SKIP_LOGS_COLLECTION: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+          ORCHESTRATOR_RELEASE: "1.27"
         run: make test-kubernetes
