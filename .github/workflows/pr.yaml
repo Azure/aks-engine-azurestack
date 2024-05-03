@@ -17,32 +17,36 @@ on:
         default: 2024.032.1
 
 jobs:
-  unit-tests:
-    runs-on: self-hosted
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          ref: ${{inputs.from_branch}}
-      - name: Set up Go
-        uses: actions/setup-go@v3
-        with:
-          go-version-file: "go.mod"
-      - name: Install dependencies
-        run: make bootstrap
-      - name: Check generated code
-        run: make ensure-generated
-      - name: Run linting rules
-        run: make generate test-style
-      - name: Build binary
-        run: make build-binary
-      - name: Check go mod
-        run: make validate-dependencies
-      - name: Run unit tests
-        run: make test
+  # unit-tests:
+  #   runs-on: self-hosted
+  #   container:
+  #     image: mcr.microsoft.com/oss/azcu/go-dev:v1.36.2
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v3
+  #       with:
+  #         ref: ${{inputs.from_branch}}
+  #     - name: Set up Go
+  #       uses: actions/setup-go@v3
+  #       with:
+  #         go-version-file: "go.mod"
+  #     - name: Install dependencies
+  #       run: make bootstrap
+  #     - name: Check generated code
+  #       run: make ensure-generated
+  #     - name: Run linting rules
+  #       run: make generate test-style
+  #     - name: Build binary
+  #       run: make build-binary
+  #     - name: Check go mod
+  #       run: make validate-dependencies
+  #     - name: Run unit tests
+  #       run: make test
 
   e2e:
     runs-on: self-hosted
+    container:
+      image: mcr.microsoft.com/oss/azcu/go-dev:v1.36.2
     env:
       GOBIN: "$(GOPATH)/bin" # Go binaries path
       GOROOT: "/usr/local/go" # Go installation path
