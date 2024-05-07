@@ -1,0 +1,152 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "template_name": {
+            "type": "string"
+        },
+        "subscription_id": {
+            "type": "string"
+        },
+        "vhd_resource_group_name": {
+          "type": "string"
+        },
+        "managed_identity_name": {
+            "type": "string"
+        },
+        "vnet_resource_group_name": {
+          "type": "string"
+        },
+        "vnet_name": {
+            "type": "string"
+        },
+        "subnet_name": {
+            "type": "string"
+        },
+        "image_gallery_name": {
+            "type": "string"
+        },
+        "image_version": {
+            "type": "string"
+        },
+        "vhd_url": {
+            "type": "string",
+            "defaultValue": "https://akseashvhds.blob.core.windows.net/test/windows2019-containerd-"
+        },
+        "github_branch_name": {
+            "type": "string",
+            "defaultValue": "master"
+        },
+        "location": {
+            "type": "string"
+        },
+        "vm_size": {
+            "type": "string"
+        },
+        "build_id": {
+            "type": "string"
+        },
+        "build_number": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "name": "[parameters('template_name')]",
+            "type": "Microsoft.VirtualMachineImages/imageTemplates",
+            "apiVersion": "2022-02-14",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {
+                "userIdentity": "enabled"
+            },
+            "identity": {
+                "type": "UserAssigned",
+                "userAssignedIdentities": {
+                    "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('managed_identity_name'))]": {}
+                }
+            },
+            "properties": {
+                "buildTimeoutInMinutes" : 180,
+                "vmProfile": 
+                    {
+                        "vmSize": "[parameters('vm_size')]",
+                        "osDiskSizeGB": 127,
+                        "vnetConfig": {
+                            "subnetId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vnet_resource_group_name'),'/providers/Microsoft.Network/virtualNetworks/',parameters('vnet_name'),'/subnets/',parameters('subnet_name'))]"
+                        }
+                    },
+                "source": {
+                    "type": "PlatformImage",
+                    "publisher": "MicrosoftWindowsServer",
+                    "offer": "WindowsServer",
+                    "sku": "2019-Datacenter-Core-smalldisk",
+                    "version": "17763.5329.231230"
+                },
+                "customize": [
+                    {
+                        "type": "PowerShell",
+                        "name": "configure-windows-vhd-phase1",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/configure-windows-vhd-phase1.ps1'))]"
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
+                        "restartTimeout": "10m"
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
+                        "restartTimeout": "10m"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "configure-windows-vhd-phase2",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/configure-windows-vhd-phase2.ps1'))]"
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
+                        "restartTimeout": "10m"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download log collection script",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/scripts/collect-windows-logs.ps1'))]",
+                        "destination":"c:\\akse-cache\\collect-windows-logs.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download notice",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/notice/notice_windows.txt'))]",
+                        "destination":"c:\\NOTICE.txt"
+                    }
+                ],
+                "distribute": 
+                [
+                    {   
+                        "type": "SharedImage",
+                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/windows2019containerd/versions/',parameters('image_version'))]",
+                        "runOutputName": "AKSeWindowsSIG",
+                        "artifactTags": {
+                            "baseosimg": "windows2019"
+                        },
+                        "replicationRegions": [
+                          "[parameters('location')]"
+                        ]
+                    },
+                    {
+                        "type": "VHD",
+                        "runOutputName": "AKSeWindowsVHD",
+                        "artifactTags": {
+                            "baseosimg": "windows2019"
+                        },
+                        "uri": "[uri(parameters('vhd_url'),concat(parameters('image_version'),'.vhd'))]"
+                    }
+                ]
+            }
+        }
+    ]
+}    

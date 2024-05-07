@@ -1,0 +1,15 @@
+{
+    "Name": "Azure Image Builder Service Networking Role for AKSe ManagedIdentity",
+    "IsCustom": true,
+    "Description": "Image Builder access to create resources for the image build",
+    "Actions": [
+        "Microsoft.Network/virtualNetworks/read",
+        "Microsoft.Network/virtualNetworks/subnets/join/action"
+    ],
+    "NotActions": [
+    ],
+    "AssignableScopes": [
+      "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourceGroups/AKSeImageBuilderVnetRG"
+    ]
+  }
+

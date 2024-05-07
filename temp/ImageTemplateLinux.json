@@ -1,0 +1,226 @@
+{
+    "type": "Microsoft.VirtualMachineImages",
+    "apiVersion": "2022-02-14",
+    "location": "eastus",
+    "dependsOn": [],
+    "tags": {
+        "userIdentity": "enabled"
+    },
+    "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+            "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourcegroups/AKSeVHDs/providers/Microsoft.ManagedIdentity/userAssignedIdentities/akse-e2e-uai": {}
+        }
+    },
+    "properties": {
+        "buildTimeoutInMinutes" : 80,
+        "vmProfile": 
+            {
+                "vmSize": "Standard_D2s_v3",
+                "osDiskSizeGB": 30,
+                "vnetConfig": {
+                    "subnetId": "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourceGroups/AKSeImageBuilderVnetRG/providers/Microsoft.Network/virtualNetworks/AKSeImageBuilderVnet/subnets/AKSeImageBuilderSubnet"
+                }
+            },
+        "source": {
+            "type": "PlatformImage",
+                "publisher": "Canonical",
+                "offer": "0001-com-ubuntu-server-focal",
+                "sku": "20_04-lts",
+                "version": "latest"
+        },
+        "customize": [
+            {
+                "type": "Shell",
+                "inline": [
+                    "sudo mkdir -p /opt/azure/containers",
+                    "sudo chown -R $USER /opt/azure/containers"
+                ]
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/vhd/packer/cleanup-vhd.sh",
+                "destination": "/home/packer/cleanup-vhd.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/vhd/packer/packer_source.sh",
+                "destination": "/home/packer/packer_source.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/users/hafa/aib-test/parts/k8s/cloud-init/artifacts/cse_install.sh",
+                "destination": "/home/packer/provision_installs.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/cse_helpers.sh",
+                "destination": "/home/packer/provision_source.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh",
+                "destination": "/home/packer/provision_stig_ubuntu2004.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/cis.sh",
+                "destination": "/home/packer/cis.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/vhd/packer/install-dependencies.sh",
+                "destination": "/home/packer/install-dependencies.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/sysctl-d-60-CIS.conf",
+                "destination": "/home/packer/sysctl-d-60-CIS.conf"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/sshd_config",
+                "destination": "/home/packer/sshd_config"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/sshd_config_1604",
+                "destination": "/home/packer/sshd_config_1604"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/rsyslog-d-60-CIS.conf",
+                "destination": "/home/packer/rsyslog-d-60-CIS.conf"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/etc-issue",
+                "destination": "/home/packer/etc-issue"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/etc-issue.net",
+                "destination": "/home/packer/etc-issue.net"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/etc-issue-stig.net",
+                "destination": "/home/packer/etc-issue-stig.net"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/modprobe-CIS.conf",
+                "destination": "/home/packer/modprobe-CIS.conf"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/pwquality-CIS.conf",
+                "destination": "/home/packer/pwquality-CIS.conf"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/pam-d-su",
+                "destination": "/home/packer/pam-d-su"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/pam-d-common-auth",
+                "destination": "/home/packer/pam-d-common-auth"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/pam-d-common-password",
+                "destination": "/home/packer/pam-d-common-password"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/profile-d-cis.sh",
+                "destination": "/home/packer/profile-d-cis.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/label-nodes.sh",
+                "destination": "/home/packer/label-nodes.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/label-nodes.service",
+                "destination": "/home/packer/label-nodes.service"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/apt-preferences",
+                "destination": "/home/packer/apt-preferences"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/health-monitor.sh",
+                "destination": "/home/packer/health-monitor.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/docker_clear_mount_propagation_flags.conf",
+                "destination": "/home/packer/docker_clear_mount_propagation_flags.conf"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/generateproxycerts.sh",
+                "destination": "/home/packer/generateproxycerts.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/scripts/collect-logs.sh",
+                "destination": "/home/packer/collect-logs.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/vhd/notice/notice.txt",
+                "destination": "/home/packer/NOTICE.txt"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/scripts/cse_customcloud_cni.sh",
+                "destination": "/home/packer/provision_azurestack_cni.sh"
+            },
+            {
+                "type": "File",
+                "sourceUri": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/parts/k8s/cloud-init/artifacts/auditd-rules",
+                "destination": "/home/packer/auditd-rules"
+            },
+            {
+                "type": "Shell",
+                "inline": [
+                    "sudo FEATURE_FLAGS={{user `feature_flags`}} BUILD_NUMBER={{user `build_number`}} BUILD_ID={{user `build_id`}} COMMIT={{user `commit`}} /bin/bash -ux /home/packer/install-dependencies.sh"
+                ]
+            },
+            {
+                "type": "Shell",
+                "inline": [
+                    "sudo /bin/bash -eux /home/packer/cis.sh"
+                ]
+            }
+        ],
+        "distribute": 
+        [
+            {   
+                "type": "SharedImage",
+                "galleryImageId": "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourceGroups/AKSeVHDs/providers/Microsoft.Compute/galleries/AKSeImagesTestGallery/images/ubuntu-20.04",
+                "runOutputName": "AKSeLinuxTest",
+                "artifactTags": {
+                    "baseosimg": "ubuntu2004"
+                },
+                "replicationRegions": [
+                  "eastus"
+                ]
+            },
+            {
+                "type": "VHD",
+                "runOutputName": "AKSeLinuxTestVHD",
+                "artifactTags": {
+                    "baseosimg": "ubuntu2004"
+                },
+                "uri": "https://akseashvhds.blob.core.windows.net/test/AKSeLinuxTest.vhd"
+            }
+        ]
+    }
+}
