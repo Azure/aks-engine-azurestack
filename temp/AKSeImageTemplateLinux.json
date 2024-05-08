@@ -51,6 +51,10 @@
         },
         "git_version": {
             "type": "string"
+        },
+        "feature_flags": {
+            "type": "string",
+            "defaultValue": "default"
         }
     },
     "resources": [
@@ -247,7 +251,7 @@
                     {
                         "type": "Shell",
                         "inline": [
-                            "sudo BUILD_NUMBER=[parameters('build_number')] BUILD_ID=[parameters('build_id')] COMMIT=[parameters('git_version')] /bin/bash -ux /home/packer/install-dependencies.sh"
+                            "sudo FEATURE_FLAGS=[parameters('feature_flags')] BUILD_NUMBER=[parameters('build_number')] BUILD_ID=[parameters('build_id')] COMMIT=[parameters('git_version')] /bin/bash -ux /home/packer/install-dependencies.sh"
                         ]
                     },
                     {
