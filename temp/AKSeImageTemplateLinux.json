@@ -291,7 +291,7 @@
                         "artifactTags": {
                             "baseosimg": "ubuntu2004"
                         },
-                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd'))]"
+                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd')]"
                     }
                 ]
             }
