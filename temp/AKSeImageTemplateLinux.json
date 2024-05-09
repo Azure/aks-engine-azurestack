@@ -31,7 +31,18 @@
         },
         "vhd_url": {
             "type": "string",
-            "defaultValue": "https://akseashvhds.blob.core.windows.net/test/ubuntu-2004-"
+            "defaultValue": "https://akseashvhds.blob.core.windows.net"
+        },
+        "vhd_blob_container_name": {
+            "type": "string",
+            "defaultValue": "test"
+        },
+        "vhd_prefix": {
+            "type": "string",
+            "defaultValue": "ubuntu-2004-"
+        },
+        "vhd_run_output_name": {
+            "type": "string"
         },
         "github_branch_name": {
             "type": "string",
@@ -251,7 +262,7 @@
                     {
                         "type": "Shell",
                         "inline": [
-                            "sudo FEATURE_FLAGS=[parameters('feature_flags')] BUILD_NUMBER=[parameters('build_number')] BUILD_ID=[parameters('build_id')] COMMIT=[parameters('git_version')] /bin/bash -ux /home/packer/install-dependencies.sh"
+                            "sudo FEATURE_FLAGS={{user `feature_flags`}} BUILD_NUMBER={{user `build_number`}} BUILD_ID={{user `build_id`}} COMMIT={{user `commit`}} /bin/bash -ux /home/packer/install-dependencies.sh"
                         ]
                     },
                     {
@@ -276,11 +287,11 @@
                     },
                     {
                         "type": "VHD",
-                        "runOutputName": "AKSeLinuxVHD",
+                        "runOutputName": "[parameters('vhd_run_output_name')]",
                         "artifactTags": {
                             "baseosimg": "ubuntu2004"
                         },
-                        "uri": "[uri(parameters('vhd_url'),concat(parameters('image_version'),'.vhd'))]"
+                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd'))]"
                     }
                 ]
             }

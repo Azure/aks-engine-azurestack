@@ -31,7 +31,18 @@
         },
         "vhd_url": {
             "type": "string",
-            "defaultValue": "https://akseashvhds.blob.core.windows.net/test/windows2019-containerd-"
+            "defaultValue": "https://akseashvhds.blob.core.windows.net"
+        },
+        "vhd_blob_container_name": {
+            "type": "string",
+            "defaultValue": "test"
+        },
+        "vhd_prefix": {
+            "type": "string",
+            "defaultValue": "windows2019-containerd-"
+        },
+        "vhd_run_output_name": {
+            "type": "string"
         },
         "github_branch_name": {
             "type": "string",
@@ -139,11 +150,11 @@
                     },
                     {
                         "type": "VHD",
-                        "runOutputName": "AKSeWindowsVHD",
+                        "runOutputName": "[parameters('vhd_run_output_name')]",
                         "artifactTags": {
                             "baseosimg": "windows2019"
                         },
-                        "uri": "[uri(parameters('vhd_url'),concat(parameters('image_version'),'.vhd'))]"
+                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd'))]"
                     }
                 ]
             }
