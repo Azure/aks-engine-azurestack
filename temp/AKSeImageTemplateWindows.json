@@ -154,7 +154,7 @@
                         "artifactTags": {
                             "baseosimg": "windows2019"
                         },
-                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd'))]"
+                        "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_prefix'),parameters('image_version'),'.vhd')]"
                     }
                 ]
             }
