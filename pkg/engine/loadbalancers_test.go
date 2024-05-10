@@ -25,7 +25,7 @@ func TestCreateMasterLoadBalancer(t *testing.T) {
 			},
 		},
 	}
-	actual := CreateMasterLoadBalancer(cs.Properties, false)
+	actual := CreateMasterLoadBalancer(cs.Properties)
 
 	expected := LoadBalancerARM{
 		ARMResource: ARMResource{
@@ -134,7 +134,7 @@ func TestCreateMasterLoadBalancerPrivate(t *testing.T) {
 			},
 		},
 	}
-	actual := CreateMasterLoadBalancer(cs.Properties, false)
+	actual := CreateMasterLoadBalancer(cs.Properties)
 
 	expected := LoadBalancerARM{
 		ARMResource: ARMResource{
@@ -210,7 +210,7 @@ func TestCreateLoadBalancerStandard(t *testing.T) {
 			},
 		},
 	}
-	actual := CreateMasterLoadBalancer(cs.Properties, false)
+	actual := CreateMasterLoadBalancer(cs.Properties)
 
 	expected := LoadBalancerARM{
 		ARMResource: ARMResource{
@@ -291,111 +291,6 @@ func TestCreateLoadBalancerStandard(t *testing.T) {
 							FrontendPort:     to.Int32Ptr(22),
 							BackendPort:      to.Int32Ptr(22),
 							EnableFloatingIP: to.BoolPtr(false),
-						},
-					},
-				},
-				Probes: &[]network.Probe{
-					{
-						Name: to.StringPtr("tcpHTTPSProbe"),
-						ProbePropertiesFormat: &network.ProbePropertiesFormat{
-							Protocol:          network.ProbeProtocolTCP,
-							Port:              to.Int32Ptr(443),
-							IntervalInSeconds: to.Int32Ptr(5),
-							NumberOfProbes:    to.Int32Ptr(2),
-						},
-					},
-				},
-			},
-			Sku: &network.LoadBalancerSku{
-				Name: "[variables('loadBalancerSku')]",
-			},
-			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
-		},
-	}
-
-	diff := cmp.Diff(actual, expected)
-
-	if diff != "" {
-		t.Errorf("unexpected error while comparing load balancers: %s", diff)
-	}
-
-}
-
-func TestCreateLoadBalancerVMSS(t *testing.T) {
-	cs := &api.ContainerService{
-		Properties: &api.Properties{
-			MasterProfile: &api.MasterProfile{
-				Count: 1,
-			},
-			OrchestratorProfile: &api.OrchestratorProfile{
-				KubernetesConfig: &api.KubernetesConfig{
-					LoadBalancerSku: BasicLoadBalancerSku,
-				},
-			},
-		},
-	}
-	actual := CreateMasterLoadBalancer(cs.Properties, true)
-
-	expected := LoadBalancerARM{
-		ARMResource: ARMResource{
-			APIVersion: "[variables('apiVersionNetwork')]",
-			DependsOn: []string{
-				"[concat('Microsoft.Network/publicIPAddresses/', variables('masterPublicIPAddressName'))]",
-			},
-		},
-		LoadBalancer: network.LoadBalancer{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterLbName')]"),
-			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
-				BackendAddressPools: &[]network.BackendAddressPool{
-					{
-						Name: to.StringPtr("[variables('masterLbBackendPoolName')]"),
-					},
-				},
-				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
-					{
-						Name: to.StringPtr("[variables('masterLbIPConfigName')]"),
-						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
-							PublicIPAddress: &network.PublicIPAddress{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
-							},
-						},
-					},
-				},
-				LoadBalancingRules: &[]network.LoadBalancingRule{
-					{
-						Name: to.StringPtr("LBRuleHTTPS"),
-						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
-							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
-							},
-							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
-							},
-							Protocol:             network.TransportProtocolTCP,
-							FrontendPort:         to.Int32Ptr(443),
-							BackendPort:          to.Int32Ptr(443),
-							EnableFloatingIP:     to.BoolPtr(false),
-							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							LoadDistribution:     network.LoadDistributionDefault,
-							Probe: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
-							},
-						},
-					},
-				},
-				InboundNatPools: &[]network.InboundNatPool{
-					{
-						Name: to.StringPtr("[concat('SSH-', variables('masterVMNamePrefix'), 'natpools')]"),
-						InboundNatPoolPropertiesFormat: &network.InboundNatPoolPropertiesFormat{
-							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
-							},
-							Protocol:               network.TransportProtocolTCP,
-							BackendPort:            to.Int32Ptr(22),
-							FrontendPortRangeStart: to.Int32Ptr(50001),
-							FrontendPortRangeEnd:   to.Int32Ptr(50119),
-							EnableFloatingIP:       to.BoolPtr(false),
 						},
 					},
 				},
@@ -529,7 +424,7 @@ func TestCreateMasterInternalLoadBalancer(t *testing.T) {
 
 	actual = CreateMasterInternalLoadBalancer(cs)
 
-	expected.LoadBalancerPropertiesFormat.LoadBalancingRules = &[]network.LoadBalancingRule{
+	expected.LoadBalancingRules = &[]network.LoadBalancingRule{
 		{
 			Name: to.StringPtr("InternalLBRuleHTTPS"),
 			LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{

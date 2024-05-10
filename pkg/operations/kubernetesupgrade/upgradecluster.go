@@ -16,7 +16,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
+	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,16 +36,16 @@ type ClusterTopology struct {
 	AgentPoolsToUpgrade map[string]bool
 	AgentPools          map[string]*AgentPoolTopology
 
-	MasterVMs         *[]compute.VirtualMachine
-	UpgradedMasterVMs *[]compute.VirtualMachine
+	MasterVMs         *[]*compute.VirtualMachine
+	UpgradedMasterVMs *[]*compute.VirtualMachine
 }
 
 // AgentPoolTopology contains agent VMs in a single pool
 type AgentPoolTopology struct {
 	Identifier       *string
 	Name             *string
-	AgentVMs         *[]compute.VirtualMachine
-	UpgradedAgentVMs *[]compute.VirtualMachine
+	AgentVMs         *[]*compute.VirtualMachine
+	UpgradedAgentVMs *[]*compute.VirtualMachine
 }
 
 // UpgradeCluster upgrades a cluster with Orchestrator version X.X to version Y.Y.
@@ -68,8 +68,8 @@ const MasterPoolName = "master"
 
 // UpgradeCluster runs the workflow to upgrade a Kubernetes cluster.
 func (uc *UpgradeCluster) UpgradeCluster(az armhelpers.AKSEngineClient, kubeConfig string, aksEngineVersion string) error {
-	uc.MasterVMs = &[]compute.VirtualMachine{}
-	uc.UpgradedMasterVMs = &[]compute.VirtualMachine{}
+	uc.MasterVMs = &[]*compute.VirtualMachine{}
+	uc.UpgradedMasterVMs = &[]*compute.VirtualMachine{}
 	uc.AgentPools = make(map[string]*AgentPoolTopology)
 
 	var kubeClient kubernetes.Client
@@ -183,39 +183,37 @@ func (uc *UpgradeCluster) setNodesToUpgrade(kubeClient kubernetes.Client, resour
 	ctx, cancel := context.WithTimeout(context.Background(), armhelpers.DefaultARMOperationTimeout)
 	defer cancel()
 
-	for vmListPage, err := uc.Client.ListVirtualMachines(ctx, resourceGroup); vmListPage.NotDone(); err = vmListPage.Next() {
-		if err != nil {
-			return err
+	vmList, err := uc.Client.ListVirtualMachines(ctx, resourceGroup)
+	if err != nil {
+		return err
+	}
+	for _, vm := range vmList {
+		// Windows VMs contain a substring of the name suffix
+		if !strings.Contains(*(vm.Name), uc.NameSuffix) && !strings.Contains(*(vm.Name), uc.NameSuffix[:4]+"k8s") {
+			uc.Logger.Infof("Skipping VM: %s for upgrade as it does not belong to cluster with expected name suffix: %s",
+				*vm.Name, uc.NameSuffix)
+			continue
 		}
+		currentVersion := uc.getNodeVersion(kubeClient, strings.ToLower(*vm.Name), vm.Tags, true)
 
-		for _, vm := range vmListPage.Values() {
-			// Windows VMs contain a substring of the name suffix
-			if !strings.Contains(*(vm.Name), uc.NameSuffix) && !strings.Contains(*(vm.Name), uc.NameSuffix[:4]+"k8s") {
-				uc.Logger.Infof("Skipping VM: %s for upgrade as it does not belong to cluster with expected name suffix: %s",
-					*vm.Name, uc.NameSuffix)
+		if uc.Force {
+			if currentVersion == "" {
+				currentVersion = "Unknown"
+			}
+			uc.addVMToUpgradeSets(vm, currentVersion)
+		} else {
+			if currentVersion == "" {
+				uc.Logger.Infof("Skipping VM: %s for upgrade as the orchestrator version could not be determined.", *vm.Name)
 				continue
 			}
-			currentVersion := uc.getNodeVersion(kubeClient, strings.ToLower(*vm.Name), vm.Tags, true)
-
-			if uc.Force {
-				if currentVersion == "" {
-					currentVersion = "Unknown"
+			// If the current version is different than the desired version then we add the VM to the list of VMs to upgrade.
+			if currentVersion != goalVersion {
+				if err := uc.upgradable(currentVersion); err != nil {
+					return err
 				}
 				uc.addVMToUpgradeSets(vm, currentVersion)
-			} else {
-				if currentVersion == "" {
-					uc.Logger.Infof("Skipping VM: %s for upgrade as the orchestrator version could not be determined.", *vm.Name)
-					continue
-				}
-				// If the current version is different than the desired version then we add the VM to the list of VMs to upgrade.
-				if currentVersion != goalVersion {
-					if err := uc.upgradable(currentVersion); err != nil {
-						return err
-					}
-					uc.addVMToUpgradeSets(vm, currentVersion)
-				} else if currentVersion == goalVersion {
-					uc.addVMToFinishedSets(vm, currentVersion)
-				}
+			} else if currentVersion == goalVersion {
+				uc.addVMToFinishedSets(vm, currentVersion)
 			}
 		}
 	}
@@ -271,7 +269,7 @@ func (uc *UpgradeCluster) getNodeVersion(client kubernetes.Client, name string, 
 	return ""
 }
 
-func (uc *UpgradeCluster) addVMToAgentPool(vm compute.VirtualMachine, isUpgradableVM bool) error {
+func (uc *UpgradeCluster) addVMToAgentPool(vm *compute.VirtualMachine, isUpgradableVM bool) error {
 	var poolIdentifier string
 	var poolPrefix string
 	var err error
@@ -306,7 +304,7 @@ func (uc *UpgradeCluster) addVMToAgentPool(vm compute.VirtualMachine, isUpgradab
 		return nil
 	}
 
-	if vm.StorageProfile.OsDisk.OsType == compute.Windows {
+	if *vm.Properties.StorageProfile.OSDisk.OSType == compute.OperatingSystemTypesWindows {
 		poolPrefix, _, _, _, err = utils.WindowsVMNameParts(*vm.Name)
 		if err != nil {
 			uc.Logger.Errorf(err.Error())
@@ -342,7 +340,7 @@ func (uc *UpgradeCluster) addVMToAgentPool(vm compute.VirtualMachine, isUpgradab
 
 	if uc.AgentPools[poolIdentifier] == nil {
 		uc.AgentPools[poolIdentifier] =
-			&AgentPoolTopology{&poolIdentifier, &vmPoolName, &[]compute.VirtualMachine{}, &[]compute.VirtualMachine{}}
+			&AgentPoolTopology{&poolIdentifier, &vmPoolName, &[]*compute.VirtualMachine{}, &[]*compute.VirtualMachine{}}
 	}
 
 	orchestrator := "unknown"
@@ -364,7 +362,7 @@ func (uc *UpgradeCluster) addVMToAgentPool(vm compute.VirtualMachine, isUpgradab
 	return nil
 }
 
-func (uc *UpgradeCluster) addVMToUpgradeSets(vm compute.VirtualMachine, currentVersion string) {
+func (uc *UpgradeCluster) addVMToUpgradeSets(vm *compute.VirtualMachine, currentVersion string) {
 	if strings.Contains(*(vm.Name), fmt.Sprintf("%s-", common.LegacyControlPlaneVMPrefix)) {
 		uc.Logger.Infof("Master VM name: %s, orchestrator: %s (MasterVMs)", *vm.Name, currentVersion)
 		*uc.MasterVMs = append(*uc.MasterVMs, vm)
@@ -375,7 +373,7 @@ func (uc *UpgradeCluster) addVMToUpgradeSets(vm compute.VirtualMachine, currentV
 	}
 }
 
-func (uc *UpgradeCluster) addVMToFinishedSets(vm compute.VirtualMachine, currentVersion string) {
+func (uc *UpgradeCluster) addVMToFinishedSets(vm *compute.VirtualMachine, currentVersion string) {
 	if strings.Contains(*(vm.Name), fmt.Sprintf("%s-", common.LegacyControlPlaneVMPrefix)) {
 		uc.Logger.Infof("Master VM name: %s, orchestrator: %s (UpgradedMasterVMs)", *vm.Name, currentVersion)
 		*uc.UpgradedMasterVMs = append(*uc.UpgradedMasterVMs, vm)

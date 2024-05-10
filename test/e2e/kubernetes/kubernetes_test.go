@@ -26,9 +26,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
@@ -49,7 +46,9 @@ import (
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/storageclass"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
-
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
+	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/Azure/go-autorest/autorest/to"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -181,11 +180,11 @@ var _ = BeforeSuite(func() {
 	stabilityCommandTimeout = time.Duration(cfg.StabilityTimeoutSeconds) * time.Second
 
 	if !cfg.IsCustomCloudProfile() {
-		env, err = azure.EnvironmentFromName("AzurePublicCloud") // TODO get this programmatically
+		cred, err := armhelpers.NewClientSecretCredential(cfg.SubscriptionID, cfg.ClientID, cfg.ClientSecret, cloud.AzurePublic)
 		if err != nil {
 			Expect(err).NotTo(HaveOccurred())
 		}
-		azureClient, err = armhelpers.NewAzureClientWithClientSecret(env, cfg.SubscriptionID, cfg.ClientID, cfg.ClientSecret)
+		azureClient, err = armhelpers.NewAzureClient(cfg.SubscriptionID, cred, cloud.AzurePublic)
 		if err != nil {
 			Expect(err).NotTo(HaveOccurred())
 		}

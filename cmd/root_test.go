@@ -4,15 +4,11 @@
 package cmd
 
 import (
-	"fmt"
-	"net/http"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
-	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/testserver"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/go-autorest/autorest/azure"
@@ -221,83 +217,6 @@ func TestWriteCustomCloudProfile(t *testing.T) {
 	}
 }
 
-func TestGetAzureStackClientWithClientSecret(t *testing.T) {
-	t.Parallel()
-
-	cs, err := prepareCustomCloudProfile()
-	if err != nil {
-		t.Fatalf("failed to prepare custom cloud profile: %v", err)
-	}
-	subscriptionID, _ := uuid.Parse("cc6b141e-6afc-4786-9bf6-e3b9a5601460")
-
-	for _, tc := range []struct {
-		desc     string
-		authArgs authArgs
-	}{
-		{
-			"identity-system azure_ad should produce valid client",
-			authArgs{
-				AuthMethod:          "client_secret",
-				IdentitySystem:      "azure_ad",
-				SubscriptionID:      subscriptionID,
-				RawAzureEnvironment: "AZURESTACKCLOUD",
-				ClientID:            subscriptionID,
-				ClientSecret:        "secret",
-			},
-		},
-		{
-			"identity-system adfs should produce valid client",
-			authArgs{
-				AuthMethod:          "client_secret",
-				IdentitySystem:      "adfs",
-				SubscriptionID:      subscriptionID,
-				RawAzureEnvironment: "AZURESTACKCLOUD",
-				ClientID:            subscriptionID,
-				ClientSecret:        "secret",
-			},
-		},
-		{
-			"invalid identity-system should throw error",
-			authArgs{
-				AuthMethod:          "client_secret",
-				IdentitySystem:      "fake-system",
-				RawAzureEnvironment: "AZURESTACKCLOUD",
-			},
-		},
-	} {
-		test := tc
-		t.Run(test.desc, func(t *testing.T) {
-
-			mux := getMuxForIdentitySystem(&test.authArgs)
-
-			server, err := testserver.CreateAndStart(0, mux)
-			if err != nil {
-				t.Fatal(err)
-			}
-			defer server.Stop()
-
-			mockURI := fmt.Sprintf("http://localhost:%d/", server.Port)
-			cs.Properties.CustomCloudProfile.Environment.ResourceManagerEndpoint = mockURI
-			cs.Properties.CustomCloudProfile.Environment.ActiveDirectoryEndpoint = mockURI
-
-			if err = writeCustomCloudProfile(cs); err != nil {
-				t.Fatalf("failed to write custom cloud profile: %v", err)
-			}
-
-			client, err := test.authArgs.getAzureClient()
-			if isValidIdentitySystem(test.authArgs.IdentitySystem) {
-				if client == nil {
-					t.Fatalf("azure client was not created. error=%v", err)
-				}
-			} else {
-				if err == nil || !strings.HasPrefix(err.Error(), "--auth-method") {
-					t.Fatalf("failed to return error with invalid identity-system")
-				}
-			}
-		})
-	}
-}
-
 func TestValidateAuthArgs(t *testing.T) {
 	t.Parallel()
 	g := NewGomegaWithT(t)
@@ -408,92 +327,6 @@ func TestValidateAuthArgs(t *testing.T) {
 			}
 		})
 	}
-}
-
-func isValidIdentitySystem(s string) bool {
-	return s == "azure_ad" || s == "adfs"
-}
-
-func getMuxForIdentitySystem(authArgs *authArgs) *http.ServeMux {
-	const (
-		apiVersion    = "api-version"
-		token         = "19590a3f-b1af-4e6b-8f63-f917cbf40711"
-		tokenResponse = `
-			{
-				"token_type": "Bearer",
-				"expires_in": "3600",
-				"ext_expires_in": "3600",
-				"expires_on": "1553888252",
-				"not_before": "1553884352",
-				"resource": "https://management.core.windows.net/",
-				"access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Ik4tbEMwbi05REFMcXdodUhZbkhRNjNHZUNYYyIsImtpZCI6Ik4tbEMwbi05REFMcXdodUhZbkhRNjNHZUNYYyJ9.eyJhdWQiOiJodHRwczovL21hbmFnZW1lbnQuY29yZS53aW5kb3dzLm5ldC8iLCJpc3MiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC83MmY5ODhiZi04NmYxLTQxYWYtOTFhYi0yZDdjZDAxMWRiNDcvIiwiaWF0IjoxNTUzODg0MzUyLCJuYmYiOjE1NTM4ODQzNTIsImV4cCI6MTU1Mzg4ODI1MiwiYWlvIjoiNDJKZ1lHZzRIOWpPOGlCMDl4bU5JOTU3WDM4T0FBQT0iLCJhcHBpZCI6Ijg1MTE1Zjg0LWVmN2ItNGRkYi1iNDRkLWIzYTlkM2IxOTkwZCIsImFwcGlkYWNyIjoiMSIsImlkcCI6Imh0dHBzOi8vc3RzLndpbmRvd3MubmV0LzcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0Ny8iLCJvaWQiOiJmOWE4Y2JlZC1lOTdiLTQ0MGItYjYxNS1jNDIyOTFkOTU1NzMiLCJzdWIiOiJmOWE4Y2JlZC1lOTdiLTQ0MGItYjYxNS1jNDIyOTFkOTU1NzMiLCJ0aWQiOiI3MmY5ODhiZi04NmYxLTQxYWYtOTFhYi0yZDdjZDAxMWRiNDciLCJ1dGkiOiJIdDE0TXZkU2pFZVFfY29Ua1EwS0FBIiwidmVyIjoiMS4wIn0.sTVlgBfbztPEaN1mzRRz1W9nraI3r4jz7Kcg6gz7rGaMJT6x5gqifbeDJstUAj7au_EUhupDwD6JyKJgZY-0-IDCTYw_V4m0y_l4LQxO4STUVk86SiTGZH1gf-rXPebZ8phvk1Wgn9LpwC2gIhfoj1uSxu675-7HKwu1QZTT6m0yLMTY0CJPXQYvR2lFlZjZShJiJN1Z_zXye0K_ALv3PQwXao1buuj9PDV5GN3wolaN6DcB2gSuyAwDuD3U5Re4mpdksNs4m7O66AVfeGQV-R7ch8EW-NfFDHT3oRNjSP8WHoZjebFTg-wm2WCB7kInKRcugUo9cd-buVZARIRSAA"
-			}`
-		providerResponse = `
-			{
-				"value": [
-					{
-						"id": "1",
-						"namespace": "Microsoft.Compute",
-						"registrationState": "Registered"
-					},
-					{
-						"id": "2",
-						"namespace": "Microsoft.Storage",
-						"registrationState": "Registered"},
-					{
-						"id": "3",
-						"namespace": "Microsoft.Network",
-						"registrationState": "Registered"
-					}
-				],
-				"nextLink": "something"
-			}`
-	)
-
-	mux := http.NewServeMux()
-
-	switch authArgs.IdentitySystem {
-	case "azure_ad":
-		mux.HandleFunc(fmt.Sprintf("/subscriptions/%s", authArgs.SubscriptionID), func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "2018-06-01" {
-				w.WriteHeader(http.StatusNotFound)
-			} else {
-				w.Header().Add("Www-Authenticate", fmt.Sprintf(`Bearer authorization_uri="https://login.windows.net/%s", error="invalid_token", error_description="The authentication failed because of missing 'Authorization' header."`, token))
-				w.WriteHeader(http.StatusUnauthorized)
-				_, _ = fmt.Fprintf(w, `{"error":{"code":"AuthenticationFailed","message":"Authentication failed. The 'Authorization' header is missing."}}`)
-			}
-		})
-		mux.HandleFunc(fmt.Sprintf("/subscriptions/%s/providers", authArgs.SubscriptionID), func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "2018-05-01" || r.URL.Query().Get("$top") != "100" {
-				w.WriteHeader(http.StatusNotFound)
-			} else {
-				_, _ = fmt.Fprint(w, providerResponse)
-			}
-		})
-		mux.HandleFunc(fmt.Sprintf("/%s/oauth2/token", token), func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "1.0" {
-				w.WriteHeader(http.StatusNotFound)
-			} else {
-				_, _ = fmt.Fprint(w, tokenResponse)
-			}
-		})
-	case "adfs":
-		mux.HandleFunc("/adfs/oauth2/token", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "1.0" {
-				w.WriteHeader(http.StatusNotFound)
-			} else {
-				_, _ = fmt.Fprint(w, tokenResponse)
-			}
-		})
-		mux.HandleFunc(fmt.Sprintf("/subscriptions/%s/providers", authArgs.SubscriptionID), func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.Query().Get(apiVersion) != "2018-05-01" || r.URL.Query().Get("$top") != "100" {
-				w.WriteHeader(http.StatusNotFound)
-			} else {
-				_, _ = fmt.Fprint(w, providerResponse)
-			}
-		})
-	}
-	return mux
 }
 
 func prepareCustomCloudProfile() (*api.ContainerService, error) {

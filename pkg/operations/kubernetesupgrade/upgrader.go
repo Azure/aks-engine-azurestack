@@ -259,7 +259,7 @@ func (ku *Upgrader) upgradeMasterNodes(ctx context.Context) error {
 	existingMastersIndex := make(map[int]bool)
 
 	for _, vm := range *ku.ClusterTopology.MasterVMs {
-		masterIndex, _ := utils.GetVMNameIndex(vm.StorageProfile.OsDisk.OsType, *vm.Name)
+		masterIndex, _ := utils.GetVMNameIndex(*vm.Properties.StorageProfile.OSDisk.OSType, *vm.Name)
 		existingMastersIndex[masterIndex] = true
 	}
 
@@ -296,14 +296,14 @@ func (ku *Upgrader) upgradeMasterNodes(ctx context.Context) error {
 
 	for _, vm := range *ku.ClusterTopology.UpgradedMasterVMs {
 		ku.logger.Infof("Master VM: %s is upgraded to expected orchestrator version", *vm.Name)
-		masterIndex, _ := utils.GetVMNameIndex(vm.StorageProfile.OsDisk.OsType, *vm.Name)
+		masterIndex, _ := utils.GetVMNameIndex(*vm.Properties.StorageProfile.OSDisk.OSType, *vm.Name)
 		upgradedMastersIndex[masterIndex] = true
 	}
 
 	for _, vm := range *ku.ClusterTopology.MasterVMs {
 		ku.logger.Infof("Upgrading Master VM: %s", *vm.Name)
 
-		masterIndex, _ := utils.GetVMNameIndex(vm.StorageProfile.OsDisk.OsType, *vm.Name)
+		masterIndex, _ := utils.GetVMNameIndex(*vm.Properties.StorageProfile.OSDisk.OSType, *vm.Name)
 
 		err = upgradeMasterNode.DeleteNode(vm.Name, false)
 		if err != nil {
@@ -420,10 +420,10 @@ func (ku *Upgrader) upgradeAgentPools(ctx context.Context) error {
 		for _, vm := range *agentPool.UpgradedAgentVMs {
 			ku.logger.Infof("Agent VM: %s, pool name: %s on expected orchestrator version", *vm.Name, *agentPool.Name)
 			var vmProvisioningState string
-			if vm.VirtualMachineProperties != nil && vm.VirtualMachineProperties.ProvisioningState != nil {
-				vmProvisioningState = *vm.VirtualMachineProperties.ProvisioningState
+			if vm.Properties != nil && vm.Properties.ProvisioningState != nil {
+				vmProvisioningState = *vm.Properties.ProvisioningState
 			}
-			agentIndex, _ := utils.GetVMNameIndex(vm.StorageProfile.OsDisk.OsType, *vm.Name)
+			agentIndex, _ := utils.GetVMNameIndex(*vm.Properties.StorageProfile.OSDisk.OSType, *vm.Name)
 
 			switch vmProvisioningState {
 			case "Creating", "Updating", "Succeeded":
@@ -447,7 +447,7 @@ func (ku *Upgrader) upgradeAgentPools(ctx context.Context) error {
 		}
 
 		for _, vm := range *agentPool.AgentVMs {
-			agentIndex, _ := utils.GetVMNameIndex(vm.StorageProfile.OsDisk.OsType, *vm.Name)
+			agentIndex, _ := utils.GetVMNameIndex(*vm.Properties.StorageProfile.OSDisk.OSType, *vm.Name)
 			agentVMs[agentIndex] = &vmInfo{*vm.Name, vmStatusNotUpgraded}
 		}
 		toBeUpgradedCount := len(*agentPool.AgentVMs)

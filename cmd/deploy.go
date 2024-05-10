@@ -5,22 +5,14 @@ package cmd
 
 import (
 	"context"
-	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"io"
 	"math/rand"
 	"os"
 	"path"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
-
-	"github.com/leonelquinteros/gotext"
-	log "github.com/sirupsen/logrus"
-	"github.com/spf13/cobra"
-
-	"encoding/json"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
@@ -29,7 +21,10 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
 )
 
 const (
@@ -356,19 +351,6 @@ func autofillApimodel(dc *deployCmd) error {
 		}
 	}
 
-	if k8sConfig != nil && k8sConfig.Addons != nil && k8sConfig.IsContainerMonitoringAddonEnabled() {
-		log.Infoln("container monitoring addon enabled")
-		cloudOrDependenciesLocation := dc.containerService.GetCloudSpecConfig().CloudName
-		if dc.containerService.Properties.IsCustomCloudProfile() {
-			cloudOrDependenciesLocation = string(dc.containerService.Properties.CustomCloudProfile.DependenciesLocation)
-		}
-		workspaceDomain := helpers.GetLogAnalyticsWorkspaceDomain(cloudOrDependenciesLocation)
-		err := dc.configureContainerMonitoringAddon(ctx, k8sConfig, workspaceDomain)
-		if err != nil {
-			return errors.Wrap(err, "Failed to configure container monitoring addon")
-		}
-	}
-
 	return nil
 }
 
@@ -442,94 +424,16 @@ func (dc *deployCmd) run() error {
 
 	deploymentSuffix := dc.random.Int31()
 
-	if res, err := dc.client.DeployTemplate(
+	if _, err := dc.client.DeployTemplate(
 		cx,
 		dc.resourceGroup,
 		fmt.Sprintf("%s-%d", dc.resourceGroup, deploymentSuffix),
 		templateJSON,
 		parametersJSON,
 	); err != nil {
-		if res.Response.Response != nil && res.Body != nil {
-			defer res.Body.Close()
-			body, _ := io.ReadAll(res.Body)
-			log.Errorf(string(body))
-		}
 		return err
 	}
 
-	return nil
-}
-
-// configure api model addon config with container monitoring addon
-func (dc *deployCmd) configureContainerMonitoringAddon(ctx context.Context, k8sConfig *api.KubernetesConfig, workspaceDomain string) error {
-	log.Infoln("configuring container monitoring addon info")
-	if k8sConfig == nil {
-		return errors.New("KubernetesConfig either null or invalid")
-	}
-
-	var workspaceResourceID string
-	var err error
-	addon := k8sConfig.GetAddonByName("container-monitoring")
-	if addon.Config == nil || len(addon.Config) == 0 || addon.Config["logAnalyticsWorkspaceResourceId"] != "" {
-		if dc.containerService.Properties.IsAzureStackCloud() {
-			return errors.New("This is not supported option for AzureStackCloud. Please provide config with workspaceGuid and workspaceKey")
-		}
-		workspaceResourceID = strings.TrimSpace(addon.Config["logAnalyticsWorkspaceResourceId"])
-		if workspaceResourceID != "" {
-			log.Infoln("using provided log analytics workspace resource id:", workspaceResourceID)
-			if !strings.HasPrefix(workspaceResourceID, "/") {
-				workspaceResourceID = "/" + workspaceResourceID
-			}
-			workspaceResourceID = strings.TrimSuffix(workspaceResourceID, "/")
-		} else {
-			log.Infoln("creating default log analytics workspace if not exists already")
-			workspaceResourceID, err = dc.client.EnsureDefaultLogAnalyticsWorkspace(ctx, dc.resourceGroup, dc.location)
-			if err != nil {
-				return errors.Wrap(err, "apimodel: Failed to create default log analytics workspace for container monitoring addon")
-			}
-			log.Infoln("successfully created or fetched default log analytics workspace:", workspaceResourceID)
-		}
-		resourceParts := strings.Split(workspaceResourceID, "/")
-		if len(resourceParts) != 9 {
-			return errors.Errorf("%s is not a valid azure resource id", workspaceResourceID)
-		}
-		workspaceSubscriptionID := resourceParts[2]
-		workspaceResourceGroup := resourceParts[4]
-		workspaceName := resourceParts[8]
-		log.Infoln("Retrieving log analytics workspace Guid, Key and location details for the workspace resource:", workspaceResourceID)
-		wsID, wsKey, wsLocation, err := dc.client.GetLogAnalyticsWorkspaceInfo(ctx, workspaceSubscriptionID, workspaceResourceGroup, workspaceName)
-		if err != nil {
-			return errors.Wrap(err, "apimodel: Failed to get the workspace Guid, Key and location details ")
-		}
-		log.Infoln("successfully retrieved log analytics workspace details")
-		log.Infoln("log analytics workspace id: ", wsID)
-
-		log.Infoln("adding container insights solution to log analytics workspace: ", workspaceResourceID)
-		_, err = dc.client.AddContainerInsightsSolution(ctx, workspaceSubscriptionID, workspaceResourceGroup, workspaceName, wsLocation)
-		if err != nil {
-			return errors.Wrap(err, "apimodel: Failed to get add container insights solution")
-		}
-		log.Infoln("successfully added container insights solution to log analytics workspace: ", workspaceResourceID)
-
-		log.Infoln("Adding log analytics workspaceGuid and workspaceKey, workspaceResourceId to the container monitoring addon")
-		for _, addon := range dc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Addons {
-			if addon.Name == "container-monitoring" {
-				addon.Config["workspaceGuid"] = base64.StdEncoding.EncodeToString([]byte(wsID))
-				addon.Config["workspaceKey"] = base64.StdEncoding.EncodeToString([]byte(wsKey))
-				addon.Config["logAnalyticsWorkspaceResourceId"] = workspaceResourceID
-				addon.Config["workspaceDomain"] = base64.StdEncoding.EncodeToString([]byte(workspaceDomain))
-			}
-		}
-
-	} else {
-		log.Infoln("using provided workspaceGuid, workspaceKey in the container addon config")
-		workspaceGUID := addon.Config["workspaceGuid"]
-		workspaceKey := addon.Config["workspaceKey"]
-		addon.Config["workspaceDomain"] = base64.StdEncoding.EncodeToString([]byte(workspaceDomain))
-		log.Infoln("workspaceGuid:", workspaceGUID)
-		log.Infoln("workspaceKey:", workspaceKey)
-		log.Infoln("workspaceDomain:", workspaceDomain)
-	}
 	return nil
 }
 

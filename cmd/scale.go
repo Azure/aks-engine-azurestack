@@ -282,30 +282,29 @@ func (sc *scaleCmd) run(cmd *cobra.Command, args []string) error {
 
 	if sc.agentPool.IsAvailabilitySets() {
 		for i := 0; i < 10; i++ {
-			for vmsListPage, err := sc.client.ListVirtualMachines(ctx, sc.resourceGroupName); vmsListPage.NotDone(); err = vmsListPage.Next() {
+			vmsList, err := sc.client.ListVirtualMachines(ctx, sc.resourceGroupName)
+			if err != nil {
+				return errors.Wrap(err, "failed to get VMs in the resource group")
+			} else if len(vmsList) < 1 {
+				return errors.New("The provided resource group does not contain any VMs")
+			}
+			for _, vm := range vmsList {
+				vmName := *vm.Name
+				if !sc.vmInVMASAgentPool(vmName, vm.Tags) {
+					continue
+				}
+
+				if sc.agentPool.OSType == api.Windows {
+					_, _, winPoolIndex, index, err = utils.WindowsVMNameParts(vmName)
+				} else {
+					_, _, index, err = utils.K8sLinuxVMNameParts(vmName)
+				}
 				if err != nil {
-					return errors.Wrap(err, "failed to get VMs in the resource group")
-				} else if len(vmsListPage.Values()) < 1 {
-					return errors.New("The provided resource group does not contain any VMs")
+					return err
 				}
-				for _, vm := range vmsListPage.Values() {
-					vmName := *vm.Name
-					if !sc.vmInVMASAgentPool(vmName, vm.Tags) {
-						continue
-					}
 
-					if sc.agentPool.OSType == api.Windows {
-						_, _, winPoolIndex, index, err = utils.WindowsVMNameParts(vmName)
-					} else {
-						_, _, index, err = utils.K8sLinuxVMNameParts(vmName)
-					}
-					if err != nil {
-						return err
-					}
-
-					indexToVM[index] = vmName
-					indexes = append(indexes, index)
-				}
+				indexToVM[index] = vmName
+				indexes = append(indexes, index)
 			}
 			// If we get zero VMs that match our api model pool name, then
 			// Retry every 30 seconds for up to 5 minutes to accommodate temporary issues connecting to the VM API

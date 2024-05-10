@@ -99,9 +99,7 @@ func GenerateARMResources(cs *api.ContainerService) []interface{} {
 
 	isMasterVMSS := cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.IsVirtualMachineScaleSets()
 	var masterResources []interface{}
-	if isMasterVMSS {
-		masterResources = createKubernetesMasterResourcesVMSS(cs)
-	} else {
+	if !isMasterVMSS {
 		masterResources = createKubernetesMasterResourcesVMAS(cs)
 	}
 

@@ -7,6 +7,9 @@ import (
 	"context"
 	"testing"
 
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -26,8 +29,13 @@ func TestDeployTemplate(t *testing.T) {
 	}
 	defer mc.DeactivateAndReset()
 
-	env := mc.GetEnvironment()
-	azureClient, err := NewAzureClientWithClientSecret(env, subscriptionID, "clientID", "secret")
+	options := &arm.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			InsecureAllowCredentialWithHTTP: true,
+			Cloud:                           mc.GetEnvironment(),
+		},
+	}
+	azureClient, err := NewAzureClient(subscriptionID, &fake.TokenCredential{}, options)
 	if err != nil {
 		t.Fatalf("can not get client %s", err)
 	}
@@ -54,8 +62,13 @@ func TestDeployTemplateSync(t *testing.T) {
 	}
 	defer mc.DeactivateAndReset()
 
-	env := mc.GetEnvironment()
-	azureClient, err := NewAzureClientWithClientSecret(env, subscriptionID, "clientID", "secret")
+	options := &arm.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			InsecureAllowCredentialWithHTTP: true,
+			Cloud:                           mc.GetEnvironment(),
+		},
+	}
+	azureClient, err := NewAzureClient(subscriptionID, &fake.TokenCredential{}, options)
 	if err != nil {
 		t.Fatalf("can not get client %s", err)
 	}

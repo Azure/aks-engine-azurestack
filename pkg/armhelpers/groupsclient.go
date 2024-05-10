@@ -6,47 +6,39 @@ package armhelpers
 import (
 	"context"
 
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
-	"github.com/Azure/go-autorest/autorest"
+	resources "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/resources/armresources"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
 // EnsureResourceGroup ensures the named resource group exists in the given location.
-func (az *AzureClient) EnsureResourceGroup(ctx context.Context, name, location string, managedBy *string) (resourceGroup *resources.Group, err error) {
+func (az *AzureClient) EnsureResourceGroup(ctx context.Context, name, location string, managedBy *string) (resources.ResourceGroup, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
 	var tags map[string]*string
-	group, err := az.groupsClient.Get(ctx, name)
+	group, err := az.groupsClient.Get(ctx, name, nil)
 	if err == nil {
 		tags = group.Tags
 	}
-
-	response, err := az.groupsClient.CreateOrUpdate(ctx, name, resources.Group{
+	response, err := az.groupsClient.CreateOrUpdate(ctx, name, resources.ResourceGroup{
 		Name:      &name,
 		Location:  &location,
 		ManagedBy: managedBy,
 		Tags:      tags,
-	})
+	}, nil)
 	if err != nil {
-		return &response, err
+		return resources.ResourceGroup{}, err
 	}
-
-	return &response, nil
-}
-
-// CheckResourceGroupExistence return if the resource group exists
-func (az *AzureClient) CheckResourceGroupExistence(ctx context.Context, name string) (result autorest.Response, err error) {
-	return az.groupsClient.CheckExistence(ctx, name)
+	return response.ResourceGroup, nil
 }
 
 // DeleteResourceGroup delete the named resource group
 func (az *AzureClient) DeleteResourceGroup(ctx context.Context, name string) error {
-	future, err := az.groupsClient.Delete(ctx, name)
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	poller, err := az.groupsClient.BeginDelete(ctx, name, nil)
 	if err != nil {
 		return err
 	}
-
-	if err = future.WaitForCompletionRef(ctx, az.groupsClient.Client); err != nil {
+	if _, err = poller.PollUntilDone(ctx, nil); err != nil {
 		return err
 	}
-
-	_, err = future.Result(az.groupsClient)
 	return err
 }
