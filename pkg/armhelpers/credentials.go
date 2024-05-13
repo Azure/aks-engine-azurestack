@@ -15,6 +15,25 @@ import (
 	"github.com/pkg/errors"
 )
 
+// NewDefaultCredential returns an AzureClient
+func NewDefaultCredential(cloud cloud.Configuration, subscriptionID string) (*azidentity.DefaultAzureCredential, error) {
+	tenantID, err := getOAuthConfig(subscriptionID, cloud)
+	if err != nil {
+		return nil, err
+	}
+	options := &azidentity.DefaultAzureCredentialOptions{
+		ClientOptions: policy.ClientOptions{
+			Cloud: cloud,
+		},
+		TenantID: tenantID,
+	}
+	cred, err := azidentity.NewDefaultAzureCredential(options)
+	if err != nil {
+		return nil, err
+	}
+	return cred, nil
+}
+
 // NewClientSecretCredential returns an AzureClient via client_id and client_secret
 func NewClientSecretCredential(cloud cloud.Configuration, subscriptionID, clientID, clientSecret string) (*azidentity.ClientSecretCredential, error) {
 	tenantID, err := getOAuthConfig(subscriptionID, cloud)
