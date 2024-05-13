@@ -17,15 +17,10 @@ import (
 
 // NewDefaultCredential returns an AzureClient
 func NewDefaultCredential(cloud cloud.Configuration, subscriptionID string) (*azidentity.DefaultAzureCredential, error) {
-	tenantID, err := getOAuthConfig(subscriptionID, cloud)
-	if err != nil {
-		return nil, err
-	}
 	options := &azidentity.DefaultAzureCredentialOptions{
 		ClientOptions: policy.ClientOptions{
 			Cloud: cloud,
 		},
-		TenantID: tenantID,
 	}
 	cred, err := azidentity.NewDefaultAzureCredential(options)
 	if err != nil {

@@ -28,7 +28,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/daemonset"
@@ -46,7 +45,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/storageclass"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
-	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 	. "github.com/onsi/ginkgo/v2"
@@ -82,7 +80,6 @@ var (
 	singleCommandTimeout            time.Duration
 	stabilityCommandTimeout         time.Duration
 	env                             azure.Environment
-	azureClient                     *armhelpers.AzureClient
 	firstMasterRegexStr             = fmt.Sprintf("^%s-.*-0", common.LegacyControlPlaneVMPrefix)
 	vmssHealthCommand               *exec.Cmd
 	vmssHealthCommandStdOut         string
@@ -178,17 +175,6 @@ var _ = BeforeSuite(func() {
 
 	singleCommandTimeout = time.Duration(cfg.SingleCommandTimeoutMinutes) * time.Minute
 	stabilityCommandTimeout = time.Duration(cfg.StabilityTimeoutSeconds) * time.Second
-
-	if !cfg.IsCustomCloudProfile() {
-		cred, err := armhelpers.NewClientSecretCredential(cfg.SubscriptionID, cfg.ClientID, cfg.ClientSecret, cloud.AzurePublic)
-		if err != nil {
-			Expect(err).NotTo(HaveOccurred())
-		}
-		azureClient, err = armhelpers.NewAzureClient(cfg.SubscriptionID, cred, cloud.AzurePublic)
-		if err != nil {
-			Expect(err).NotTo(HaveOccurred())
-		}
-	}
 })
 
 var _ = AfterSuite(func() {
