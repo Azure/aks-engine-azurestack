@@ -26,7 +26,7 @@ func ValidateRequiredImages(ctx context.Context, location string, p *api.Propert
 			log.Debugln(fmt.Sprintf("Validate OS image is available on the target cloud: %s, %s, %s, %s", i.ImagePublisher, i.ImageOffer, i.ImageSku, i.ImageVersion))
 			if i.ImageVersion == "latest" {
 				list, err := fetcher.ListVirtualMachineImages(ctx, location, i.ImagePublisher, i.ImageOffer, i.ImageSku)
-				if err != nil || len(*list.Value) == 0 {
+				if err != nil || len(list) == 0 {
 					missingImages[distro] = validationResult{
 						image:     i,
 						errorData: err,

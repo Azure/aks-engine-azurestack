@@ -4,72 +4,44 @@
 package armhelpers
 
 import (
-	"bytes"
 	"context"
+	"fmt"
+	"strings"
 
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
-	azStorage "github.com/Azure/azure-sdk-for-go/storage"
-	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
+	"github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/storage/armstorage"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
 )
 
-// AzureStorageClient implements the StorageClient interface and wraps the Azure storage client.
-type AzureStorageClient struct {
-	client *azStorage.Client
-}
-
-// GetStorageClient returns an authenticated client for the specified account.
-func (az *AzureClient) GetStorageClient(ctx context.Context, resourceGroup, accountName string) (AKSStorageClient, error) {
+func (az *AzureClient) DeleteVirtualHardDisk(ctx context.Context, resourceGroup string, vhd *armcompute.VirtualHardDisk) error {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	parts, err := azblob.ParseURL(*vhd.URI)
+	if err != nil {
+		return err
+	}
+	accountName := strings.Split(parts.Host, ".")[0]
 	keys, err := az.getStorageKeys(ctx, resourceGroup, accountName)
 	if err != nil {
-		return nil, err
+		return err
 	}
+	serviceURL := fmt.Sprintf("%s%s", parts.Scheme, parts.Host)
+	client, err := az.storageBlobClientFactory(serviceURL, *keys[0].Value)
+	if err != nil {
+		return err
+	}
+	_, err = client.DeleteBlob(ctx, parts.ContainerName, parts.BlobName, nil)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-	client, err := azStorage.NewBasicClientOnSovereignCloud(accountName, to.String(keys[0].Value), az.environment)
+func (az *AzureClient) getStorageKeys(ctx context.Context, resourceGroup, accountName string) ([]*armstorage.AccountKey, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	storageKeysResult, err := az.storageAccountsClient.ListKeys(ctx, resourceGroup, accountName, nil)
 	if err != nil {
 		return nil, err
 	}
-
-	return &AzureStorageClient{
-		client: &client,
-	}, nil
-}
-
-func (az *AzureClient) getStorageKeys(ctx context.Context, resourceGroup, accountName string) ([]storage.AccountKey, error) {
-	storageKeysResult, err := az.storageAccountsClient.ListKeys(ctx, resourceGroup, accountName)
-	if err != nil {
-		return nil, err
-	}
-
-	return *storageKeysResult.Keys, nil
-}
-
-// DeleteBlob deletes the specified blob
-// TODO(colemick): why doesn't SDK give a way to just delete a blob by URI?
-// it's what it ends up doing internally anyway...
-func (as *AzureStorageClient) DeleteBlob(vhdContainer, vhdBlob string, options *azStorage.DeleteBlobOptions) error {
-	containerRef := getContainerRef(as.client, vhdContainer)
-	blobRef := containerRef.GetBlobReference(vhdBlob)
-
-	return blobRef.Delete(options)
-}
-
-// CreateContainer creates the CloudBlobContainer if it does not exist
-func (as *AzureStorageClient) CreateContainer(containerName string, options *azStorage.CreateContainerOptions) (bool, error) {
-	containerRef := getContainerRef(as.client, containerName)
-	created, err := containerRef.CreateIfNotExists(options)
-
-	return created, err
-}
-
-// SaveBlockBlob initializes a block blob by taking the byte
-func (as *AzureStorageClient) SaveBlockBlob(containerName, blobName string, b []byte, options *azStorage.PutBlobOptions) error {
-	containerRef := getContainerRef(as.client, containerName)
-	blobRef := containerRef.GetBlobReference(blobName)
-
-	return blobRef.CreateBlockBlobFromReader(bytes.NewReader(b), options)
-}
-
-func getContainerRef(client *azStorage.Client, containerName string) *azStorage.Container {
-	bs := client.GetBlobService()
-	return bs.GetContainerReference(containerName)
+	return storageKeysResult.Keys, nil
 }

@@ -9,7 +9,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/utils"
-	azStorage "github.com/Azure/azure-sdk-for-go/storage"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -30,18 +29,18 @@ func CleanDeleteVirtualMachine(az armhelpers.AKSEngineClient, logger *log.Entry,
 		return err
 	}
 
-	vhd := vm.VirtualMachineProperties.StorageProfile.OsDisk.Vhd
-	managedDisk := vm.VirtualMachineProperties.StorageProfile.OsDisk.ManagedDisk
+	vhd := vm.Properties.StorageProfile.OSDisk.Vhd
+	managedDisk := vm.Properties.StorageProfile.OSDisk.ManagedDisk
 	if vhd == nil && managedDisk == nil {
 		logger.Errorf("failed to get a valid OS disk URI for VM %s in resource group %s", name, resourceGroup)
 
 		return errors.New("OS disk does not have a VHD URI")
 	}
 
-	osDiskName := vm.VirtualMachineProperties.StorageProfile.OsDisk.Name
+	osDiskName := vm.Properties.StorageProfile.OSDisk.Name
 
 	var nicName string
-	nicID := (*vm.VirtualMachineProperties.NetworkProfile.NetworkInterfaces)[0].ID
+	nicID := (vm.Properties.NetworkProfile.NetworkInterfaces)[0].ID
 	if nicID == nil {
 		logger.Warnf("NIC ID is not set for VM %s in resource group %s)", name, resourceGroup)
 	} else {
@@ -71,15 +70,10 @@ func CleanDeleteVirtualMachine(az armhelpers.AKSEngineClient, logger *log.Entry,
 		}
 
 		logger.Debugf("found OS disk storage reference: %s:%s/%s", accountName, vhdContainer, vhdBlob)
-
-		var as armhelpers.AKSStorageClient
-		as, err = az.GetStorageClient(ctx, resourceGroup, accountName)
-		if err != nil {
-			return err
-		}
-
 		logger.Infof("deleting blob %s/%s ...", vhdContainer, vhdBlob)
-		if err = as.DeleteBlob(vhdContainer, vhdBlob, &azStorage.DeleteBlobOptions{}); err != nil {
+
+		err = az.DeleteVirtualHardDisk(ctx, resourceGroup, vhd)
+		if err != nil {
 			return err
 		}
 	} else if managedDisk != nil {
@@ -99,19 +93,18 @@ func CleanDeleteVirtualMachine(az armhelpers.AKSEngineClient, logger *log.Entry,
 		// but always cleaning them up is easier than adding rule based logic here and there.
 		scope := fmt.Sprintf(AADRoleResourceGroupScopeTemplate, subscriptionID, resourceGroup)
 		logger.Debugf("fetching role assignments: %s with principal %s", scope, *vm.Identity.PrincipalID)
-		for vmRoleAssignmentsPage, err := az.ListRoleAssignmentsForPrincipal(ctx, scope, *vm.Identity.PrincipalID); vmRoleAssignmentsPage.NotDone(); err = vmRoleAssignmentsPage.Next() {
-			if err != nil {
-				logger.Errorf("failed to list role assignments: %s/%s: %s", scope, *vm.Identity.PrincipalID, err)
-				return err
-			}
+		vmRoleAssignments, err := az.ListRoleAssignmentsForPrincipal(ctx, scope, *vm.Identity.PrincipalID)
+		if err != nil {
+			logger.Errorf("failed to list role assignments: %s/%s: %s", scope, *vm.Identity.PrincipalID, err)
+			return err
+		}
 
-			for _, roleAssignment := range vmRoleAssignmentsPage.Values() {
-				logger.Infof("deleting role assignment %s ...", *roleAssignment.ID)
-				_, deleteRoleAssignmentErr := az.DeleteRoleAssignmentByID(ctx, *roleAssignment.ID)
-				if deleteRoleAssignmentErr != nil {
-					logger.Errorf("failed to delete role assignment: %s: %s", *roleAssignment.ID, deleteRoleAssignmentErr.Error())
-					return deleteRoleAssignmentErr
-				}
+		for _, roleAssignment := range vmRoleAssignments {
+			logger.Infof("deleting role assignment %s ...", *roleAssignment.ID)
+			_, deleteRoleAssignmentErr := az.DeleteRoleAssignmentByID(ctx, *roleAssignment.ID)
+			if deleteRoleAssignmentErr != nil {
+				logger.Errorf("failed to delete role assignment: %s: %s", *roleAssignment.ID, deleteRoleAssignmentErr.Error())
+				return deleteRoleAssignmentErr
 			}
 		}
 	}

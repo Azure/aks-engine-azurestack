@@ -7,67 +7,62 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
-	"github.com/Azure/go-autorest/autorest"
+	resources "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/resources/armresources"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	log "github.com/sirupsen/logrus"
 )
 
 // DeployTemplate implements the TemplateDeployer interface for the AzureClient client
-func (az *AzureClient) DeployTemplate(ctx context.Context, resourceGroupName, deploymentName string, template map[string]interface{}, parameters map[string]interface{}) (de resources.DeploymentExtended, err error) {
+func (az *AzureClient) DeployTemplate(ctx context.Context, resourceGroupName, deploymentName string, template map[string]interface{}, parameters map[string]interface{}) (resources.DeploymentExtended, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	mode := resources.DeploymentModeIncremental
 	deployment := resources.Deployment{
 		Properties: &resources.DeploymentProperties{
 			Template:   &template,
 			Parameters: &parameters,
-			Mode:       resources.Incremental,
+			Mode:       &mode,
 		},
 	}
-
 	log.Infof("Starting ARM Deployment %s in resource group %s. This will take some time...", deploymentName, resourceGroupName)
-	future, err := az.deploymentsClient.CreateOrUpdate(ctx, resourceGroupName, deploymentName, deployment)
+	poller, err := az.deploymentsClient.BeginCreateOrUpdate(ctx, resourceGroupName, deploymentName, deployment, nil)
 	if err != nil {
-		return de, err
+		return resources.DeploymentExtended{}, err
 	}
-
 	outcomeText := "Succeeded"
-	err = future.WaitForCompletionRef(ctx, az.deploymentsClient.Client)
+	de, err := poller.PollUntilDone(ctx, nil)
 	if err != nil {
 		outcomeText = fmt.Sprintf("Error: %v", err)
 		log.Infof("Finished ARM Deployment (%s). %s", deploymentName, outcomeText)
-		return de, err
+		return de.DeploymentExtended, err
 	}
-
-	de, err = future.Result(az.deploymentsClient)
-	if err != nil {
-		outcomeText = fmt.Sprintf("Error: %v", err)
-	}
-
 	log.Infof("Finished ARM Deployment (%s). %s", deploymentName, outcomeText)
-	return de, err
+	return de.DeploymentExtended, err
 }
 
 // ValidateTemplate validate the template and parameters
-func (az *AzureClient) ValidateTemplate(
-	ctx context.Context,
-	resourceGroupName string,
-	deploymentName string,
-	template map[string]interface{},
-	parameters map[string]interface{}) (result resources.DeploymentValidateResult, err error) {
+func (az *AzureClient) ValidateTemplate(ctx context.Context, resourceGroupName, deploymentName string, template map[string]interface{}, parameters map[string]interface{}) (*resources.DeploymentsClientValidateResponse, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	mode := resources.DeploymentModeIncremental
 	deployment := resources.Deployment{
 		Properties: &resources.DeploymentProperties{
 			Template:   &template,
 			Parameters: &parameters,
-			Mode:       resources.Incremental,
+			Mode:       &mode,
 		},
 	}
-	return az.deploymentsClient.Validate(ctx, resourceGroupName, deploymentName, deployment)
+	poller, err := az.deploymentsClient.BeginValidate(ctx, resourceGroupName, deploymentName, deployment, nil)
+	if err != nil {
+		return nil, err
+	}
+	response, err := poller.PollUntilDone(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &response, err
 }
 
 // GetDeployment returns the template deployment
-func (az *AzureClient) GetDeployment(ctx context.Context, resourceGroupName, deploymentName string) (result resources.DeploymentExtended, err error) {
-	return az.deploymentsClient.Get(ctx, resourceGroupName, deploymentName)
-}
-
-// CheckDeploymentExistence returns if the deployment already exists
-func (az *AzureClient) CheckDeploymentExistence(ctx context.Context, resourceGroupName string, deploymentName string) (result autorest.Response, err error) {
-	return az.deploymentsClient.CheckExistence(ctx, resourceGroupName, deploymentName)
+func (az *AzureClient) GetDeployment(ctx context.Context, resourceGroupName, deploymentName string) (resources.DeploymentsClientGetResponse, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	return az.deploymentsClient.Get(ctx, resourceGroupName, deploymentName, nil)
 }

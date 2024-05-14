@@ -5,19 +5,19 @@ package armhelpers
 
 import (
 	"context"
+
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 )
 
 // DeleteNetworkInterface deletes the specified network interface.
 func (az *AzureClient) DeleteNetworkInterface(ctx context.Context, resourceGroup, nicName string) error {
-	future, err := az.interfacesClient.Delete(ctx, resourceGroup, nicName)
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	poller, err := az.interfacesClient.BeginDelete(ctx, resourceGroup, nicName, nil)
 	if err != nil {
 		return err
 	}
-
-	if err = future.WaitForCompletionRef(ctx, az.interfacesClient.Client); err != nil {
+	if _, err = poller.PollUntilDone(ctx, nil); err != nil {
 		return err
 	}
-
-	_, err = future.Result(az.interfacesClient)
 	return err
 }

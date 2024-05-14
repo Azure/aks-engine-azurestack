@@ -71,7 +71,7 @@ func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{}
 	if !(cs.Properties.OrchestratorProfile.IsPrivateCluster() && !p.MasterProfile.HasMultipleNodes()) &&
 		// And we don't create a master load balancer in a private cluster + Basic LB scenario
 		!(cs.Properties.OrchestratorProfile.IsPrivateCluster() && cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.BasicLoadBalancerSku) {
-		loadBalancer := CreateMasterLoadBalancer(cs.Properties, false)
+		loadBalancer := CreateMasterLoadBalancer(cs.Properties)
 		// In a private cluster scenario, the master NIC spec is different,
 		// and the master LB is for outbound access only and doesn't require a DNS record for the public IP
 		includeDNS := !cs.Properties.OrchestratorProfile.IsPrivateCluster()
@@ -148,65 +148,6 @@ func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{}
 	for _, ext := range customExtensions {
 		masterResources = append(masterResources, ext)
 	}
-
-	return masterResources
-}
-
-func createKubernetesMasterResourcesVMSS(cs *api.ContainerService) []interface{} {
-	var masterResources []interface{}
-
-	if cs.Properties.MasterProfile.HasCosmosEtcd() {
-		masterResources = append(masterResources, createCosmosDBAccount())
-	}
-
-	masterNSG := CreateNetworkSecurityGroup(cs)
-	masterResources = append(masterResources, masterNSG)
-
-	if cs.Properties.RequireRouteTable() {
-		masterResources = append(masterResources, createRouteTable())
-	}
-	if !cs.Properties.MasterProfile.IsCustomVNET() {
-		masterVNET := createVirtualNetworkVMSS(cs)
-		masterResources = append(masterResources, masterVNET)
-	}
-
-	if cs.Properties.MasterProfile.HasMultipleNodes() {
-		internalLb := CreateMasterInternalLoadBalancer(cs)
-		masterResources = append(masterResources, internalLb)
-	}
-
-	includeDNS := !cs.Properties.OrchestratorProfile.IsPrivateCluster()
-	publicIPAddress := CreatePublicIPAddressForMaster(includeDNS)
-	loadBalancer := CreateMasterLoadBalancer(cs.Properties, true)
-	masterResources = append(masterResources, publicIPAddress, loadBalancer)
-
-	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig
-
-	var isKMSEnabled bool
-	if kubernetesConfig != nil {
-		isKMSEnabled = to.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)
-	}
-
-	if isKMSEnabled {
-		// TODO (aramase) remove storage account creation as part of kms plugin v0.0.11
-		keyVaultStorageAccount := createKeyVaultStorageAccount()
-		keyVault := CreateKeyVaultVMSS(cs)
-		keyVaultKey := CreateKeyVaultKey(cs)
-		masterResources = append(masterResources, keyVaultStorageAccount, keyVault, keyVaultKey)
-	}
-
-	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") {
-		// for standard lb sku, the loadbalancer and ipv4 FE is already created
-		if cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku != api.StandardLoadBalancerSku {
-			clusterIPv4PublicIPAddress := CreateClusterPublicIPAddress()
-			clusterLB := CreateClusterLoadBalancerForIPv6()
-
-			masterResources = append(masterResources, clusterIPv4PublicIPAddress, clusterLB)
-		}
-	}
-
-	masterVmss := CreateMasterVMSS(cs)
-	masterResources = append(masterResources, masterVmss)
 
 	return masterResources
 }

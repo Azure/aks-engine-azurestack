@@ -9,6 +9,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
@@ -19,6 +20,9 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
@@ -133,6 +137,10 @@ func (authArgs *authArgs) getAuthArgs() *authArgs {
 	return authArgs
 }
 
+func (authArgs *authArgs) isAzureStackCloud() bool {
+	return strings.EqualFold(authArgs.RawAzureEnvironment, api.AzureStackCloud)
+}
+
 func (authArgs *authArgs) validateAuthArgs() error {
 	var err error
 
@@ -213,38 +221,68 @@ func getCloudSubFromAzConfig(cloud string, f *ini.File) (uuid.UUID, error) {
 }
 
 func (authArgs *authArgs) getClient() (armhelpers.AKSEngineClient, error) {
-	return authArgs.getAzureClient()
-}
-
-func (authArgs *authArgs) getAzureClient() (armhelpers.AKSEngineClient, error) {
-	var client *armhelpers.AzureClient
-	env, err := azure.EnvironmentFromName(authArgs.RawAzureEnvironment)
+	var cc cloud.Configuration
+	switch authArgs.RawAzureEnvironment {
+	case api.AzureUSGovernmentCloud:
+		cc = cloud.AzureGovernment
+	case api.AzureChinaCloud:
+		cc = cloud.AzureChina
+	default:
+		cc = cloud.AzurePublic
+	}
+	if authArgs.isAzureStackCloud() {
+		env, err := azure.EnvironmentFromName(authArgs.RawAzureEnvironment)
+		if err != nil {
+			return nil, err
+		}
+		cc = cloud.Configuration{
+			ActiveDirectoryAuthorityHost: env.ActiveDirectoryEndpoint,
+			Services: map[cloud.ServiceName]cloud.ServiceConfiguration{
+				cloud.ResourceManager: {
+					Audience: env.ServiceManagementEndpoint,
+					Endpoint: env.ResourceManagerEndpoint,
+				},
+			},
+		}
+	}
+	credential, err := authArgs.getCredentials(cc)
 	if err != nil {
 		return nil, err
+	}
+	return authArgs.getAzureClient(credential, cc)
+}
+
+func (authArgs *authArgs) getCredentials(env cloud.Configuration) (azcore.TokenCredential, error) {
+	if !authArgs.isAzureStackCloud() {
+		return armhelpers.NewDefaultCredential(env, authArgs.SubscriptionID.String())
 	}
 	switch authArgs.AuthMethod {
 	case "client_secret":
 		if authArgs.IdentitySystem == "azure_ad" {
-			client, err = armhelpers.NewAzureClientWithClientSecret(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.ClientSecret)
+			return armhelpers.NewClientSecretCredential(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.ClientSecret)
 		} else if authArgs.IdentitySystem == "adfs" {
-			// for ADFS environment, it is single tenant environment and the tenant id is aways adfs
-			client, err = armhelpers.NewAzureClientWithClientSecretExternalTenant(env, authArgs.SubscriptionID.String(), "adfs", authArgs.ClientID.String(), authArgs.ClientSecret)
+			return armhelpers.NewClientSecretCredentialExternalTenant(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.ClientSecret)
 		} else {
 			return nil, errors.Errorf("--auth-method: ERROR: method unsupported. method=%q identitysystem=%q", authArgs.AuthMethod, authArgs.IdentitySystem)
 		}
 	case "client_certificate":
 		if authArgs.IdentitySystem == "azure_ad" {
-			client, err = armhelpers.NewAzureClientWithClientCertificateFile(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.CertificatePath, authArgs.PrivateKeyPath)
-			break
+			return armhelpers.NewClientCertificateCredential(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.CertificatePath, authArgs.PrivateKeyPath)
 		} else if authArgs.IdentitySystem == "adfs" {
-			// for ADFS environment, it is single tenant environment and the tenant id is aways adfs
-			client, err = armhelpers.NewAzureClientWithClientCertificateFileExternalTenant(env, authArgs.SubscriptionID.String(), "adfs", authArgs.ClientID.String(), authArgs.CertificatePath, authArgs.PrivateKeyPath)
-			break
+			return armhelpers.NewClientCertificateCredentialExternalTenant(env, authArgs.SubscriptionID.String(), authArgs.ClientID.String(), authArgs.CertificatePath, authArgs.PrivateKeyPath)
 		}
 		fallthrough
 	default:
 		return nil, errors.Errorf("--auth-method: ERROR: method unsupported. method=%q identitysystem=%q", authArgs.AuthMethod, authArgs.IdentitySystem)
 	}
+}
+
+func (authArgs *authArgs) getAzureClient(credential azcore.TokenCredential, env cloud.Configuration) (armhelpers.AKSEngineClient, error) {
+	client, err := armhelpers.NewAzureClient(authArgs.SubscriptionID.String(), credential, &arm.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			Cloud: env,
+		},
+	})
 	if err != nil {
 		return nil, err
 	}

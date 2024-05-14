@@ -74,7 +74,7 @@ func CreateClusterLoadBalancerForIPv6() LoadBalancerARM {
 
 // CreateMasterLoadBalancer creates a master LB
 // In a private cluster scenario, we don't attach the inbound foo, e.g., TCP 443 and SSH access
-func CreateMasterLoadBalancer(prop *api.Properties, isVMSS bool) LoadBalancerARM {
+func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 	loadBalancer := LoadBalancerARM{
 		ARMResource: ARMResource{
 			APIVersion: "[variables('apiVersionNetwork')]",
@@ -168,50 +168,30 @@ func CreateMasterLoadBalancer(prop *api.Properties, isVMSS bool) LoadBalancerARM
 			}
 			*loadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.LoadBalancingRules = append(*loadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.LoadBalancingRules, udpRule)
 		}
-		if isVMSS {
-			inboundNATPools := []network.InboundNatPool{
-				{
-					Name: to.StringPtr("[concat('SSH-', variables('masterVMNamePrefix'), 'natpools')]"),
-					InboundNatPoolPropertiesFormat: &network.InboundNatPoolPropertiesFormat{
-						FrontendIPConfiguration: &network.SubResource{
-							ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
-						},
-						Protocol:               network.TransportProtocolTCP,
-						BackendPort:            to.Int32Ptr(22),
-						FrontendPortRangeStart: to.Int32Ptr(50001),
-						FrontendPortRangeEnd:   to.Int32Ptr(50119),
-						EnableFloatingIP:       to.BoolPtr(false),
+		var inboundNATRules []network.InboundNatRule
+		sshNATPorts := []int32{
+			22,
+			2201,
+			2202,
+			2203,
+			2204,
+		}
+		for i := 0; i < prop.MasterProfile.Count; i++ {
+			inboundNATRule := network.InboundNatRule{
+				Name: to.StringPtr(fmt.Sprintf("[concat('SSH-', variables('masterVMNamePrefix'), %d)]", i)),
+				InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
+					BackendPort:      to.Int32Ptr(22),
+					EnableFloatingIP: to.BoolPtr(false),
+					FrontendIPConfiguration: &network.SubResource{
+						ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
 					},
+					FrontendPort: to.Int32Ptr(sshNATPorts[i]),
+					Protocol:     network.TransportProtocolTCP,
 				},
 			}
-			loadBalancer.InboundNatPools = &inboundNATPools
-
-		} else {
-			var inboundNATRules []network.InboundNatRule
-			sshNATPorts := []int32{
-				22,
-				2201,
-				2202,
-				2203,
-				2204,
-			}
-			for i := 0; i < prop.MasterProfile.Count; i++ {
-				inboundNATRule := network.InboundNatRule{
-					Name: to.StringPtr(fmt.Sprintf("[concat('SSH-', variables('masterVMNamePrefix'), %d)]", i)),
-					InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
-						BackendPort:      to.Int32Ptr(22),
-						EnableFloatingIP: to.BoolPtr(false),
-						FrontendIPConfiguration: &network.SubResource{
-							ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
-						},
-						FrontendPort: to.Int32Ptr(sshNATPorts[i]),
-						Protocol:     network.TransportProtocolTCP,
-					},
-				}
-				inboundNATRules = append(inboundNATRules, inboundNATRule)
-			}
-			loadBalancer.InboundNatRules = &inboundNATRules
+			inboundNATRules = append(inboundNATRules, inboundNATRule)
 		}
+		loadBalancer.InboundNatRules = &inboundNATRules
 	} else {
 		outboundRules := createOutboundRules(prop)
 		outboundRule := (*outboundRules)[0]

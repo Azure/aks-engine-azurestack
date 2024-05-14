@@ -5,25 +5,36 @@ package armhelpers
 
 import (
 	"context"
+
+	"github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
+	"github.com/pkg/errors"
 )
 
 // DeleteManagedDisk deletes a managed disk.
 func (az *AzureClient) DeleteManagedDisk(ctx context.Context, resourceGroupName string, diskName string) error {
-	future, err := az.disksClient.Delete(ctx, resourceGroupName, diskName)
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	poller, err := az.disksClient.BeginDelete(ctx, resourceGroupName, diskName, nil)
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "deleting managed disk %s/%s", resourceGroupName, diskName)
 	}
-
-	if err = future.WaitForCompletionRef(ctx, az.disksClient.Client); err != nil {
-		return err
+	if _, err = poller.PollUntilDone(ctx, nil); err != nil {
+		return errors.Wrapf(err, "deleting managed disk %s/%s", resourceGroupName, diskName)
 	}
-
-	_, err = future.Result(az.disksClient)
-	return err
+	return nil
 }
 
 // ListManagedDisksByResourceGroup lists managed disks in a resource group.
-func (az *AzureClient) ListManagedDisksByResourceGroup(ctx context.Context, resourceGroupName string) (result DiskListPage, err error) {
-	page, err := az.disksClient.ListByResourceGroup(ctx, resourceGroupName)
-	return &page, err
+func (az *AzureClient) ListManagedDisksByResourceGroup(ctx context.Context, resourceGroupName string) ([]*armcompute.Disk, error) {
+	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
+	pager := az.disksClient.NewListByResourceGroupPager(resourceGroupName, nil)
+	list := []*armcompute.Disk{}
+	for pager.More() {
+		page, err := pager.NextPage(ctx)
+		if err != nil {
+			return nil, errors.Wrapf(err, "listing managed disks for resource group %s", resourceGroupName)
+		}
+		list = append(list, page.Value...)
+	}
+	return list, nil
 }

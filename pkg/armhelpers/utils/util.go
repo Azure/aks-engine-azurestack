@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
+	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
@@ -149,7 +149,7 @@ func WindowsVMNameParts(vmName string) (poolPrefix string, orch string, poolInde
 func GetVMNameIndex(osType compute.OperatingSystemTypes, vmName string) (int, error) {
 	var agentIndex int
 	var err error
-	if osType == compute.Linux {
+	if osType == compute.OperatingSystemTypesLinux {
 		_, _, agentIndex, err = K8sLinuxVMNameParts(vmName)
 		if err != nil {
 			log.Errorln(err)
@@ -157,7 +157,7 @@ func GetVMNameIndex(osType compute.OperatingSystemTypes, vmName string) (int, er
 		}
 		return agentIndex, nil
 	}
-	if osType == compute.Windows {
+	if osType == compute.OperatingSystemTypesWindows {
 		_, _, _, agentIndex, err = WindowsVMNameParts(vmName)
 		if err != nil {
 			log.Errorln(err)

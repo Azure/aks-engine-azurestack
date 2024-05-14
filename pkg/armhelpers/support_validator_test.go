@@ -8,6 +8,9 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
+	"github.com/Azure/azure-sdk-for-go/sdk/azcore/fake"
 )
 
 func TestValidateRequiredImages(t *testing.T) {
@@ -25,8 +28,13 @@ func TestValidateRequiredImages(t *testing.T) {
 	}
 	defer mc.DeactivateAndReset()
 
-	env := mc.GetEnvironment()
-	azureClient, err := NewAzureClientWithClientSecret(env, subscriptionID, "clientID", "secret")
+	options := &arm.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			InsecureAllowCredentialWithHTTP: true,
+			Cloud:                           mc.GetEnvironment(),
+		},
+	}
+	azureClient, err := NewAzureClient(subscriptionID, &fake.TokenCredential{}, options)
 	if err != nil {
 		t.Fatalf("can not get client %s", err)
 	}
@@ -72,8 +80,13 @@ func TestValidateRequiredImagesMissingImageCase(t *testing.T) {
 	}
 	defer mc.DeactivateAndReset()
 
-	env := mc.GetEnvironment()
-	azureClient, err := NewAzureClientWithClientSecret(env, subscriptionID, "clientID", "secret")
+	options := &arm.ClientOptions{
+		ClientOptions: azcore.ClientOptions{
+			InsecureAllowCredentialWithHTTP: true,
+			Cloud:                           mc.GetEnvironment(),
+		},
+	}
+	azureClient, err := NewAzureClient(subscriptionID, &fake.TokenCredential{}, options)
 	if err != nil {
 		t.Fatalf("can not get client %s", err)
 	}
@@ -110,7 +123,6 @@ func TestValidateRequiredImagesMissingImageCase(t *testing.T) {
 	if err := ValidateRequiredImages(context.Background(), location, &testProperties, azureClient); err == nil {
 		t.Fatal("could not fail fast for missing images")
 	}
-
 }
 
 func TestToImageConfigWindows(t *testing.T) {
@@ -136,5 +148,4 @@ func TestToImageConfigWindows(t *testing.T) {
 	if imageConfig.ImageOffer != api.AKSWindowsServer2019OSImageConfig.ImageOffer {
 		t.Fatal("could not fetch windows profile as image config AKSWindowsServer2019OSImageConfig")
 	}
-
 }

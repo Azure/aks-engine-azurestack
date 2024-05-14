@@ -4,14 +4,13 @@
 package armhelpers
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
+	resources "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/resources/armresources"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,33 +19,27 @@ type DeploymentError struct {
 	DeploymentName    string
 	ResourceGroup     string
 	TopError          error
-	StatusCode        int
+	StatusCode        string
 	Response          []byte
 	ProvisioningState string
-	OperationsLists   []resources.DeploymentOperationsListResult
+	OperationsLists   []*resources.DeploymentOperation
 }
 
-// Error implements error interface
 func (e *DeploymentError) Error() string {
 	var str string
 	if e.TopError != nil {
 		str = e.TopError.Error()
 	}
 	var ops []string
-	for _, operationsList := range e.OperationsLists {
-		if operationsList.Value == nil {
-			continue
-		}
-		for _, operation := range *operationsList.Value {
-			if operation.Properties != nil && *operation.Properties.ProvisioningState == string(api.Failed) && operation.Properties.StatusMessage != nil {
-				if b, err := json.MarshalIndent(operation.Properties.StatusMessage, "", "  "); err == nil {
-					ops = append(ops, string(b))
-				}
+	for _, operation := range e.OperationsLists {
+		if operation.Properties != nil && *operation.Properties.ProvisioningState == string(api.Failed) && operation.Properties.StatusMessage != nil {
+			if b, err := json.MarshalIndent(operation.Properties.StatusMessage, "", "  "); err == nil {
+				ops = append(ops, string(b))
 			}
 		}
 	}
-	return fmt.Sprintf("DeploymentName[%s] ResourceGroup[%s] TopError[%s] StatusCode[%d] Response[%s] ProvisioningState[%s] Operations[%s]",
-		e.DeploymentName, e.ResourceGroup, str, e.StatusCode, e.Response, e.ProvisioningState, strings.Join(ops, " | "))
+	return fmt.Sprintf("DeploymentName[%s] ResourceGroup[%s] TopError[%s] ProvisioningState[%s] Operations[%s]",
+		e.DeploymentName, e.ResourceGroup, str, e.ProvisioningState, strings.Join(ops, " | "))
 }
 
 // DeploymentValidationError contains validation error
@@ -76,15 +69,15 @@ func DeployTemplateSync(az AKSEngineClient, logger *logrus.Entry, resourceGroupN
 	}
 
 	// try to extract error from ARM Response
-	if deploymentExtended.Response.Response != nil && deploymentExtended.Body != nil {
-		buf := new(bytes.Buffer)
-		_, _ = buf.ReadFrom(deploymentExtended.Body)
-		logger.Infof("StatusCode: %d, Error: %s", deploymentExtended.Response.StatusCode, buf.String())
-		deploymentErr.Response = buf.Bytes()
-		deploymentErr.StatusCode = deploymentExtended.Response.StatusCode
+	if deploymentExtended.Properties != nil && deploymentExtended.Properties.Error != nil && deploymentExtended.Properties.Error.Code != nil {
+		// logger.Infof("StatusCode: %d, Error: %s", deploymentExtended.Properties.Error.Code, deploymentExtended.Properties.Error.Details)
+		// deploymentErr.Response, _ = deploymentExtended.Properties.Error.Details.MarshalJSON()
+		deploymentErr.StatusCode = *deploymentExtended.Properties.Error.Code
 	} else {
 		logger.Errorf("Got error from Azure SDK without response from ARM")
 		// This is the failed sdk validation before calling ARM path
+		// deploymentErr.Response, _ = deploymentExtended.MarshalJSON()
+		deploymentErr.StatusCode = "0"
 		return deploymentErr
 	}
 
@@ -92,16 +85,12 @@ func DeployTemplateSync(az AKSEngineClient, logger *logrus.Entry, resourceGroupN
 		logger.Warn("No resources.DeploymentExtended.Properties")
 		return deploymentErr
 	}
-	properties := deploymentExtended.Properties
-	deploymentErr.ProvisioningState = *properties.ProvisioningState
-
-	for page, err := az.ListDeploymentOperations(ctx, resourceGroupName, deploymentName, nil); page.NotDone(); err = page.Next() {
-		if err != nil {
-			logger.Errorf("unable to list deployment operations %s. error: %v", deploymentName, err)
-			return deploymentErr
-		}
-		deploymentErr.OperationsLists = append(deploymentErr.OperationsLists, page.Response())
+	operations, err := az.ListDeploymentOperations(ctx, resourceGroupName, deploymentName)
+	if err != nil {
+		logger.Errorf("unable to list deployment operations %s. error: %v", deploymentName, err)
 	}
 
+	deploymentErr.OperationsLists = append(deploymentErr.OperationsLists, operations...)
+	deploymentErr.ProvisioningState = *deploymentExtended.Properties.ProvisioningState
 	return deploymentErr
 }
