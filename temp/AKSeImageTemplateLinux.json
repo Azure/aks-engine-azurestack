@@ -53,18 +53,18 @@
         "vm_size": {
             "type": "string"
         },
-        "build_id": {
-            "type": "string"
+        "feature_flags": {
+            "type": "string",
+            "defaultValue": "default"
         },
         "build_number": {
             "type": "string"
         },
-        "git_version": {
+        "build_id": {
             "type": "string"
         },
-        "feature_flags": {
-            "type": "string",
-            "defaultValue": "default"
+        "git_version": {
+            "type": "string"
         }
     },
     "resources": [
@@ -261,7 +261,11 @@
                     {
                         "type": "Shell",
                         "inline": [
-                            "sudo FEATURE_FLAGS={{user `feature_flags`}} BUILD_NUMBER={{user `build_number`}} BUILD_ID={{user `build_id`}} COMMIT={{user `commit`}} /bin/bash -ux /home/packer/install-dependencies.sh"
+                            "[concat('feature_flags=', parameters('feature_flags'))]",
+                            "[concat('build_number=', parameters('build_number'))]",
+                            "[concat('build_id=', parameters('build_id'))]",
+                            "[concat('commit=', parameters('git_version'))]",
+                            "sudo /bin/bash -ux /home/packer/install-dependencies.sh $feature_flags $build_number $build_id $commit"
                         ]
                     },
                     {

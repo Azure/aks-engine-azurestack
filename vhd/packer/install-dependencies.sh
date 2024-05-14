@@ -409,13 +409,16 @@ df -h
 echo "Using kernel:" >> ${VHD_LOGS_FILEPATH}
 tee -a ${VHD_LOGS_FILEPATH} < /proc/version
 { printf "Installed apt packages:\n"; apt list --installed | grep -v 'Listing...'; } >> ${VHD_LOGS_FILEPATH}
-{
-  echo "Install completed successfully on " $(date)
-  echo "VSTS Build NUMBER: ${BUILD_NUMBER}"
-  echo "VSTS Build ID: ${BUILD_ID}"
-  echo "Commit: ${COMMIT}"
-  echo "Feature flags: ${FEATURE_FLAGS}"
-} >> ${VHD_LOGS_FILEPATH}
+
+if [ "$#" -eq 4 ]; then
+  {
+    echo "Install completed successfully on " $(date)
+    echo "VSTS Build NUMBER: $2"
+    echo "VSTS Build ID: $3"
+    echo "Commit: $4"
+    echo "Feature flags: $1"
+  } >> ${VHD_LOGS_FILEPATH}
+fi
 
 VHD_CG_MANIFEST=/opt/azure/cgmanifest.json
 apt list --installed \
