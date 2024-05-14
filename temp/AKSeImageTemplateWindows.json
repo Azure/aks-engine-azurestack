@@ -53,10 +53,16 @@
         "vm_size": {
             "type": "string"
         },
+        "build_number": {
+            "type": "string"
+        },
         "build_id": {
             "type": "string"
         },
-        "build_number": {
+        "build_repo": {
+            "type": "string"
+        },
+        "git_version": {
             "type": "string"
         }
     },
@@ -132,6 +138,25 @@
                         "name": "download notice",
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/notice/notice_windows.txt'))]",
                         "destination":"c:\\NOTICE.txt"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download release notes script",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/write-release-notes-windows.ps1'))]",
+                        "destination":"c:\\akse-cache\\write-release-notes-windows.ps1"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "write release notes windows",
+                        "runElevated": true,
+                        "inline": [
+                            "[concat('$BUILD_BRANCH=', parameters('github_branch_name'))]",
+                            "[concat('$BUILD_COMMIT=', parameters('git_version'))]",
+                            "[concat('$BUILD_ID=', parameters('build_id'))]",
+                            "[concat('$BUILD_NUMBER=', parameters('build_number'))]",
+                            "[concat('$BUILD_REPO=', parameters('build_repo'))]",
+                            "& c:\\akse-cache\\write-release-notes-windows.ps1"
+                        ]
                     }
                 ],
                 "distribute": 
