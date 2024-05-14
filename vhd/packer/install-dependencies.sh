@@ -411,12 +411,22 @@ tee -a ${VHD_LOGS_FILEPATH} < /proc/version
 { printf "Installed apt packages:\n"; apt list --installed | grep -v 'Listing...'; } >> ${VHD_LOGS_FILEPATH}
 
 if [ "$#" -eq 4 ]; then
+  feature_flags="$1"
+  build_number="$2"
+  build_id="$3"
+  commit="$4"
+
+  if [ -z "$feature_flags" ] || [ -z "$build_number" ] || [ -z "$build_id" ] || [ -z "$commit" ]; then
+      echo "Arguments cannot be empty"
+      exit 1
+  fi
+
   {
     echo "Install completed successfully on " $(date)
-    echo "VSTS Build NUMBER: $2"
-    echo "VSTS Build ID: $3"
-    echo "Commit: $4"
-    echo "Feature flags: $1"
+    echo "VSTS Build NUMBER: $build_number"
+    echo "VSTS Build ID: $build_id"
+    echo "Commit: $commit"
+    echo "Feature flags: $feature_flags"
   } >> ${VHD_LOGS_FILEPATH}
 fi
 
