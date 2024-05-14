@@ -150,12 +150,12 @@
                         "name": "write release notes windows",
                         "runElevated": true,
                         "inline": [
-                            "[concat('$env:BUILD_BRANCH=', parameters('github_branch_name'))]",
-                            "[concat('$env:BUILD_COMMIT=', parameters('git_version'))]",
-                            "[concat('$env:BUILD_ID=', parameters('build_id'))]",
-                            "[concat('$env:BUILD_NUMBER=', parameters('build_number'))]",
-                            "[concat('$env:BUILD_REPO=', parameters('build_repo'))]",
-                            "& c:\\akse-cache\\write-release-notes-windows.ps1"
+                            "[concat('$BUILD_BRANCH=', parameters('github_branch_name'))]",
+                            "[concat('$BUILD_COMMIT=', parameters('git_version'))]",
+                            "[concat('$BUILD_ID=', parameters('build_id'))]",
+                            "[concat('$BUILD_NUMBER=', parameters('build_number'))]",
+                            "[concat('$BUILD_REPO=', parameters('build_repo'))]",
+                            "& c:\\akse-cache\\write-release-notes-windows.ps1 $BUILD_BRANCH $BUILD_COMMIT $BUILD_ID $BUILD_NUMBER $BUILD_REPO"
                         ]
                     }
                 ],
