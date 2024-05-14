@@ -155,7 +155,7 @@
                             "[concat('$BUILD_ID=', parameters('build_id'))]",
                             "[concat('$BUILD_NUMBER=', parameters('build_number'))]",
                             "[concat('$BUILD_REPO=', parameters('build_repo'))]",
-                            "& c:\\akse-cache\\write-release-notes-windows.ps1 $BUILD_BRANCH $BUILD_COMMIT $BUILD_ID $BUILD_NUMBER $BUILD_REPO"
+                            "& c:\\akse-cache\\write-release-notes-windows.ps1 -BUILD_NUMBER $BUILD_NUMBER -BUILD_ID $BUILD_ID -BUILD_REPO $BUILD_REPO -BUILD_BRANCH $BUILD_BRANCH -BUILD_COMMIT $BUILD_COMMIT"
                         ]
                     }
                 ],
