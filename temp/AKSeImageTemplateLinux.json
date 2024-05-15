@@ -23,6 +23,9 @@
         "subnet_name": {
             "type": "string"
         },
+        "image_gallery_group_name": {
+            "type": "string"
+        },
         "image_gallery_name": {
             "type": "string"
         },
@@ -30,8 +33,7 @@
             "type": "string"
         },
         "vhd_url": {
-            "type": "string",
-            "defaultValue": "https://akseashvhds.blob.core.windows.net"
+            "type": "string"
         },
         "vhd_blob_container_name": {
             "type": "string",
@@ -279,7 +281,7 @@
                 [
                     {   
                         "type": "SharedImage",
-                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-20.04/versions/',parameters('image_version'))]",
+                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-20.04/versions/',parameters('image_version'))]",
                         "runOutputName": "AKSeLinuxSIG",
                         "artifactTags": {
                             "baseosimg": "ubuntu2004"

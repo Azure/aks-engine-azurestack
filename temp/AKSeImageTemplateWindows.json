@@ -23,6 +23,9 @@
         "subnet_name": {
             "type": "string"
         },
+        "image_gallery_group_name": {
+            "type": "string"
+        },
         "image_gallery_name": {
             "type": "string"
         },
@@ -30,8 +33,7 @@
             "type": "string"
         },
         "vhd_url": {
-            "type": "string",
-            "defaultValue": "https://akseashvhds.blob.core.windows.net"
+            "type": "string"
         },
         "vhd_blob_container_name": {
             "type": "string",
@@ -152,13 +154,19 @@
                         "inline": [
                             "[concat('& c:\\akse-cache\\write-release-notes-windows.ps1 -BUILD_NUMBER ',parameters('build_number'),' -BUILD_ID ',parameters('build_id'),' -BUILD_REPO ',parameters('build_repo'),' -BUILD_BRANCH ',parameters('github_branch_name'),' -BUILD_COMMIT ',parameters('git_version'))]"
                         ]
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "clean up",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]"
                     }
                 ],
                 "distribute": 
                 [
                     {   
                         "type": "SharedImage",
-                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/windows2019containerd/versions/',parameters('image_version'))]",
+                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/windows2019containerd/versions/',parameters('image_version'))]",
                         "runOutputName": "AKSeWindowsSIG",
                         "artifactTags": {
                             "baseosimg": "windows2019"
