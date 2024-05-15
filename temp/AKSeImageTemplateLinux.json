@@ -273,7 +273,8 @@
                     {
                         "type": "Shell",
                         "inline": [
-                            "sudo /bin/bash -eux /home/packer/cis.sh"
+                            "sudo /bin/bash -eux /home/packer/cis.sh",
+                            "sudo /bin/bash -eux /home/packer/cleanup-vhd.sh"
                         ]
                     }
                 ],
