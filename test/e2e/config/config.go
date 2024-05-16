@@ -26,6 +26,7 @@ import (
 
 // Config holds global test configuration
 type Config struct {
+	SkipAzLogin                        bool          `envconfig:"SKIP_AZ_LOGIN" default:"false"`
 	SkipTest                           bool          `envconfig:"SKIP_TEST" default:"false"`
 	SkipLogsCollection                 bool          `envconfig:"SKIP_LOGS_COLLECTION" default:"true"`
 	Orchestrator                       string        `envconfig:"ORCHESTRATOR" default:"kubernetes"`

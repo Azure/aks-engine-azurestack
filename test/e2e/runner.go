@@ -63,10 +63,12 @@ func main() {
 		log.Fatalf("Error while trying to setup azure account: %s\n", err)
 	}
 
-	// err := acct.Login()
-	// if err != nil {
-	// 	log.Fatalf("Error while trying to login to azure account! %s\n", err)
-	// }
+	if !cfg.SkipAzLogin {
+		err := acct.Login()
+		if err != nil {
+			log.Fatalf("Error while trying to login to azure account! %s\n", err)
+		}
+	}
 
 	err = acct.SetSubscription()
 	if err != nil {
