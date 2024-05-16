@@ -37,7 +37,7 @@
         },
         "vhd_blob_container_name": {
             "type": "string",
-            "defaultValue": "test"
+            "defaultValue": "windows"
         },
         "vhd_name": {
             "type": "string"
