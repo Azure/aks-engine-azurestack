@@ -64,6 +64,7 @@ type Config struct {
 	AddNodePoolInput                   string `envconfig:"ADD_NODE_POOL_INPUT" default:""`
 	TestPVC                            bool   `envconfig:"TEST_PVC" default:"false"`
 	CleanPVC                           bool   `envconfig:"CLEAN_PVC" default:"true"`
+	CheckIngressIPOnly                 bool   `envconfig:"CHECK_INGRESS_IP_ONLY" default:"false"`
 	SubscriptionID                     string `envconfig:"SUBSCRIPTION_ID"`
 	ClientID                           string `envconfig:"CLIENT_ID"`
 	ClientSecret                       string `envconfig:"CLIENT_SECRET"`

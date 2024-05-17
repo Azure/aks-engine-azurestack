@@ -1779,7 +1779,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Ensuring we can connect to the ELB service on the service IP")
-				err = sELB.ValidateWithRetry("(Welcome to nginx)", 30*time.Second, cfg.Timeout)
+				err = sELB.ValidateWithRetry("(Welcome to nginx)", cfg.CheckIngressIPOnly, 30*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Ensuring we can connect to the ELB service from another pod")
@@ -1793,7 +1793,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					log.Printf("%s\n", string(out))
 					Expect(err).NotTo(HaveOccurred())
 				}
-				err = sELB.ValidateWithRetry("(Welcome to nginx)", 30*time.Second, cfg.Timeout)
+				err = sELB.ValidateWithRetry("(Welcome to nginx)", cfg.CheckIngressIPOnly, 30*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				err = sELB.Delete(util.DefaultDeleteRetries)
@@ -2223,7 +2223,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Verifying that the service is reachable and returns the default IIS start page")
-				err = iisService.ValidateWithRetry("(IIS Windows Server)", sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
+				err = iisService.ValidateWithRetry("(IIS Windows Server)", cfg.CheckIngressIPOnly, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Checking that each pod can reach the internet")
@@ -2253,7 +2253,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(len(iisPods)).To(Equal(5))
 
 				By("Verifying that the service is reachable and returns the default IIS start page")
-				err = iisService.ValidateWithRetry("(IIS Windows Server)", sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
+				err = iisService.ValidateWithRetry("(IIS Windows Server)", cfg.CheckIngressIPOnly, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Checking that each pod can reach the internet")
@@ -2277,7 +2277,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(len(iisPods)).To(Equal(2))
 
 				By("Verifying that the service is reachable and returns the default IIS start page")
-				err = iisService.ValidateWithRetry("(IIS Windows Server)", sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
+				err = iisService.ValidateWithRetry("(IIS Windows Server)", cfg.CheckIngressIPOnly, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Checking that each pod can reach the internet")
@@ -2298,7 +2298,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					log.Printf("%s\n", string(out))
 					Expect(err).NotTo(HaveOccurred())
 				}
-				err = iisService.ValidateWithRetry("(IIS Windows Server)", 30*time.Second, cfg.Timeout)
+				err = iisService.ValidateWithRetry("(IIS Windows Server)", cfg.CheckIngressIPOnly, 30*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 
 				By("Verifying pods & services can be deleted")

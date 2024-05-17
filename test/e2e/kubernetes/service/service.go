@@ -278,7 +278,7 @@ func WaitOnDeleted(servicePrefix, namespace string, sleep, timeout time.Duration
 }
 
 // ValidateWithRetry waits for an Ingress to be provisioned
-func (s *Service) ValidateWithRetry(bodyResponseTextMatch string, sleep, timeout time.Duration) error {
+func (s *Service) ValidateWithRetry(bodyResponseTextMatch string, checkIngressIPOnly bool, sleep, timeout time.Duration) error {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	var mostRecentValidateWithRetryError error
@@ -289,7 +289,7 @@ func (s *Service) ValidateWithRetry(bodyResponseTextMatch string, sleep, timeout
 			case <-ctx.Done():
 				return
 			default:
-				ch <- s.Validate(bodyResponseTextMatch)
+				ch <- s.Validate(bodyResponseTextMatch, checkIngressIPOnly)
 				time.Sleep(sleep)
 			}
 		}
@@ -312,7 +312,7 @@ func (s *Service) ValidateWithRetry(bodyResponseTextMatch string, sleep, timeout
 }
 
 // Validate will attempt to run an http.Get against the root service url
-func (s *Service) Validate(bodyResponseTextMatch string) error {
+func (s *Service) Validate(bodyResponseTextMatch string, checkIngressIPOnly bool) error {
 	if len(s.Status.LoadBalancer.Ingress) < 1 {
 		return errors.Errorf("No LB ingress IP for service %s", s.Metadata.Name)
 	}
@@ -328,6 +328,9 @@ func (s *Service) Validate(bodyResponseTextMatch string) error {
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return errors.Errorf("Unable to parse response body: %s", err)
+	}
+	if checkIngressIPOnly {
+		return nil
 	}
 	matched, err := regexp.MatchString(bodyResponseTextMatch, string(body))
 	if err != nil {
