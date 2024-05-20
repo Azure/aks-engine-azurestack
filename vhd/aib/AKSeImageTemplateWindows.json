@@ -89,7 +89,7 @@
                 "vmProfile": 
                     {
                         "vmSize": "[parameters('vm_size')]",
-                        "osDiskSizeGB": 127,
+                        "osDiskSizeGB": 30,
                         "vnetConfig": {
                             "subnetId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vnet_resource_group_name'),'/providers/Microsoft.Network/virtualNetworks/',parameters('vnet_name'),'/subnets/',parameters('subnet_name'))]"
                         }

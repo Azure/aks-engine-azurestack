@@ -15,7 +15,7 @@
     "NotActions": [
     ],
     "AssignableScopes": [
-      "/subscriptions/a2b58cb8-c2cf-4afe-af64-63ed4dab8628/resourceGroups/AKSeVHDs"
+      "/subscriptions/${subscription_id}/resourceGroups/{$vhd_resource_group_name}"
     ]
   }
 
