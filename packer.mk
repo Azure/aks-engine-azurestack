@@ -19,12 +19,7 @@ run-packer-windows: az-login
 az-copy: az-login
 	azcopy-preview copy "${OS_DISK_SAS}" "${SA_CONTAINER_URL}?${SA_TOKEN}" --overwrite=false
 
-az-copy-msi:
-	export AZCOPY_AUTO_LOGIN_TYPE=MSI
-	export AZCOPY_MSI_CLIENT_ID=${CLIENT_ID}
-	export AZCOPY_MSI_OBJECT_ID=${OBJECT_ID}
-	export AZCOPY_MSI_RESOURCE_STRING=${RESOURCE_ID}
-	azcopy-preview copy "${OS_DISK_URL}" "${SA_CONTAINER_URL}" --overwrite=false
+new-az-copy: azcopy-preview copy "${OS_DISK_SAS}" "${SA_CONTAINER_URL}" --overwrite=false
 
 delete-sa: az-login
 	az storage account delete -n ${PACKER_TEMP_SA} -g ${PACKER_TEMP_GROUP} --yes
