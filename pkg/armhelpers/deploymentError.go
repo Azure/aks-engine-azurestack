@@ -70,13 +70,12 @@ func DeployTemplateSync(az AKSEngineClient, logger *logrus.Entry, resourceGroupN
 
 	// try to extract error from ARM Response
 	if deploymentExtended.Properties != nil && deploymentExtended.Properties.Error != nil && deploymentExtended.Properties.Error.Code != nil {
-		// logger.Infof("StatusCode: %d, Error: %s", deploymentExtended.Properties.Error.Code, deploymentExtended.Properties.Error.Details)
-		// deploymentErr.Response, _ = deploymentExtended.Properties.Error.Details.MarshalJSON()
+		logger.Infof("StatusCode: %s, Error: %s", *deploymentExtended.Properties.Error.Code, *deploymentExtended.Properties.Error.Message)
 		deploymentErr.StatusCode = *deploymentExtended.Properties.Error.Code
+		deploymentErr.Response, _ = json.Marshal(deploymentExtended.Properties.Error.Message)
 	} else {
 		logger.Errorf("Got error from Azure SDK without response from ARM")
 		// This is the failed sdk validation before calling ARM path
-		// deploymentErr.Response, _ = deploymentExtended.MarshalJSON()
 		deploymentErr.StatusCode = "0"
 		return deploymentErr
 	}
