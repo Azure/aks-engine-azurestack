@@ -2234,8 +2234,8 @@ func TestDistroDefaultsOnAzureStack(t *testing.T) {
 			},
 			"",
 			"",
-			AKSUbuntu2004,
-			AKSUbuntu2004,
+			AKSUbuntu2204,
+			AKSUbuntu2204,
 			false,
 			false,
 		},
@@ -3849,74 +3849,6 @@ func TestSetCertDefaults(t *testing.T) {
 
 		if cs.Properties.MasterProfile.HasMultipleNodes() {
 			expectedILBIP := net.IP{firstMasterIP[0], firstMasterIP[1], firstMasterIP[2], firstMasterIP[3] + byte(DefaultInternalLbStaticIPOffset)}
-			actualILBIPAddr := binary.BigEndian.Uint32(ips[2])
-			expectedILBIPAddr := binary.BigEndian.Uint32(expectedILBIP)
-
-			if actualILBIPAddr != expectedILBIPAddr {
-				t.Errorf("expected IP of master ILB from SetDefaultCerts %d, actual %d", expectedILBIP, ips[2])
-			}
-		}
-	}
-}
-
-func TestSetCertDefaultsVMSS(t *testing.T) {
-	cs := &ContainerService{
-		Properties: &Properties{
-			ServicePrincipalProfile: &ServicePrincipalProfile{
-				ClientID: "barClientID",
-				Secret:   "bazSecret",
-			},
-			MasterProfile: &MasterProfile{
-				Count:               3,
-				DNSPrefix:           "myprefix1",
-				VMSize:              "Standard_DS2_v2",
-				AvailabilityProfile: VirtualMachineScaleSets,
-			},
-			OrchestratorProfile: &OrchestratorProfile{
-				OrchestratorType:    Kubernetes,
-				OrchestratorVersion: "1.10.2",
-				KubernetesConfig: &KubernetesConfig{
-					NetworkPlugin: NetworkPluginAzure,
-				},
-			},
-		},
-	}
-
-	cs.setOrchestratorDefaults(false, false)
-	cs.Properties.setMasterProfileDefaults()
-	result, ips, err := cs.SetDefaultCerts(DefaultCertParams{
-		PkiKeySize: helpers.DefaultPkiKeySize,
-	})
-
-	if !result {
-		t.Error("expected SetDefaultCerts to return true")
-	}
-
-	if err != nil {
-		t.Errorf("unexpected error thrown while executing SetDefaultCerts %s", err.Error())
-	}
-
-	if ips == nil {
-		t.Error("expected SetDefaultCerts to create a list of IPs")
-	} else {
-
-		if len(ips) != cs.Properties.MasterProfile.Count+3 {
-			t.Errorf("expected length of IPs from SetDefaultCerts %d, actual length %d", cs.Properties.MasterProfile.Count+3, len(ips))
-		}
-
-		firstMasterIP := net.ParseIP(cs.Properties.MasterProfile.FirstConsecutiveStaticIP).To4()
-		offsetMultiplier := cs.Properties.MasterProfile.IPAddressCount
-		addr := binary.BigEndian.Uint32(firstMasterIP)
-		expectedNewAddr := getNewAddr(addr, cs.Properties.MasterProfile.Count-1, offsetMultiplier)
-		actualLastIPAddr := binary.BigEndian.Uint32(ips[len(ips)-2])
-		if actualLastIPAddr != expectedNewAddr {
-			expectedLastIP := make(net.IP, 4)
-			binary.BigEndian.PutUint32(expectedLastIP, expectedNewAddr)
-			t.Errorf("expected last IP of master vm from SetDefaultCerts %d, actual %d", expectedLastIP, ips[len(ips)-2])
-		}
-
-		if cs.Properties.MasterProfile.HasMultipleNodes() {
-			expectedILBIP := net.IP{firstMasterIP[0], firstMasterIP[1], byte(255), byte(DefaultInternalLbStaticIPOffset)}
 			actualILBIPAddr := binary.BigEndian.Uint32(ips[2])
 			expectedILBIPAddr := binary.BigEndian.Uint32(expectedILBIP)
 

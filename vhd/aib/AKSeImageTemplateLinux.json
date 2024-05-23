@@ -98,8 +98,8 @@
                 "source": {
                     "type": "PlatformImage",
                         "publisher": "Canonical",
-                        "offer": "0001-com-ubuntu-server-focal",
-                        "sku": "20_04-lts",
+                        "offer": "0001-com-ubuntu-server-jammy",
+                        "sku": "22_04-lts",
                         "version": "latest"
                 },
                 "customize": [
@@ -285,7 +285,7 @@
                         "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-20.04/versions/',parameters('image_version'))]",
                         "runOutputName": "AKSeLinuxSIG",
                         "artifactTags": {
-                            "baseosimg": "ubuntu2004"
+                            "baseosimg": "ubuntu2204"
                         },
                         "replicationRegions": [
                             "[parameters('location')]"
@@ -295,7 +295,7 @@
                         "type": "VHD",
                         "runOutputName": "[parameters('vhd_run_output_name')]",
                         "artifactTags": {
-                            "baseosimg": "ubuntu2004"
+                            "baseosimg": "ubuntu2204"
                         },
                         "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_name'))]"
                     }

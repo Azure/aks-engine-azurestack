@@ -318,7 +318,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 			}
 		}
 		// Override the --resolv-conf kubelet config value for Ubuntu 18.04 after the distro value is set.
-		if cs.Properties.MasterProfile.IsUbuntu1804() || cs.Properties.MasterProfile.IsUbuntu2004() {
+		if cs.Properties.MasterProfile.IsUbuntu1804() || cs.Properties.MasterProfile.IsUbuntu2004() || cs.Properties.MasterProfile.IsUbuntu2204() {
 			cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--resolv-conf"] = "/run/systemd/resolve/resolv.conf"
 		}
 
@@ -383,7 +383,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 			}
 		}
 		// Override the --resolv-conf kubelet config value for Ubuntu 18.04 after the distro value is set.
-		if profile.IsUbuntu1804() || profile.IsUbuntu2004() {
+		if profile.IsUbuntu1804() || profile.IsUbuntu2004() || profile.IsUbuntu2204() {
 			profile.KubernetesConfig.KubeletConfig["--resolv-conf"] = "/run/systemd/resolve/resolv.conf"
 		}
 

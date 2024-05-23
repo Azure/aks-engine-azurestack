@@ -25,7 +25,7 @@ import (
 )
 
 // DistroValues is a list of currently supported distros
-var DistroValues = []Distro{"", Ubuntu, Ubuntu1804, Ubuntu2004, Flatcar, AKSUbuntu1604, AKSUbuntu1804, Ubuntu1804Gen2, AKSUbuntu2004, ACC1604}
+var DistroValues = []Distro{"", Ubuntu, Ubuntu1804, Ubuntu2004, Ubuntu2204, Flatcar, AKSUbuntu1604, AKSUbuntu1804, Ubuntu1804Gen2, AKSUbuntu2004, AKSUbuntu2204, ACC1604}
 
 // PropertiesDefaultsParams is the parameters when we set the properties defaults for ContainerService.
 type PropertiesDefaultsParams struct {
@@ -544,7 +544,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 				if cs.Properties.MasterProfile.Distro == "" {
 					cs.Properties.MasterProfile.Distro = AKSUbuntu1804
 					if cs.Properties.IsAzureStackCloud() {
-						cs.Properties.MasterProfile.Distro = AKSUbuntu2004
+						cs.Properties.MasterProfile.Distro = AKSUbuntu2204
 					}
 				} else if isUpgrade || isScale {
 					if cs.Properties.MasterProfile.Distro == AKSDockerEngine || cs.Properties.MasterProfile.Distro == AKS1604Deprecated {
@@ -557,7 +557,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 				if cloudSpecConfig.CloudName == AzureGermanCloud {
 					cs.Properties.MasterProfile.Distro = Ubuntu1804
 					if cs.Properties.IsAzureStackCloud() {
-						cs.Properties.MasterProfile.Distro = Ubuntu2004
+						cs.Properties.MasterProfile.Distro = Ubuntu2204
 					}
 				}
 			}
@@ -582,12 +582,12 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 						if profile.OSDiskSizeGB != 0 && profile.OSDiskSizeGB < VHDDiskSizeAKS {
 							profile.Distro = Ubuntu1804
 							if cs.Properties.IsAzureStackCloud() {
-								profile.Distro = Ubuntu2004
+								profile.Distro = Ubuntu2204
 							}
 						} else {
 							profile.Distro = AKSUbuntu1804
 							if cs.Properties.IsAzureStackCloud() {
-								profile.Distro = AKSUbuntu2004
+								profile.Distro = AKSUbuntu2204
 							}
 						}
 						// Ensure deprecated distros are overridden
@@ -604,7 +604,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 					if cloudSpecConfig.CloudName == AzureGermanCloud {
 						profile.Distro = Ubuntu1804
 						if cs.Properties.IsAzureStackCloud() {
-							profile.Distro = Ubuntu2004
+							profile.Distro = Ubuntu2204
 						}
 					}
 				}

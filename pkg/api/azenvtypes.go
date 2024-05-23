@@ -109,6 +109,14 @@ var (
 		ImageVersion:   "latest",
 	}
 
+	//Ubuntu2204OSImageConfig is the Ubunutu 22.04-LTS Linux distribution.
+	Ubuntu2204OSImageConfig = AzureOSImageConfig{
+		ImageOffer:     "0001-com-ubuntu-server-jammy",
+		ImageSku:       "22_04-lts",
+		ImagePublisher: "Canonical",
+		ImageVersion:   "latest",
+	}
+
 	//Ubuntu1804Gen2OSImageConfig is Gen2 flavor the Ubunutu 18.04-LTS Linux distribution.
 	Ubuntu1804Gen2OSImageConfig = AzureOSImageConfig{
 		ImageOffer:     "UbuntuServer",
@@ -149,6 +157,14 @@ var (
 		ImageSku:       "aks-engine-azurestack-ubuntu-2004",
 		ImagePublisher: "microsoft-aks",
 		ImageVersion:   "2024.311.1",
+	}
+
+	// AKSUbuntu2204OSImageConfig is the AKS Engine image based on Ubuntu 22.04-LTS.
+	AKSUbuntu2204OSImageConfig = AzureOSImageConfig{
+		ImageOffer:     "aks",
+		ImageSku:       "aks-engine-azurestack-ubuntu-2204",
+		ImagePublisher: "microsoft-aks",
+		ImageVersion:   "2024.032.1",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
@@ -199,12 +215,14 @@ var (
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
 			Ubuntu2004:        Ubuntu2004OSImageConfig,
+			Ubuntu2204:        Ubuntu2204OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
 			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
+			AKSUbuntu2204:     AKSUbuntu2204OSImageConfig,
 			ACC1604:           ACC1604OSImageConfig,
 		},
 	}
@@ -221,12 +239,14 @@ var (
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
 			Ubuntu2004:        Ubuntu2004OSImageConfig,
+			Ubuntu2204:        Ubuntu2204OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     Ubuntu1604OSImageConfig,
 			AKS1604Deprecated: Ubuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     Ubuntu1604OSImageConfig, // workaround for https://github.com/Azure/aks-engine/issues/761
 			AKS1804Deprecated: Ubuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
+			AKSUbuntu2204:     AKSUbuntu2204OSImageConfig,
 		},
 	}
 
@@ -242,12 +262,14 @@ var (
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
 			Ubuntu2004:        Ubuntu2004OSImageConfig,
+			Ubuntu2204:        Ubuntu2204OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
 			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
+			AKSUbuntu2204:     AKSUbuntu2204OSImageConfig,
 		},
 	}
 
@@ -284,12 +306,14 @@ var (
 			Ubuntu1804:        Ubuntu1804OSImageConfig,
 			Ubuntu1804Gen2:    Ubuntu1804Gen2OSImageConfig,
 			Ubuntu2004:        Ubuntu2004OSImageConfig,
+			Ubuntu2204:        Ubuntu2204OSImageConfig,
 			Flatcar:           FlatcarImageConfig,
 			AKSUbuntu1604:     AKSUbuntu1604OSImageConfig,
 			AKS1604Deprecated: AKSUbuntu1604OSImageConfig, // for back-compat
 			AKSUbuntu1804:     AKSUbuntu1804OSImageConfig,
 			AKS1804Deprecated: AKSUbuntu1804OSImageConfig, // for back-compat
 			AKSUbuntu2004:     AKSUbuntu2004OSImageConfig,
+			AKSUbuntu2204:     AKSUbuntu2204OSImageConfig,
 		},
 	}
 
