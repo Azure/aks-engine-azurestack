@@ -282,7 +282,7 @@
                 [
                     {   
                         "type": "SharedImage",
-                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-20.04/versions/',parameters('image_version'))]",
+                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-22.04/versions/',parameters('image_version'))]",
                         "runOutputName": "AKSeLinuxSIG",
                         "artifactTags": {
                             "baseosimg": "ubuntu2204"
