@@ -243,7 +243,6 @@ func TestAssignDefaultAddonImages(t *testing.T) {
 		common.DashboardAddonName:           k8sComponents[common.DashboardAddonName],
 		common.MetricsServerAddonName:       specConfig.MCRKubernetesImageBase + k8sComponents[common.MetricsServerAddonName],
 		common.NVIDIADevicePluginAddonName:  specConfig.NVIDIAImageBase + k8sComponents[common.NVIDIADevicePluginAddonName],
-		common.ContainerMonitoringAddonName: "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021",
 		common.IPMASQAgentAddonName:         specConfig.MCRKubernetesImageBase + k8sComponents[common.IPMASQAgentAddonName],
 		common.CalicoAddonName:              specConfig.CalicoImageBase + k8sComponents[common.CalicoTyphaComponentName],
 		common.AzureNetworkPolicyAddonName:  k8sComponents[common.AzureNetworkPolicyAddonName],
@@ -310,9 +309,6 @@ func getFakeAddons(defaultAddonMap map[string]string, customImage string) []Kube
 	var fakeCustomAddons []KubernetesAddon
 	for addonName := range defaultAddonMap {
 		containerName := addonName
-		if addonName == common.ContainerMonitoringAddonName {
-			containerName = "omsagent"
-		}
 		if addonName == common.CalicoAddonName {
 			containerName = common.CalicoTyphaComponentName
 		}

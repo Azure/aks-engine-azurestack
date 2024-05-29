@@ -10,7 +10,6 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -51,16 +50,6 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 		"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
 		"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
 		"poolName":           to.StringPtr("master"),
-	}
-
-	if kubernetesConfig != nil && kubernetesConfig.IsContainerMonitoringAddonEnabled() {
-		addon := kubernetesConfig.GetAddonByName(common.ContainerMonitoringAddonName)
-		clusterDNSPrefix := "aks-engine-cluster"
-		if cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.DNSPrefix != "" {
-			clusterDNSPrefix = cs.Properties.MasterProfile.DNSPrefix
-		}
-		vmTags["logAnalyticsWorkspaceResourceId"] = to.StringPtr(addon.Config["logAnalyticsWorkspaceResourceId"])
-		vmTags["clusterName"] = to.StringPtr(clusterDNSPrefix)
 	}
 
 	virtualMachine := compute.VirtualMachine{

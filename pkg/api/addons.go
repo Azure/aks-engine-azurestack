@@ -206,52 +206,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		},
 	}
 
-	// for windows container, no requests should be specified or limits and requests should be same
-	// ref: https://kubernetes.io/docs/setup/production-environment/windows/intro-windows-in-kubernetes/#memory-reservations-and-handling
-	defaultContainerMonitoringAddonsConfig := KubernetesAddon{
-		Name:    common.ContainerMonitoringAddonName,
-		Enabled: to.BoolPtr(DefaultContainerMonitoringAddonEnabled && !cs.Properties.IsAzureStackCloud()),
-		Config: map[string]string{
-			"omsAgentVersion":       "1.10.0.1",
-			"dockerProviderVersion": "16.0.0-0",
-			"schema-versions":       "v1",
-			"clusterName":           clusterDNSPrefix,
-			"workspaceDomain":       workspaceDomain,
-		},
-		Containers: []KubernetesContainerSpec{
-			{
-				Name:           "omsagent",
-				CPURequests:    "75m",
-				MemoryRequests: "225Mi",
-				CPULimits:      "500m",
-				MemoryLimits:   "600Mi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:           "omsagent-rs",
-				CPURequests:    "150m",
-				MemoryRequests: "250Mi",
-				CPULimits:      "1",
-				MemoryLimits:   "1Gi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:           "omsagent-prometheus",
-				CPURequests:    "75m",
-				MemoryRequests: "225Mi",
-				CPULimits:      "500m",
-				MemoryLimits:   "1Gi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:         "omsagent-win",
-				CPULimits:    "200m",
-				MemoryLimits: "600Mi",
-				Image:        omsagentWinImage,
-			},
-		},
-	}
-
 	defaultIPMasqAgentAddonsConfig := KubernetesAddon{
 		Name: common.IPMASQAgentAddonName,
 		Enabled: to.BoolPtr(DefaultIPMasqAgentAddonEnabled &&
@@ -855,7 +809,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		defaultDashboardAddonsConfig,
 		defaultMetricsServerAddonsConfig,
 		defaultNVIDIADevicePluginAddonsConfig,
-		defaultContainerMonitoringAddonsConfig,
 		defaultAzureNetworkPolicyAddonsConfig,
 		defaultCloudNodeManagerAddonsConfig,
 		defaultIPMasqAgentAddonsConfig,

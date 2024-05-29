@@ -164,8 +164,6 @@ const (
 	dashboardAddonDestinationFilename             string = "kubernetes-dashboard.yaml" // Deprecated
 	nvidiaAddonSourceFilename                     string = "nvidia-device-plugin.yaml"
 	nvidiaAddonDestinationFilename                string = "nvidia-device-plugin.yaml"
-	containerMonitoringAddonSourceFilename        string = "container-monitoring.yaml"
-	containerMonitoringAddonDestinationFilename   string = "container-monitoring.yaml"
 	ipMasqAgentAddonSourceFilename                string = "ip-masq-agent.yaml"
 	ipMasqAgentAddonDestinationFilename           string = "ip-masq-agent.yaml"
 	calicoAddonSourceFilename                     string = "calico.yaml"

@@ -71,43 +71,6 @@ const ExampleAPIModelWithoutServicePrincipalProfile = `{
 	}
   }
   `
-const ExampleAPIModelWithContainerMonitoringAddonWithNoConfig = `{
-	"apiVersion": "vlabs",
-	"properties": {
-		  "orchestratorProfile": { "orchestratorType": "Kubernetes", "kubernetesConfig": { "addons":[{"name": "container-monitoring","enabled": true }]}},
-	  "masterProfile": { "count": 1, "dnsPrefix": "mytestcluster", "vmSize": "Standard_D2_v2" },
-	  "agentPoolProfiles": [ { "name": "linuxpool1", "count": 2, "vmSize": "Standard_D2_v2", "availabilityProfile": "AvailabilitySet" } ],
-	  "windowsProfile": { "adminUsername": "azureuser", "adminPassword": "replacepassword1234$" },
-	  "linuxProfile": { "adminUsername": "azureuser", "ssh": { "publicKeys": [ { "keyData": "" } ] }
-	  }
-	}
-  }
-  `
-
-const ExampleAPIModelWithContainerMonitoringAddonWithExistingWorkspaceConfig = `{
-	"apiVersion": "vlabs",
-	"properties": {
-		  "orchestratorProfile": { "orchestratorType": "Kubernetes", "kubernetesConfig": { "addons":[{"name": "container-monitoring","enabled": true, "config":{"logAnalyticsWorkspaceResourceId": "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/test-workspace-rg/providers/Microsoft.OperationalInsights/workspaces/test-workspace"} }]}},
-	  "masterProfile": { "count": 1, "dnsPrefix": "mytestcluster", "vmSize": "Standard_D2_v2" },
-	  "agentPoolProfiles": [ { "name": "linuxpool1", "count": 2, "vmSize": "Standard_D2_v2", "availabilityProfile": "AvailabilitySet" } ],
-	  "windowsProfile": { "adminUsername": "azureuser", "adminPassword": "replacepassword1234$" },
-	  "linuxProfile": { "adminUsername": "azureuser", "ssh": { "publicKeys": [ { "keyData": "" } ] }
-	  }
-	}
-  }
-  `
-const ExampleAPIModelWithContainerMonitoringAddonWithWorkspaceGUIDAndKeyConfig = `{
-	"apiVersion": "vlabs",
-	"properties": {
-		  "orchestratorProfile": { "orchestratorType": "Kubernetes", "kubernetesConfig": { "addons":[{"name": "container-monitoring","enabled": true, "config":{"workspaceGuid": "MDAwMDAwMDAtMDAwMC0wMDAwLTAwMDAtMDAwMDAwMDAwMDAw", "workspaceKey": "NEQrdnlkNS9qU2NCbXNBd1pPRi8wR09CUTVrdUZRYzlKVmFXK0hsbko1OGN5ZVBKY3dUcGtzK3JWbXZnY1hHbW15dWpMRE5FVlBpVDhwQjI3NGE5WWc9PQ=="} }]}},
-	  "masterProfile": { "count": 1, "dnsPrefix": "mytestcluster", "vmSize": "Standard_D2_v2" },
-	  "agentPoolProfiles": [ { "name": "linuxpool1", "count": 2, "vmSize": "Standard_D2_v2", "availabilityProfile": "AvailabilitySet" } ],
-	  "windowsProfile": { "adminUsername": "azureuser", "adminPassword": "replacepassword1234$" },
-	  "linuxProfile": { "adminUsername": "azureuser", "ssh": { "publicKeys": [ { "keyData": "" } ] }
-	  }
-	}
-  }
-  `
 
 func getExampleAPIModel(useManagedIdentity bool, clientID, clientSecret string) string {
 	return getAPIModel(ExampleAPIModel, useManagedIdentity, clientID, clientSecret)

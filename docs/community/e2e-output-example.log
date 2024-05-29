@@ -1534,7 +1534,6 @@ keyvault-flexvolume disabled for this cluster, will not test
 kubernetes-dashboard disabled for this cluster, will not test
 rescheduler disabled for this cluster, will not test
 nvidia-device-plugin disabled for this cluster, will not test
-container-monitoring disabled for this cluster, will not test
 azure-npm-daemonset disabled for this cluster, will not test
 azure-policy disabled for this cluster, will not test
 node-problem-detector disabled for this cluster, will not test

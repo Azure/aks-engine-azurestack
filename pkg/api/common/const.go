@@ -99,8 +99,6 @@ const (
 	AddonResizerComponentName = "addon-resizer"
 	// NVIDIADevicePluginAddonName is the name of the NVIDIA device plugin addon deployment
 	NVIDIADevicePluginAddonName = "nvidia-device-plugin"
-	// ContainerMonitoringAddonName is the name of the kubernetes Container Monitoring addon deployment
-	ContainerMonitoringAddonName = "container-monitoring"
 	// IPMASQAgentAddonName is the name of the ip masq agent addon
 	IPMASQAgentAddonName = "ip-masq-agent"
 	// AzureCNINetworkMonitorAddonName is the name of the Azure CNI networkmonitor addon

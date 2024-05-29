@@ -1189,7 +1189,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			for _, addonName := range []string{common.CoreDNSAddonName, common.TillerAddonName, common.AADPodIdentityAddonName,
 				common.AzureDiskCSIDriverAddonName, common.AzureFileCSIDriverAddonName, common.CloudNodeManagerAddonName, common.ClusterAutoscalerAddonName,
 				common.BlobfuseFlexVolumeAddonName, common.SMBFlexVolumeAddonName, common.DashboardAddonName,
-				common.MetricsServerAddonName, common.NVIDIADevicePluginAddonName, common.ContainerMonitoringAddonName,
+				common.MetricsServerAddonName, common.NVIDIADevicePluginAddonName,
 				common.CalicoAddonName, common.AzureNetworkPolicyAddonName, common.IPMASQAgentAddonName,
 				common.AzurePolicyAddonName, common.NodeProblemDetectorAddonName, common.AntreaAddonName, common.FlannelAddonName,
 				common.ScheduledMaintenanceAddonName, common.SecretsStoreCSIDriverAddonName} {
@@ -1200,12 +1200,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					addonPods = []string{"blobfuse-flexvol-installer"}
 				case common.SMBFlexVolumeAddonName:
 					addonPods = []string{"smb-flexvol-installer"}
-				case common.ContainerMonitoringAddonName:
-					addonPods = []string{"omsagent", "omsagent-rs"}
-					if eng.HasWindowsAgents() {
-						addonPods = append(addonPods, "omsagent-win")
-					}
-					timeout = 60 * time.Minute
 				case common.AzureNetworkPolicyAddonName:
 					addonPods = []string{"azure-npm"}
 				case common.DashboardAddonName:
@@ -1310,41 +1304,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(actualTillerMaxHistory).To(Equal(maxHistory))
 			} else {
 				Skip("tiller disabled for this cluster, will not test")
-			}
-		})
-
-		It("should have the expected omsagent cluster footprint", func() {
-			if hasContainerMonitoring, _ := eng.HasAddon(common.ContainerMonitoringAddonName); hasContainerMonitoring {
-				By("Validating the omsagent replicaset")
-				running, err := pod.WaitOnSuccesses("omsagent-rs", "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(running).To(Equal(true))
-				pods, err := pod.GetAllRunningByPrefixWithRetry("omsagent-rs", "kube-system", 3*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				By("Ensuring that the kubepodinventory plugin is writing data successfully")
-				pass, err := pods[0].ValidateOmsAgentLogs("kubePodInventoryEmitStreamSuccess", 1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(pass).To(BeTrue())
-				By("Ensuring that the kubenodeinventory plugin is writing data successfully")
-				pass, err = pods[0].ValidateOmsAgentLogs("kubeNodeInventoryEmitStreamSuccess", 1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(pass).To(BeTrue())
-				By("Validating the omsagent daemonset")
-				running, err = pod.WaitOnSuccesses("omsagent", "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(running).To(Equal(true))
-				pods, err = pod.GetAllRunningByPrefixWithRetry("omsagent", "kube-system", 3*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				By("Ensuring that the cadvisor_perf plugin is writing data successfully")
-				pass, err = pods[0].ValidateOmsAgentLogs("cAdvisorPerfEmitStreamSuccess", 1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(pass).To(BeTrue())
-				By("Ensuring that the containerinventory plugin is writing data successfully")
-				pass, err = pods[0].ValidateOmsAgentLogs("containerInventoryEmitStreamSuccess", 1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				Expect(pass).To(BeTrue())
-			} else {
-				Skip("container monitoring disabled for this cluster, will not test")
 			}
 		})
 

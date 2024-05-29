@@ -18,7 +18,6 @@ Tools like `kubectl` and the Kubernetes Dashboard use metrics-server, and it has
 
 1. [kubectl](#kubectl)
 1. [Kubernetes Dashboard](#kubernetes-dashboard)
-1. [Azure Monitor for containers](#azure-monitor-for-containers)
 1. [Monitoring extension](#monitoring-extension)
 
 ## Kubectl
@@ -53,24 +52,6 @@ The [Kubernetes Dashboard][kubernetes-dashboard] is a web-based user interface t
 
 Describing all of the useful ways to use the dashboard project is out of scope of this documentation. See [here](https://github.com/kubernetes/dashboard) to learn more.
 
-## Azure Monitor for containers
-
-[Azure Monitor for containers][azure-monitor-for-containers] is a feature designed to monitor the performance of container workloads. It supports self-managed Kubernetes clusters using AKS Engine.
-
-Azure Monitor for containers gives you performance visibility by collecting memory and processor metrics from controllers, nodes, and containers that are available in Kubernetes through the Metrics API. Container logs are also collected. Please see its documentation [overview][azure-monitor-for-containers] for more detail.
-
-Azure Monitor for containers is known as the ["container-monitoring" addon][container-monitoring-addon] in AKS Engine, and it is not enabled by default. See the container-monitoring docs to learn how to enable and configure Azure Monitor for containers via addon.
-
-Alternately, you can install the [azuremonitor-containers][] Helm chart to enable Azure Monitor for containers.
-
-Once Azure Monitor for containers is enabled, navigate to https://aka.ms/azmon-containers to view the health, metrics, and logs of your AKS Engine clusters in the Azure portal website.
-
-Refer to [azuremonitor-containers-aks-engine](https://github.com/Microsoft/OMS-docker/blob/aks-engine/README.md) for information about supported versions and for troubleshooting.
-
-![Image of Azure Monitor for containers](../static/img/azure_monitor_aks_engine.png)
-
-Please reach out with any questions or feedback by sending an email to [Azure Monitor for containers](mailto:askcoin@microsoft.com).
-
 ## Monitoring extension
 
 A quick way to scaffold out cloud-native and open source monitoring components is to use the [aks-engine-azurestack monitoring extension](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). For details on how to use the monitoring extension, please refer to the [extension documentation](https://github.com/Azure/aks-engine/tree/master/extensions/prometheus-grafana-k8s). By embedding the extension in your apimodel, the extension will do much of the work to create a monitoring solution in your cluster, which includes the following:
@@ -84,7 +65,6 @@ The extension wires up these components together. Post-deployment of the Kuberne
 
 [azure-monitor-for-containers]: https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-overview
 [azuremonitor-containers]: https://github.com/helm/charts/tree/master/incubator/azuremonitor-containers
-[container-monitoring-addon]: ../../examples/addons/container-monitoring/README.md
 [creating-a-sample-user]: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 [kubernetes-dashboard]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 [metrics-server]: https://github.com/kubernetes-sigs/metrics-server

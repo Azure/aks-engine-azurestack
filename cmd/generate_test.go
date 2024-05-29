@@ -353,11 +353,6 @@ func TestExampleAPIModels(t *testing.T) {
 			setArgs:      defaultSet,
 		},
 		{
-			name:         "container-monitoring",
-			apiModelPath: "../examples/addons/container-monitoring/kubernetes-container-monitoring.json",
-			setArgs:      defaultSet,
-		},
-		{
 			name:         "custom PSP",
 			apiModelPath: "../examples/addons/custom-manifests/kubernetes-custom-psp.json",
 			setArgs:      defaultSet,
