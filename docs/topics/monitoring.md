@@ -62,9 +62,6 @@ A quick way to scaffold out cloud-native and open source monitoring components i
 
 The extension wires up these components together. Post-deployment of the Kubernetes cluster, you just have to retrieve Grafana admin password (Kubernetes secret) and target your browser to the Grafana endpoint. There is already a pre-loaded Kubernetes cluster monitoring dashboard, so out-of-the-box you will have meaningful monitoring points with the extensibility that Prometheus and Grafana offer you.
 
-
-[azure-monitor-for-containers]: https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-overview
-[azuremonitor-containers]: https://github.com/helm/charts/tree/master/incubator/azuremonitor-containers
 [creating-a-sample-user]: https://github.com/kubernetes/dashboard/blob/master/docs/user/access-control/creating-sample-user.md
 [kubernetes-dashboard]: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/
 [metrics-server]: https://github.com/kubernetes-sigs/metrics-server
