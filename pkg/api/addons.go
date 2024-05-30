@@ -4,13 +4,11 @@
 package api
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/to"
 	log "github.com/sirupsen/logrus"
 )
@@ -20,10 +18,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	if cs.Properties != nil {
 		o = cs.Properties.OrchestratorProfile
 	}
-	clusterDNSPrefix := "aks-engine-cluster"
-	if cs != nil && cs.Properties != nil && cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.DNSPrefix != "" {
-		clusterDNSPrefix = cs.Properties.MasterProfile.DNSPrefix
-	}
 	cloudSpecConfig := cs.GetCloudSpecConfig()
 	specConfig := cloudSpecConfig.KubernetesSpecConfig
 	kubernetesImageBase := specConfig.MCRKubernetesImageBase
@@ -31,24 +25,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		kubernetesImageBase = o.KubernetesConfig.KubernetesImageBase
 	}
 	k8sComponents := GetK8sComponentsByVersionMap(o.KubernetesConfig)[o.OrchestratorVersion]
-	omsagentImage := "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021"
-	omsagentWinImage := "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-	var workspaceDomain string
-	if cs.Properties.IsCustomCloudProfile() {
-		dependenciesLocation := string(cs.Properties.CustomCloudProfile.DependenciesLocation)
-		workspaceDomain = helpers.GetLogAnalyticsWorkspaceDomain(dependenciesLocation)
-		if strings.EqualFold(dependenciesLocation, "china") {
-			omsagentImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:ciprod10132021"
-			omsagentWinImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-		}
-	} else {
-		workspaceDomain = helpers.GetLogAnalyticsWorkspaceDomain(cloudSpecConfig.CloudName)
-		if strings.EqualFold(cloudSpecConfig.CloudName, "AzureChinaCloud") {
-			omsagentImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:ciprod10132021"
-			omsagentWinImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-		}
-	}
-	workspaceDomain = base64.StdEncoding.EncodeToString([]byte(workspaceDomain))
 
 	defaultTillerAddonsConfig := KubernetesAddon{
 		Name:    common.TillerAddonName,
