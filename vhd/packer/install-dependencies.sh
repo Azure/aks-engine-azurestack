@@ -19,7 +19,6 @@ cat << EOF >> ${VHD_LOGS_FILEPATH}
 apt packages:
   - apt-transport-https
   - auditd
-  - blobfuse
   - ca-certificates
   - ceph-common
   - cgroup-lite
@@ -178,13 +177,6 @@ NVIDIA_DEVICE_PLUGIN_VERSIONS="
 "
 for NVIDIA_DEVICE_PLUGIN_VERSION in ${NVIDIA_DEVICE_PLUGIN_VERSIONS}; do
     CONTAINER_IMAGE="mcr.microsoft.com/oss/nvidia/k8s-device-plugin:${NVIDIA_DEVICE_PLUGIN_VERSION}"
-    loadContainerImage ${CONTAINER_IMAGE}
-    echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-done
-
-BLOBFUSE_FLEXVOLUME_VERSIONS="1.0.8"
-for BLOBFUSE_FLEXVOLUME_VERSION in ${BLOBFUSE_FLEXVOLUME_VERSIONS}; do
-    CONTAINER_IMAGE="mcr.microsoft.com/k8s/flexvolume/blobfuse-flexvolume:${BLOBFUSE_FLEXVOLUME_VERSION}"
     loadContainerImage ${CONTAINER_IMAGE}
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
@@ -409,13 +401,26 @@ df -h
 echo "Using kernel:" >> ${VHD_LOGS_FILEPATH}
 tee -a ${VHD_LOGS_FILEPATH} < /proc/version
 { printf "Installed apt packages:\n"; apt list --installed | grep -v 'Listing...'; } >> ${VHD_LOGS_FILEPATH}
-{
-  echo "Install completed successfully on " $(date)
-  echo "VSTS Build NUMBER: ${BUILD_NUMBER}"
-  echo "VSTS Build ID: ${BUILD_ID}"
-  echo "Commit: ${COMMIT}"
-  echo "Feature flags: ${FEATURE_FLAGS}"
-} >> ${VHD_LOGS_FILEPATH}
+
+if [ "$#" -eq 4 ]; then
+  feature_flags="$1"
+  build_number="$2"
+  build_id="$3"
+  commit="$4"
+
+  if [ -z "$feature_flags" ] || [ -z "$build_number" ] || [ -z "$build_id" ] || [ -z "$commit" ]; then
+      echo "Arguments cannot be empty"
+      exit 1
+  fi
+
+  {
+    echo "Install completed successfully on " $(date)
+    echo "VSTS Build NUMBER: $build_number"
+    echo "VSTS Build ID: $build_id"
+    echo "Commit: $commit"
+    echo "Feature flags: $feature_flags"
+  } >> ${VHD_LOGS_FILEPATH}
+fi
 
 VHD_CG_MANIFEST=/opt/azure/cgmanifest.json
 apt list --installed \

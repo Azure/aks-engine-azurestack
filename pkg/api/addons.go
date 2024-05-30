@@ -97,21 +97,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		Pools: makeDefaultClusterAutoscalerAddonPoolsConfig(cs),
 	}
 
-	defaultBlobfuseFlexVolumeAddonsConfig := KubernetesAddon{
-		Name:    common.BlobfuseFlexVolumeAddonName,
-		Enabled: to.BoolPtr(DefaultBlobfuseFlexVolumeAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.8.0") && !cs.Properties.IsAzureStackCloud()),
-		Containers: []KubernetesContainerSpec{
-			{
-				Name:           common.BlobfuseFlexVolumeAddonName,
-				CPURequests:    "50m",
-				MemoryRequests: "100Mi",
-				CPULimits:      "50m",
-				MemoryLimits:   "100Mi",
-				Image:          k8sComponents[common.BlobfuseFlexVolumeAddonName],
-			},
-		},
-	}
-
 	defaultSMBFlexVolumeAddonsConfig := KubernetesAddon{
 		Name:    common.SMBFlexVolumeAddonName,
 		Enabled: to.BoolPtr(DefaultSMBFlexVolumeAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.8.0") && !cs.Properties.IsAzureStackCloud()),
@@ -780,7 +765,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	defaultAddons := []KubernetesAddon{
 		defaultTillerAddonsConfig,
 		defaultClusterAutoscalerAddonsConfig,
-		defaultBlobfuseFlexVolumeAddonsConfig,
 		defaultSMBFlexVolumeAddonsConfig,
 		defaultDashboardAddonsConfig,
 		defaultMetricsServerAddonsConfig,

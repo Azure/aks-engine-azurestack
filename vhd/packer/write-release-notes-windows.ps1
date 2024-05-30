@@ -6,6 +6,14 @@
         Produces a release notes file for a Windows VHD
 #>
 
+param (
+    [string]$BUILD_NUMBER,
+    [string]$BUILD_ID,
+    [string]$BUILD_REPO,
+    [string]$BUILD_BRANCH,
+    [string]$BUILD_COMMIT
+)
+
 $ErrorActionPreference = "Stop"
 
 $releaseNotesFilePath = "c:\release-notes.txt"
@@ -15,11 +23,11 @@ function Log($Message) {
     $Message | Tee-Object -FilePath $releaseNotesFilePath -Append
 }
 
-Log "Build Number: $env:BUILD_NUMBER"
-Log "Build Id:     $env:BUILD_ID"
-Log "Build Repo:   $env:BUILD_REPO"
-Log "Build Branch: $env:BUILD_BRANCH"
-Log "Commit:       $env:BUILD_COMMIT"
+Log "Build Number: $BUILD_NUMBER"
+Log "Build Id:     $BUILD_ID"
+Log "Build Repo:   $BUILD_REPO"
+Log "Build Branch: $BUILD_BRANCH"
+Log "Commit:       $BUILD_COMMIT"
 Log ""
 
 $vhdId = Get-Content 'c:\vhd-id.txt'

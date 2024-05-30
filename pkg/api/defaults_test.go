@@ -238,7 +238,6 @@ func TestAssignDefaultAddonImages(t *testing.T) {
 	defaultAddonImages := map[string]string{
 		common.TillerAddonName:              specConfig.TillerImageBase + k8sComponents[common.TillerAddonName],
 		common.ClusterAutoscalerAddonName:   specConfig.MCRKubernetesImageBase + k8sComponents[common.ClusterAutoscalerAddonName],
-		common.BlobfuseFlexVolumeAddonName:  k8sComponents[common.BlobfuseFlexVolumeAddonName],
 		common.SMBFlexVolumeAddonName:       k8sComponents[common.SMBFlexVolumeAddonName],
 		common.DashboardAddonName:           k8sComponents[common.DashboardAddonName],
 		common.MetricsServerAddonName:       specConfig.MCRKubernetesImageBase + k8sComponents[common.MetricsServerAddonName],

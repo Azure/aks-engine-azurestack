@@ -81,8 +81,6 @@ const (
 	ACIConnectorAddonName = "aci-connector" // Deprecated
 	// ClusterAutoscalerAddonName is the name of the cluster autoscaler addon deployment
 	ClusterAutoscalerAddonName = "cluster-autoscaler"
-	// BlobfuseFlexVolumeAddonName is the name of the blobfuse flexvolume addon
-	BlobfuseFlexVolumeAddonName = "blobfuse-flexvolume"
 	// SMBFlexVolumeAddonName is the name of the smb flexvolume addon
 	SMBFlexVolumeAddonName = "smb-flexvolume"
 	// DashboardAddonName // Deprecated

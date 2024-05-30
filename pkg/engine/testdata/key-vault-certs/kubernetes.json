@@ -60,20 +60,6 @@
             }
           },
           {
-            "name": "blobfuse-flexvolume",
-            "enabled": true,
-            "containers": [
-              {
-                "name": "blobfuse-flexvolume",
-                "image": "mcr.microsoft.com/k8s/flexvolume/blobfuse-flexvolume:1.0.8",
-                "cpuRequests": "50m",
-                "memoryRequests": "10Mi",
-                "cpuLimits": "50m",
-                "memoryLimits": "10Mi"
-              }
-            ]
-          },
-          {
             "name": "smb-flexvolume",
             "enabled": false,
             "containers": [

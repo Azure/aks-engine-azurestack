@@ -105,11 +105,6 @@ func kubernetesAddonSettingsInit(p *api.Properties) map[string]kubernetesCompone
 			base64Data:      k.GetAddonScript(common.ClusterAutoscalerAddonName),
 			destinationFile: clusterAutoscalerAddonDestinationFilename,
 		},
-		common.BlobfuseFlexVolumeAddonName: {
-			sourceFile:      blobfuseFlexVolumeAddonSourceFilename,
-			base64Data:      k.GetAddonScript(common.BlobfuseFlexVolumeAddonName),
-			destinationFile: blobfuseFlexVolumeAddonDestinationFilename,
-		},
 		common.SMBFlexVolumeAddonName: {
 			sourceFile:      smbFlexVolumeAddonSourceFilename,
 			base64Data:      k.GetAddonScript(common.SMBFlexVolumeAddonName),

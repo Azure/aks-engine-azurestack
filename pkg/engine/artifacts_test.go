@@ -25,7 +25,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 		expectedAzureDiskCSIDriver     kubernetesComponentFileSpec
 		expectedAzureFileCSIDriver     kubernetesComponentFileSpec
 		expectedClusterAutoscaler      kubernetesComponentFileSpec
-		expectedBlobFlexVolume         kubernetesComponentFileSpec
 		expectedSMBFlexVolume          kubernetesComponentFileSpec
 		expectedDashboard              kubernetesComponentFileSpec
 		expectedNvidia                 kubernetesComponentFileSpec
@@ -79,10 +78,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 							},
 							{
 								Name: common.ClusterAutoscalerAddonName,
-								Data: base64Data,
-							},
-							{
-								Name: common.BlobfuseFlexVolumeAddonName,
 								Data: base64Data,
 							},
 							{
@@ -198,11 +193,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      clusterAutoscalerAddonSourceFilename,
 				base64Data:      base64Data,
 				destinationFile: clusterAutoscalerAddonDestinationFilename,
-			},
-			expectedBlobFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      blobfuseFlexVolumeAddonSourceFilename,
-				base64Data:      base64Data,
-				destinationFile: blobfuseFlexVolumeAddonDestinationFilename,
 			},
 			expectedSMBFlexVolume: kubernetesComponentFileSpec{
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
@@ -332,9 +322,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 								Name: common.ClusterAutoscalerAddonName,
 							},
 							{
-								Name: common.BlobfuseFlexVolumeAddonName,
-							},
-							{
 								Name: common.SMBFlexVolumeAddonName,
 							},
 							{
@@ -427,11 +414,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      clusterAutoscalerAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: clusterAutoscalerAddonDestinationFilename,
-			},
-			expectedBlobFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      blobfuseFlexVolumeAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: blobfuseFlexVolumeAddonDestinationFilename,
 			},
 			expectedSMBFlexVolume: kubernetesComponentFileSpec{
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
@@ -566,11 +548,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      clusterAutoscalerAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: clusterAutoscalerAddonDestinationFilename,
-			},
-			expectedBlobFlexVolume: kubernetesComponentFileSpec{
-				sourceFile:      blobfuseFlexVolumeAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: blobfuseFlexVolumeAddonDestinationFilename,
 			},
 			expectedSMBFlexVolume: kubernetesComponentFileSpec{
 				sourceFile:      smbFlexVolumeAddonSourceFilename,
@@ -741,16 +718,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 					}
 					if c.expectedClusterAutoscaler.destinationFile != componentFileSpec[addon].destinationFile {
 						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedClusterAutoscaler.destinationFile)
-					}
-				case common.BlobfuseFlexVolumeAddonName:
-					if c.expectedBlobFlexVolume.sourceFile != componentFileSpec[addon].sourceFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].sourceFile, c.expectedBlobFlexVolume.sourceFile)
-					}
-					if c.expectedBlobFlexVolume.base64Data != componentFileSpec[addon].base64Data {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].base64Data, c.expectedBlobFlexVolume.base64Data)
-					}
-					if c.expectedBlobFlexVolume.destinationFile != componentFileSpec[addon].destinationFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedBlobFlexVolume.destinationFile)
 					}
 				case common.SMBFlexVolumeAddonName:
 					if c.expectedSMBFlexVolume.sourceFile != componentFileSpec[addon].sourceFile {
