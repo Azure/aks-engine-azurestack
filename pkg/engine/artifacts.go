@@ -120,11 +120,6 @@ func kubernetesAddonSettingsInit(p *api.Properties) map[string]kubernetesCompone
 			base64Data:      k.GetAddonScript(common.NVIDIADevicePluginAddonName),
 			destinationFile: nvidiaAddonDestinationFilename,
 		},
-		common.ContainerMonitoringAddonName: {
-			sourceFile:      containerMonitoringAddonSourceFilename,
-			base64Data:      k.GetAddonScript(common.ContainerMonitoringAddonName),
-			destinationFile: containerMonitoringAddonDestinationFilename,
-		},
 		common.IPMASQAgentAddonName: {
 			sourceFile:      ipMasqAgentAddonSourceFilename,
 			base64Data:      k.GetAddonScript(common.IPMASQAgentAddonName),

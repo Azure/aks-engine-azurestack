@@ -98,32 +98,6 @@
             ]
           },
           {
-            "name": "container-monitoring",
-            "enabled": false,
-            "containers": [
-              {
-                "name": "omsagent",
-                "image": "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod03262021",
-                "cpuRequests": "150m",
-                "memoryRequests": "250Mi",
-                "cpuLimits": "1",
-                "memoryLimits": "750Mi"
-              },
-              {
-                "name": "omsagentWin",
-                "image": "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:win-ciprod03262021",
-                "cpuRequests": "150m",
-                "memoryRequests": "250Mi",
-                "cpuLimits": "1",
-                "memoryLimits": "750Mi"
-              }
-            ],
-            "config": {
-              "dockerProviderVersion": "16.0.0-0",
-              "omsAgentVersion": "1.10.0.1"
-            }
-          },
-          {
             "name": "azure-cni-networkmonitor",
             "enabled": true,
             "containers": [

@@ -14,7 +14,6 @@
 * [Disconnected Azure Stack Hub Instances](#disconnected-azure-stack-hub-instances)
 * [AKS Engine Versions](#aks-engine-versions)
 * [Cloud Provider for Azure](#cloud-provider-for-azure)
-* [Azure Monitor for containers](#azure-Monitor-for-containers)
 * [Volume Provisioner: Container Storage Interface Drivers (preview)](#volume-provisioner-container-storage-interface-drivers-preview)
 * [Known Issues and Limitations](#known-issues-and-limitations)
 * [Frequently Asked Questions](#frequently-asked-questions)
@@ -167,10 +166,6 @@ Make sure `linuxProfile.runUnattendedUpgradesOnBootstrap` is set to `"false"` wh
 >\* Starting from Kubernetes v1.21, **only** [Cloud Provider for Azure](#cloud-provider-for-azure) is supported on Azure Stack Hub.
 
 >\** Starting from Kubernetes v1.24, **ONLY** the `containerd` container runtime is supported. Please refer to the section [*Upgrading Kubernetes clusters created with docker container runtime*](#upgrading-kubernetes-clusters-created-with-docker-container-runtime) for more details.
-
-## Azure Monitor for containers
-
-Azure Monitor for containers can be deployed to AKS Engine clusters hosted in Azure Stack Hub Cloud Environments. Refer to [Azure Monitor for containers](../topics/monitoring.md#azure-monitor-for-containers) for more details on how to onboard and monitor clusters, nodes, pods, containers inventory, performance metrics and logs.
 
 ## Cloud Provider for Azure
 

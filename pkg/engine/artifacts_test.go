@@ -28,7 +28,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 		expectedSMBFlexVolume          kubernetesComponentFileSpec
 		expectedDashboard              kubernetesComponentFileSpec
 		expectedNvidia                 kubernetesComponentFileSpec
-		expectedContainerMonitoring    kubernetesComponentFileSpec
 		expectedIPMasqAgent            kubernetesComponentFileSpec
 		expectedAzureCNINetworkMonitor kubernetesComponentFileSpec
 		expectedDNSAutoscaler          kubernetesComponentFileSpec
@@ -91,10 +90,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 							},
 							{
 								Name: common.NVIDIADevicePluginAddonName,
-								Data: base64Data,
-							},
-							{
-								Name: common.ContainerMonitoringAddonName,
 								Data: base64Data,
 							},
 							{
@@ -213,11 +208,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      nvidiaAddonSourceFilename,
 				base64Data:      base64Data,
 				destinationFile: nvidiaAddonDestinationFilename,
-			},
-			expectedContainerMonitoring: kubernetesComponentFileSpec{
-				sourceFile:      containerMonitoringAddonSourceFilename,
-				base64Data:      base64Data,
-				destinationFile: containerMonitoringAddonDestinationFilename,
 			},
 			expectedIPMasqAgent: kubernetesComponentFileSpec{
 				sourceFile:      ipMasqAgentAddonSourceFilename,
@@ -341,9 +331,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 								Name: common.NVIDIADevicePluginAddonName,
 							},
 							{
-								Name: common.ContainerMonitoringAddonName,
-							},
-							{
 								Name: common.IPMASQAgentAddonName,
 							},
 							{
@@ -442,11 +429,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      nvidiaAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: nvidiaAddonDestinationFilename,
-			},
-			expectedContainerMonitoring: kubernetesComponentFileSpec{
-				sourceFile:      containerMonitoringAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: containerMonitoringAddonDestinationFilename,
 			},
 			expectedIPMasqAgent: kubernetesComponentFileSpec{
 				sourceFile:      ipMasqAgentAddonSourceFilename,
@@ -581,11 +563,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 				sourceFile:      nvidiaAddonSourceFilename,
 				base64Data:      "",
 				destinationFile: nvidiaAddonDestinationFilename,
-			},
-			expectedContainerMonitoring: kubernetesComponentFileSpec{
-				sourceFile:      containerMonitoringAddonSourceFilename,
-				base64Data:      "",
-				destinationFile: containerMonitoringAddonDestinationFilename,
 			},
 			expectedIPMasqAgent: kubernetesComponentFileSpec{
 				sourceFile:      ipMasqAgentAddonSourceFilename,
@@ -771,16 +748,6 @@ func TestKubernetesAddonSettingsInit(t *testing.T) {
 					}
 					if c.expectedNvidia.destinationFile != componentFileSpec[addon].destinationFile {
 						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedNvidia.destinationFile)
-					}
-				case common.ContainerMonitoringAddonName:
-					if c.expectedContainerMonitoring.sourceFile != componentFileSpec[addon].sourceFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].sourceFile, c.expectedContainerMonitoring.sourceFile)
-					}
-					if c.expectedContainerMonitoring.base64Data != componentFileSpec[addon].base64Data {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].base64Data, c.expectedContainerMonitoring.base64Data)
-					}
-					if c.expectedContainerMonitoring.destinationFile != componentFileSpec[addon].destinationFile {
-						t.Fatalf("Expected %s to be %s", componentFileSpec[addon].destinationFile, c.expectedContainerMonitoring.destinationFile)
 					}
 				case common.IPMASQAgentAddonName:
 					if c.expectedIPMasqAgent.sourceFile != componentFileSpec[addon].sourceFile {
