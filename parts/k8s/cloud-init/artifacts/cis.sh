@@ -29,8 +29,6 @@ assignFilePermissions() {
     azure-cnimonitor.log
     azure-vnet.log
     kv-driver.log
-    blobfuse-driver.log
-    blobfuse-flexvol-installer.log
     landscape/sysinfo.log
     "
   for FILE in ${FILES}; do

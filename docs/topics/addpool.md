@@ -208,11 +208,11 @@ $ for node in "k8s-pool1-26196714-vmss000000 k8s-pool1-26196714-vmss000001 k8s-p
 node/k8s-pool1-26196714-vmss000000 already cordoned
 node/k8s-pool1-26196714-vmss000001 already cordoned
 node/k8s-pool1-26196714-vmss000002 already cordoned
-WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-z4tcw, kube-system/azure-ip-masq-agent-nmlnv, kube-system/blobfuse-flexvol-installer-zgjxg, kube-system/csi-secrets-store-jdmql, kube-system/csi-secrets-store-provider-azure-9d4j9, kube-system/kube-proxy-glrm6
+WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-z4tcw, kube-system/azure-ip-masq-agent-nmlnv, kube-system/csi-secrets-store-jdmql, kube-system/csi-secrets-store-provider-azure-9d4j9, kube-system/kube-proxy-glrm6
 node/k8s-pool1-26196714-vmss000000 drained
-WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-xhk8d, kube-system/azure-ip-masq-agent-lhj9p, kube-system/blobfuse-flexvol-installer-zdc4w, kube-system/csi-secrets-store-6zbx9, kube-system/csi-secrets-store-provider-azure-q2h6n, kube-system/kube-proxy-728sx
+WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-xhk8d, kube-system/azure-ip-masq-agent-lhj9p, kube-system/csi-secrets-store-6zbx9, kube-system/csi-secrets-store-provider-azure-q2h6n, kube-system/kube-proxy-728sx
 node/k8s-pool1-26196714-vmss000001 drained
-WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-mtx7c, kube-system/azure-ip-masq-agent-5p9lw, kube-system/blobfuse-flexvol-installer-cl9ls, kube-system/csi-secrets-store-provider-azure-vv8rb, kube-system/csi-secrets-store-xnjxn, kube-system/kube-proxy-rpfjt
+WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-mtx7c, kube-system/azure-ip-masq-agent-5p9lw, kube-system/csi-secrets-store-provider-azure-vv8rb, kube-system/csi-secrets-store-xnjxn, kube-system/kube-proxy-rpfjt
 node/k8s-pool1-26196714-vmss000002 drained
 ```
 

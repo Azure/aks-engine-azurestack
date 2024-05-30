@@ -19,7 +19,6 @@ cat << EOF >> ${VHD_LOGS_FILEPATH}
 apt packages:
   - apt-transport-https
   - auditd
-  - blobfuse
   - ca-certificates
   - ceph-common
   - cgroup-lite
@@ -178,13 +177,6 @@ NVIDIA_DEVICE_PLUGIN_VERSIONS="
 "
 for NVIDIA_DEVICE_PLUGIN_VERSION in ${NVIDIA_DEVICE_PLUGIN_VERSIONS}; do
     CONTAINER_IMAGE="mcr.microsoft.com/oss/nvidia/k8s-device-plugin:${NVIDIA_DEVICE_PLUGIN_VERSION}"
-    loadContainerImage ${CONTAINER_IMAGE}
-    echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-done
-
-BLOBFUSE_FLEXVOLUME_VERSIONS="1.0.8"
-for BLOBFUSE_FLEXVOLUME_VERSION in ${BLOBFUSE_FLEXVOLUME_VERSIONS}; do
-    CONTAINER_IMAGE="mcr.microsoft.com/k8s/flexvolume/blobfuse-flexvolume:${BLOBFUSE_FLEXVOLUME_VERSION}"
     loadContainerImage ${CONTAINER_IMAGE}
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done

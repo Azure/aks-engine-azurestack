@@ -13,7 +13,6 @@
 // ../../parts/k8s/addons/azure-policy-deployment.yaml
 // ../../parts/k8s/addons/azuredisk-csi-driver-deployment.yaml
 // ../../parts/k8s/addons/azurefile-csi-driver-deployment.yaml
-// ../../parts/k8s/addons/blobfuse-flexvolume.yaml
 // ../../parts/k8s/addons/calico.yaml
 // ../../parts/k8s/addons/cilium.yaml
 // ../../parts/k8s/addons/cloud-node-manager.yaml
@@ -9911,84 +9910,6 @@ func k8sAddonsAzurefileCsiDriverDeploymentYaml() (*asset, error) {
 	return a, nil
 }
 
-var _k8sAddonsBlobfuseFlexvolumeYaml = []byte(`apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: blobfuse-flexvol-installer
-  namespace: kube-system
-  labels:
-    k8s-app: blobfuse
-    kubernetes.io/cluster-service: "true"
-spec:
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 50%
-  selector:
-    matchLabels:
-      name: blobfuse
-  template:
-    metadata:
-      labels:
-        name: blobfuse
-        kubernetes.io/cluster-service: "true"
-{{- if IsKubernetesVersionGe "1.17.0"}}
-      annotations:
-        cluster-autoscaler.kubernetes.io/daemonset-pod: "true"
-{{- end}}
-    spec:
-      priorityClassName: system-cluster-critical
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: agentpool
-                operator: NotIn
-                values:
-                - flatcar
-      containers:
-      - name: blobfuse-flexvol-installer
-        image: {{ContainerImage "blobfuse-flexvolume"}}
-        imagePullPolicy: IfNotPresent
-        resources:
-          requests:
-            cpu: {{ContainerCPUReqs "blobfuse-flexvolume"}}
-            memory: {{ContainerMemReqs "blobfuse-flexvolume"}}
-          limits:
-            cpu: {{ContainerCPULimits "blobfuse-flexvolume"}}
-            memory: {{ContainerMemLimits "blobfuse-flexvolume"}}
-        volumeMounts:
-        - name: volplugins
-          mountPath: /etc/kubernetes/volumeplugins/
-        - name: varlog
-          mountPath: /var/log/
-      volumes:
-      - name: varlog
-        hostPath:
-          path: /var/log/
-      - name: volplugins
-        hostPath:
-          path: /etc/kubernetes/volumeplugins/
-      nodeSelector:
-        kubernetes.io/os: linux
-`)
-
-func k8sAddonsBlobfuseFlexvolumeYamlBytes() ([]byte, error) {
-	return _k8sAddonsBlobfuseFlexvolumeYaml, nil
-}
-
-func k8sAddonsBlobfuseFlexvolumeYaml() (*asset, error) {
-	bytes, err := k8sAddonsBlobfuseFlexvolumeYamlBytes()
-	if err != nil {
-		return nil, err
-	}
-
-	info := bindataFileInfo{name: "k8s/addons/blobfuse-flexvolume.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
-	a := &asset{bytes: bytes, info: info}
-	return a, nil
-}
-
 var _k8sAddonsCalicoYaml = []byte(`{{- /* Source: calico/templates/calico-config.yaml
 This ConfigMap is used to configure a self-hosted Calico installation. */}}
 kind: ConfigMap
@@ -16403,8 +16324,6 @@ assignFilePermissions() {
     azure-cnimonitor.log
     azure-vnet.log
     kv-driver.log
-    blobfuse-driver.log
-    blobfuse-flexvol-installer.log
     landscape/sysinfo.log
     "
   for FILE in ${FILES}; do
@@ -17686,7 +17605,7 @@ installEtcd() {
   fi
 }
 installDeps() {
-  packages="apt-transport-https blobfuse=1.4.5 ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
+  packages="apt-transport-https ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
@@ -24874,7 +24793,6 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/addons/azure-policy-deployment.yaml":                            k8sAddonsAzurePolicyDeploymentYaml,
 	"k8s/addons/azuredisk-csi-driver-deployment.yaml":                    k8sAddonsAzurediskCsiDriverDeploymentYaml,
 	"k8s/addons/azurefile-csi-driver-deployment.yaml":                    k8sAddonsAzurefileCsiDriverDeploymentYaml,
-	"k8s/addons/blobfuse-flexvolume.yaml":                                k8sAddonsBlobfuseFlexvolumeYaml,
 	"k8s/addons/calico.yaml":                                             k8sAddonsCalicoYaml,
 	"k8s/addons/cilium.yaml":                                             k8sAddonsCiliumYaml,
 	"k8s/addons/cloud-node-manager.yaml":                                 k8sAddonsCloudNodeManagerYaml,
@@ -25027,7 +24945,6 @@ var _bintree = &bintree{nil, map[string]*bintree{
 			"azure-policy-deployment.yaml":          {k8sAddonsAzurePolicyDeploymentYaml, map[string]*bintree{}},
 			"azuredisk-csi-driver-deployment.yaml":  {k8sAddonsAzurediskCsiDriverDeploymentYaml, map[string]*bintree{}},
 			"azurefile-csi-driver-deployment.yaml":  {k8sAddonsAzurefileCsiDriverDeploymentYaml, map[string]*bintree{}},
-			"blobfuse-flexvolume.yaml":              {k8sAddonsBlobfuseFlexvolumeYaml, map[string]*bintree{}},
 			"calico.yaml":                           {k8sAddonsCalicoYaml, map[string]*bintree{}},
 			"cilium.yaml":                           {k8sAddonsCiliumYaml, map[string]*bintree{}},
 			"cloud-node-manager.yaml":               {k8sAddonsCloudNodeManagerYaml, map[string]*bintree{}},

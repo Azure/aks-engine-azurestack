@@ -128,8 +128,6 @@ const (
 	DefaultAzureFileCSIDriverAddonEnabled = false
 	// DefaultClusterAutoscalerAddonEnabled determines the aks-engine provided default for enabling cluster autoscaler addon
 	DefaultClusterAutoscalerAddonEnabled = false
-	// DefaultBlobfuseFlexVolumeAddonEnabled determines the aks-engine provided default for enabling blobfuse flexvolume addon
-	DefaultBlobfuseFlexVolumeAddonEnabled = false
 	// DefaultSMBFlexVolumeAddonEnabled determines the aks-engine provided default for enabling smb flexvolume addon
 	DefaultSMBFlexVolumeAddonEnabled = false
 	// DefaultDashboardAddonEnabled // Deprecated

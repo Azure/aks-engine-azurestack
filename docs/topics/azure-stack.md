@@ -344,7 +344,6 @@ AKS Engine includes a number of optional [addons](../topics/clusterdefinitions.m
 The list below includes the addons currently unsupported on Azure Stack Hub:
 
 * AAD Pod Identity
-* Blobfuse Flex Volume
 * Cluster Autoscaler
 * KeyVault Flex Volume
 * SMB Flex Volume
