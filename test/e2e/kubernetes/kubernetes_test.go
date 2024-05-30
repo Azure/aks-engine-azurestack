@@ -1188,7 +1188,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			timeout := cfg.Timeout
 			for _, addonName := range []string{common.CoreDNSAddonName, common.TillerAddonName, common.AADPodIdentityAddonName,
 				common.AzureDiskCSIDriverAddonName, common.AzureFileCSIDriverAddonName, common.CloudNodeManagerAddonName, common.ClusterAutoscalerAddonName,
-				common.BlobfuseFlexVolumeAddonName, common.SMBFlexVolumeAddonName, common.DashboardAddonName,
+				common.SMBFlexVolumeAddonName, common.DashboardAddonName,
 				common.MetricsServerAddonName, common.NVIDIADevicePluginAddonName, common.ContainerMonitoringAddonName,
 				common.CalicoAddonName, common.AzureNetworkPolicyAddonName, common.IPMASQAgentAddonName,
 				common.AzurePolicyAddonName, common.NodeProblemDetectorAddonName, common.AntreaAddonName, common.FlannelAddonName,
@@ -1196,8 +1196,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				var addonPods = []string{addonName}
 				var addonNamespace = "kube-system"
 				switch addonName {
-				case common.BlobfuseFlexVolumeAddonName:
-					addonPods = []string{"blobfuse-flexvol-installer"}
 				case common.SMBFlexVolumeAddonName:
 					addonPods = []string{"smb-flexvol-installer"}
 				case common.ContainerMonitoringAddonName:

@@ -95,7 +95,7 @@ error: unable to drain node "k8s-agentpool1-10367588-vmss000000", aborting comma
 There are pending nodes to be drained:
  k8s-agentpool1-10367588-vmss000000
  k8s-agentpool1-10367588-vmss000001
-error: cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore): kube-system/azure-cni-networkmonitor-wvrg7, kube-system/azure-ip-masq-agent-qqlvf, kube-system/blobfuse-flexvol-installer-9q45x, kube-system/csi-secrets-store-provider-azure-jsgkh, kube-system/csi-secrets-store-q5wnw, kube-system/kube-proxy-cgh7g
+error: cannot delete DaemonSet-managed Pods (use --ignore-daemonsets to ignore): kube-system/azure-cni-networkmonitor-wvrg7, kube-system/azure-ip-masq-agent-qqlvf, kube-system/csi-secrets-store-provider-azure-jsgkh, kube-system/csi-secrets-store-q5wnw, kube-system/kube-proxy-cgh7g
 ```
 
 It's always best to do a vanilla `kubectl drain` first to see the set of scheduled pods that require a little more forceful removal, so that you can be extra sure that you actually want to do this. In our case, we're O.K. with removing those daemonsets, so we proceed to add the `--ignore-daemonsets` option:
@@ -104,11 +104,11 @@ It's always best to do a vanilla `kubectl drain` first to see the set of schedul
 $ for node in "k8s-agentpool1-10367588-vmss000000 k8s-agentpool1-10367588-vmss000001"; do kubectl drain $node --ignore-daemonsets; done
 node/k8s-agentpool1-10367588-vmss000000 already cordoned
 node/k8s-agentpool1-10367588-vmss000001 already cordoned
-WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-wvrg7, kube-system/azure-ip-masq-agent-qqlvf, kube-system/blobfuse-flexvol-installer-9q45x, kube-system/csi-secrets-store-provider-azure-jsgkh, kube-system/csi-secrets-store-q5wnw, kube-system/kube-proxy-cgh7g
+WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-wvrg7, kube-system/azure-ip-masq-agent-qqlvf, kube-system/csi-secrets-store-provider-azure-jsgkh, kube-system/csi-secrets-store-q5wnw, kube-system/kube-proxy-cgh7g
 evicting pod "metrics-server-bb7db87bc-xzxld"
 pod/metrics-server-bb7db87bc-xzxld evicted
 node/k8s-agentpool1-10367588-vmss000000 evicted
-WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-cvfqs, kube-system/azure-ip-masq-agent-p755d, kube-system/blobfuse-flexvol-installer-stc2x, kube-system/csi-secrets-store-fs9xr, kube-system/csi-secrets-store-provider-azure-7qhqt, kube-system/kube-proxy-bpdvl
+WARNING: ignoring DaemonSet-managed Pods: kube-system/azure-cni-networkmonitor-cvfqs, kube-system/azure-ip-masq-agent-p755d, kube-system/csi-secrets-store-fs9xr, kube-system/csi-secrets-store-provider-azure-7qhqt, kube-system/kube-proxy-bpdvl
 evicting pod "coredns-autoscaler-5c7db64899-kp64h"
 pod/coredns-autoscaler-5c7db64899-kp64h evicted
 node/k8s-agentpool1-10367588-vmss000001 evicted

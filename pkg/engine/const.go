@@ -156,8 +156,6 @@ const (
 	azureFileCSIAddonDestinationFilename          string = "azurefile-csi-driver-deployment.yaml"
 	clusterAutoscalerAddonSourceFilename          string = "cluster-autoscaler.yaml"
 	clusterAutoscalerAddonDestinationFilename     string = "cluster-autoscaler.yaml"
-	blobfuseFlexVolumeAddonSourceFilename         string = "blobfuse-flexvolume.yaml"
-	blobfuseFlexVolumeAddonDestinationFilename    string = "blobfuse-flexvolume.yaml"
 	smbFlexVolumeAddonSourceFilename              string = "smb-flexvolume.yaml"
 	smbFlexVolumeAddonDestinationFilename         string = "smb-flexvolume.yaml"
 	dashboardAddonSourceFilename                  string = "kubernetes-dashboard.yaml" // Deprecated

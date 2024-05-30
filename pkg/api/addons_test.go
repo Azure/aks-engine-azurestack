@@ -4472,49 +4472,6 @@ func TestSetAddonsConfig(t *testing.T) {
 			}, "1.15.4"),
 		},
 		{
-			name: "blobfuse flexvolume addon enabled",
-			cs: &ContainerService{
-				Properties: &Properties{
-					OrchestratorProfile: &OrchestratorProfile{
-						OrchestratorVersion: "1.20.5",
-						KubernetesConfig: &KubernetesConfig{
-							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
-							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
-							KubeletConfig: map[string]string{
-								"--cluster-domain": "cluster.local",
-							},
-							ClusterSubnet: DefaultKubernetesSubnet,
-							ProxyMode:     KubeProxyModeIPTables,
-							NetworkPlugin: NetworkPluginAzure,
-							Addons: []KubernetesAddon{
-								{
-									Name:    common.BlobfuseFlexVolumeAddonName,
-									Enabled: to.BoolPtr(true),
-								},
-							},
-						},
-					},
-				},
-			},
-			isUpgrade: false,
-			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
-				{
-					Name:    common.BlobfuseFlexVolumeAddonName,
-					Enabled: to.BoolPtr(true),
-					Containers: []KubernetesContainerSpec{
-						{
-							Name:           common.BlobfuseFlexVolumeAddonName,
-							CPURequests:    "50m",
-							MemoryRequests: "100Mi",
-							CPULimits:      "50m",
-							MemoryLimits:   "100Mi",
-							Image:          k8sComponentsByVersionMap["1.20.5"][common.BlobfuseFlexVolumeAddonName],
-						},
-					},
-				},
-			}, "1.20.5"),
-		},
-		{
 			name: "csi secrets store addon enabled",
 			cs: &ContainerService{
 				Properties: &Properties{
@@ -4630,7 +4587,6 @@ func TestSetAddonsConfig(t *testing.T) {
 			for _, addonName := range []string{
 				common.TillerAddonName,
 				common.ClusterAutoscalerAddonName,
-				common.BlobfuseFlexVolumeAddonName,
 				common.SMBFlexVolumeAddonName,
 				common.DashboardAddonName,
 				common.MetricsServerAddonName,
