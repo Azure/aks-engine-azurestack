@@ -981,7 +981,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{Name: common.ContainerMonitoringAddonName,
-			Enabled: to.BoolPtr(true)},
+			Enabled: helpers.PointerToBool(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err == nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -2365,7 +2365,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.ContainerMonitoringAddonName,
-								Enabled: to.BoolPtr(true),
+								Enabled: helpers.PointerToBool(true),
 							},
 						},
 					},
