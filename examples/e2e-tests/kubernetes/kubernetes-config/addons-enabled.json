@@ -17,10 +17,6 @@
             "enabled": true
           },
           {
-            "name": "container-monitoring",
-            "enabled": true
-          },
-          {
             "name": "azure-policy",
             "enabled": true
           },

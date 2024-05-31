@@ -1440,78 +1440,6 @@ func TestSetAddonsConfig(t *testing.T) {
 			}, "1.15.4"),
 		},
 		{
-			name: "container-monitoring addon enabled",
-			cs: &ContainerService{
-				Properties: &Properties{
-					OrchestratorProfile: &OrchestratorProfile{
-						OrchestratorVersion: "1.15.4",
-						KubernetesConfig: &KubernetesConfig{
-							KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR,
-							DNSServiceIP:            DefaultKubernetesDNSServiceIP,
-							KubeletConfig: map[string]string{
-								"--cluster-domain": "cluster.local",
-							},
-							ClusterSubnet: DefaultKubernetesSubnet,
-							ProxyMode:     KubeProxyModeIPTables,
-							NetworkPlugin: NetworkPluginAzure,
-							Addons: []KubernetesAddon{
-								{
-									Name:    common.ContainerMonitoringAddonName,
-									Enabled: helpers.PointerToBool(true),
-								},
-							},
-						},
-					},
-				},
-			},
-			isUpgrade: false,
-			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
-				{
-					Name:    common.ContainerMonitoringAddonName,
-					Enabled: helpers.PointerToBool(true),
-					Config: map[string]string{
-						"omsAgentVersion":       "1.10.0.1",
-						"dockerProviderVersion": "16.0.0-0",
-						"schema-versions":       "v1",
-						"clusterName":           "aks-engine-cluster",
-						"workspaceDomain":       "b3BpbnNpZ2h0cy5henVyZS5jb20=",
-					},
-					Containers: []KubernetesContainerSpec{
-						{
-							Name:           "omsagent",
-							CPURequests:    "75m",
-							MemoryRequests: "225Mi",
-							CPULimits:      "500m",
-							MemoryLimits:   "600Mi",
-							Image:          "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021",
-						},
-						{
-							Name:           "omsagent-rs",
-							CPURequests:    "150m",
-							MemoryRequests: "250Mi",
-							CPULimits:      "1",
-							MemoryLimits:   "1Gi",
-							Image:          "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021",
-						},
-						{
-							Name:           "omsagent-prometheus",
-							CPURequests:    "75m",
-							MemoryRequests: "225Mi",
-							CPULimits:      "500m",
-							MemoryLimits:   "1Gi",
-							Image:          "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021",
-						},
-						{
-							Name:         "omsagent-win",
-							CPULimits:    "200m",
-							MemoryLimits: "600Mi",
-							Image:        "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:win-ciprod10132021",
-						},
-					},
-				},
-			}, "1.15.4"),
-		},
-		{
 			name: "Azure Network Policy addon enabled",
 			cs: &ContainerService{
 				Properties: &Properties{
@@ -4591,7 +4519,6 @@ func TestSetAddonsConfig(t *testing.T) {
 				common.DashboardAddonName,
 				common.MetricsServerAddonName,
 				common.NVIDIADevicePluginAddonName,
-				common.ContainerMonitoringAddonName,
 				common.IPMASQAgentAddonName,
 				common.AzureNetworkPolicyAddonName,
 				common.CalicoAddonName,

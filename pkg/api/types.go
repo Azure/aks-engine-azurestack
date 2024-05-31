@@ -1800,11 +1800,6 @@ func (k *KubernetesConfig) IsAADPodIdentityEnabled() bool {
 	return k.IsAddonEnabled(common.AADPodIdentityAddonName)
 }
 
-// IsContainerMonitoringAddonEnabled checks if the container monitoring addon is enabled
-func (k *KubernetesConfig) IsContainerMonitoringAddonEnabled() bool {
-	return k.IsAddonEnabled(common.ContainerMonitoringAddonName)
-}
-
 // IsClusterAutoscalerEnabled checks if the cluster autoscaler addon is enabled
 func (k *KubernetesConfig) IsClusterAutoscalerEnabled() bool {
 	return k.IsAddonEnabled(common.ClusterAutoscalerAddonName)

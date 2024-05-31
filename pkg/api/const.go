@@ -160,8 +160,8 @@ const (
 	DefaultMetricsServerAddonEnabled = true
 	// DefaultNVIDIADevicePluginAddonEnabled determines the aks-engine provided default for enabling NVIDIA Device Plugin
 	DefaultNVIDIADevicePluginAddonEnabled = false
-	// DefaultContainerMonitoringAddonEnabled determines the aks-engine provided default for enabling kubernetes container monitoring addon
-	DefaultContainerMonitoringAddonEnabled = false
+	// DefaultContainerMonitoringAddonEnabled // Deprecated
+	DefaultContainerMonitoringAddonEnabled = false // Deprecated
 	// DefaultIPMasqAgentAddonEnabled enables the ip-masq-agent addon
 	DefaultIPMasqAgentAddonEnabled = true
 	// DefaultArcAddonEnabled determines the aks-engine provided default for enabling arc addon

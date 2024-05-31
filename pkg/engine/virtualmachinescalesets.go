@@ -65,16 +65,6 @@ func CreateMasterVMSS(cs *api.ContainerService) VirtualMachineScaleSetARM {
 		"poolName":           helpers.PointerToString("master"),
 	}
 
-	if k8sConfig != nil && k8sConfig.IsContainerMonitoringAddonEnabled() {
-		addon := k8sConfig.GetAddonByName(common.ContainerMonitoringAddonName)
-		clusterDNSPrefix := "aks-engine-cluster"
-		if cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.DNSPrefix != "" {
-			clusterDNSPrefix = cs.Properties.MasterProfile.DNSPrefix
-		}
-		vmScaleSetTags["logAnalyticsWorkspaceResourceId"] = helpers.PointerToString(addon.Config["logAnalyticsWorkspaceResourceId"])
-		vmScaleSetTags["clusterName"] = helpers.PointerToString(clusterDNSPrefix)
-	}
-
 	virtualMachine := compute.VirtualMachineScaleSet{
 		Location: helpers.PointerToString("[variables('location')]"),
 		Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmss')]"),

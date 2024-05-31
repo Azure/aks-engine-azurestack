@@ -326,18 +326,6 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 		prop.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig["--horizontal-pod-autoscaler-cpu-initialization-period"] = "30s"
 	}
 
-	if config.LogAnalyticsWorkspaceKey != "" && len(prop.OrchestratorProfile.KubernetesConfig.Addons) > 0 {
-		for _, addOn := range prop.OrchestratorProfile.KubernetesConfig.Addons {
-			if addOn.Name == "container-monitoring" {
-				if addOn.Config == nil {
-					addOn.Config = make(map[string]string)
-				}
-				addOn.Config["workspaceKey"] = config.LogAnalyticsWorkspaceKey
-				break
-			}
-		}
-	}
-
 	if len(prop.OrchestratorProfile.KubernetesConfig.Addons) > 0 {
 		for _, addon := range prop.OrchestratorProfile.KubernetesConfig.Addons {
 			if addon.Name == common.AzureArcOnboardingAddonName && helpers.Bool(addon.Enabled) {

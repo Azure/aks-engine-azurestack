@@ -4,7 +4,6 @@
 package api
 
 import (
-	"encoding/base64"
 	"fmt"
 	"strconv"
 	"strings"
@@ -19,10 +18,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	if cs.Properties != nil {
 		o = cs.Properties.OrchestratorProfile
 	}
-	clusterDNSPrefix := "aks-engine-cluster"
-	if cs != nil && cs.Properties != nil && cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.DNSPrefix != "" {
-		clusterDNSPrefix = cs.Properties.MasterProfile.DNSPrefix
-	}
 	cloudSpecConfig := cs.GetCloudSpecConfig()
 	specConfig := cloudSpecConfig.KubernetesSpecConfig
 	kubernetesImageBase := specConfig.MCRKubernetesImageBase
@@ -30,24 +25,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		kubernetesImageBase = o.KubernetesConfig.KubernetesImageBase
 	}
 	k8sComponents := GetK8sComponentsByVersionMap(o.KubernetesConfig)[o.OrchestratorVersion]
-	omsagentImage := "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:ciprod10132021"
-	omsagentWinImage := "mcr.microsoft.com/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-	var workspaceDomain string
-	if cs.Properties.IsCustomCloudProfile() {
-		dependenciesLocation := string(cs.Properties.CustomCloudProfile.DependenciesLocation)
-		workspaceDomain = helpers.GetLogAnalyticsWorkspaceDomain(dependenciesLocation)
-		if strings.EqualFold(dependenciesLocation, "china") {
-			omsagentImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:ciprod10132021"
-			omsagentWinImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-		}
-	} else {
-		workspaceDomain = helpers.GetLogAnalyticsWorkspaceDomain(cloudSpecConfig.CloudName)
-		if strings.EqualFold(cloudSpecConfig.CloudName, "AzureChinaCloud") {
-			omsagentImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:ciprod10132021"
-			omsagentWinImage = "mcr.azk8s.cn/azuremonitor/containerinsights/ciprod:win-ciprod10132021"
-		}
-	}
-	workspaceDomain = base64.StdEncoding.EncodeToString([]byte(workspaceDomain))
 
 	defaultTillerAddonsConfig := KubernetesAddon{
 		Name:    common.TillerAddonName,
@@ -186,52 +163,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 				CPULimits:      "50m",
 				MemoryLimits:   "100Mi",
 				Image:          specConfig.NVIDIAImageBase + k8sComponents[common.NVIDIADevicePluginAddonName],
-			},
-		},
-	}
-
-	// for windows container, no requests should be specified or limits and requests should be same
-	// ref: https://kubernetes.io/docs/setup/production-environment/windows/intro-windows-in-kubernetes/#memory-reservations-and-handling
-	defaultContainerMonitoringAddonsConfig := KubernetesAddon{
-		Name:    common.ContainerMonitoringAddonName,
-		Enabled: helpers.PointerToBool(DefaultContainerMonitoringAddonEnabled && !cs.Properties.IsAzureStackCloud()),
-		Config: map[string]string{
-			"omsAgentVersion":       "1.10.0.1",
-			"dockerProviderVersion": "16.0.0-0",
-			"schema-versions":       "v1",
-			"clusterName":           clusterDNSPrefix,
-			"workspaceDomain":       workspaceDomain,
-		},
-		Containers: []KubernetesContainerSpec{
-			{
-				Name:           "omsagent",
-				CPURequests:    "75m",
-				MemoryRequests: "225Mi",
-				CPULimits:      "500m",
-				MemoryLimits:   "600Mi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:           "omsagent-rs",
-				CPURequests:    "150m",
-				MemoryRequests: "250Mi",
-				CPULimits:      "1",
-				MemoryLimits:   "1Gi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:           "omsagent-prometheus",
-				CPURequests:    "75m",
-				MemoryRequests: "225Mi",
-				CPULimits:      "500m",
-				MemoryLimits:   "1Gi",
-				Image:          omsagentImage,
-			},
-			{
-				Name:         "omsagent-win",
-				CPULimits:    "200m",
-				MemoryLimits: "600Mi",
-				Image:        omsagentWinImage,
 			},
 		},
 	}
@@ -838,7 +769,6 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		defaultDashboardAddonsConfig,
 		defaultMetricsServerAddonsConfig,
 		defaultNVIDIADevicePluginAddonsConfig,
-		defaultContainerMonitoringAddonsConfig,
 		defaultAzureNetworkPolicyAddonsConfig,
 		defaultCloudNodeManagerAddonsConfig,
 		defaultIPMasqAgentAddonsConfig,
