@@ -67,6 +67,31 @@ func IsFalseBoolPointer(b *bool) bool {
 	return false
 }
 
+// Bool returns a bool value for the passed bool pointer. It returns false if the pointer is nil.
+func Bool(b *bool) bool {
+	if b != nil {
+		return *b
+	}
+	return false
+}
+
+// String returns a string value for the passed string pointer. It returns the empty string if the
+// pointer is nil.
+func String(s *string) string {
+	if s != nil {
+		return *s
+	}
+	return ""
+}
+
+// Int returns an int value for the passed int pointer. It returns 0 if the pointer is nil.
+func Int(i *int) int {
+	if i != nil {
+		return *i
+	}
+	return 0
+}
+
 // PointerToBool returns a pointer to a bool
 func PointerToBool(b bool) *bool {
 	p := b

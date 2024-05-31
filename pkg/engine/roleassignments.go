@@ -5,6 +5,7 @@ package engine
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/services/preview/authorization/mgmt/2018-09-01-preview/authorization"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -44,7 +45,7 @@ func createKubernetesSpAppGIdentityOperatorAccessRoleAssignment(prop *api.Proper
 	// determine objectId of the cluster identity used by the kubernetes cluster
 	if prop.OrchestratorProfile != nil &&
 		prop.OrchestratorProfile.KubernetesConfig != nil &&
-		to.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		helpers.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 		kubernetesSpObjectID = "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('userAssignedID'))).principalId]"
 	} else if prop.ServicePrincipalProfile.ObjectID != "" {
 		kubernetesSpObjectID = prop.ServicePrincipalProfile.ObjectID

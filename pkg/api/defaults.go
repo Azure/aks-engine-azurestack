@@ -399,7 +399,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 			a.OrchestratorProfile.KubernetesConfig.EtcdStorageLimitGB = DefaultEtcdStorageLimitGB
 		}
 
-		if to.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) {
+		if helpers.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) {
 			if "" == a.OrchestratorProfile.KubernetesConfig.EtcdEncryptionKey {
 				a.OrchestratorProfile.KubernetesConfig.EtcdEncryptionKey = generateEtcdEncryptionKey()
 			}
@@ -1232,7 +1232,7 @@ func (cs *ContainerService) getDefaultKubernetesClusterSubnetIPv6() string {
 
 func (cs *ContainerService) setCSIProxyDefaults() {
 	p := cs.Properties
-	useCloudControllerManager := p.OrchestratorProfile.KubernetesConfig != nil && to.Bool(p.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
+	useCloudControllerManager := p.OrchestratorProfile.KubernetesConfig != nil && helpers.Bool(p.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
 	w := p.WindowsProfile
 	// We should enable CSI proxy if:
 	// 1. enableCSIProxy is not defined and cloud-controller-manager

@@ -117,8 +117,8 @@ func TestPointerToBool(t *testing.T) {
 		t.Fatal("expected to.BoolPtr(true) to return true")
 	}
 
-	if !to.Bool(ret) {
-		t.Fatal("expected to.Bool(*true) to return true")
+	if !Bool(ret) {
+		t.Fatal("expected helpers.Bool(*true) to return true")
 	}
 
 	boolVar = false
@@ -136,8 +136,8 @@ func TestPointerToBool(t *testing.T) {
 		t.Fatal("expected to.BoolPtr(false) to return false")
 	}
 
-	if to.Bool(ret) {
-		t.Fatal("expected to.Bool(*true) to return false")
+	if Bool(ret) {
+		t.Fatal("expected helpers.Bool(*true) to return false")
 	}
 
 	boolVar = true
@@ -146,8 +146,8 @@ func TestPointerToBool(t *testing.T) {
 		t.Fatal("expected IsFalseBoolPointer(*true) to return false")
 	}
 
-	if !to.Bool(ret) {
-		t.Fatal("expected !to.Bool(*true) to return false")
+	if !Bool(ret) {
+		t.Fatal("expected !helpers.Bool(*true) to return false")
 	}
 }
 

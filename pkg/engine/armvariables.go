@@ -13,8 +13,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
-
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func GetKubernetesVariables(cs *api.ContainerService) (map[string]interface{}, error) {
@@ -71,12 +69,12 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 	var useInstanceMetadata *bool
 	var userAssignedIDReference string
 	if kubernetesConfig != nil {
-		useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
+		useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
 		userAssignedID = kubernetesConfig.UserAssignedIDEnabled()
 		userAssignedClientID = useManagedIdentity && kubernetesConfig.UserAssignedClientID != ""
-		enableEncryptionWithExternalKms = to.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)
+		enableEncryptionWithExternalKms = helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)
 		useInstanceMetadata = kubernetesConfig.UseInstanceMetadata
-		excludeMasterFromStandardLB = to.Bool(kubernetesConfig.ExcludeMasterFromStandardLB)
+		excludeMasterFromStandardLB = helpers.Bool(kubernetesConfig.ExcludeMasterFromStandardLB)
 		maxLoadBalancerCount = kubernetesConfig.MaximumLoadBalancerRuleCount
 		provisionJumpbox = kubernetesConfig.PrivateJumpboxProvision()
 
@@ -110,7 +108,7 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 		"maxVMsPerPool":                 100,
 		"useManagedIdentityExtension":   strconv.FormatBool(useManagedIdentity),
 		"userAssignedIDReference":       userAssignedIDReference,
-		"useInstanceMetadata":           strconv.FormatBool(to.Bool(useInstanceMetadata)),
+		"useInstanceMetadata":           strconv.FormatBool(helpers.Bool(useInstanceMetadata)),
 		"loadBalancerSku":               loadBalancerSku,
 		"excludeMasterFromStandardLB":   strconv.FormatBool(excludeMasterFromStandardLB),
 		"maximumLoadBalancerRuleCount":  maxLoadBalancerCount,
@@ -227,7 +225,7 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 	clusterAutoscalerEnabled := "false"
 
 	if masterProfile != nil {
-		auditDEnabled = strconv.FormatBool(to.Bool(masterProfile.AuditDEnabled))
+		auditDEnabled = strconv.FormatBool(helpers.Bool(masterProfile.AuditDEnabled))
 		if kubernetesConfig != nil {
 			clusterAutoscalerEnabled = strconv.FormatBool(kubernetesConfig.IsAddonEnabled(common.ClusterAutoscalerAddonName))
 		}

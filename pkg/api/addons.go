@@ -885,7 +885,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		}
 		for name, config := range componentry {
 			if i := getAddonsIndexByName(o.KubernetesConfig.Addons, name); i > -1 {
-				if !to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+				if !helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 					o.KubernetesConfig.Addons[i] = config
 				}
 			}
@@ -895,7 +895,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Ensure cloud-node-manager is enabled on appropriate upgrades for Azure Stack cloud
 	if isUpgrade &&
 		cs.Properties.IsAzureStackCloud() &&
-		to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
+		helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 		// Force enabling cloud-node-manager addon
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.CloudNodeManagerAddonName); i > -1 {
 			o.KubernetesConfig.Addons[i] = defaultCloudNodeManagerAddonsConfig
@@ -905,7 +905,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Back-compat for older addon specs of cluster-autoscaler
 	if isUpgrade {
 		i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.ClusterAutoscalerAddonName)
-		if i > -1 && to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+		if i > -1 && helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 			if o.KubernetesConfig.Addons[i].Pools == nil {
 				log.Warnf("This cluster upgrade operation will enable the per-pool cluster-autoscaler addon.\n")
 				var pools []AddonNodePoolsConfig
@@ -1014,7 +1014,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	// Specific back-compat business logic for deprecated "kube-proxy-daemonset" addon
 	if i := getAddonsIndexByName(o.KubernetesConfig.Addons, "kube-proxy-daemonset"); i > -1 {
-		if to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+		if helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 			if j := getAddonsIndexByName(o.KubernetesConfig.Addons, common.KubeProxyAddonName); j > -1 {
 				// Copy data from deprecated addon spec to the current "kube-proxy" addon
 				o.KubernetesConfig.Addons[j] = KubernetesAddon{
@@ -1062,7 +1062,7 @@ func assignDefaultAddonVals(addon, defaults KubernetesAddon, isUpgrade bool) Kub
 	if addon.Enabled == nil {
 		addon.Enabled = defaults.Enabled
 	}
-	if !to.Bool(addon.Enabled) {
+	if !helpers.Bool(addon.Enabled) {
 		return KubernetesAddon{
 			Name:    addon.Name,
 			Enabled: addon.Enabled,

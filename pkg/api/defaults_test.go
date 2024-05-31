@@ -495,8 +495,8 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	isUpdate = false
 	addonWithDefaults.Enabled = to.BoolPtr(true)
 	modifiedAddon = assignDefaultAddonVals(customAddon, addonWithDefaults, isUpdate)
-	if to.Bool(modifiedAddon.Enabled) != to.Bool(addonWithDefaults.Enabled) {
-		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", to.Bool(addonWithDefaults.Enabled), to.Bool(modifiedAddon.Enabled))
+	if helpers.Bool(modifiedAddon.Enabled) != helpers.Bool(addonWithDefaults.Enabled) {
+		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", helpers.Bool(addonWithDefaults.Enabled), helpers.Bool(modifiedAddon.Enabled))
 	}
 
 	customAddon = KubernetesAddon{
@@ -511,8 +511,8 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	isUpdate = false
 	addonWithDefaults.Enabled = to.BoolPtr(false)
 	modifiedAddon = assignDefaultAddonVals(customAddon, addonWithDefaults, isUpdate)
-	if to.Bool(modifiedAddon.Enabled) != to.Bool(addonWithDefaults.Enabled) {
-		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", to.Bool(addonWithDefaults.Enabled), to.Bool(modifiedAddon.Enabled))
+	if helpers.Bool(modifiedAddon.Enabled) != helpers.Bool(addonWithDefaults.Enabled) {
+		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", helpers.Bool(addonWithDefaults.Enabled), helpers.Bool(modifiedAddon.Enabled))
 	}
 }
 
@@ -531,12 +531,12 @@ func TestAcceleratedNetworking(t *testing.T) {
 	}
 
 	// In upgrade scenario, nil AcceleratedNetworkingEnabled should always render as false (i.e., we never turn on this feature on an existing vm that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
-		t.Errorf("expected nil acceleratedNetworkingEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
+		t.Errorf("expected nil acceleratedNetworkingEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
 	}
 	// In upgrade scenario, nil AcceleratedNetworkingEnabledWindows should always render as false (i.e., we never turn on this feature on an existing vm that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
-		t.Errorf("expected nil acceleratedNetworkingEnabledWindows to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
+		t.Errorf("expected nil acceleratedNetworkingEnabledWindows to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -553,12 +553,12 @@ func TestAcceleratedNetworking(t *testing.T) {
 	}
 
 	// In scale scenario, nil AcceleratedNetworkingEnabled should always render as false (i.e., we never turn on this feature on an existing agent pool / VMSS that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
-		t.Errorf("expected nil acceleratedNetworkingEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
+		t.Errorf("expected nil acceleratedNetworkingEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
 	}
 	// In scale scenario, nil AcceleratedNetworkingEnabledWindows should always render as false (i.e., we never turn on this feature on an existing VM that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
-		t.Errorf("expected nil acceleratedNetworkingEnabledWindows to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
+		t.Errorf("expected nil acceleratedNetworkingEnabledWindows to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -578,13 +578,13 @@ func TestAcceleratedNetworking(t *testing.T) {
 
 	// In create scenario, nil AcceleratedNetworkingEnabled should be the defaults
 	acceleratedNetworkingEnabled := DefaultAcceleratedNetworking
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) != acceleratedNetworkingEnabled {
-		t.Errorf("expected default acceleratedNetworkingEnabled to be %t, instead got %t", acceleratedNetworkingEnabled, to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) != acceleratedNetworkingEnabled {
+		t.Errorf("expected default acceleratedNetworkingEnabled to be %t, instead got %t", acceleratedNetworkingEnabled, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
 	}
 	// In create scenario, nil AcceleratedNetworkingEnabledWindows should be the defaults
 	acceleratedNetworkingEnabled = DefaultAcceleratedNetworkingWindowsEnabled
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) != acceleratedNetworkingEnabled {
-		t.Errorf("expected default acceleratedNetworkingEnabledWindows to be %t, instead got %t", acceleratedNetworkingEnabled, to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) != acceleratedNetworkingEnabled {
+		t.Errorf("expected default acceleratedNetworkingEnabledWindows to be %t, instead got %t", acceleratedNetworkingEnabled, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -603,12 +603,12 @@ func TestAcceleratedNetworking(t *testing.T) {
 	}
 
 	// In non-supported VM SKU scenario, acceleratedNetworkingEnabled should always be false
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
-		t.Errorf("expected acceleratedNetworkingEnabled to be %t for an unsupported VM SKU, instead got %t", false, to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled) {
+		t.Errorf("expected acceleratedNetworkingEnabled to be %t for an unsupported VM SKU, instead got %t", false, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabled))
 	}
 	// In non-supported VM SKU scenario, acceleratedNetworkingEnabledWindows should always be false
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
-		t.Errorf("expected acceleratedNetworkingEnabledWindows to be %t for an unsupported VM SKU, instead got %t", false, to.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows) {
+		t.Errorf("expected acceleratedNetworkingEnabledWindows to be %t for an unsupported VM SKU, instead got %t", false, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows))
 	}
 }
 
@@ -626,8 +626,8 @@ func TestVMSSOverProvisioning(t *testing.T) {
 	}
 
 	// In upgrade scenario, nil AcceleratedNetworkingEnabled should always render as false (i.e., we never turn on this feature on an existing vm that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
-		t.Errorf("expected nil VMSSOverProvisioningEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
+		t.Errorf("expected nil VMSSOverProvisioningEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -643,8 +643,8 @@ func TestVMSSOverProvisioning(t *testing.T) {
 	}
 
 	// In scale scenario, nil VMSSOverProvisioningEnabled should always render as false (i.e., we never turn on this feature on an existing agent pool / VMSS that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
-		t.Errorf("expected nil VMSSOverProvisioningEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
+		t.Errorf("expected nil VMSSOverProvisioningEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -661,8 +661,8 @@ func TestVMSSOverProvisioning(t *testing.T) {
 
 	// In create scenario, nil VMSSOverProvisioningEnabled should be the defaults
 	vmssOverProvisioningEnabled := DefaultVMSSOverProvisioningEnabled
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) != vmssOverProvisioningEnabled {
-		t.Errorf("expected default VMSSOverProvisioningEnabled to be %t, instead got %t", vmssOverProvisioningEnabled, to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) != vmssOverProvisioningEnabled {
+		t.Errorf("expected default VMSSOverProvisioningEnabled to be %t, instead got %t", vmssOverProvisioningEnabled, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -678,8 +678,8 @@ func TestVMSSOverProvisioning(t *testing.T) {
 	}
 
 	// In create scenario with explicit true, VMSSOverProvisioningEnabled should be true
-	if !to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
-		t.Errorf("expected VMSSOverProvisioningEnabled to be true, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
+	if !helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
+		t.Errorf("expected VMSSOverProvisioningEnabled to be true, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -695,8 +695,8 @@ func TestVMSSOverProvisioning(t *testing.T) {
 	}
 
 	// In create scenario with explicit false, VMSSOverProvisioningEnabled should be false
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
-		t.Errorf("expected VMSSOverProvisioningEnabled to be false, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled) {
+		t.Errorf("expected VMSSOverProvisioningEnabled to be false, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled))
 	}
 }
 
@@ -726,8 +726,8 @@ func TestAuditDEnabled(t *testing.T) {
 	mockCS.Properties.setAgentProfileDefaults(isUpgrade, false)
 
 	// In upgrade scenario, nil AuditDEnabled should always render as false (i.e., we never turn on this feature on an existing vm that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
-		t.Errorf("expected nil AuditDEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
+		t.Errorf("expected nil AuditDEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.12.7")
@@ -735,8 +735,8 @@ func TestAuditDEnabled(t *testing.T) {
 	mockCS.Properties.setAgentProfileDefaults(false, isScale)
 
 	// In scale scenario, nil AuditDEnabled should always render as false (i.e., we never turn on this feature on an existing agent pool / vms that didn't have it before)
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
-		t.Errorf("expected nil AuditDEnabled to be false after upgrade, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
+		t.Errorf("expected nil AuditDEnabled to be false after upgrade, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.12.7")
@@ -744,8 +744,8 @@ func TestAuditDEnabled(t *testing.T) {
 
 	// In create scenario, nil AuditDEnabled should be the defaults
 	auditDEnabledEnabled := DefaultAuditDEnabled
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) != auditDEnabledEnabled {
-		t.Errorf("expected default AuditDEnabled to be %t, instead got %t", auditDEnabledEnabled, to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) != auditDEnabledEnabled {
+		t.Errorf("expected default AuditDEnabled to be %t, instead got %t", auditDEnabledEnabled, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -753,8 +753,8 @@ func TestAuditDEnabled(t *testing.T) {
 	mockCS.Properties.setAgentProfileDefaults(false, false)
 
 	// In create scenario with explicit true, AuditDEnabled should be true
-	if !to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
-		t.Errorf("expected AuditDEnabled to be true, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
+	if !helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
+		t.Errorf("expected AuditDEnabled to be true, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
@@ -762,8 +762,8 @@ func TestAuditDEnabled(t *testing.T) {
 	mockCS.Properties.setAgentProfileDefaults(false, false)
 
 	// In create scenario with explicit false, AuditDEnabled should be false
-	if to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
-		t.Errorf("expected AuditDEnabled to be false, instead got %t", to.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
+	if helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled) {
+		t.Errorf("expected AuditDEnabled to be false, instead got %t", helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled))
 	}
 }
 
@@ -793,23 +793,23 @@ func TestDefaultUseManagedIdentity(t *testing.T) {
 	isUpgrade := false
 	isScale := false
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
-	if !to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
-		t.Errorf("expected UseManagedIdentity to be true by default, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+	if !helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		t.Errorf("expected UseManagedIdentity to be true by default, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.Properties.CustomCloudProfile = &CustomCloudProfile{
 		Environment: &azure.Environment{},
 	}
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
-	if to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
-		t.Errorf("expected UseManagedIdentity to be false by default in CustomCloudProfile context, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+	if helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		t.Errorf("expected UseManagedIdentity to be false by default in CustomCloudProfile context, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.Properties.MasterProfile.AvailabilityProfile = VirtualMachineScaleSets
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
-	if to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
-		t.Errorf("expected UseManagedIdentity to be false by default in VMSS control plane context, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+	if helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		t.Errorf("expected UseManagedIdentity to be false by default in VMSS control plane context, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 
 	isUpgrade = true
@@ -817,7 +817,7 @@ func TestDefaultUseManagedIdentity(t *testing.T) {
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
 	if mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity != nil {
-		t.Errorf("expected UseManagedIdentity to be unchanged by default in upgrade context, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+		t.Errorf("expected UseManagedIdentity to be unchanged by default in upgrade context, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 
 	isUpgrade = false
@@ -825,14 +825,14 @@ func TestDefaultUseManagedIdentity(t *testing.T) {
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
 	if mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity != nil {
-		t.Errorf("expected UseManagedIdentity to be unchanged by default in scale context, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+		t.Errorf("expected UseManagedIdentity to be unchanged by default in scale context, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(false)
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
-	if to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
-		t.Errorf("expected UseManagedIdentity=false config to be honored by defaults enforcement, instead got %t", to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
+	if helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		t.Errorf("expected UseManagedIdentity=false config to be honored by defaults enforcement, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
 	}
 }
 
@@ -3547,9 +3547,9 @@ func TestSetVMSSDefaultsAndZones(t *testing.T) {
 			properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku, StandardLoadBalancerSku)
 	}
 	for _, profile := range properties.AgentPoolProfiles {
-		if to.Bool(profile.SinglePlacementGroup) {
+		if helpers.Bool(profile.SinglePlacementGroup) {
 			t.Fatalf("pool did not have the expected SinglePlacementGroup configuration, got %t, expected %t",
-				to.Bool(profile.SinglePlacementGroup), false)
+				helpers.Bool(profile.SinglePlacementGroup), false)
 		}
 	}
 	// agents with VMSS and zones
@@ -3597,7 +3597,7 @@ func TestSetVMSSDefaultsAndZones(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if to.Bool(properties.AgentPoolProfiles[0].SinglePlacementGroup) {
+	if helpers.Bool(properties.AgentPoolProfiles[0].SinglePlacementGroup) {
 		t.Fatalf("AgentPoolProfile[0].SinglePlacementGroup did not have the expected configuration, got %t, expected %t",
 			*properties.AgentPoolProfiles[0].SinglePlacementGroup, false)
 	}
@@ -3669,14 +3669,14 @@ func TestDefaultCloudProvider(t *testing.T) {
 	properties := mockCS.Properties
 	mockCS.setOrchestratorDefaults(true, true)
 
-	if to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) {
+	if helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) {
 		t.Fatalf("got unexpected CloudProviderBackoff expected false, got %t",
-			to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
+			helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
 	}
 
-	if !to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) {
+	if !helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) {
 		t.Fatalf("got unexpected CloudProviderBackoff expected true, got %t",
-			to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
+			helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
 	}
 
 	mockCS = getMockBaseContainerService("1.10.3")
@@ -3685,14 +3685,14 @@ func TestDefaultCloudProvider(t *testing.T) {
 	properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit = to.BoolPtr(false)
 	mockCS.setOrchestratorDefaults(true, true)
 
-	if to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) {
+	if helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) {
 		t.Fatalf("got unexpected CloudProviderBackoff expected true, got %t",
-			to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
+			helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
 	}
 
-	if to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) {
+	if helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) {
 		t.Fatalf("got unexpected CloudProviderBackoff expected true, got %t",
-			to.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
+			helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
 	}
 }
 
@@ -3763,8 +3763,8 @@ func TestCloudProviderBackoff(t *testing.T) {
 			if c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffMode != c.expected.CloudProviderBackoffMode {
 				t.Errorf("expected %s, but got %s", c.expected.CloudProviderBackoffMode, c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffMode)
 			}
-			if to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) != to.Bool(c.expected.CloudProviderBackoff) {
-				t.Errorf("expected %t, but got %t", to.Bool(c.expected.CloudProviderBackoff), to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
+			if helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) != helpers.Bool(c.expected.CloudProviderBackoff) {
+				t.Errorf("expected %t, but got %t", helpers.Bool(c.expected.CloudProviderBackoff), helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff))
 			}
 			if c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffRetries != c.expected.CloudProviderBackoffRetries {
 				t.Errorf("expected %d, but got %d", c.expected.CloudProviderBackoffRetries, c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffRetries)
@@ -3778,8 +3778,8 @@ func TestCloudProviderBackoff(t *testing.T) {
 			if c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffExponent != c.expected.CloudProviderBackoffExponent {
 				t.Errorf("expected %f, but got %f", c.expected.CloudProviderBackoffExponent, c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoffExponent)
 			}
-			if to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) != to.Bool(c.expected.CloudProviderRateLimit) {
-				t.Errorf("expected %t, but got %t", to.Bool(c.expected.CloudProviderRateLimit), to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit))
+			if helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit) != helpers.Bool(c.expected.CloudProviderRateLimit) {
+				t.Errorf("expected %t, but got %t", helpers.Bool(c.expected.CloudProviderRateLimit), helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit))
 			}
 			if c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimitQPS != c.expected.CloudProviderRateLimitQPS {
 				t.Errorf("expected %f, but got %f", c.expected.CloudProviderRateLimitQPS, c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimitQPS)
@@ -4732,8 +4732,8 @@ func TestPreserveNodesProperties(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !to.Bool(mockCS.Properties.AgentPoolProfiles[0].PreserveNodesProperties) {
-		t.Errorf("expected preserveNodesProperties to be %t instead got %t", true, to.Bool(mockCS.Properties.AgentPoolProfiles[0].PreserveNodesProperties))
+	if !helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].PreserveNodesProperties) {
+		t.Errorf("expected preserveNodesProperties to be %t instead got %t", true, helpers.Bool(mockCS.Properties.AgentPoolProfiles[0].PreserveNodesProperties))
 	}
 }
 
@@ -4884,8 +4884,8 @@ func TestDefaultEnablePodSecurityPolicy(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			c.cs.setOrchestratorDefaults(false, false)
-			if to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) != c.expected {
-				t.Errorf("expected  %t, but got %t", c.expected, to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy))
+			if helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) != c.expected {
+				t.Errorf("expected  %t, but got %t", c.expected, helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy))
 			}
 		})
 	}
@@ -5076,8 +5076,8 @@ func TestEnableRBAC(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			c.cs.setOrchestratorDefaults(c.isUpgrade, c.isScale)
-			if to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnableRbac) != c.expected {
-				t.Errorf("expected %t, but got %t", c.expected, to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnableRbac))
+			if helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnableRbac) != c.expected {
+				t.Errorf("expected %t, but got %t", c.expected, helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.EnableRbac))
 			}
 		})
 	}
@@ -5261,8 +5261,8 @@ func TestDefaultCloudProviderDisableOutboundSNAT(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			c.cs.setOrchestratorDefaults(false, false)
-			if to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderDisableOutboundSNAT) != c.expected {
-				t.Errorf("expected %t, but got %t", c.expected, to.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderDisableOutboundSNAT))
+			if helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderDisableOutboundSNAT) != c.expected {
+				t.Errorf("expected %t, but got %t", c.expected, helpers.Bool(c.cs.Properties.OrchestratorProfile.KubernetesConfig.CloudProviderDisableOutboundSNAT))
 			}
 		})
 	}
@@ -6156,8 +6156,8 @@ func TestSetCSIProxyDefaults(t *testing.T) {
 			cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(c.useCloudControllerManager)
 			cs.Properties.WindowsProfile = c.windowsProfile
 			cs.setCSIProxyDefaults()
-			if to.Bool(cs.Properties.WindowsProfile.EnableCSIProxy) != c.expectedEnableCSIProxy {
-				t.Errorf("expected enableCSIProxy to be %t, but got %t", c.expectedEnableCSIProxy, to.Bool(cs.Properties.WindowsProfile.EnableCSIProxy))
+			if helpers.Bool(cs.Properties.WindowsProfile.EnableCSIProxy) != c.expectedEnableCSIProxy {
+				t.Errorf("expected enableCSIProxy to be %t, but got %t", c.expectedEnableCSIProxy, helpers.Bool(cs.Properties.WindowsProfile.EnableCSIProxy))
 			}
 			if cs.Properties.WindowsProfile.CSIProxyURL != c.expectedCSIProxyURL {
 				t.Errorf("expected csiProxyURL to be %s, but got %s", DefaultKubernetesSpecConfig.CSIProxyDownloadURL, cs.Properties.WindowsProfile.CSIProxyURL)
@@ -6320,8 +6320,8 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			c.p.setLinuxProfileDefaults()
-			if c.expectedRunUnattendedUpgradesOnBootstrap != to.Bool(c.p.LinuxProfile.RunUnattendedUpgradesOnBootstrap) {
-				t.Errorf("expected RunUnattendedUpgradesOnBootstrap to be %t, but got %t", c.expectedRunUnattendedUpgradesOnBootstrap, to.Bool(c.p.LinuxProfile.RunUnattendedUpgradesOnBootstrap))
+			if c.expectedRunUnattendedUpgradesOnBootstrap != helpers.Bool(c.p.LinuxProfile.RunUnattendedUpgradesOnBootstrap) {
+				t.Errorf("expected RunUnattendedUpgradesOnBootstrap to be %t, but got %t", c.expectedRunUnattendedUpgradesOnBootstrap, helpers.Bool(c.p.LinuxProfile.RunUnattendedUpgradesOnBootstrap))
 			}
 		})
 	}

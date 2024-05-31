@@ -10,6 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -314,7 +315,7 @@ func CreateMasterVMSS(cs *api.ContainerService) VirtualMachineScaleSetARM {
 		ExtensionProfile: &extensionProfile,
 	}
 
-	if to.Bool(masterProfile.UltraSSDEnabled) {
+	if helpers.Bool(masterProfile.UltraSSDEnabled) {
 		vmProperties.AdditionalCapabilities = &compute.AdditionalCapabilities{
 			UltraSSDEnabled: to.BoolPtr(true),
 		}
@@ -407,7 +408,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 	var useManagedIdentity bool
 	var userAssignedIdentityEnabled bool
 	if k8sConfig != nil {
-		useManagedIdentity = to.Bool(k8sConfig.UseManagedIdentity)
+		useManagedIdentity = helpers.Bool(k8sConfig.UseManagedIdentity)
 	}
 	if useManagedIdentity {
 		userAssignedIdentityEnabled = k8sConfig.UserAssignedIDEnabled()
@@ -443,7 +444,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 		}
 	}
 
-	if to.Bool(profile.VMSSOverProvisioningEnabled) {
+	if helpers.Bool(profile.VMSSOverProvisioningEnabled) {
 		vmssProperties.DoNotRunExtensionsOnOverprovisionedVMs = to.BoolPtr(true)
 	}
 
@@ -526,7 +527,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 			}
 
 			// Set VMSS node public IP if requested
-			if to.Bool(profile.EnableVMSSNodePublicIP) {
+			if helpers.Bool(profile.EnableVMSSNodePublicIP) {
 				publicIPAddressConfiguration := &compute.VirtualMachineScaleSetPublicIPAddressConfiguration{
 					Name: to.StringPtr(fmt.Sprintf("pub%d", i)),
 					VirtualMachineScaleSetPublicIPAddressConfigurationProperties: &compute.VirtualMachineScaleSetPublicIPAddressConfigurationProperties{
@@ -706,7 +707,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 		}
 	}
 
-	if to.Bool(profile.UltraSSDEnabled) {
+	if helpers.Bool(profile.UltraSSDEnabled) {
 		vmssProperties.AdditionalCapabilities = &compute.AdditionalCapabilities{
 			UltraSSDEnabled: to.BoolPtr(true),
 		}
@@ -744,7 +745,7 @@ func CreateAgentVMSS(cs *api.ContainerService, profile *api.AgentPoolProfile) Vi
 		}
 		nVidiaEnabled := strconv.FormatBool(common.IsNvidiaEnabledSKU(profile.VMSize))
 		sgxEnabled := strconv.FormatBool(common.IsSgxEnabledSKU(profile.VMSize))
-		auditDEnabled := strconv.FormatBool(to.Bool(profile.AuditDEnabled))
+		auditDEnabled := strconv.FormatBool(helpers.Bool(profile.AuditDEnabled))
 		isVHD := strconv.FormatBool(profile.IsVHDDistro())
 
 		commandExec := fmt.Sprintf("[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq \"EOF\" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),%s,' IS_VHD=%s GPU_NODE=%s SGX_NODE=%s AUDITD_ENABLED=%s /usr/bin/nohup /bin/bash -c \"/bin/bash /opt/azure/containers/provision.sh >> %s 2>&1%s\"')]", generateUserAssignedIdentityClientIDParameter(userAssignedIdentityEnabled), isVHD, nVidiaEnabled, sgxEnabled, auditDEnabled, linuxCSELogPath, runInBackground)

@@ -5,6 +5,7 @@ package api
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/to"
 )
 
@@ -43,7 +44,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultCloudControllerManagerComponentConfig := KubernetesComponent{
 		Name:    common.CloudControllerManagerComponentName,
-		Enabled: to.BoolPtr(to.Bool(kubernetesConfig.UseCloudControllerManager)),
+		Enabled: to.BoolPtr(helpers.Bool(kubernetesConfig.UseCloudControllerManager)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.CloudControllerManagerComponentName,
@@ -82,7 +83,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultAzureKMSProviderComponentConfig := KubernetesComponent{
 		Name:    common.AzureKMSProviderComponentName,
-		Enabled: to.BoolPtr(to.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)),
+		Enabled: to.BoolPtr(helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.AzureKMSProviderComponentName,
@@ -150,7 +151,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 	// Ensure cloud-controller-manager is enabled on appropriate upgrades for Azure Stack cloud
 	if isUpgrade &&
 		cs.Properties.IsAzureStackCloud() &&
-		to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
+		helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 		// Force enabling cloud-controller-manager
 		if i := GetComponentsIndexByName(kubernetesConfig.Components, common.CloudControllerManagerComponentName); i > -1 {
 			kubernetesConfig.Components[i] = defaultCloudControllerManagerComponentConfig
@@ -189,7 +190,7 @@ func assignDefaultComponentVals(component, defaultComponent KubernetesComponent,
 	if component.Enabled == nil {
 		component.Enabled = defaultComponent.Enabled
 	}
-	if !to.Bool(component.Enabled) {
+	if !helpers.Bool(component.Enabled) {
 		return KubernetesComponent{
 			Name:    component.Name,
 			Enabled: component.Enabled,

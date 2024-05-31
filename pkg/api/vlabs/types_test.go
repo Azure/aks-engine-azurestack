@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -136,11 +137,11 @@ func TestAgentPoolProfile(t *testing.T) {
 		t.Fatalf("unexpectedly detected AgentPoolProfile.DiskEncryptionSetID is not empty after unmarshal")
 	}
 
-	if to.Bool(ap.UltraSSDEnabled) {
+	if helpers.Bool(ap.UltraSSDEnabled) {
 		t.Fatalf("AgentPoolProfile.UltraSSDEnabled should be false by default")
 	}
 
-	if to.Bool(ap.EncryptionAtHost) {
+	if helpers.Bool(ap.EncryptionAtHost) {
 		t.Fatalf("AgentPoolProfile.EncryptionAtHost should be false by default")
 	}
 
@@ -192,11 +193,11 @@ func TestAgentPoolProfile(t *testing.T) {
 		t.Fatalf("unexpectedly detected AgentPoolProfile.DiskEncryptionSetID is empty after unmarshal")
 	}
 
-	if !to.Bool(ap.UltraSSDEnabled) {
+	if !helpers.Bool(ap.UltraSSDEnabled) {
 		t.Fatalf("AgentPoolProfile.UltraSSDEnabled should be true after unmarshal")
 	}
 
-	if !to.Bool(ap.EncryptionAtHost) {
+	if !helpers.Bool(ap.EncryptionAtHost) {
 		t.Fatalf("AgentPoolProfile.EncryptionAtHost should be true after unmarshal")
 	}
 	// With osType Linux and aks-ubuntu-18.04 distro
@@ -247,11 +248,11 @@ func TestAgentPoolProfile(t *testing.T) {
 		t.Fatalf("unexpectedly detected *AgentPoolProfile.SpotMaxPrice != float64(88) after unmarshal")
 	}
 
-	if !to.Bool(ap.UltraSSDEnabled) {
+	if !helpers.Bool(ap.UltraSSDEnabled) {
 		t.Fatalf("AgentPoolProfile.UltraSSDEnabled should be true after unmarshal")
 	}
 
-	if !to.Bool(ap.EncryptionAtHost) {
+	if !helpers.Bool(ap.EncryptionAtHost) {
 		t.Fatalf("AgentPoolProfile.EncryptionAtHost should be true after unmarshal")
 	}
 	// With osType Linux and Flatcar distro

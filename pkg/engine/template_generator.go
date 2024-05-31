@@ -14,8 +14,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
@@ -327,7 +325,7 @@ func getContainerServiceFuncMap(cs *api.ContainerService) template.FuncMap {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateJumpboxProvision()
 		},
 		"UseManagedIdentity": func() bool {
-			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 		},
 		"GetVNETSubnetDependencies": func() string {
 			return getVNETSubnetDependencies(cs.Properties)
@@ -549,10 +547,10 @@ func getContainerServiceFuncMap(cs *api.ContainerService) template.FuncMap {
 			return cs.Properties.AADProfile != nil && cs.Properties.AADProfile.AdminGroupID != ""
 		},
 		"EnableDataEncryptionAtRest": func() bool {
-			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableDataEncryptionAtRest)
+			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableDataEncryptionAtRest)
 		},
 		"EnableEncryptionWithExternalKms": func() bool {
-			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms)
+			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms)
 		},
 		"EnableAggregatedAPIs": func() bool {
 			if cs.Properties.OrchestratorProfile.KubernetesConfig.EnableAggregatedAPIs {
@@ -684,7 +682,7 @@ version = 2
 			return common.AADPodIdentityTaintKey
 		},
 		"HasCustomPodSecurityPolicy": func() bool {
-			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) &&
+			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) &&
 				cs.Properties.OrchestratorProfile.KubernetesConfig.PodSecurityPolicyConfig != nil {
 				return true
 			}
@@ -826,13 +824,13 @@ version = 2
 		},
 		"RunUnattendedUpgradesOnBootstrap": func() bool {
 			if cs.Properties.LinuxProfile != nil {
-				return to.Bool(cs.Properties.LinuxProfile.RunUnattendedUpgradesOnBootstrap)
+				return helpers.Bool(cs.Properties.LinuxProfile.RunUnattendedUpgradesOnBootstrap)
 			}
 			return false
 		},
 		"EnableUnattendedUpgrades": func() bool {
 			if cs.Properties.LinuxProfile != nil {
-				return to.Bool(cs.Properties.LinuxProfile.EnableUnattendedUpgrades)
+				return helpers.Bool(cs.Properties.LinuxProfile.EnableUnattendedUpgrades)
 			}
 			return false
 		},

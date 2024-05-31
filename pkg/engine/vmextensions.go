@@ -10,6 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -76,7 +77,7 @@ func createAgentVMASCustomScriptExtension(cs *api.ContainerService, profile *api
 
 	nVidiaEnabled := strconv.FormatBool(common.IsNvidiaEnabledSKU(profile.VMSize))
 	sgxEnabled := strconv.FormatBool(common.IsSgxEnabledSKU(profile.VMSize))
-	auditDEnabled := strconv.FormatBool(to.Bool(profile.AuditDEnabled))
+	auditDEnabled := strconv.FormatBool(helpers.Bool(profile.AuditDEnabled))
 	isVHD := strconv.FormatBool(profile.IsVHDDistro())
 
 	vmExtension := compute.VirtualMachineExtension{

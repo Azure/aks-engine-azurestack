@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
@@ -177,7 +178,7 @@ func TestCreateNetworkSecurityGroup(t *testing.T) {
 	actual = CreateNetworkSecurityGroup(cs)
 
 	for _, rule := range rules {
-		if to.String(rule.Name) == "allow_kube_tls" {
+		if helpers.String(rule.Name) == "allow_kube_tls" {
 			source := "VirtualNetwork"
 			rule.SourceAddressPrefix = &source
 		}

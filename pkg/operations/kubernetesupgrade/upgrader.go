@@ -20,7 +20,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	"github.com/Azure/aks-engine-azurestack/pkg/operations"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	appsv1 "k8s.io/api/apps/v1"
@@ -202,7 +201,7 @@ func (ku *Upgrader) upgradeMasterNodes(ctx context.Context) error {
 		}
 	}
 
-	if to.Bool(ku.DataModel.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) {
+	if helpers.Bool(ku.DataModel.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) {
 		err = transformer.RemoveKMSResourcesFromTemplate(ku.logger, templateMap)
 		if err != nil {
 			return ku.Translator.Errorf("error removing KMS resources from template: %s", err.Error())

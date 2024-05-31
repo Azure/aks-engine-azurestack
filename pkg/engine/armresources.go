@@ -9,6 +9,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -32,7 +33,7 @@ func GenerateARMResources(cs *api.ContainerService) []interface{} {
 	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig
 
 	if kubernetesConfig != nil {
-		useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
+		useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
 		userAssignedIDEnabled = kubernetesConfig.UserAssignedIDEnabled()
 		createNewUserAssignedIdentity = kubernetesConfig.ShouldCreateNewUserAssignedIdentity()
 	}
@@ -153,7 +154,7 @@ func createKubernetesAgentVMASResources(cs *api.ContainerService, profile *api.A
 	agentVMASVM := createAgentAvailabilitySetVM(cs, profile)
 	agentVMASResources = append(agentVMASResources, agentVMASVM)
 
-	useManagedIdentity := to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	useManagedIdentity := helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	userAssignedIDEnabled := cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedIDEnabled()
 
 	if useManagedIdentity && !userAssignedIDEnabled {

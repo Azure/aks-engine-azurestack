@@ -1092,11 +1092,11 @@ func TestHasStorageProfile(t *testing.T) {
 			if c.p.MasterProfile.IsStorageAccount() == c.expectedMasterMD {
 				t.Fatalf("expected IsStorageAccount() to return %t but instead returned %t", !c.expectedMasterMD, c.p.MasterProfile.IsStorageAccount())
 			}
-			if to.Bool(c.p.MasterProfile.UltraSSDEnabled) != c.expectedUltraSSDEnabled {
-				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.MasterProfile.UltraSSDEnabled))
+			if helpers.Bool(c.p.MasterProfile.UltraSSDEnabled) != c.expectedUltraSSDEnabled {
+				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.MasterProfile.UltraSSDEnabled))
 			}
-			if to.Bool(c.p.MasterProfile.EncryptionAtHost) != c.expectedEncryptionAtHost {
-				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedEncryptionAtHost, to.Bool(c.p.MasterProfile.EncryptionAtHost))
+			if helpers.Bool(c.p.MasterProfile.EncryptionAtHost) != c.expectedEncryptionAtHost {
+				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedEncryptionAtHost, helpers.Bool(c.p.MasterProfile.EncryptionAtHost))
 			}
 			if c.p.AgentPoolProfiles[0].IsManagedDisks() != c.expectedAgent0MD {
 				t.Fatalf("expected IsManagedDisks() to return %t but instead returned %t", c.expectedAgent0MD, c.p.AgentPoolProfiles[0].IsManagedDisks())
@@ -1117,11 +1117,11 @@ func TestHasStorageProfile(t *testing.T) {
 			if c.p.AgentPoolProfiles[0].DiskEncryptionSetID != c.expectedDesID {
 				t.Fatalf("expected DiskEncryptionSetID to return %s but instead returned %s", c.expectedDesID, c.p.AgentPoolProfiles[0].DiskEncryptionSetID)
 			}
-			if to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled) != c.expectedUltraSSDEnabled {
-				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
+			if helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled) != c.expectedUltraSSDEnabled {
+				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
 			}
-			if to.Bool(c.p.AgentPoolProfiles[0].EncryptionAtHost) != c.expectedEncryptionAtHost {
-				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
+			if helpers.Bool(c.p.AgentPoolProfiles[0].EncryptionAtHost) != c.expectedEncryptionAtHost {
+				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
 			}
 		})
 	}
@@ -3078,7 +3078,7 @@ func TestUserAssignedMSI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error deserailizing the example user msi api model: %s", err)
 	}
-	systemMSI := to.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	systemMSI := helpers.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	actualUserMSI := apiModel.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID
 	if !systemMSI || actualUserMSI != "" {
 		t.Fatalf("found user msi: %t and usermsi: %s", systemMSI, actualUserMSI)
@@ -3092,7 +3092,7 @@ func TestUserAssignedMSI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error deserailizing the example user msi api model: %s", err)
 	}
-	systemMSI = to.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	systemMSI = helpers.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	actualUserMSI = apiModel.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID
 	if !systemMSI && actualUserMSI != exampleUserMSI {
 		t.Fatalf("found user msi: %t and usermsi: %s", systemMSI, actualUserMSI)

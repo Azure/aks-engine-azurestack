@@ -176,8 +176,8 @@ func (uc *upgradeCmd) loadCluster() error {
 	}
 	if uc.containerService.Properties.OrchestratorProfile != nil &&
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig != nil &&
-		to.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) &&
-		to.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) &&
+		helpers.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) &&
+		helpers.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) &&
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
 		return errors.Errorf("clusters with enableEncryptionWithExternalKms=true and system-assigned identity are not upgradable using `aks-engine upgrade`")
 	}

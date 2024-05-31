@@ -11,6 +11,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -22,7 +23,7 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 
 	var useManagedIdentity, userAssignedIDEnabled bool
 	if kubernetesConfig != nil {
-		useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
+		useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
 		userAssignedIDEnabled = kubernetesConfig.UserAssignedIDEnabled()
 	}
 
@@ -209,7 +210,7 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 		osDisk.DiskSizeGB = to.Int32Ptr(int32(cs.Properties.MasterProfile.OSDiskSizeGB))
 	}
 
-	if to.Bool(cs.Properties.MasterProfile.UltraSSDEnabled) {
+	if helpers.Bool(cs.Properties.MasterProfile.UltraSSDEnabled) {
 		vmProperties.AdditionalCapabilities = &compute.AdditionalCapabilities{
 			UltraSSDEnabled: to.BoolPtr(true),
 		}
@@ -332,7 +333,7 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	var useManagedIdentity, userAssignedIDEnabled bool
 
 	if kubernetesConfig != nil {
-		useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
+		useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
 		userAssignedIDEnabled = kubernetesConfig.UserAssignedIDEnabled()
 	}
 
@@ -558,7 +559,7 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 		}
 	}
 
-	if to.Bool(profile.UltraSSDEnabled) {
+	if helpers.Bool(profile.UltraSSDEnabled) {
 		virtualMachine.AdditionalCapabilities = &compute.AdditionalCapabilities{
 			UltraSSDEnabled: to.BoolPtr(true),
 		}

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 func (cs *ContainerService) setControllerManagerConfig() {
@@ -41,7 +41,7 @@ func (cs *ContainerService) setControllerManagerConfig() {
 	}
 
 	// Enable cloudprovider if we're not using cloud controller manager
-	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+	if !helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 		staticControllerManagerConfig["--cloud-provider"] = "azure"
 		staticControllerManagerConfig["--cloud-config"] = "/etc/kubernetes/azure.json"
 	} else {

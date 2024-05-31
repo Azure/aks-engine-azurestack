@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -4615,8 +4616,8 @@ func TestSetAddonsConfig(t *testing.T) {
 						t.Fatalf("got addon %s that we weren't expecting", addon.Name)
 					}
 					expectedAddon := test.expectedAddons[getAddonsIndexByName(test.expectedAddons, addonName)]
-					if to.Bool(addon.Enabled) != to.Bool(expectedAddon.Enabled) {
-						t.Fatalf("expected addon %s to have Enabled value %t, instead got %t", expectedAddon.Name, to.Bool(expectedAddon.Enabled), to.Bool(addon.Enabled))
+					if helpers.Bool(addon.Enabled) != helpers.Bool(expectedAddon.Enabled) {
+						t.Fatalf("expected addon %s to have Enabled value %t, instead got %t", expectedAddon.Name, helpers.Bool(expectedAddon.Enabled), helpers.Bool(addon.Enabled))
 					}
 					if expectedAddon.Containers != nil {
 						if len(expectedAddon.Containers) != len(addon.Containers) {
@@ -4676,7 +4677,7 @@ func TestSetAddonsConfig(t *testing.T) {
 					}
 				} else {
 					if i := getAddonsIndexByName(test.expectedAddons, addonName); i > -1 {
-						if to.Bool(test.expectedAddons[i].Enabled) {
+						if helpers.Bool(test.expectedAddons[i].Enabled) {
 							t.Fatalf("expected addon %s to be enabled, instead it was disabled", addonName)
 						}
 					}

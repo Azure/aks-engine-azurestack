@@ -12,6 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )
@@ -1133,8 +1134,8 @@ func TestConvertComponentsToAPI(t *testing.T) {
 		if k.Components[i].Name != component.Name {
 			t.Errorf("unexpected Component.Name property %s after convertComponentsToVlabs conversion, expected %s", k.Components[i].Name, component.Name)
 		}
-		if to.Bool(k.Components[i].Enabled) != to.Bool(component.Enabled) {
-			t.Errorf("unexpected Component.Enabled property %t after convertComponentsToVlabs conversion, expected %t", to.Bool(k.Components[i].Enabled), to.Bool(component.Enabled))
+		if helpers.Bool(k.Components[i].Enabled) != helpers.Bool(component.Enabled) {
+			t.Errorf("unexpected Component.Enabled property %t after convertComponentsToVlabs conversion, expected %t", helpers.Bool(k.Components[i].Enabled), helpers.Bool(component.Enabled))
 		}
 		if k.Components[i].Data != component.Data {
 			t.Errorf("unexpected Component.Data property %s after convertComponentsToVlabs conversion, expected %s", k.Components[i].Data, component.Data)

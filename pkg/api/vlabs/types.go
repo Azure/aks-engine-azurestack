@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/pkg/errors"
 )
 
@@ -818,7 +818,7 @@ func (p *Properties) GetAgentPoolByName(name string) *AgentPoolProfile {
 // For Windows clusters, we should enable them when using K8s 1.18+.
 func (p *Properties) ShouldEnableAzureCloudAddon(addonName string) bool {
 	o := p.OrchestratorProfile
-	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+	if !helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 		return false
 	}
 	if addonName == common.AzureDiskCSIDriverAddonName && p.IsAzureStackCloud() {
@@ -988,7 +988,7 @@ func (k *KubernetesConfig) RequiresDocker() bool {
 // IsRBACEnabled checks if RBAC is enabled
 func (k *KubernetesConfig) IsRBACEnabled() bool {
 	if k.EnableRbac != nil {
-		return to.Bool(k.EnableRbac)
+		return helpers.Bool(k.EnableRbac)
 	}
 	return false
 }

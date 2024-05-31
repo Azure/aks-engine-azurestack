@@ -8,9 +8,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
@@ -35,7 +34,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	for key := range staticLinuxKubeletConfig {
 		switch key {
 		case "--anonymous-auth", "--client-ca-file":
-			if !to.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
+			if !helpers.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
 				delete(staticLinuxKubeletConfig, key)
 			}
 		}
@@ -48,13 +47,13 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		case "--pod-manifest-path", "--tls-cert-file", "--tls-private-key-file": // Don't add Linux-specific config
 			staticWindowsKubeletConfig[key] = ""
 		case "--anonymous-auth":
-			if !to.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
+			if !helpers.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
 				staticWindowsKubeletConfig[key] = ""
 			} else {
 				staticWindowsKubeletConfig[key] = val
 			}
 		case "--client-ca-file":
-			if !to.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
+			if !helpers.Bool(o.KubernetesConfig.EnableSecureKubelet) { // Don't add if EnableSecureKubelet is disabled
 				staticWindowsKubeletConfig[key] = ""
 			} else {
 				staticWindowsKubeletConfig[key] = "c:\\k\\ca.crt"
@@ -153,7 +152,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	addDefaultFeatureGates(o.KubernetesConfig.KubeletConfig, o.OrchestratorVersion, "1.25.0", "PodSecurity=true")
 
 	// Override default cloud-provider?
-	if to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+	if helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 		staticLinuxKubeletConfig["--cloud-provider"] = "external"
 	}
 
@@ -252,7 +251,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 			cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--pod-infra-container-image"] = o.KubernetesConfig.KubeletConfig["--pod-infra-container-image"]
 		}
 		//Ensure cloud-provider setting
-		if to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+		if helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 			cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--cloud-provider"] = "external"
 		}
 		setMissingKubeletValues(cs.Properties.MasterProfile.KubernetesConfig, o.KubernetesConfig.KubeletConfig)

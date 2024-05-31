@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/Azure/go-autorest/autorest/to"
 )
@@ -355,8 +356,8 @@ func TestSetComponentsConfig(t *testing.T) {
 						t.Fatalf("got component %s that we weren't expecting", component.Name)
 					}
 					expectedComponent := test.expectedComponents[GetComponentsIndexByName(test.expectedComponents, componentName)]
-					if to.Bool(component.Enabled) != to.Bool(expectedComponent.Enabled) {
-						t.Fatalf("expected component %s to have Enabled value %t, instead got %t", expectedComponent.Name, to.Bool(expectedComponent.Enabled), to.Bool(component.Enabled))
+					if helpers.Bool(component.Enabled) != helpers.Bool(expectedComponent.Enabled) {
+						t.Fatalf("expected component %s to have Enabled value %t, instead got %t", expectedComponent.Name, helpers.Bool(expectedComponent.Enabled), helpers.Bool(component.Enabled))
 					}
 					if expectedComponent.Containers != nil {
 						if len(expectedComponent.Containers) != len(component.Containers) {
@@ -399,7 +400,7 @@ func TestSetComponentsConfig(t *testing.T) {
 					}
 				} else {
 					if i := GetComponentsIndexByName(test.expectedComponents, componentName); i > -1 {
-						if to.Bool(test.expectedComponents[i].Enabled) {
+						if helpers.Bool(test.expectedComponents[i].Enabled) {
 							t.Fatalf("expected component %s to be enabled, instead it was disabled", componentName)
 						}
 					}
