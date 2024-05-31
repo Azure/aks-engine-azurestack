@@ -14,7 +14,6 @@ import (
 	"strings"
 
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
-	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -186,7 +185,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 			!cs.Properties.IsCustomCloudProfile() &&
 			!cs.Properties.MasterProfile.IsVirtualMachineScaleSets() &&
 			o.KubernetesConfig.UseManagedIdentity == nil {
-			o.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+			o.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 		}
 
 		if a.HasWindows() {
@@ -342,12 +341,12 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.14.0") {
 			o.KubernetesConfig.CloudProviderBackoffMode = CloudProviderBackoffModeV2
 			if o.KubernetesConfig.CloudProviderBackoff == nil {
-				o.KubernetesConfig.CloudProviderBackoff = to.BoolPtr(true)
+				o.KubernetesConfig.CloudProviderBackoff = helpers.PointerToBool(true)
 			}
 		} else {
 			o.KubernetesConfig.CloudProviderBackoffMode = "v1"
 			if o.KubernetesConfig.CloudProviderBackoff == nil {
-				o.KubernetesConfig.CloudProviderBackoff = to.BoolPtr(false)
+				o.KubernetesConfig.CloudProviderBackoff = helpers.PointerToBool(false)
 			}
 		}
 
@@ -355,7 +354,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		a.SetCloudProviderBackoffDefaults()
 
 		if o.KubernetesConfig.CloudProviderRateLimit == nil {
-			o.KubernetesConfig.CloudProviderRateLimit = to.BoolPtr(DefaultKubernetesCloudProviderRateLimit)
+			o.KubernetesConfig.CloudProviderRateLimit = helpers.PointerToBool(DefaultKubernetesCloudProviderRateLimit)
 		}
 		// Enforce sane cloudprovider rate limit defaults.
 		a.SetCloudProviderRateLimitDefaults()
@@ -365,11 +364,11 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		}
 
 		if o.KubernetesConfig.PrivateCluster.Enabled == nil {
-			o.KubernetesConfig.PrivateCluster.Enabled = to.BoolPtr(DefaultPrivateClusterEnabled)
+			o.KubernetesConfig.PrivateCluster.Enabled = helpers.PointerToBool(DefaultPrivateClusterEnabled)
 		}
 
 		if o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent == nil {
-			o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent = to.BoolPtr(DefaultPrivateClusterHostsConfigAgentEnabled)
+			o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent = helpers.PointerToBool(DefaultPrivateClusterHostsConfigAgentEnabled)
 		}
 
 		if "" == a.OrchestratorProfile.KubernetesConfig.EtcdDiskSizeGB {
@@ -418,7 +417,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.EnableRbac == nil {
-			a.OrchestratorProfile.KubernetesConfig.EnableRbac = to.BoolPtr(DefaultRBACEnabled)
+			a.OrchestratorProfile.KubernetesConfig.EnableRbac = helpers.PointerToBool(DefaultRBACEnabled)
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.MicrosoftAptRepositoryURL == "" {
@@ -429,7 +428,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		// We need to force set EnableRbac to true for upgrades to 1.15.0 and greater if it was previously set to false (AKS Engine only)
 		if !a.OrchestratorProfile.KubernetesConfig.IsRBACEnabled() && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.15.0") && isUpgrade {
 			log.Warnf("RBAC will be enabled during upgrade to version %s\n", o.OrchestratorVersion)
-			a.OrchestratorProfile.KubernetesConfig.EnableRbac = to.BoolPtr(true)
+			a.OrchestratorProfile.KubernetesConfig.EnableRbac = helpers.PointerToBool(true)
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.IsRBACEnabled() {
@@ -441,14 +440,14 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet == nil {
-			a.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(DefaultSecureKubeletEnabled)
+			a.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(DefaultSecureKubeletEnabled)
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.UseInstanceMetadata == nil {
 			if a.IsAzureStackCloud() {
-				a.OrchestratorProfile.KubernetesConfig.UseInstanceMetadata = to.BoolPtr(DefaultAzureStackUseInstanceMetadata)
+				a.OrchestratorProfile.KubernetesConfig.UseInstanceMetadata = helpers.PointerToBool(DefaultAzureStackUseInstanceMetadata)
 			} else {
-				a.OrchestratorProfile.KubernetesConfig.UseInstanceMetadata = to.BoolPtr(DefaultUseInstanceMetadata)
+				a.OrchestratorProfile.KubernetesConfig.UseInstanceMetadata = helpers.PointerToBool(DefaultUseInstanceMetadata)
 			}
 		}
 
@@ -468,7 +467,7 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 		}
 
 		if a.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == StandardLoadBalancerSku && a.OrchestratorProfile.KubernetesConfig.ExcludeMasterFromStandardLB == nil {
-			a.OrchestratorProfile.KubernetesConfig.ExcludeMasterFromStandardLB = to.BoolPtr(DefaultExcludeMasterFromStandardLB)
+			a.OrchestratorProfile.KubernetesConfig.ExcludeMasterFromStandardLB = helpers.PointerToBool(DefaultExcludeMasterFromStandardLB)
 		}
 
 		if a.OrchestratorProfile.IsAzureCNI() {
@@ -492,11 +491,11 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 
 		if o.KubernetesConfig.LoadBalancerSku == StandardLoadBalancerSku {
 			if o.KubernetesConfig.CloudProviderDisableOutboundSNAT == nil {
-				o.KubernetesConfig.CloudProviderDisableOutboundSNAT = to.BoolPtr(false)
+				o.KubernetesConfig.CloudProviderDisableOutboundSNAT = helpers.PointerToBool(false)
 			}
 		} else {
 			// CloudProviderDisableOutboundSNAT is only valid in the context of Standard LB, statically set to false if not Standard LB
-			o.KubernetesConfig.CloudProviderDisableOutboundSNAT = to.BoolPtr(false)
+			o.KubernetesConfig.CloudProviderDisableOutboundSNAT = helpers.PointerToBool(false)
 		}
 
 		if o.KubernetesConfig.ContainerRuntimeConfig == nil {
@@ -612,9 +611,9 @@ func (cs *ContainerService) setOrchestratorDefaults(isUpgrade, isScale bool) {
 			// Ensure that all VMSS pools have SinglePlacementGroup set to false in Standard LB cluster scenarios
 			if profile.AvailabilityProfile == VirtualMachineScaleSets && profile.SinglePlacementGroup == nil {
 				if cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == StandardLoadBalancerSku {
-					profile.SinglePlacementGroup = to.BoolPtr(false)
+					profile.SinglePlacementGroup = helpers.PointerToBool(false)
 				} else {
-					profile.SinglePlacementGroup = to.BoolPtr(DefaultSinglePlacementGroup)
+					profile.SinglePlacementGroup = helpers.PointerToBool(DefaultSinglePlacementGroup)
 				}
 			}
 		}
@@ -693,7 +692,7 @@ func (p *Properties) setMasterProfileDefaults() {
 
 	if p.MasterProfile.IsVirtualMachineScaleSets() {
 		if p.MasterProfile.SinglePlacementGroup == nil {
-			p.MasterProfile.SinglePlacementGroup = to.BoolPtr(DefaultSinglePlacementGroup)
+			p.MasterProfile.SinglePlacementGroup = helpers.PointerToBool(DefaultSinglePlacementGroup)
 		}
 	}
 
@@ -706,15 +705,15 @@ func (p *Properties) setMasterProfileDefaults() {
 	}
 
 	if nil == p.MasterProfile.CosmosEtcd {
-		p.MasterProfile.CosmosEtcd = to.BoolPtr(DefaultUseCosmos)
+		p.MasterProfile.CosmosEtcd = helpers.PointerToBool(DefaultUseCosmos)
 	}
 
 	// Update default fault domain value for Azure Stack
 	if p.IsAzureStackCloud() && p.MasterProfile.PlatformFaultDomainCount == nil {
-		p.MasterProfile.PlatformFaultDomainCount = to.IntPtr(DefaultAzureStackFaultDomainCount)
+		p.MasterProfile.PlatformFaultDomainCount = helpers.PointerToInt(DefaultAzureStackFaultDomainCount)
 	}
 	if p.MasterProfile.PlatformUpdateDomainCount == nil {
-		p.MasterProfile.PlatformUpdateDomainCount = to.IntPtr(3)
+		p.MasterProfile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
 	}
 
 	if p.MasterProfile.OSDiskCachingType == "" {
@@ -725,16 +724,16 @@ func (p *Properties) setMasterProfileDefaults() {
 func (p *Properties) setLinuxProfileDefaults() {
 	if p.LinuxProfile.RunUnattendedUpgradesOnBootstrap == nil {
 		if p.IsAzureStackCloud() {
-			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr(DefaultRunUnattendedUpgradesOnBootstrapAzureStack)
+			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = helpers.PointerToBool(DefaultRunUnattendedUpgradesOnBootstrapAzureStack)
 		} else {
-			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr(DefaultRunUnattendedUpgradesOnBootstrap)
+			p.LinuxProfile.RunUnattendedUpgradesOnBootstrap = helpers.PointerToBool(DefaultRunUnattendedUpgradesOnBootstrap)
 		}
 	}
 	if p.LinuxProfile.EnableUnattendedUpgrades == nil {
 		if p.IsAzureStackCloud() {
-			p.LinuxProfile.EnableUnattendedUpgrades = to.BoolPtr(DefaultEnableUnattendedUpgradesAzureStack)
+			p.LinuxProfile.EnableUnattendedUpgrades = helpers.PointerToBool(DefaultEnableUnattendedUpgradesAzureStack)
 		} else {
-			p.LinuxProfile.EnableUnattendedUpgrades = to.BoolPtr(DefaultEnableUnattendedUpgrades)
+			p.LinuxProfile.EnableUnattendedUpgrades = helpers.PointerToBool(DefaultEnableUnattendedUpgrades)
 		}
 	}
 	if p.OrchestratorProfile.IsAzureCNI() && p.LinuxProfile.Eth0MTU == 0 {
@@ -758,7 +757,7 @@ func (p *Properties) setAgentProfileDefaults(isUpgrade, isScale bool) {
 			}
 
 			if profile.VMSSOverProvisioningEnabled == nil {
-				profile.VMSSOverProvisioningEnabled = to.BoolPtr(DefaultVMSSOverProvisioningEnabled && !isUpgrade && !isScale)
+				profile.VMSSOverProvisioningEnabled = helpers.PointerToBool(DefaultVMSSOverProvisioningEnabled && !isUpgrade && !isScale)
 			}
 
 			profile.VMSSName = p.GetAgentVMPrefix(profile, i)
@@ -770,10 +769,10 @@ func (p *Properties) setAgentProfileDefaults(isUpgrade, isScale bool) {
 
 		// Update default fault domain value for Azure Stack
 		if p.IsAzureStackCloud() && profile.PlatformFaultDomainCount == nil {
-			profile.PlatformFaultDomainCount = to.IntPtr(DefaultAzureStackFaultDomainCount)
+			profile.PlatformFaultDomainCount = helpers.PointerToInt(DefaultAzureStackFaultDomainCount)
 		}
 		if profile.PlatformUpdateDomainCount == nil {
-			profile.PlatformUpdateDomainCount = to.IntPtr(3)
+			profile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
 		}
 
 		// Accelerated Networking is supported on most general purpose and compute-optimized instance sizes with 2 or more vCPUs.
@@ -782,31 +781,31 @@ func (p *Properties) setAgentProfileDefaults(isUpgrade, isScale bool) {
 		// Supported series are: D/DSv3, E/ESv3, Fsv2, and Ms/Mms.
 		if profile.AcceleratedNetworkingEnabled == nil {
 			if p.IsAzureStackCloud() {
-				profile.AcceleratedNetworkingEnabled = to.BoolPtr(DefaultAzureStackAcceleratedNetworking)
+				profile.AcceleratedNetworkingEnabled = helpers.PointerToBool(DefaultAzureStackAcceleratedNetworking)
 			} else {
-				profile.AcceleratedNetworkingEnabled = to.BoolPtr(DefaultAcceleratedNetworking && !isUpgrade && !isScale && helpers.AcceleratedNetworkingSupported(profile.VMSize))
+				profile.AcceleratedNetworkingEnabled = helpers.PointerToBool(DefaultAcceleratedNetworking && !isUpgrade && !isScale && helpers.AcceleratedNetworkingSupported(profile.VMSize))
 			}
 		}
 
 		if profile.AcceleratedNetworkingEnabledWindows == nil {
 			if p.IsAzureStackCloud() {
 				// Here we are using same default variable. We will change once we will start supporting AcceleratedNetworking feature in general.
-				profile.AcceleratedNetworkingEnabledWindows = to.BoolPtr(DefaultAzureStackAcceleratedNetworking)
+				profile.AcceleratedNetworkingEnabledWindows = helpers.PointerToBool(DefaultAzureStackAcceleratedNetworking)
 			} else {
-				profile.AcceleratedNetworkingEnabledWindows = to.BoolPtr(DefaultAcceleratedNetworkingWindowsEnabled && !isUpgrade && !isScale && helpers.AcceleratedNetworkingSupported(profile.VMSize))
+				profile.AcceleratedNetworkingEnabledWindows = helpers.PointerToBool(DefaultAcceleratedNetworkingWindowsEnabled && !isUpgrade && !isScale && helpers.AcceleratedNetworkingSupported(profile.VMSize))
 			}
 		}
 
 		if profile.AuditDEnabled == nil {
-			profile.AuditDEnabled = to.BoolPtr(DefaultAuditDEnabled && !isUpgrade && !isScale)
+			profile.AuditDEnabled = helpers.PointerToBool(DefaultAuditDEnabled && !isUpgrade && !isScale)
 		}
 
 		if profile.PreserveNodesProperties == nil {
-			profile.PreserveNodesProperties = to.BoolPtr(DefaultPreserveNodesProperties)
+			profile.PreserveNodesProperties = helpers.PointerToBool(DefaultPreserveNodesProperties)
 		}
 
 		if profile.EnableVMSSNodePublicIP == nil {
-			profile.EnableVMSSNodePublicIP = to.BoolPtr(DefaultEnableVMSSNodePublicIP)
+			profile.EnableVMSSNodePublicIP = helpers.PointerToBool(DefaultEnableVMSSNodePublicIP)
 		}
 
 		if profile.OSDiskCachingType == "" {
@@ -840,10 +839,10 @@ func (cs *ContainerService) setWindowsProfileDefaults(isUpgrade, isScale bool) {
 			windowsProfile.WindowsPauseImageURL = cloudSpecConfig.KubernetesSpecConfig.WindowsPauseImageURL
 		}
 		if windowsProfile.AlwaysPullWindowsPauseImage == nil {
-			windowsProfile.AlwaysPullWindowsPauseImage = to.BoolPtr(cloudSpecConfig.KubernetesSpecConfig.AlwaysPullWindowsPauseImage)
+			windowsProfile.AlwaysPullWindowsPauseImage = helpers.PointerToBool(cloudSpecConfig.KubernetesSpecConfig.AlwaysPullWindowsPauseImage)
 		}
 		if windowsProfile.SSHEnabled == nil {
-			windowsProfile.SSHEnabled = to.BoolPtr(DefaultWindowsSSHEnabled)
+			windowsProfile.SSHEnabled = helpers.PointerToBool(DefaultWindowsSSHEnabled)
 		}
 
 		// Default to aks-engine WIndows Server 2019 docker image
@@ -903,7 +902,7 @@ func (cs *ContainerService) setWindowsProfileDefaults(isUpgrade, isScale bool) {
 			windowsProfile.WindowsPauseImageURL = cloudSpecConfig.KubernetesSpecConfig.WindowsPauseImageURL
 		}
 		if windowsProfile.AlwaysPullWindowsPauseImage == nil {
-			windowsProfile.AlwaysPullWindowsPauseImage = to.BoolPtr(cloudSpecConfig.KubernetesSpecConfig.AlwaysPullWindowsPauseImage)
+			windowsProfile.AlwaysPullWindowsPauseImage = helpers.PointerToBool(cloudSpecConfig.KubernetesSpecConfig.AlwaysPullWindowsPauseImage)
 		}
 
 		// Image reference publisher and offer only can be set when you create the scale set so we keep the old values.
@@ -1244,7 +1243,7 @@ func (cs *ContainerService) setCSIProxyDefaults() {
 		w.CSIProxyURL != ""
 
 	if shouldEnableCSIProxy {
-		w.EnableCSIProxy = to.BoolPtr(true)
+		w.EnableCSIProxy = helpers.PointerToBool(true)
 		if w.CSIProxyURL == "" {
 			cloudSpecConfig := cs.GetCloudSpecConfig()
 			w.CSIProxyURL = cloudSpecConfig.KubernetesSpecConfig.CSIProxyDownloadURL

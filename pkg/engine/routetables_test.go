@@ -6,8 +6,8 @@ package engine
 import (
 	"testing"
 
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -19,9 +19,9 @@ func TestCreateRouteTable(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		RouteTable: network.RouteTable{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('routeTableName')]"),
-			Type:     to.StringPtr("Microsoft.Network/routeTables"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('routeTableName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/routeTables"),
 		},
 	}
 

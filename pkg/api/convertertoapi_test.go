@@ -6,8 +6,6 @@ package api
 import (
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/davecgh/go-spew/spew"
 	"k8s.io/apimachinery/pkg/api/equality"
 
@@ -575,7 +573,7 @@ func TestConvertVLabsContainerService(t *testing.T) {
 		Addons: []vlabs.KubernetesAddon{
 			{
 				Name:    "sampleAddon",
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "sampleK8sContainer",
@@ -602,8 +600,8 @@ func TestConvertVLabsContainerService(t *testing.T) {
 			"sampleSchedulerKey": "sampleSchedulerVal",
 		},
 		PrivateCluster: &vlabs.PrivateCluster{
-			Enabled:                to.BoolPtr(true),
-			EnableHostsConfigAgent: to.BoolPtr(true),
+			Enabled:                helpers.PointerToBool(true),
+			EnableHostsConfigAgent: helpers.PointerToBool(true),
 			JumpboxProfile: &vlabs.PrivateJumpboxProfile{
 				Name:           "sampleJumpboxProfile",
 				VMSize:         "Standard_DS1_v2",
@@ -806,7 +804,7 @@ func TestConvertVLabsWindowsProfile(t *testing.T) {
 				WindowsOffer:           "WindowsServer",
 				WindowsSku:             "2019-Datacenter-Core-smalldisk",
 				WindowsDockerVersion:   "18.09",
-				EnableAHUB:             to.BoolPtr(true),
+				EnableAHUB:             helpers.PointerToBool(true),
 				WindowsRuntimes: &vlabs.WindowsRuntimes{
 					Default: "process",
 					HypervRuntimes: []vlabs.RuntimeHandlers{
@@ -825,7 +823,7 @@ func TestConvertVLabsWindowsProfile(t *testing.T) {
 				WindowsSku:             "2019-Datacenter-Core-smalldisk",
 				WindowsDockerVersion:   "18.09",
 				Secrets:                []KeyVaultSecrets{},
-				EnableAHUB:             to.BoolPtr(true),
+				EnableAHUB:             helpers.PointerToBool(true),
 				WindowsRuntimes: &WindowsRuntimes{
 					Default: "process",
 					HypervRuntimes: []RuntimeHandlers{
@@ -1047,11 +1045,11 @@ func TestConvertVlabsPlatformUpdateDomain(t *testing.T) {
 				OrchestratorType: vlabs.Kubernetes,
 			},
 			MasterProfile: &vlabs.MasterProfile{
-				PlatformUpdateDomainCount: to.IntPtr(3),
+				PlatformUpdateDomainCount: helpers.PointerToInt(3),
 			},
 			AgentPoolProfiles: []*vlabs.AgentPoolProfile{
 				{
-					PlatformUpdateDomainCount: to.IntPtr(3),
+					PlatformUpdateDomainCount: helpers.PointerToInt(3),
 				},
 			},
 		},
@@ -1074,7 +1072,7 @@ func TestConvertComponentsToAPI(t *testing.T) {
 		Components: []vlabs.KubernetesComponent{
 			{
 				Name:    "component-0",
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "component-0-container-0",
@@ -1101,7 +1099,7 @@ func TestConvertComponentsToAPI(t *testing.T) {
 			},
 			{
 				Name:    "component-1",
-				Enabled: to.BoolPtr(false),
+				Enabled: helpers.PointerToBool(false),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "component-1-container-0",
@@ -1188,53 +1186,53 @@ func TestConvertVLabsLinuxProfile(t *testing.T) {
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
-				EnableUnattendedUpgrades:         to.BoolPtr(true),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
-				EnableUnattendedUpgrades:         to.BoolPtr(true),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
-				EnableUnattendedUpgrades:         to.BoolPtr(false),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
-				EnableUnattendedUpgrades:         to.BoolPtr(false),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
-				EnableUnattendedUpgrades:         to.BoolPtr(false),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
-				EnableUnattendedUpgrades:         to.BoolPtr(false),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
-				EnableUnattendedUpgrades:         to.BoolPtr(true),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
-				EnableUnattendedUpgrades:         to.BoolPtr(true),
+				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
+				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
 			},
 		},
 	}

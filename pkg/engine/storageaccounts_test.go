@@ -5,8 +5,8 @@ package engine
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 
 	"testing"
@@ -20,7 +20,7 @@ func TestCreateStorageAccount(t *testing.T) {
 			OrchestratorProfile: &api.OrchestratorProfile{
 				KubernetesConfig: &api.KubernetesConfig{
 					PrivateCluster: &api.PrivateCluster{
-						Enabled: to.BoolPtr(false),
+						Enabled: helpers.PointerToBool(false),
 					},
 				},
 			},
@@ -37,9 +37,9 @@ func TestCreateStorageAccount(t *testing.T) {
 			},
 		},
 		Account: storage.Account{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterStorageAccountName')]"),
-			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterStorageAccountName')]"),
+			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
 			Sku: &storage.Sku{
 				Name: storage.SkuName("[variables('vmSizesMap')[parameters('masterVMSize')].storageAccountType]"),
 			},
@@ -61,9 +61,9 @@ func TestCreateJumpboxStorageAccount(t *testing.T) {
 			APIVersion: "[variables('apiVersionStorage')]",
 		},
 		Account: storage.Account{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('jumpboxStorageAccountName')]"),
-			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('jumpboxStorageAccountName')]"),
+			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
 			Sku: &storage.Sku{
 				Name: storage.SkuName("[variables('vmSizesMap')[parameters('jumpboxVMSize')].storageAccountType]"),
 			},
@@ -85,7 +85,7 @@ func TestCreateAgentVMASStorageAccount(t *testing.T) {
 			OrchestratorProfile: &api.OrchestratorProfile{
 				KubernetesConfig: &api.KubernetesConfig{
 					PrivateCluster: &api.PrivateCluster{
-						Enabled: to.BoolPtr(false),
+						Enabled: helpers.PointerToBool(false),
 					},
 				},
 			},
@@ -111,9 +111,9 @@ func TestCreateAgentVMASStorageAccount(t *testing.T) {
 			},
 		},
 		Account: storage.Account{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('fooAgentDataAccountName'))]"),
-			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('fooAgentDataAccountName'))]"),
+			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
 			Sku: &storage.Sku{
 				Name: storage.SkuName("[variables('vmSizesMap')[variables('fooAgentVMSize')].storageAccountType]"),
 			},
@@ -134,7 +134,7 @@ func TestCreateAgentVMASStorageAccount(t *testing.T) {
 		"name":  "loop",
 	}
 
-	expected.Account.Name = to.StringPtr("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('fooAgentAccountName'))]")
+	expected.Account.Name = helpers.PointerToString("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('fooAgentStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('fooAgentAccountName'))]")
 
 	diff = cmp.Diff(actual, expected)
 
@@ -150,9 +150,9 @@ func TestCreateKeyVaultStorageAccount(t *testing.T) {
 			APIVersion: "[variables('apiVersionStorage')]",
 		},
 		Account: storage.Account{
-			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
-			Name:     to.StringPtr("[variables('clusterKeyVaultName')]"),
-			Location: to.StringPtr("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
+			Name:     helpers.PointerToString("[variables('clusterKeyVaultName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Sku: &storage.Sku{
 				Name: storage.StandardLRS,
 			},

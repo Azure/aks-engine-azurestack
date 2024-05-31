@@ -19,7 +19,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/operations/kubernetesupgrade"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/blang/semver"
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
@@ -228,7 +227,7 @@ func (uc *upgradeCmd) loadCluster() error {
 	// Enforce UseCloudControllerManager for Kubernetes 1.21+ on Azure Stack cloud
 	if uc.containerService.Properties.IsAzureStackCloud() && common.IsKubernetesVersionGe(uc.upgradeVersion, "1.21.0") {
 		log.Infoln("The in-tree cloud provider is not longer supported on Azure Stack Hub for v1.21+ clusters, overwriting UseCloudControllerManager to 'true'")
-		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(true)
+		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = helpers.PointerToBool(true)
 	}
 
 	// Only containerd runtime is allowed for Kubernetes 1.24+ on Azure Stack cloud
@@ -241,7 +240,7 @@ func (uc *upgradeCmd) loadCluster() error {
 	if i := api.GetComponentsIndexByName(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components, common.ClusterInitComponentName); i > -1 {
 		if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].IsEnabled() {
 			uc.disableClusterInitComponentDuringUpgrade = true
-			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = to.BoolPtr(false)
+			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = helpers.PointerToBool(false)
 		}
 	}
 
@@ -398,7 +397,7 @@ func (uc *upgradeCmd) run(cmd *cobra.Command, args []string) error {
 	// Restore the original cluster-init component enabled value, if it was disabled during upgrade
 	if uc.disableClusterInitComponentDuringUpgrade {
 		if i := api.GetComponentsIndexByName(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components, common.ClusterInitComponentName); i > -1 {
-			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = to.BoolPtr(true)
+			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = helpers.PointerToBool(true)
 		}
 	}
 	apiloader := &api.Apiloader{

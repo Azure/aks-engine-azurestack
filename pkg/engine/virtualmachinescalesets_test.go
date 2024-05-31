@@ -11,7 +11,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -40,33 +39,33 @@ func TestCreateMasterVMSS(t *testing.T) {
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[parameters('masterVMSize')]"),
-				Tier:     to.StringPtr("Standard"),
-				Capacity: to.Int64Ptr(1),
+				Name:     helpers.PointerToString("[parameters('masterVMSize')]"),
+				Tier:     helpers.PointerToString("Standard"),
+				Capacity: helpers.PointerToInt64(1),
 			},
 
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), 'vmss')]"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("master"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), 'vmss')]"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("master"),
 			},
-			Type: to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
+			Type: helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeModeManual,
 				},
-				Overprovision: to.BoolPtr(false),
+				Overprovision: helpers.PointerToBool(false),
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
+								Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:          to.BoolPtr(true),
+									Primary:          helpers.PointerToBool(true),
 									IPConfigurations: getIPConfigsMaster(),
 								},
 							},
@@ -74,34 +73,34 @@ func TestCreateMasterVMSS(t *testing.T) {
 					},
 
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						ComputerNamePrefix: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						ComputerNamePrefix: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
 									{
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-										Path:    to.StringPtr("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+										Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 									},
 								},
 							},
 						},
-						CustomData: to.StringPtr(expectedCustomDataStr),
+						CustomData: helpers.PointerToString(expectedCustomDataStr),
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						DataDisks: &[]compute.VirtualMachineScaleSetDataDisk{
 							{
 								CreateOption: compute.DiskCreateOptionTypesEmpty,
-								DiskSizeGB:   to.Int32Ptr(int32(256)),
-								Lun:          to.Int32Ptr(0),
+								DiskSizeGB:   helpers.PointerToInt32(int32(256)),
+								Lun:          helpers.PointerToInt32(0),
 							},
 						},
 						ImageReference: &compute.ImageReference{
-							Offer:     to.StringPtr("[parameters('osImageOffer')]"),
-							Publisher: to.StringPtr("[parameters('osImagePublisher')]"),
-							Sku:       to.StringPtr("[parameters('osImageSku')]"),
-							Version:   to.StringPtr("[parameters('osImageVersion')]"),
+							Offer:     helpers.PointerToString("[parameters('osImageOffer')]"),
+							Publisher: helpers.PointerToString("[parameters('osImagePublisher')]"),
+							Sku:       helpers.PointerToString("[parameters('osImageSku')]"),
+							Version:   helpers.PointerToString("[parameters('osImageVersion')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							Caching:      compute.CachingTypesReadWrite,
@@ -112,12 +111,12 @@ func TestCreateMasterVMSS(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
+								Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
@@ -150,29 +149,29 @@ func TestCreateMasterVMSS(t *testing.T) {
 		"[variables('masterLbID')]",
 	}
 
-	expected.Sku.Capacity = to.Int64Ptr(3)
+	expected.Sku.Capacity = helpers.PointerToInt64(3)
 
 	expectedCustomDataStr = getCustomDataFromJSON(tg.GetMasterCustomDataJSONObject(cs))
-	expected.VirtualMachineProfile.OsProfile.CustomData = to.StringPtr(expectedCustomDataStr)
+	expected.VirtualMachineProfile.OsProfile.CustomData = helpers.PointerToString(expectedCustomDataStr)
 
 	ipConfigs := *getIPConfigsMaster()
 
 	ipConfigs[0].LoadBalancerBackendAddressPools = &[]compute.SubResource{
 		{
-			ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+			ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 		},
 		{
-			ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+			ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 		},
 	}
 	expected.VirtualMachineProfile.NetworkProfile.NetworkInterfaceConfigurations = &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 		{
-			Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
+			Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
 			VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-				Primary:          to.BoolPtr(true),
+				Primary:          helpers.PointerToBool(true),
 				IPConfigurations: &ipConfigs,
 				NetworkSecurityGroup: &compute.SubResource{
-					ID: to.StringPtr("[variables('nsgID')]"),
+					ID: helpers.PointerToString("[variables('nsgID')]"),
 				},
 				DNSSettings: &compute.VirtualMachineScaleSetNetworkConfigurationDNSSettings{
 					DNSServers: &[]string{
@@ -192,7 +191,7 @@ func TestCreateMasterVMSS(t *testing.T) {
 	}
 
 	// Test with managed Identity
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = "fooAssignedID"
 	userAssignedIDEnabled = true
 
@@ -208,12 +207,12 @@ func TestCreateMasterVMSS(t *testing.T) {
 	expected.VirtualMachineProfile.ExtensionProfile = &compute.VirtualMachineScaleSetExtensionProfile{
 		Extensions: &[]compute.VirtualMachineScaleSetExtension{
 			{
-				Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
+				Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
 				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-					Type:                    to.StringPtr("CustomScript"),
-					TypeHandlerVersion:      to.StringPtr("2.0"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
+					Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+					Type:                    helpers.PointerToString("CustomScript"),
+					TypeHandlerVersion:      helpers.PointerToString("2.0"),
+					AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 					Settings:                map[string]interface{}{},
 					ProtectedSettings: map[string]interface{}{
 						"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
@@ -256,45 +255,45 @@ func TestCreateAgentVMSS(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name:     to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[variables('agentpool1VMSize')]"),
-				Tier:     to.StringPtr("Standard"),
-				Capacity: to.Int64Ptr(2),
+				Name:     helpers.PointerToString("[variables('agentpool1VMSize')]"),
+				Tier:     helpers.PointerToString("Standard"),
+				Capacity: helpers.PointerToInt64(2),
 			},
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				SinglePlacementGroup:     to.BoolPtr(true),
-				PlatformFaultDomainCount: to.Int32Ptr(3),
+				SinglePlacementGroup:     helpers.PointerToBool(true),
+				PlatformFaultDomainCount: helpers.PointerToInt32(3),
 				ProximityPlacementGroup: &compute.SubResource{
-					ID: to.StringPtr("TestPPGResourceID"),
+					ID: helpers.PointerToString("TestPPGResourceID"),
 				},
-				Overprovision:                          to.BoolPtr(true),
-				DoNotRunExtensionsOnOverprovisionedVMs: to.BoolPtr(true),
+				Overprovision:                          helpers.PointerToBool(true),
+				DoNotRunExtensionsOnOverprovisionedVMs: helpers.PointerToBool(true),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeModeManual,
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
 									{
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-										Path:    to.StringPtr("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+										Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 									},
 								},
 							},
@@ -302,10 +301,10 @@ func TestCreateAgentVMSS(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							Offer:     to.StringPtr("[variables('agentpool1osImageOffer')]"),
-							Publisher: to.StringPtr("[variables('agentpool1osImagePublisher')]"),
-							Sku:       to.StringPtr("[variables('agentpool1osImageSKU')]"),
-							Version:   to.StringPtr("[variables('agentpool1osImageVersion')]"),
+							Offer:     helpers.PointerToString("[variables('agentpool1osImageOffer')]"),
+							Publisher: helpers.PointerToString("[variables('agentpool1osImagePublisher')]"),
+							Sku:       helpers.PointerToString("[variables('agentpool1osImageSKU')]"),
+							Version:   helpers.PointerToString("[variables('agentpool1osImageVersion')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							CreateOption: compute.DiskCreateOptionTypesFromImage,
@@ -316,11 +315,11 @@ func TestCreateAgentVMSS(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+								Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:                     to.BoolPtr(true),
-									EnableAcceleratedNetworking: to.BoolPtr(true),
-									IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
+									Primary:                     helpers.PointerToBool(true),
+									EnableAcceleratedNetworking: helpers.PointerToBool(true),
+									IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
 								},
 							},
 						},
@@ -328,12 +327,12 @@ func TestCreateAgentVMSS(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("vmssCSE"),
+								Name: helpers.PointerToString("vmssCSE"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
@@ -357,11 +356,11 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
-					IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, false),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
+					IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, false),
 				},
 			},
 		},
@@ -387,10 +386,10 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
 					IPConfigurations:            getIPConfigs(nil, true, false),
 				},
 			},
@@ -409,7 +408,7 @@ func TestCreateAgentVMSS(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku = api.BasicLoadBalancerSku
 	cs.Properties.AgentPoolProfiles[0].LoadBalancerBackendAddressPoolIDs = []string{"/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"}
 	cs.Properties.AgentPoolProfiles[0].OSType = "Windows"
-	cs.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows = to.BoolPtr(true)
+	cs.Properties.AgentPoolProfiles[0].AcceleratedNetworkingEnabledWindows = helpers.PointerToBool(true)
 	cs.Properties.WindowsProfile = &api.WindowsProfile{
 		SSHEnabled: &trueVar,
 	}
@@ -426,35 +425,35 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
-					IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
+					IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
 				},
 			},
 		},
 	}
 
 	expected.VirtualMachineProfile.OsProfile = &compute.VirtualMachineScaleSetOSProfile{
-		AdminUsername:      to.StringPtr("[parameters('windowsAdminUsername')]"),
-		AdminPassword:      to.StringPtr("[parameters('windowsAdminPassword')]"),
-		CustomData:         to.StringPtr(expectedCustomDataStr),
-		ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+		AdminUsername:      helpers.PointerToString("[parameters('windowsAdminUsername')]"),
+		AdminPassword:      helpers.PointerToString("[parameters('windowsAdminPassword')]"),
+		CustomData:         helpers.PointerToString(expectedCustomDataStr),
+		ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 		WindowsConfiguration: &compute.WindowsConfiguration{
-			EnableAutomaticUpdates: to.BoolPtr(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
+			EnableAutomaticUpdates: helpers.PointerToBool(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
 		},
 	}
 
 	expected.VirtualMachineProfile.ExtensionProfile = &compute.VirtualMachineScaleSetExtensionProfile{
 		Extensions: &[]compute.VirtualMachineScaleSetExtension{
 			{
-				Name: to.StringPtr("vmssCSE"),
+				Name: helpers.PointerToString("vmssCSE"),
 				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.Compute"),
-					Type:                    to.StringPtr("CustomScriptExtension"),
-					TypeHandlerVersion:      to.StringPtr("1.8"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
+					Publisher:               helpers.PointerToString("Microsoft.Compute"),
+					Type:                    helpers.PointerToString("CustomScriptExtension"),
+					TypeHandlerVersion:      helpers.PointerToString("1.8"),
+					AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 					Settings:                map[string]interface{}{},
 					ProtectedSettings: map[string]interface{}{
 						"commandToExecute": `[concat('echo %DATE%,%TIME%,%COMPUTERNAME% && powershell.exe -ExecutionPolicy Unrestricted -command "', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp'),` + generateUserAssignedIdentityClientIDParameterForWindows(userAssignedIDEnabled) + `' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '" > %SYSTEMDRIVE%\AzureData\CustomDataSetupScript.log 2>&1 ; exit $LASTEXITCODE')]`,
@@ -465,13 +464,13 @@ func TestCreateAgentVMSS(t *testing.T) {
 	}
 
 	expected.VirtualMachineProfile.StorageProfile.ImageReference = &compute.ImageReference{
-		Offer:     to.StringPtr("[parameters('agentWindowsOffer')]"),
-		Publisher: to.StringPtr("[parameters('agentWindowsPublisher')]"),
-		Sku:       to.StringPtr("[parameters('agentWindowsSku')]"),
-		Version:   to.StringPtr("[parameters('agentWindowsVersion')]"),
+		Offer:     helpers.PointerToString("[parameters('agentWindowsOffer')]"),
+		Publisher: helpers.PointerToString("[parameters('agentWindowsPublisher')]"),
+		Sku:       helpers.PointerToString("[parameters('agentWindowsSku')]"),
+		Version:   helpers.PointerToString("[parameters('agentWindowsVersion')]"),
 	}
 
-	expected.Tags["resourceNameSuffix"] = to.StringPtr("[variables('winResourceNamePrefix')]")
+	expected.Tags["resourceNameSuffix"] = helpers.PointerToString("[variables('winResourceNamePrefix')]")
 
 	diff = cmp.Diff(actual, expected)
 
@@ -480,7 +479,7 @@ func TestCreateAgentVMSS(t *testing.T) {
 	}
 
 	// Test with windows and managed Identity
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = "fooAssignedID"
 
 	actual = CreateAgentVMSS(cs, cs.Properties.AgentPoolProfiles[0])
@@ -495,35 +494,35 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
-					IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
+					IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
 				},
 			},
 		},
 	}
 
 	expected.VirtualMachineProfile.OsProfile = &compute.VirtualMachineScaleSetOSProfile{
-		AdminUsername:      to.StringPtr("[parameters('windowsAdminUsername')]"),
-		AdminPassword:      to.StringPtr("[parameters('windowsAdminPassword')]"),
-		CustomData:         to.StringPtr(expectedCustomDataStr),
-		ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+		AdminUsername:      helpers.PointerToString("[parameters('windowsAdminUsername')]"),
+		AdminPassword:      helpers.PointerToString("[parameters('windowsAdminPassword')]"),
+		CustomData:         helpers.PointerToString(expectedCustomDataStr),
+		ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 		WindowsConfiguration: &compute.WindowsConfiguration{
-			EnableAutomaticUpdates: to.BoolPtr(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
+			EnableAutomaticUpdates: helpers.PointerToBool(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
 		},
 	}
 
 	expected.VirtualMachineProfile.ExtensionProfile = &compute.VirtualMachineScaleSetExtensionProfile{
 		Extensions: &[]compute.VirtualMachineScaleSetExtension{
 			{
-				Name: to.StringPtr("vmssCSE"),
+				Name: helpers.PointerToString("vmssCSE"),
 				VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-					Publisher:               to.StringPtr("Microsoft.Compute"),
-					Type:                    to.StringPtr("CustomScriptExtension"),
-					TypeHandlerVersion:      to.StringPtr("1.8"),
-					AutoUpgradeMinorVersion: to.BoolPtr(true),
+					Publisher:               helpers.PointerToString("Microsoft.Compute"),
+					Type:                    helpers.PointerToString("CustomScriptExtension"),
+					TypeHandlerVersion:      helpers.PointerToString("1.8"),
+					AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 					Settings:                map[string]interface{}{},
 					ProtectedSettings: map[string]interface{}{
 						"commandToExecute": `[concat('echo %DATE%,%TIME%,%COMPUTERNAME% && powershell.exe -ExecutionPolicy Unrestricted -command "', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp'),` + generateUserAssignedIdentityClientIDParameterForWindows(helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)) + `' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '" > %SYSTEMDRIVE%\AzureData\CustomDataSetupScript.log 2>&1 ; exit $LASTEXITCODE')]`,
@@ -534,13 +533,13 @@ func TestCreateAgentVMSS(t *testing.T) {
 	}
 
 	expected.VirtualMachineProfile.StorageProfile.ImageReference = &compute.ImageReference{
-		Offer:     to.StringPtr("[parameters('agentWindowsOffer')]"),
-		Publisher: to.StringPtr("[parameters('agentWindowsPublisher')]"),
-		Sku:       to.StringPtr("[parameters('agentWindowsSku')]"),
-		Version:   to.StringPtr("[parameters('agentWindowsVersion')]"),
+		Offer:     helpers.PointerToString("[parameters('agentWindowsOffer')]"),
+		Publisher: helpers.PointerToString("[parameters('agentWindowsPublisher')]"),
+		Sku:       helpers.PointerToString("[parameters('agentWindowsSku')]"),
+		Version:   helpers.PointerToString("[parameters('agentWindowsVersion')]"),
 	}
 
-	expected.Tags["resourceNameSuffix"] = to.StringPtr("[variables('winResourceNamePrefix')]")
+	expected.Tags["resourceNameSuffix"] = helpers.PointerToString("[variables('winResourceNamePrefix')]")
 
 	expected.Identity = &compute.VirtualMachineScaleSetIdentity{
 		Type: compute.ResourceIdentityType("UserAssigned"),
@@ -557,7 +556,7 @@ func TestCreateAgentVMSS(t *testing.T) {
 
 	// Test with ipv6 dual stack enabled
 	cs.Properties.FeatureFlags = &api.FeatureFlags{EnableIPv6DualStack: true}
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(false)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = ""
 	cs.Properties.AgentPoolProfiles[0].OSType = "Linux"
 
@@ -566,12 +565,12 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
-					EnableIPForwarding:          to.BoolPtr(true),
-					IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, true),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
+					EnableIPForwarding:          helpers.PointerToBool(true),
+					IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, true),
 				},
 			},
 		},
@@ -589,12 +588,12 @@ func TestCreateAgentVMSS(t *testing.T) {
 	expected.VirtualMachineProfile.NetworkProfile = &compute.VirtualMachineScaleSetNetworkProfile{
 		NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 			{
-				Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+				Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 				VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-					Primary:                     to.BoolPtr(true),
-					EnableAcceleratedNetworking: to.BoolPtr(true),
-					EnableIPForwarding:          to.BoolPtr(true),
-					IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, true),
+					Primary:                     helpers.PointerToBool(true),
+					EnableAcceleratedNetworking: helpers.PointerToBool(true),
+					EnableIPForwarding:          helpers.PointerToBool(true),
+					IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, true),
 				},
 			},
 		},
@@ -608,12 +607,12 @@ func TestCreateAgentVMSS(t *testing.T) {
 
 	// Test with Spot Scale Set
 	cs.Properties.AgentPoolProfiles[0].ScaleSetPriority = api.ScaleSetPrioritySpot
-	cs.Properties.AgentPoolProfiles[0].SpotMaxPrice = to.Float64Ptr(float64(22))
+	cs.Properties.AgentPoolProfiles[0].SpotMaxPrice = helpers.PointerToFloat64(float64(22))
 	actual = CreateAgentVMSS(cs, cs.Properties.AgentPoolProfiles[0])
 
 	//   Test VirtualMachineProfile.BillingProfile
 	expected.VirtualMachineProfile.BillingProfile = &compute.BillingProfile{
-		MaxPrice: to.Float64Ptr(float64(22)),
+		MaxPrice: helpers.PointerToFloat64(float64(22)),
 	}
 	diff = cmp.Diff(actual.VirtualMachineProfile.BillingProfile, expected.VirtualMachineProfile.BillingProfile)
 	if diff != "" {
@@ -639,27 +638,27 @@ func getIPConfigsMaster() *[]compute.VirtualMachineScaleSetIPConfiguration {
 	var ipConfigs []compute.VirtualMachineScaleSetIPConfiguration
 	for i := 1; i <= 31; i++ {
 		ipconfig := compute.VirtualMachineScaleSetIPConfiguration{
-			Name: to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
+			Name: helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
 			VirtualMachineScaleSetIPConfigurationProperties: &compute.VirtualMachineScaleSetIPConfigurationProperties{
 				Subnet: &compute.APIEntityReference{
-					ID: to.StringPtr("[variables('vnetSubnetIDMaster')]"),
+					ID: helpers.PointerToString("[variables('vnetSubnetIDMaster')]"),
 				},
 			},
 		}
 		if i == 1 {
-			ipconfig.Primary = to.BoolPtr(true)
+			ipconfig.Primary = helpers.PointerToBool(true)
 			ipconfig.LoadBalancerBackendAddressPools = &[]compute.SubResource{
 				{
-					ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+					ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 				},
 			}
 			ipconfig.LoadBalancerInboundNatPools = &[]compute.SubResource{
 				{
-					ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatPools/SSH-', variables('masterVMNamePrefix'), 'natpools')]"),
+					ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatPools/SSH-', variables('masterVMNamePrefix'), 'natpools')]"),
 				},
 			}
 		} else {
-			ipconfig.Primary = to.BoolPtr(false)
+			ipconfig.Primary = helpers.PointerToBool(false)
 		}
 		ipConfigs = append(ipConfigs, ipconfig)
 	}
@@ -672,20 +671,20 @@ func getIPConfigs(lbBackendAddresPoolID *string, isStandardLB, ipv6DualStackEnab
 	var ipConfigs []compute.VirtualMachineScaleSetIPConfiguration
 	for i := 1; i <= 31; i++ {
 		ipconfig := compute.VirtualMachineScaleSetIPConfiguration{
-			Name: to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
+			Name: helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
 			VirtualMachineScaleSetIPConfigurationProperties: &compute.VirtualMachineScaleSetIPConfigurationProperties{
 				Subnet: &compute.APIEntityReference{
-					ID: to.StringPtr("[variables('agentpool1VnetSubnetID')]"),
+					ID: helpers.PointerToString("[variables('agentpool1VnetSubnetID')]"),
 				},
 			},
 		}
 		if i == 1 {
-			ipconfig.Primary = to.BoolPtr(true)
+			ipconfig.Primary = helpers.PointerToBool(true)
 
 			publicIPAddressConfiguration := &compute.VirtualMachineScaleSetPublicIPAddressConfiguration{
-				Name: to.StringPtr(fmt.Sprintf("pub%d", i)),
+				Name: helpers.PointerToString(fmt.Sprintf("pub%d", i)),
 				VirtualMachineScaleSetPublicIPAddressConfigurationProperties: &compute.VirtualMachineScaleSetPublicIPAddressConfigurationProperties{
-					IdleTimeoutInMinutes: to.Int32Ptr(30),
+					IdleTimeoutInMinutes: helpers.PointerToInt32(30),
 				},
 			}
 			ipconfig.PublicIPAddressConfiguration = publicIPAddressConfiguration
@@ -698,7 +697,7 @@ func getIPConfigs(lbBackendAddresPoolID *string, isStandardLB, ipv6DualStackEnab
 			} else {
 				if isStandardLB {
 					agentLbBackendAddressPools := compute.SubResource{
-						ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+						ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 					}
 					backendAddressPools = append(backendAddressPools, agentLbBackendAddressPools)
 				}
@@ -706,7 +705,7 @@ func getIPConfigs(lbBackendAddresPoolID *string, isStandardLB, ipv6DualStackEnab
 			ipconfig.LoadBalancerBackendAddressPools = &backendAddressPools
 			if ipv6DualStackEnabled && !isStandardLB {
 				defaultIPv4BackendPool := compute.SubResource{
-					ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
+					ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
 				}
 				if ipconfig.LoadBalancerBackendAddressPools != nil {
 					backendPools := *ipconfig.LoadBalancerBackendAddressPools
@@ -721,12 +720,12 @@ func getIPConfigs(lbBackendAddresPoolID *string, isStandardLB, ipv6DualStackEnab
 
 		if i == 1 && ipv6DualStackEnabled {
 			ipconfigv6 := compute.VirtualMachineScaleSetIPConfiguration{
-				Name: to.StringPtr(fmt.Sprintf("ipconfig%dv6", i)),
+				Name: helpers.PointerToString(fmt.Sprintf("ipconfig%dv6", i)),
 				VirtualMachineScaleSetIPConfigurationProperties: &compute.VirtualMachineScaleSetIPConfigurationProperties{
 					Subnet: &compute.APIEntityReference{
-						ID: to.StringPtr("[variables('agentpool1VnetSubnetID')]"),
+						ID: helpers.PointerToString("[variables('agentpool1VnetSubnetID')]"),
 					},
-					Primary:                 to.BoolPtr(false),
+					Primary:                 helpers.PointerToBool(false),
 					PrivateIPAddressVersion: "IPv6",
 				},
 			}
@@ -738,9 +737,9 @@ func getIPConfigs(lbBackendAddresPoolID *string, isStandardLB, ipv6DualStackEnab
 
 func TestCreateVmScaleSetsWithCustomTags(t *testing.T) {
 	testTags := map[string]*string{
-		"orchestrator":     to.StringPtr("k8s"),
-		"aksEngineVersion": to.StringPtr("1.15"),
-		"poolName":         to.StringPtr("TestPool"),
+		"orchestrator":     helpers.PointerToString("k8s"),
+		"aksEngineVersion": helpers.PointerToString("1.15"),
+		"poolName":         helpers.PointerToString("TestPool"),
 	}
 
 	testVirtualMachineScaleSet := compute.VirtualMachineScaleSet{
@@ -756,11 +755,11 @@ func TestCreateVmScaleSetsWithCustomTags(t *testing.T) {
 	addCustomTagsToVMScaleSets(testTagsToAdd, &testVirtualMachineScaleSet)
 
 	expectedTags := map[string]*string{
-		"orchestrator":     to.StringPtr("k8s"),
-		"aksEngineVersion": to.StringPtr("1.15"),
-		"poolName":         to.StringPtr("TestPool"),
-		"myTestKey1":       to.StringPtr("myTestValue1"),
-		"myTestKey2":       to.StringPtr("myTestValue2"),
+		"orchestrator":     helpers.PointerToString("k8s"),
+		"aksEngineVersion": helpers.PointerToString("1.15"),
+		"poolName":         helpers.PointerToString("TestPool"),
+		"myTestKey1":       helpers.PointerToString("myTestValue1"),
+		"myTestKey2":       helpers.PointerToString("myTestValue2"),
 	}
 
 	diff := cmp.Diff(testVirtualMachineScaleSet.Tags, expectedTags)
@@ -795,23 +794,23 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[parameters('masterVMSize')]"),
-				Tier:     to.StringPtr("Standard"),
-				Capacity: to.Int64Ptr(1),
+				Name:     helpers.PointerToString("[parameters('masterVMSize')]"),
+				Tier:     helpers.PointerToString("Standard"),
+				Capacity: helpers.PointerToInt64(1),
 			},
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), 'vmss')]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("master"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), 'vmss')]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("master"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				Overprovision: to.BoolPtr(false),
+				Overprovision: helpers.PointerToBool(false),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeModeManual,
 				},
@@ -819,25 +818,25 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
+								Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'netintconfig')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:          to.BoolPtr(true),
+									Primary:          helpers.PointerToBool(true),
 									IPConfigurations: getIPConfigsMaster(),
 								},
 							},
 						},
 					},
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						ComputerNamePrefix: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						ComputerNamePrefix: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmss')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
 									{
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-										Path:    to.StringPtr("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+										Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 									},
 								},
 							},
@@ -845,7 +844,7 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							ID: to.StringPtr("[concat('/subscriptions/', 'testSub',  '/resourceGroups/', parameters('osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'testGallery', '/images/', parameters('osImageName'), '/versions/', '0.0.1')]"),
+							ID: helpers.PointerToString("[concat('/subscriptions/', 'testSub',  '/resourceGroups/', parameters('osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'testGallery', '/images/', parameters('osImageName'), '/versions/', '0.0.1')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							CreateOption: compute.DiskCreateOptionTypesFromImage,
@@ -853,21 +852,21 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 						},
 						DataDisks: &[]compute.VirtualMachineScaleSetDataDisk{
 							{
-								Lun:          to.Int32Ptr(0),
+								Lun:          helpers.PointerToInt32(0),
 								CreateOption: compute.DiskCreateOptionTypes("Empty"),
-								DiskSizeGB:   to.Int32Ptr(256),
+								DiskSizeGB:   helpers.PointerToInt32(256),
 							},
 						},
 					},
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
+								Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'vmssCSE')]"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
@@ -900,40 +899,40 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name:     to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[variables('agentpool1VMSize')]"),
-				Tier:     to.StringPtr("Standard"),
-				Capacity: to.Int64Ptr(2),
+				Name:     helpers.PointerToString("[variables('agentpool1VMSize')]"),
+				Tier:     helpers.PointerToString("Standard"),
+				Capacity: helpers.PointerToInt64(2),
 			},
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				SinglePlacementGroup: to.BoolPtr(true),
-				Overprovision:        to.BoolPtr(false),
+				SinglePlacementGroup: helpers.PointerToBool(true),
+				Overprovision:        helpers.PointerToBool(false),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeModeManual,
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
 									{
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-										Path:    to.StringPtr("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+										Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 									},
 								},
 							},
@@ -941,7 +940,7 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							ID: to.StringPtr("[concat('/subscriptions/', 'testSub', '/resourceGroups/', variables('agentpool1osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'testGallery', '/images/', variables('agentpool1osImageName'), '/versions/', '0.0.1')]"),
+							ID: helpers.PointerToString("[concat('/subscriptions/', 'testSub', '/resourceGroups/', variables('agentpool1osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'testGallery', '/images/', variables('agentpool1osImageName'), '/versions/', '0.0.1')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							CreateOption: compute.DiskCreateOptionTypesFromImage,
@@ -951,11 +950,11 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+								Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:                     to.BoolPtr(true),
-									EnableAcceleratedNetworking: to.BoolPtr(true),
-									IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
+									Primary:                     helpers.PointerToBool(true),
+									EnableAcceleratedNetworking: helpers.PointerToBool(true),
+									IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
 								},
 							},
 						},
@@ -963,12 +962,12 @@ func TestCreateCustomOSVMSS(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("vmssCSE"),
+								Name: helpers.PointerToString("vmssCSE"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=false GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},

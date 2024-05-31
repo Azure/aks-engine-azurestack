@@ -4,8 +4,8 @@
 package engine
 
 import (
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func createAzureStackTelemetry(azureTelemetryPID string) DeploymentARM {
@@ -23,8 +23,8 @@ func createAzureStackTelemetry(azureTelemetryPID string) DeploymentARM {
 			APIVersion: "2015-01-01",
 		},
 		DeploymentExtended: resources.DeploymentExtended{
-			Name:       to.StringPtr(azureTelemetryPID),
-			Type:       to.StringPtr("Microsoft.Resources/deployments"),
+			Name:       helpers.PointerToString(azureTelemetryPID),
+			Type:       helpers.PointerToString("Microsoft.Resources/deployments"),
 			Properties: &properties,
 		},
 	}

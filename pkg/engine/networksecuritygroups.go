@@ -5,8 +5,8 @@ package engine
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupARM {
@@ -15,32 +15,32 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 	}
 
 	sshRule := network.SecurityRule{
-		Name: to.StringPtr("allow_ssh"),
+		Name: helpers.PointerToString("allow_ssh"),
 		SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 			Access:                   network.SecurityRuleAccessAllow,
-			Description:              to.StringPtr("Allow SSH traffic to master"),
-			DestinationAddressPrefix: to.StringPtr("*"),
-			DestinationPortRange:     to.StringPtr("22-22"),
+			Description:              helpers.PointerToString("Allow SSH traffic to master"),
+			DestinationAddressPrefix: helpers.PointerToString("*"),
+			DestinationPortRange:     helpers.PointerToString("22-22"),
 			Direction:                network.SecurityRuleDirectionInbound,
-			Priority:                 to.Int32Ptr(101),
+			Priority:                 helpers.PointerToInt32(101),
 			Protocol:                 network.SecurityRuleProtocolTCP,
-			SourceAddressPrefix:      to.StringPtr("*"),
-			SourcePortRange:          to.StringPtr("*"),
+			SourceAddressPrefix:      helpers.PointerToString("*"),
+			SourcePortRange:          helpers.PointerToString("*"),
 		},
 	}
 
 	kubeTLSRule := network.SecurityRule{
-		Name: to.StringPtr("allow_kube_tls"),
+		Name: helpers.PointerToString("allow_kube_tls"),
 		SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 			Access:                   network.SecurityRuleAccessAllow,
-			Description:              to.StringPtr("Allow kube-apiserver (tls) traffic to master"),
-			DestinationAddressPrefix: to.StringPtr("*"),
-			DestinationPortRange:     to.StringPtr("443-443"),
+			Description:              helpers.PointerToString("Allow kube-apiserver (tls) traffic to master"),
+			DestinationAddressPrefix: helpers.PointerToString("*"),
+			DestinationPortRange:     helpers.PointerToString("443-443"),
 			Direction:                network.SecurityRuleDirectionInbound,
-			Priority:                 to.Int32Ptr(100),
+			Priority:                 helpers.PointerToInt32(100),
 			Protocol:                 network.SecurityRuleProtocolTCP,
-			SourceAddressPrefix:      to.StringPtr("*"),
-			SourcePortRange:          to.StringPtr("*"),
+			SourceAddressPrefix:      helpers.PointerToString("*"),
+			SourcePortRange:          helpers.PointerToString("*"),
 		},
 	}
 
@@ -56,17 +56,17 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 
 	if cs.Properties.HasWindows() {
 		rdpRule := network.SecurityRule{
-			Name: to.StringPtr("allow_rdp"),
+			Name: helpers.PointerToString("allow_rdp"),
 			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 				Access:                   network.SecurityRuleAccessAllow,
-				Description:              to.StringPtr("Allow RDP traffic to master"),
-				DestinationAddressPrefix: to.StringPtr("*"),
-				DestinationPortRange:     to.StringPtr("3389-3389"),
+				Description:              helpers.PointerToString("Allow RDP traffic to master"),
+				DestinationAddressPrefix: helpers.PointerToString("*"),
+				DestinationPortRange:     helpers.PointerToString("3389-3389"),
 				Direction:                network.SecurityRuleDirectionInbound,
-				Priority:                 to.Int32Ptr(102),
+				Priority:                 helpers.PointerToInt32(102),
 				Protocol:                 network.SecurityRuleProtocolTCP,
-				SourceAddressPrefix:      to.StringPtr("*"),
-				SourcePortRange:          to.StringPtr("*"),
+				SourceAddressPrefix:      helpers.PointerToString("*"),
+				SourcePortRange:          helpers.PointerToString("*"),
 			},
 		}
 
@@ -75,47 +75,47 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("BlockOutboundInternet") {
 		vnetRule := network.SecurityRule{
-			Name: to.StringPtr("allow_vnet"),
+			Name: helpers.PointerToString("allow_vnet"),
 			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 				Access:                   network.SecurityRuleAccessAllow,
-				Description:              to.StringPtr("Allow outbound internet to vnet"),
-				DestinationAddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
-				DestinationPortRange:     to.StringPtr("*"),
+				Description:              helpers.PointerToString("Allow outbound internet to vnet"),
+				DestinationAddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+				DestinationPortRange:     helpers.PointerToString("*"),
 				Direction:                network.SecurityRuleDirectionOutbound,
-				Priority:                 to.Int32Ptr(110),
+				Priority:                 helpers.PointerToInt32(110),
 				Protocol:                 network.SecurityRuleProtocolAsterisk,
-				SourceAddressPrefix:      to.StringPtr("VirtualNetwork"),
-				SourcePortRange:          to.StringPtr("*"),
+				SourceAddressPrefix:      helpers.PointerToString("VirtualNetwork"),
+				SourcePortRange:          helpers.PointerToString("*"),
 			},
 		}
 
 		blockOutBoundRule := network.SecurityRule{
-			Name: to.StringPtr("block_outbound"),
+			Name: helpers.PointerToString("block_outbound"),
 			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 				Access:                   network.SecurityRuleAccessDeny,
-				Description:              to.StringPtr("Block outbound internet from master"),
-				DestinationAddressPrefix: to.StringPtr("*"),
-				DestinationPortRange:     to.StringPtr("*"),
+				Description:              helpers.PointerToString("Block outbound internet from master"),
+				DestinationAddressPrefix: helpers.PointerToString("*"),
+				DestinationPortRange:     helpers.PointerToString("*"),
 				Direction:                network.SecurityRuleDirectionOutbound,
-				Priority:                 to.Int32Ptr(120),
+				Priority:                 helpers.PointerToInt32(120),
 				Protocol:                 network.SecurityRuleProtocolAsterisk,
-				SourceAddressPrefix:      to.StringPtr("*"),
-				SourcePortRange:          to.StringPtr("*"),
+				SourceAddressPrefix:      helpers.PointerToString("*"),
+				SourcePortRange:          helpers.PointerToString("*"),
 			},
 		}
 
 		allowARMRule := network.SecurityRule{
-			Name: to.StringPtr("allow_ARM"),
+			Name: helpers.PointerToString("allow_ARM"),
 			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 				Access:                   network.SecurityRuleAccessAllow,
-				Description:              to.StringPtr("Allow outbound internet to ARM"),
-				DestinationAddressPrefix: to.StringPtr("AzureResourceManager"),
-				DestinationPortRange:     to.StringPtr("443"),
+				Description:              helpers.PointerToString("Allow outbound internet to ARM"),
+				DestinationAddressPrefix: helpers.PointerToString("AzureResourceManager"),
+				DestinationPortRange:     helpers.PointerToString("443"),
 				Direction:                network.SecurityRuleDirectionOutbound,
-				Priority:                 to.Int32Ptr(100),
+				Priority:                 helpers.PointerToInt32(100),
 				Protocol:                 network.SecurityRuleProtocolTCP,
-				SourceAddressPrefix:      to.StringPtr("*"),
-				SourcePortRange:          to.StringPtr("*"),
+				SourceAddressPrefix:      helpers.PointerToString("*"),
+				SourcePortRange:          helpers.PointerToString("*"),
 			},
 		}
 
@@ -125,9 +125,9 @@ func CreateNetworkSecurityGroup(cs *api.ContainerService) NetworkSecurityGroupAR
 	}
 
 	nsg := network.SecurityGroup{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[variables('nsgName')]"),
-		Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[variables('nsgName')]"),
+		Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
 		SecurityGroupPropertiesFormat: &network.SecurityGroupPropertiesFormat{
 			SecurityRules: &securityRules,
 		},
@@ -146,23 +146,23 @@ func createJumpboxNSG() NetworkSecurityGroupARM {
 
 	securityRules := []network.SecurityRule{
 		{
-			Name: to.StringPtr("default-allow-ssh"),
+			Name: helpers.PointerToString("default-allow-ssh"),
 			SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
-				Priority:                 to.Int32Ptr(1000),
+				Priority:                 helpers.PointerToInt32(1000),
 				Protocol:                 network.SecurityRuleProtocolTCP,
 				Access:                   network.SecurityRuleAccessAllow,
 				Direction:                network.SecurityRuleDirectionInbound,
-				SourceAddressPrefix:      to.StringPtr("*"),
-				SourcePortRange:          to.StringPtr("*"),
-				DestinationAddressPrefix: to.StringPtr("*"),
-				DestinationPortRange:     to.StringPtr("22"),
+				SourceAddressPrefix:      helpers.PointerToString("*"),
+				SourcePortRange:          helpers.PointerToString("*"),
+				DestinationAddressPrefix: helpers.PointerToString("*"),
+				DestinationPortRange:     helpers.PointerToString("22"),
 			},
 		},
 	}
 	nsg := network.SecurityGroup{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[variables('jumpboxNetworkSecurityGroupName')]"),
-		Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[variables('jumpboxNetworkSecurityGroupName')]"),
+		Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
 		SecurityGroupPropertiesFormat: &network.SecurityGroupPropertiesFormat{
 			SecurityRules: &securityRules,
 		},

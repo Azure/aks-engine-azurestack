@@ -11,7 +11,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func GenerateARMResources(cs *api.ContainerService) []interface{} {
@@ -140,11 +139,11 @@ func createKubernetesAgentVMASResources(cs *api.ContainerService, profile *api.A
 				APIVersion: "[variables('apiVersionCompute')]",
 			},
 			AvailabilitySet: compute.AvailabilitySet{
-				Location: to.StringPtr("[variables('location')]"),
-				Name: to.StringPtr(fmt.Sprintf("[variables('%sAvailabilitySet')]",
+				Location: helpers.PointerToString("[variables('location')]"),
+				Name: helpers.PointerToString(fmt.Sprintf("[variables('%sAvailabilitySet')]",
 					profile.Name)),
 				AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
-				Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
+				Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
 			},
 		}
 

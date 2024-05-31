@@ -110,6 +110,24 @@ func PointerToInt(i int) *int {
 	return &p
 }
 
+// PointerToInt32 returns a pointer to a int32
+func PointerToInt32(i int32) *int32 {
+	p := i
+	return &p
+}
+
+// PointerToInt64 returns a pointer to a int64
+func PointerToInt64(i int64) *int64 {
+	p := i
+	return &p
+}
+
+// PointerToFloat64 returns a pointer to a float64
+func PointerToFloat64(i float64) *float64 {
+	p := i
+	return &p
+}
+
 // EqualError is a nil-safe method which reports whether errors a and b are considered equal.
 // They're equal if both are nil, or both are not nil and a.Error() == b.Error().
 func EqualError(a, b error) bool {

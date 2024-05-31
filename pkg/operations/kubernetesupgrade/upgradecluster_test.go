@@ -15,10 +15,10 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	mock "github.com/Azure/aks-engine-azurestack/pkg/kubernetes/mock_kubernetes"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/golang/mock/gomock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -328,7 +328,7 @@ var _ = Describe("Upgrade Kubernetes cluster tests", Serial, func() {
 		It("Should leave platform fault domain count nil", func() {
 			cs := api.CreateMockContainerService("testcluster", "", 3, 2, false)
 			cs.Properties.OrchestratorProfile.KubernetesConfig = &api.KubernetesConfig{}
-			cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+			cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 			cs.Properties.MasterProfile.AvailabilityProfile = "AvailabilitySet"
 			uc := UpgradeCluster{
 				Translator: &i18n.Translator{},
@@ -358,7 +358,7 @@ var _ = Describe("Upgrade Kubernetes cluster tests", Serial, func() {
 	It("Should not fail if no managed identity is returned by azure during upgrade operation", func() {
 		cs := api.CreateMockContainerService("testcluster", "", 3, 2, false)
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &api.KubernetesConfig{}
-		cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+		cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 		uc := UpgradeCluster{
 			Translator: &i18n.Translator{},
 			Logger:     log.NewEntry(log.New()),

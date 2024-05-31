@@ -9,12 +9,12 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
 	"github.com/Azure/azure-sdk-for-go/services/preview/authorization/mgmt/2018-09-01-preview/authorization"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -26,7 +26,7 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 	if err := json.Unmarshal([]byte(apiModelStr), &cs); err != nil {
 		t.Fatal(err)
 	}
-	cs.Properties.MasterProfile.PlatformUpdateDomainCount = to.IntPtr(3)
+	cs.Properties.MasterProfile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
 
 	armResources := GenerateARMResources(&cs)
 
@@ -46,38 +46,38 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+			Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[variables('agentpool1VMSize')]"),
-				Tier:     to.StringPtr(StandardLoadBalancerSku),
-				Capacity: to.Int64Ptr(2),
+				Name:     helpers.PointerToString("[variables('agentpool1VMSize')]"),
+				Tier:     helpers.PointerToString(StandardLoadBalancerSku),
+				Capacity: helpers.PointerToInt64(2),
 			},
-			Location: to.StringPtr("[variables('location')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
-			Type: to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
+			Type: helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				SinglePlacementGroup: to.BoolPtr(true),
-				Overprovision:        to.BoolPtr(false),
+				SinglePlacementGroup: helpers.PointerToBool(true),
+				Overprovision:        helpers.PointerToBool(false),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeMode("Manual"),
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
-									{Path: to.StringPtr("[variables('sshKeyPath')]"),
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									{Path: helpers.PointerToString("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 									},
 								},
 							},
@@ -85,10 +85,10 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							Publisher: to.StringPtr("[variables('agentpool1osImagePublisher')]"),
-							Offer:     to.StringPtr("[variables('agentpool1osImageOffer')]"),
-							Sku:       to.StringPtr("[variables('agentpool1osImageSKU')]"),
-							Version:   to.StringPtr("[variables('agentpool1osImageVersion')]"),
+							Publisher: helpers.PointerToString("[variables('agentpool1osImagePublisher')]"),
+							Offer:     helpers.PointerToString("[variables('agentpool1osImageOffer')]"),
+							Sku:       helpers.PointerToString("[variables('agentpool1osImageSKU')]"),
+							Version:   helpers.PointerToString("[variables('agentpool1osImageVersion')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							Caching:      compute.CachingTypes("ReadWrite"),
@@ -99,11 +99,11 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+								Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:                     to.BoolPtr(true),
-									EnableAcceleratedNetworking: to.BoolPtr(true),
-									IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
+									Primary:                     helpers.PointerToBool(true),
+									EnableAcceleratedNetworking: helpers.PointerToBool(true),
+									IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), false, false),
 								},
 							},
 						},
@@ -111,12 +111,12 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("vmssCSE"),
+								Name: helpers.PointerToString("vmssCSE"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
@@ -132,14 +132,14 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
-			Location: to.StringPtr("[variables('location')]"),
-			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
+			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
 			Sku: &compute.Sku{
-				Name: to.StringPtr("Aligned"),
+				Name: helpers.PointerToString("Aligned"),
 			},
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: to.Int32Ptr(3),
+				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
 			},
 		},
 	}
@@ -152,9 +152,9 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
-			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -163,11 +163,11 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: to.StringPtr("[variables('subnetName')]"),
+						Name: helpers.PointerToString("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
+							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: to.StringPtr("[variables('nsgID')]"),
+								ID: helpers.PointerToString("[variables('nsgID')]"),
 							},
 						},
 					},
@@ -181,37 +181,37 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		SecurityGroup: network.SecurityGroup{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('nsgName')]"),
-			Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('nsgName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
 			SecurityGroupPropertiesFormat: &network.SecurityGroupPropertiesFormat{
 				SecurityRules: &[]network.SecurityRule{
 					{
-						Name: to.StringPtr("allow_ssh"),
+						Name: helpers.PointerToString("allow_ssh"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              to.StringPtr("Allow SSH traffic to master"),
-							DestinationAddressPrefix: to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("22-22"),
+							Description:              helpers.PointerToString("Allow SSH traffic to master"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("22-22"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 to.Int32Ptr(101),
+							Priority:                 helpers.PointerToInt32(101),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      to.StringPtr("*"),
-							SourcePortRange:          to.StringPtr("*"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
 						},
 					},
 					{
-						Name: to.StringPtr("allow_kube_tls"),
+						Name: helpers.PointerToString("allow_kube_tls"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              to.StringPtr("Allow kube-apiserver (tls) traffic to master"),
-							DestinationAddressPrefix: to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("443-443"),
+							Description:              helpers.PointerToString("Allow kube-apiserver (tls) traffic to master"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("443-443"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 to.Int32Ptr(100),
+							Priority:                 helpers.PointerToInt32(100),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      to.StringPtr("*"),
-							SourcePortRange:          to.StringPtr("*"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
 						},
 					},
 				},
@@ -224,18 +224,18 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterPublicIPAddressName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterPublicIPAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				DNSSettings: &network.PublicIPAddressDNSSettings{
-					DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
+					DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
 				},
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 
@@ -247,54 +247,54 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterLbName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterLbName')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: to.StringPtr("[variables('masterLbBackendPoolName')]"),
+						Name: helpers.PointerToString("[variables('masterLbBackendPoolName')]"),
 					},
 				},
 				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 					{
-						Name: to.StringPtr("[variables('masterLbIPConfigName')]"),
+						Name: helpers.PointerToString("[variables('masterLbIPConfigName')]"),
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
+								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
 							},
 						},
 					},
 				},
 				LoadBalancingRules: &[]network.LoadBalancingRule{
 					{
-						Name: to.StringPtr("LBRuleHTTPS"),
+						Name: helpers.PointerToString("LBRuleHTTPS"),
 						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 							},
 							Protocol:             network.TransportProtocolTCP,
-							FrontendPort:         to.Int32Ptr(443),
-							BackendPort:          to.Int32Ptr(443),
-							EnableFloatingIP:     to.BoolPtr(false),
-							IdleTimeoutInMinutes: to.Int32Ptr(5),
+							FrontendPort:         helpers.PointerToInt32(443),
+							BackendPort:          helpers.PointerToInt32(443),
+							EnableFloatingIP:     helpers.PointerToBool(false),
+							IdleTimeoutInMinutes: helpers.PointerToInt32(5),
 							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
 						},
 					},
 				},
 				Probes: &[]network.Probe{
 					{
-						Name: to.StringPtr("tcpHTTPSProbe"),
+						Name: helpers.PointerToString("tcpHTTPSProbe"),
 						ProbePropertiesFormat: &network.ProbePropertiesFormat{
 							Protocol:          network.ProbeProtocolTCP,
-							Port:              to.Int32Ptr(443),
-							IntervalInSeconds: to.Int32Ptr(5),
-							NumberOfProbes:    to.Int32Ptr(2),
+							Port:              helpers.PointerToInt32(443),
+							IntervalInSeconds: helpers.PointerToInt32(5),
+							NumberOfProbes:    helpers.PointerToInt32(2),
 						},
 					},
 				},
@@ -302,21 +302,21 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 					{
 						InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							Protocol:         network.TransportProtocol("Tcp"),
-							FrontendPort:     to.Int32Ptr(22),
-							BackendPort:      to.Int32Ptr(22),
-							EnableFloatingIP: to.BoolPtr(false),
+							FrontendPort:     helpers.PointerToInt32(22),
+							BackendPort:      helpers.PointerToInt32(22),
+							EnableFloatingIP: helpers.PointerToBool(false),
 						},
-						Name: to.StringPtr("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
+						Name: helpers.PointerToString("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
 					},
 				},
 			},
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
+			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
 		},
 	}
 
@@ -334,12 +334,12 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: getNICIPConfigs(31, false),
 			},
-			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -358,15 +358,15 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			},
 		},
 		VirtualMachine: compute.VirtualMachine{
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"poolName":           to.StringPtr("master"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"poolName":           helpers.PointerToString("master"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 
 			VirtualMachineProperties: &compute.VirtualMachineProperties{
@@ -375,34 +375,34 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: to.StringPtr("[parameters('osImagePublisher')]"),
-						Offer:     to.StringPtr("[parameters('osImageOffer')]"),
-						Sku:       to.StringPtr("[parameters('osImageSku')]"),
-						Version:   to.StringPtr("[parameters('osImageVersion')]"),
+						Publisher: helpers.PointerToString("[parameters('osImagePublisher')]"),
+						Offer:     helpers.PointerToString("[parameters('osImageOffer')]"),
+						Sku:       helpers.PointerToString("[parameters('osImageSku')]"),
+						Version:   helpers.PointerToString("[parameters('osImageVersion')]"),
 					},
 					OsDisk: &compute.OSDisk{
 						Caching:      compute.CachingTypes("ReadWrite"),
 						CreateOption: compute.DiskCreateOptionTypes("FromImage"),
 					}, DataDisks: &[]compute.DataDisk{
 						{
-							Lun:          to.Int32Ptr(0),
-							Name:         to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
+							Lun:          helpers.PointerToInt32(0),
+							Name:         helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
 							CreateOption: compute.DiskCreateOptionTypes("Empty"),
-							DiskSizeGB:   to.Int32Ptr(256),
+							DiskSizeGB:   helpers.PointerToInt32(256),
 						},
 					},
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-					AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
-					CustomData:    to.StringPtr(expectedCustomDataStr),
+					ComputerName:  helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+					AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+					CustomData:    helpers.PointerToString(expectedCustomDataStr),
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: to.BoolPtr(true),
+						DisablePasswordAuthentication: helpers.PointerToBool(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
 								{
-									Path:    to.StringPtr("[variables('sshKeyPath')]"),
-									KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
+									KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 								},
 							},
 						},
@@ -411,12 +411,12 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
+							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
 						},
 					},
 				},
 				AvailabilitySet: &compute.SubResource{
-					ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
 				},
 			},
 		},
@@ -435,16 +435,16 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher: to.StringPtr("Microsoft.Azure.Extensions"), Type: to.StringPtr("CustomScript"),
-				TypeHandlerVersion:      to.StringPtr("2.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
+				Publisher: helpers.PointerToString("Microsoft.Azure.Extensions"), Type: helpers.PointerToString("CustomScript"),
+				TypeHandlerVersion:      helpers.PointerToString("2.0"),
+				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`},
 			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags:     map[string]*string{},
 		},
 	}
@@ -469,12 +469,12 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 	}
 
 	// Now test with userAssignedID enabled and StorageAccount in agents
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = "fooUserAssignedID"
 	cs.Properties.AgentPoolProfiles[0].StorageProfile = api.StorageAccount
 	userAssignedIDEnabled = true
 
-	masterVM.VirtualMachineProperties.OsProfile.CustomData = to.StringPtr(getCustomDataFromJSON(tg.GetMasterCustomDataJSONObject(&cs)))
+	masterVM.VirtualMachineProperties.OsProfile.CustomData = helpers.PointerToString(getCustomDataFromJSON(tg.GetMasterCustomDataJSONObject(&cs)))
 	masterVM.VirtualMachine.Identity = &compute.VirtualMachineIdentity{
 		Type: compute.ResourceIdentityType("UserAssigned"),
 		UserAssignedIdentities: map[string]*compute.VirtualMachineIdentityUserAssignedIdentitiesValue{
@@ -490,18 +490,18 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 			APIVersion: "[variables('apiVersionAuthorizationUser')]",
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Name: to.StringPtr("[guid(concat(variables('userAssignedID'), 'roleAssignment', resourceGroup().id))]"),
-			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
+			Name: helpers.PointerToString("[guid(concat(variables('userAssignedID'), 'roleAssignment', resourceGroup().id))]"),
+			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				Scope:            to.StringPtr("[resourceGroup().id]"),
-				RoleDefinitionID: to.StringPtr("[variables('contributorRoleDefinitionId')]"),
-				PrincipalID:      to.StringPtr("[reference(variables('userAssignedIDReference'), variables('apiVersionManagedIdentity')).principalId]"),
+				Scope:            helpers.PointerToString("[resourceGroup().id]"),
+				RoleDefinitionID: helpers.PointerToString("[variables('contributorRoleDefinitionId')]"),
+				PrincipalID:      helpers.PointerToString("[reference(variables('userAssignedIDReference'), variables('apiVersionManagedIdentity')).principalId]"),
 				PrincipalType:    authorization.PrincipalType("ServicePrincipal"),
 			},
 		},
 	}
 
-	agentVM.VirtualMachineProfile.OsProfile.CustomData = to.StringPtr(getCustomDataFromJSON(tg.GetKubernetesLinuxNodeCustomDataJSONObject(&cs, cs.Properties.AgentPoolProfiles[0])))
+	agentVM.VirtualMachineProfile.OsProfile.CustomData = helpers.PointerToString(getCustomDataFromJSON(tg.GetKubernetesLinuxNodeCustomDataJSONObject(&cs, cs.Properties.AgentPoolProfiles[0])))
 	agentVM.VirtualMachineScaleSet.Identity = &compute.VirtualMachineScaleSetIdentity{
 		Type: compute.ResourceIdentityType("UserAssigned"),
 		UserAssignedIdentities: map[string]*compute.VirtualMachineScaleSetIdentityUserAssignedIdentitiesValue{
@@ -510,12 +510,12 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 	}
 	agentVM.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.ExtensionProfile.Extensions = &[]compute.VirtualMachineScaleSetExtension{
 		{
-			Name: to.StringPtr("vmssCSE"),
+			Name: helpers.PointerToString("vmssCSE"),
 			VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-				Type:                    to.StringPtr("CustomScript"),
-				TypeHandlerVersion:      to.StringPtr("2.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
+				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+				Type:                    helpers.PointerToString("CustomScript"),
+				TypeHandlerVersion:      helpers.PointerToString("2.0"),
+				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 				Settings:                map[string]interface{}{},
 				ProtectedSettings: map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
@@ -525,9 +525,9 @@ func TestGenerateARMResourcesWithVMSSAgentPool(t *testing.T) {
 		ARMResource: ARMResource{
 			APIVersion: "[variables('apiVersionManagedIdentity')]"},
 		Identity: msi.Identity{
-			Name:     to.StringPtr("[variables('userAssignedID')]"),
-			Location: to.StringPtr("[variables('location')]"),
-			Type:     to.StringPtr("Microsoft.ManagedIdentity/userAssignedIdentities"),
+			Name:     helpers.PointerToString("[variables('userAssignedID')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.ManagedIdentity/userAssignedIdentities"),
 		},
 	}
 
@@ -548,28 +548,28 @@ func getNICIPConfigs(n int, skipMasterLB bool) *[]network.InterfaceIPConfigurati
 	var ipConfigurations []network.InterfaceIPConfiguration
 	for i := 1; i <= n; i++ {
 		ipConfig := network.InterfaceIPConfiguration{
-			Name: to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
+			Name: helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   to.BoolPtr(false),
+				Primary:                   helpers.PointerToBool(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: to.StringPtr("[variables('vnetSubnetID')]"),
+					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
 				},
 			},
 		}
 		if i == 1 {
-			ipConfig.Primary = to.BoolPtr(true)
+			ipConfig.Primary = helpers.PointerToBool(true)
 			ipConfig.PrivateIPAllocationMethod = network.Static
-			ipConfig.PrivateIPAddress = to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]")
+			ipConfig.PrivateIPAddress = helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]")
 			if !skipMasterLB {
 				ipConfig.LoadBalancerBackendAddressPools = &[]network.BackendAddressPool{
 					{
-						ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 				}
 				ipConfig.LoadBalancerInboundNatRules = &[]network.InboundNatRule{
 					{
-						ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
+						ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
 					},
 				}
 			}
@@ -583,16 +583,16 @@ func getAgentNICIPConfigs(ipCount int, profileName string) *[]network.InterfaceI
 	var ipConfigurations []network.InterfaceIPConfiguration
 	for i := 1; i <= ipCount; i++ {
 		ipConfig := network.InterfaceIPConfiguration{
-			Name:                                     to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
+			Name:                                     helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{},
 		}
 		if i == 1 {
-			ipConfig.Primary = to.BoolPtr(true)
-			ipConfig.LoadBalancerBackendAddressPools = &[]network.BackendAddressPool{{ID: to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool")}}
+			ipConfig.Primary = helpers.PointerToBool(true)
+			ipConfig.LoadBalancerBackendAddressPools = &[]network.BackendAddressPool{{ID: helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool")}}
 		}
 		ipConfig.PrivateIPAllocationMethod = network.Dynamic
 		ipConfig.Subnet = &network.Subnet{
-			ID: to.StringPtr(fmt.Sprintf("[variables('%sVnetSubnetID')]", profileName)),
+			ID: helpers.PointerToString(fmt.Sprintf("[variables('%sVnetSubnetID')]", profileName)),
 		}
 		ipConfigurations = append(ipConfigurations, ipConfig)
 	}
@@ -665,7 +665,7 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 	if err := json.Unmarshal([]byte(apiModelStr), &cs); err != nil {
 		t.Fatal(err)
 	}
-	cs.Properties.MasterProfile.PlatformUpdateDomainCount = to.IntPtr(3)
+	cs.Properties.MasterProfile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
 
 	armResources := GenerateARMResources(&cs)
 
@@ -685,11 +685,11 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		Interface: network.Interface{
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations:            getAgentNICIPConfigs(agentProfile.IPAddressCount, agentProfile.Name),
-				EnableAcceleratedNetworking: to.BoolPtr(true),
+				EnableAcceleratedNetworking: helpers.PointerToBool(true),
 			},
-			Name:     to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), 'nic-', copyIndex(variables('agentpool1Offset')))]"),
-			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('agentpool1VMNamePrefix'), 'nic-', copyIndex(variables('agentpool1Offset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -714,15 +714,15 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: to.StringPtr("[variables('agentpool1osImagePublisher')]"),
-						Offer:     to.StringPtr("[variables('agentpool1osImageOffer')]"),
-						Sku:       to.StringPtr("[variables('agentpool1osImageSKU')]"),
-						Version:   to.StringPtr("[variables('agentpool1osImageVersion')]"),
+						Publisher: helpers.PointerToString("[variables('agentpool1osImagePublisher')]"),
+						Offer:     helpers.PointerToString("[variables('agentpool1osImageOffer')]"),
+						Sku:       helpers.PointerToString("[variables('agentpool1osImageSKU')]"),
+						Version:   helpers.PointerToString("[variables('agentpool1osImageVersion')]"),
 					},
 					OsDisk: &compute.OSDisk{
-						Name: to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')),'-osdisk')]"),
+						Name: helpers.PointerToString("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')),'-osdisk')]"),
 						Vhd: &compute.VirtualHardDisk{
-							URI: to.StringPtr("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('storageAccountPrefixes')[mod(add(div(copyIndex(variables('agentpool1Offset')),variables('maxVMsPerStorageAccount')),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(div(copyIndex(variables('agentpool1Offset')),variables('maxVMsPerStorageAccount')),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('agentpool1AccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'osdisk/', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')), '-osdisk.vhd')]"),
+							URI: helpers.PointerToString("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('storageAccountPrefixes')[mod(add(div(copyIndex(variables('agentpool1Offset')),variables('maxVMsPerStorageAccount')),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(div(copyIndex(variables('agentpool1Offset')),variables('maxVMsPerStorageAccount')),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('agentpool1AccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'osdisk/', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')), '-osdisk.vhd')]"),
 						},
 						Caching:      compute.CachingTypes("ReadWrite"),
 						CreateOption: compute.DiskCreateOptionTypes("FromImage"),
@@ -730,15 +730,15 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 					DataDisks: &agentDataDisks,
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
-					AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
-					CustomData:    to.StringPtr(expectedCustomDataStr),
+					ComputerName:  helpers.PointerToString("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
+					AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+					CustomData:    helpers.PointerToString(expectedCustomDataStr),
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: to.BoolPtr(true),
+						DisablePasswordAuthentication: helpers.PointerToBool(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
-								{Path: to.StringPtr("[variables('sshKeyPath')]"),
-									KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+								{Path: helpers.PointerToString("[variables('sshKeyPath')]"),
+									KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 								},
 							},
 						},
@@ -747,23 +747,23 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('agentpool1VMNamePrefix'), 'nic-', copyIndex(variables('agentpool1Offset'))))]"),
+							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('agentpool1VMNamePrefix'), 'nic-', copyIndex(variables('agentpool1Offset'))))]"),
 						},
 					},
 				},
 				AvailabilitySet: &compute.SubResource{
-					ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('agentpool1AvailabilitySet'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('agentpool1AvailabilitySet'))]"),
 				},
 			},
-			Name:     to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 		},
 	}
@@ -781,17 +781,17 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-				Type:                    to.StringPtr("CustomScript"),
-				TypeHandlerVersion:      to.StringPtr("2.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
+				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+				Type:                    helpers.PointerToString("CustomScript"),
+				TypeHandlerVersion:      helpers.PointerToString("2.0"),
+				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`},
 			},
-			Name:     to.StringPtr("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')),'/cse', '-agent-', copyIndex(variables('agentpool1Offset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('agentpool1VMNamePrefix'), copyIndex(variables('agentpool1Offset')),'/cse', '-agent-', copyIndex(variables('agentpool1Offset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -808,12 +808,12 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: getNICIPConfigs(cs.Properties.MasterProfile.IPAddressCount, false),
 			},
-			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
-			Location: to.StringPtr("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -831,19 +831,19 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				"[concat('Microsoft.Compute/availabilitySets/',variables('masterAvailabilitySet'))]"},
 		},
 		VirtualMachine: compute.VirtualMachine{
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			VirtualMachineProperties: &compute.VirtualMachineProperties{
 				HardwareProfile: &compute.HardwareProfile{
 					VMSize: compute.VirtualMachineSizeTypes("Standard_D2_v2"),
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: to.StringPtr("[parameters('osImagePublisher')]"),
-						Offer:     to.StringPtr("[parameters('osImageOffer')]"),
-						Sku:       to.StringPtr("[parameters('osImageSku')]"),
-						Version:   to.StringPtr("[parameters('osImageVersion')]"),
+						Publisher: helpers.PointerToString("[parameters('osImagePublisher')]"),
+						Offer:     helpers.PointerToString("[parameters('osImageOffer')]"),
+						Sku:       helpers.PointerToString("[parameters('osImageSku')]"),
+						Version:   helpers.PointerToString("[parameters('osImageVersion')]"),
 					},
 					OsDisk: &compute.OSDisk{
 						Caching:      compute.CachingTypes("ReadWrite"),
@@ -851,24 +851,24 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 					},
 					DataDisks: &[]compute.DataDisk{
 						{
-							Lun:          to.Int32Ptr(0),
-							Name:         to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
+							Lun:          helpers.PointerToInt32(0),
+							Name:         helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
 							CreateOption: compute.DiskCreateOptionTypes("Empty"),
-							DiskSizeGB:   to.Int32Ptr(256),
+							DiskSizeGB:   helpers.PointerToInt32(256),
 						},
 					},
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-					AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
-					CustomData:    to.StringPtr(expectedMasterCustomData),
+					ComputerName:  helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+					AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+					CustomData:    helpers.PointerToString(expectedMasterCustomData),
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: to.BoolPtr(true),
+						DisablePasswordAuthentication: helpers.PointerToBool(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
 								{
-									Path:    to.StringPtr("[variables('sshKeyPath')]"),
-									KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
+									KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 								},
 							},
 						},
@@ -877,20 +877,20 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
+							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
 						},
 					},
 				},
 				AvailabilitySet: &compute.SubResource{
-					ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
 				},
 			},
 			Tags: map[string]*string{
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"poolName":           to.StringPtr("master"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"poolName":           helpers.PointerToString("master"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 		},
 	}
@@ -907,18 +907,18 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-				Type:                    to.StringPtr("CustomScript"),
-				TypeHandlerVersion:      to.StringPtr("2.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
+				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+				Type:                    helpers.PointerToString("CustomScript"),
+				TypeHandlerVersion:      helpers.PointerToString("2.0"),
+				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 				},
 			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags:     map[string]*string{},
 		},
 	}
@@ -938,9 +938,9 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 			Sku: &storage.Sku{
 				Name: storage.SkuName("[variables('vmSizesMap')[variables('agentpool1VMSize')].storageAccountType]"),
 			},
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('agentpool1AccountName'))]"),
-			Type:     to.StringPtr("Microsoft.Storage/storageAccounts")},
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('agentpool1StorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('agentpool1AccountName'))]"),
+			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts")},
 	}
 
 	agentAvailabilitySet := AvailabilitySetARM{
@@ -949,9 +949,9 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		},
 		AvailabilitySet: compute.AvailabilitySet{
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
-			Name:                      to.StringPtr("[variables('agentpool1AvailabilitySet')]"),
-			Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
-			Location:                  to.StringPtr("[variables('location')]"),
+			Name:                      helpers.PointerToString("[variables('agentpool1AvailabilitySet')]"),
+			Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Location:                  helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -961,14 +961,14 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 		},
 		AvailabilitySet: compute.AvailabilitySet{
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: to.Int32Ptr(3),
+				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
 			},
 			Sku: &compute.Sku{
-				Name: to.StringPtr("Aligned"),
+				Name: helpers.PointerToString("Aligned"),
 			},
-			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
-			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -987,66 +987,66 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 					{
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
+								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
 							},
 						},
-						Name: to.StringPtr("[variables('masterLbIPConfigName')]"),
+						Name: helpers.PointerToString("[variables('masterLbIPConfigName')]"),
 					},
 				},
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: to.StringPtr("[variables('masterLbBackendPoolName')]")},
+						Name: helpers.PointerToString("[variables('masterLbBackendPoolName')]")},
 				},
 				LoadBalancingRules: &[]network.LoadBalancingRule{
 					{
 						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 							},
 							Probe: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
 							Protocol:             network.TransportProtocol("Tcp"),
 							LoadDistribution:     network.LoadDistribution("Default"),
-							FrontendPort:         to.Int32Ptr(443),
-							BackendPort:          to.Int32Ptr(443),
-							IdleTimeoutInMinutes: to.Int32Ptr(5),
-							EnableFloatingIP:     to.BoolPtr(false),
+							FrontendPort:         helpers.PointerToInt32(443),
+							BackendPort:          helpers.PointerToInt32(443),
+							IdleTimeoutInMinutes: helpers.PointerToInt32(5),
+							EnableFloatingIP:     helpers.PointerToBool(false),
 						},
-						Name: to.StringPtr("LBRuleHTTPS"),
+						Name: helpers.PointerToString("LBRuleHTTPS"),
 					},
 				}, Probes: &[]network.Probe{
 					{
 						ProbePropertiesFormat: &network.ProbePropertiesFormat{
 							Protocol:          network.ProbeProtocol("Tcp"),
-							Port:              to.Int32Ptr(443),
-							IntervalInSeconds: to.Int32Ptr(5),
-							NumberOfProbes:    to.Int32Ptr(2),
+							Port:              helpers.PointerToInt32(443),
+							IntervalInSeconds: helpers.PointerToInt32(5),
+							NumberOfProbes:    helpers.PointerToInt32(2),
 						},
-						Name: to.StringPtr("tcpHTTPSProbe"),
+						Name: helpers.PointerToString("tcpHTTPSProbe"),
 					},
 				},
 				InboundNatRules: &[]network.InboundNatRule{
 					{
 						InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							Protocol:         network.TransportProtocol("Tcp"),
-							FrontendPort:     to.Int32Ptr(22),
-							BackendPort:      to.Int32Ptr(22),
-							EnableFloatingIP: to.BoolPtr(false),
+							FrontendPort:     helpers.PointerToInt32(22),
+							BackendPort:      helpers.PointerToInt32(22),
+							EnableFloatingIP: helpers.PointerToBool(false),
 						},
-						Name: to.StringPtr("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
+						Name: helpers.PointerToString("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
 					},
 				},
 			},
-			Name:     to.StringPtr("[variables('masterLbName')]"),
-			Type:     to.StringPtr("Microsoft.Network/loadBalancers"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterLbName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/loadBalancers"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -1061,12 +1061,12 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.IPAllocationMethod("Static"),
 				DNSSettings: &network.PublicIPAddressDNSSettings{
-					DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
+					DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
 				},
 			},
-			Name:     to.StringPtr("[variables('masterPublicIPAddressName')]"),
-			Type:     to.StringPtr("Microsoft.Network/publicIPAddresses"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterPublicIPAddressName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -1079,37 +1079,37 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				SecurityRules: &[]network.SecurityRule{
 					{
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
-							Description:              to.StringPtr("Allow SSH traffic to master"),
+							Description:              helpers.PointerToString("Allow SSH traffic to master"),
 							Protocol:                 network.SecurityRuleProtocol("Tcp"),
-							SourcePortRange:          to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("22-22"),
-							SourceAddressPrefix:      to.StringPtr("*"),
-							DestinationAddressPrefix: to.StringPtr("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("22-22"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
 							Access:                   network.SecurityRuleAccess("Allow"),
-							Priority:                 to.Int32Ptr(101),
+							Priority:                 helpers.PointerToInt32(101),
 							Direction:                network.SecurityRuleDirection("Inbound"),
 						},
-						Name: to.StringPtr("allow_ssh"),
+						Name: helpers.PointerToString("allow_ssh"),
 					},
 					{
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
-							Description:              to.StringPtr("Allow kube-apiserver (tls) traffic to master"),
+							Description:              helpers.PointerToString("Allow kube-apiserver (tls) traffic to master"),
 							Protocol:                 network.SecurityRuleProtocol("Tcp"),
-							SourcePortRange:          to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("443-443"),
-							SourceAddressPrefix:      to.StringPtr("*"),
-							DestinationAddressPrefix: to.StringPtr("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("443-443"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
 							Access:                   network.SecurityRuleAccess("Allow"),
-							Priority:                 to.Int32Ptr(100),
+							Priority:                 helpers.PointerToInt32(100),
 							Direction:                network.SecurityRuleDirection("Inbound"),
 						},
-						Name: to.StringPtr("allow_kube_tls"),
+						Name: helpers.PointerToString("allow_kube_tls"),
 					},
 				},
 			},
-			Name:     to.StringPtr("[variables('nsgName')]"),
-			Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
-			Location: to.StringPtr("[variables('location')]")},
+			Name:     helpers.PointerToString("[variables('nsgName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
+			Location: helpers.PointerToString("[variables('location')]")},
 	}
 
 	virtualNetwork := VirtualNetworkARM{
@@ -1125,16 +1125,16 @@ func TestGenerateARMResourceWithVMASAgents(t *testing.T) {
 				Subnets: &[]network.Subnet{
 					{
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
+							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: to.StringPtr("[variables('nsgID')]")},
+								ID: helpers.PointerToString("[variables('nsgID')]")},
 						},
-						Name: to.StringPtr("[variables('subnetName')]")},
+						Name: helpers.PointerToString("[variables('subnetName')]")},
 				},
 			},
-			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
-			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 
@@ -1170,7 +1170,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 	if err := json.Unmarshal([]byte(apiModelStr), &cs); err != nil {
 		t.Error(err)
 	}
-	cs.Properties.MasterProfile.PlatformUpdateDomainCount = to.IntPtr(3)
+	cs.Properties.MasterProfile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
 
 	armResources := GenerateARMResources(&cs)
 
@@ -1190,38 +1190,38 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+			Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[variables('agentpool1VMSize')]"),
-				Tier:     to.StringPtr(StandardLoadBalancerSku),
-				Capacity: to.Int64Ptr(2),
+				Name:     helpers.PointerToString("[variables('agentpool1VMSize')]"),
+				Tier:     helpers.PointerToString(StandardLoadBalancerSku),
+				Capacity: helpers.PointerToInt64(2),
 			},
-			Location: to.StringPtr("[variables('location')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
-			Type: to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
+			Type: helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				SinglePlacementGroup: to.BoolPtr(true),
-				Overprovision:        to.BoolPtr(false),
+				SinglePlacementGroup: helpers.PointerToBool(true),
+				Overprovision:        helpers.PointerToBool(false),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeMode("Manual"),
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
-									{Path: to.StringPtr("[variables('sshKeyPath')]"),
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									{Path: helpers.PointerToString("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 									},
 								},
 							},
@@ -1229,10 +1229,10 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							Publisher: to.StringPtr("[variables('agentpool1osImagePublisher')]"),
-							Offer:     to.StringPtr("[variables('agentpool1osImageOffer')]"),
-							Sku:       to.StringPtr("[variables('agentpool1osImageSKU')]"),
-							Version:   to.StringPtr("[variables('agentpool1osImageVersion')]"),
+							Publisher: helpers.PointerToString("[variables('agentpool1osImagePublisher')]"),
+							Offer:     helpers.PointerToString("[variables('agentpool1osImageOffer')]"),
+							Sku:       helpers.PointerToString("[variables('agentpool1osImageSKU')]"),
+							Version:   helpers.PointerToString("[variables('agentpool1osImageVersion')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							Caching:      compute.CachingTypes("ReadWrite"),
@@ -1243,11 +1243,11 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+								Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:                     to.BoolPtr(true),
-									EnableAcceleratedNetworking: to.BoolPtr(true),
-									IPConfigurations:            getIPConfigs(to.StringPtr("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, false),
+									Primary:                     helpers.PointerToBool(true),
+									EnableAcceleratedNetworking: helpers.PointerToBool(true),
+									IPConfigurations:            getIPConfigs(helpers.PointerToString("/subscriptions/123/resourceGroups/rg/providers/Microsoft.Network/loadBalancers/mySLB/backendAddressPools/mySLBBEPool"), true, false),
 								},
 							},
 						},
@@ -1255,12 +1255,12 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("vmssCSE"),
+								Name: helpers.PointerToString("vmssCSE"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
@@ -1276,14 +1276,14 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
-			Location: to.StringPtr("[variables('location')]"),
-			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
+			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
 			Sku: &compute.Sku{
-				Name: to.StringPtr("Aligned"),
+				Name: helpers.PointerToString("Aligned"),
 			},
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: to.Int32Ptr(3),
+				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
 			},
 		},
 	}
@@ -1296,9 +1296,9 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
-			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -1307,11 +1307,11 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: to.StringPtr("[variables('subnetName')]"),
+						Name: helpers.PointerToString("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
+							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: to.StringPtr("[variables('nsgID')]"),
+								ID: helpers.PointerToString("[variables('nsgID')]"),
 							},
 						},
 					},
@@ -1325,37 +1325,37 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		SecurityGroup: network.SecurityGroup{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('nsgName')]"),
-			Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('nsgName')]"),
+			Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
 			SecurityGroupPropertiesFormat: &network.SecurityGroupPropertiesFormat{
 				SecurityRules: &[]network.SecurityRule{
 					{
-						Name: to.StringPtr("allow_ssh"),
+						Name: helpers.PointerToString("allow_ssh"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              to.StringPtr("Allow SSH traffic to master"),
-							DestinationAddressPrefix: to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("22-22"),
+							Description:              helpers.PointerToString("Allow SSH traffic to master"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("22-22"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 to.Int32Ptr(101),
+							Priority:                 helpers.PointerToInt32(101),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      to.StringPtr("*"),
-							SourcePortRange:          to.StringPtr("*"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
 						},
 					},
 					{
-						Name: to.StringPtr("allow_kube_tls"),
+						Name: helpers.PointerToString("allow_kube_tls"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              to.StringPtr("Allow kube-apiserver (tls) traffic to master"),
-							DestinationAddressPrefix: to.StringPtr("*"),
-							DestinationPortRange:     to.StringPtr("443-443"),
+							Description:              helpers.PointerToString("Allow kube-apiserver (tls) traffic to master"),
+							DestinationAddressPrefix: helpers.PointerToString("*"),
+							DestinationPortRange:     helpers.PointerToString("443-443"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 to.Int32Ptr(100),
+							Priority:                 helpers.PointerToInt32(100),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      to.StringPtr("*"),
-							SourcePortRange:          to.StringPtr("*"),
+							SourceAddressPrefix:      helpers.PointerToString("*"),
+							SourcePortRange:          helpers.PointerToString("*"),
 						},
 					},
 				},
@@ -1368,18 +1368,18 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterPublicIPAddressName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterPublicIPAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				DNSSettings: &network.PublicIPAddressDNSSettings{
-					DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
+					DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
 				},
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 
@@ -1391,74 +1391,74 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('masterLbName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('masterLbName')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: to.StringPtr("[variables('masterLbBackendPoolName')]"),
+						Name: helpers.PointerToString("[variables('masterLbBackendPoolName')]"),
 					},
 				},
 				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 					{
-						Name: to.StringPtr("[variables('masterLbIPConfigName')]"),
+						Name: helpers.PointerToString("[variables('masterLbIPConfigName')]"),
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
+								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
 							},
 						},
 					},
 				},
 				LoadBalancingRules: &[]network.LoadBalancingRule{
 					{
-						Name: to.StringPtr("LBRuleHTTPS"),
+						Name: helpers.PointerToString("LBRuleHTTPS"),
 						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 							},
 							Protocol:             network.TransportProtocolTCP,
-							FrontendPort:         to.Int32Ptr(443),
-							BackendPort:          to.Int32Ptr(443),
-							EnableFloatingIP:     to.BoolPtr(false),
-							IdleTimeoutInMinutes: to.Int32Ptr(5),
+							FrontendPort:         helpers.PointerToInt32(443),
+							BackendPort:          helpers.PointerToInt32(443),
+							EnableFloatingIP:     helpers.PointerToBool(false),
+							IdleTimeoutInMinutes: helpers.PointerToInt32(5),
 							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
 						},
 					},
 					{
-						Name: to.StringPtr("LBRuleUDP"),
+						Name: helpers.PointerToString("LBRuleUDP"),
 						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 							},
 							Protocol:             network.TransportProtocolUDP,
-							FrontendPort:         to.Int32Ptr(1123),
-							BackendPort:          to.Int32Ptr(1123),
-							EnableFloatingIP:     to.BoolPtr(false),
-							IdleTimeoutInMinutes: to.Int32Ptr(5),
+							FrontendPort:         helpers.PointerToInt32(1123),
+							BackendPort:          helpers.PointerToInt32(1123),
+							EnableFloatingIP:     helpers.PointerToBool(false),
+							IdleTimeoutInMinutes: helpers.PointerToInt32(5),
 							LoadDistribution:     network.LoadDistributionDefault,
 							Probe: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+								ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 							},
 						},
 					},
 				},
 				Probes: &[]network.Probe{
 					{
-						Name: to.StringPtr("tcpHTTPSProbe"),
+						Name: helpers.PointerToString("tcpHTTPSProbe"),
 						ProbePropertiesFormat: &network.ProbePropertiesFormat{
 							Protocol:          network.ProbeProtocolTCP,
-							Port:              to.Int32Ptr(443),
-							IntervalInSeconds: to.Int32Ptr(5),
-							NumberOfProbes:    to.Int32Ptr(2),
+							Port:              helpers.PointerToInt32(443),
+							IntervalInSeconds: helpers.PointerToInt32(5),
+							NumberOfProbes:    helpers.PointerToInt32(2),
 						},
 					},
 				},
@@ -1466,21 +1466,21 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					{
 						InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
+								ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
 							},
 							Protocol:         network.TransportProtocol("Tcp"),
-							FrontendPort:     to.Int32Ptr(22),
-							BackendPort:      to.Int32Ptr(22),
-							EnableFloatingIP: to.BoolPtr(false),
+							FrontendPort:     helpers.PointerToInt32(22),
+							BackendPort:      helpers.PointerToInt32(22),
+							EnableFloatingIP: helpers.PointerToBool(false),
 						},
-						Name: to.StringPtr("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
+						Name: helpers.PointerToString("[concat('SSH-', variables('masterVMNamePrefix'), 0)]"),
 					},
 				},
 			},
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
+			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
 		},
 	}
 
@@ -1498,12 +1498,12 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: getNICIPConfigs(31, false),
 			},
-			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -1522,15 +1522,15 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		VirtualMachine: compute.VirtualMachine{
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"poolName":           to.StringPtr("master"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"poolName":           helpers.PointerToString("master"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
 
 			VirtualMachineProperties: &compute.VirtualMachineProperties{
@@ -1539,34 +1539,34 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: to.StringPtr("[parameters('osImagePublisher')]"),
-						Offer:     to.StringPtr("[parameters('osImageOffer')]"),
-						Sku:       to.StringPtr("[parameters('osImageSku')]"),
-						Version:   to.StringPtr("[parameters('osImageVersion')]"),
+						Publisher: helpers.PointerToString("[parameters('osImagePublisher')]"),
+						Offer:     helpers.PointerToString("[parameters('osImageOffer')]"),
+						Sku:       helpers.PointerToString("[parameters('osImageSku')]"),
+						Version:   helpers.PointerToString("[parameters('osImageVersion')]"),
 					},
 					OsDisk: &compute.OSDisk{
 						Caching:      compute.CachingTypes("ReadWrite"),
 						CreateOption: compute.DiskCreateOptionTypes("FromImage"),
 					}, DataDisks: &[]compute.DataDisk{
 						{
-							Lun:          to.Int32Ptr(0),
-							Name:         to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
+							Lun:          helpers.PointerToInt32(0),
+							Name:         helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
 							CreateOption: compute.DiskCreateOptionTypes("Empty"),
-							DiskSizeGB:   to.Int32Ptr(256),
+							DiskSizeGB:   helpers.PointerToInt32(256),
 						},
 					},
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-					AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
-					CustomData:    to.StringPtr(expectedCustomDataStr),
+					ComputerName:  helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+					AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+					CustomData:    helpers.PointerToString(expectedCustomDataStr),
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: to.BoolPtr(true),
+						DisablePasswordAuthentication: helpers.PointerToBool(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
 								{
-									Path:    to.StringPtr("[variables('sshKeyPath')]"),
-									KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
+									KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 								},
 							},
 						},
@@ -1575,12 +1575,12 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
+							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
 						},
 					},
 				},
 				AvailabilitySet: &compute.SubResource{
-					ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
 				},
 			},
 		},
@@ -1599,16 +1599,16 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher: to.StringPtr("Microsoft.Azure.Extensions"), Type: to.StringPtr("CustomScript"),
-				TypeHandlerVersion:      to.StringPtr("2.0"),
-				AutoUpgradeMinorVersion: to.BoolPtr(true),
+				Publisher: helpers.PointerToString("Microsoft.Azure.Extensions"), Type: helpers.PointerToString("CustomScript"),
+				TypeHandlerVersion:      helpers.PointerToString("2.0"),
+				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`},
 			},
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
-			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
-			Location: to.StringPtr("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags:     map[string]*string{},
 		},
 	}
@@ -1634,7 +1634,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 
 	// Now test with private cluster
 	cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster = &api.PrivateCluster{
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 	}
 	armResources = GenerateARMResources(&cs)
 
@@ -1650,12 +1650,12 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: getNICIPConfigs(31, true),
 			},
-			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -1688,7 +1688,7 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 	// Now test with no LoadBalancerBackendAddressPoolIDs provided
 	cs.Properties.MasterProfile.Count = 1
 	cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster = &api.PrivateCluster{
-		Enabled: to.BoolPtr(false),
+		Enabled: helpers.PointerToBool(false),
 	}
 	cs.Properties.AgentPoolProfiles[0].LoadBalancerBackendAddressPoolIDs = nil
 	armResources = GenerateARMResources(&cs)
@@ -1702,20 +1702,20 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('agentLbName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentLbName')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: to.StringPtr("[variables('agentLbBackendPoolName')]"),
+						Name: helpers.PointerToString("[variables('agentLbBackendPoolName')]"),
 					},
 				},
 				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 					{
-						Name: to.StringPtr("[variables('agentLbIPConfigName')]"),
+						Name: helpers.PointerToString("[variables('agentLbIPConfigName')]"),
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName'))]"),
+								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName'))]"),
 							},
 						},
 					},
@@ -1725,24 +1725,24 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 						OutboundRulePropertiesFormat: &network.OutboundRulePropertiesFormat{
 							FrontendIPConfigurations: &[]network.SubResource{
 								{
-									ID: to.StringPtr("[variables('agentLbIPConfigID')]"),
+									ID: helpers.PointerToString("[variables('agentLbIPConfigID')]"),
 								},
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+								ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 							},
 							Protocol:               network.Protocol1All,
-							IdleTimeoutInMinutes:   to.Int32Ptr(cs.Properties.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
-							AllocatedOutboundPorts: to.Int32Ptr(0),
+							IdleTimeoutInMinutes:   helpers.PointerToInt32(cs.Properties.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
+							AllocatedOutboundPorts: helpers.PointerToInt32(0),
 						},
-						Name: to.StringPtr("LBOutboundRule"),
+						Name: helpers.PointerToString("LBOutboundRule"),
 					},
 				},
 			},
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
+			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
 		},
 	}
 
@@ -1751,15 +1751,15 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('agentPublicIPAddressName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentPublicIPAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 
@@ -1779,38 +1779,38 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			},
 		},
 		VirtualMachineScaleSet: compute.VirtualMachineScaleSet{
-			Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+			Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 			Sku: &compute.Sku{
-				Name:     to.StringPtr("[variables('agentpool1VMSize')]"),
-				Tier:     to.StringPtr(StandardLoadBalancerSku),
-				Capacity: to.Int64Ptr(2),
+				Name:     helpers.PointerToString("[variables('agentpool1VMSize')]"),
+				Tier:     helpers.PointerToString(StandardLoadBalancerSku),
+				Capacity: helpers.PointerToInt64(2),
 			},
-			Location: to.StringPtr("[variables('location')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			Tags: map[string]*string{
-				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
-				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-				"poolName":           to.StringPtr("agentpool1"),
-				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
+				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('agentpool1VMNamePrefix'))]"),
+				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+				"poolName":           helpers.PointerToString("agentpool1"),
+				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
 			},
-			Type: to.StringPtr("Microsoft.Compute/virtualMachineScaleSets"),
+			Type: helpers.PointerToString("Microsoft.Compute/virtualMachineScaleSets"),
 			VirtualMachineScaleSetProperties: &compute.VirtualMachineScaleSetProperties{
-				SinglePlacementGroup: to.BoolPtr(true),
-				Overprovision:        to.BoolPtr(false),
+				SinglePlacementGroup: helpers.PointerToBool(true),
+				Overprovision:        helpers.PointerToBool(false),
 				UpgradePolicy: &compute.UpgradePolicy{
 					Mode: compute.UpgradeMode("Manual"),
 				},
 				VirtualMachineProfile: &compute.VirtualMachineScaleSetVMProfile{
 					OsProfile: &compute.VirtualMachineScaleSetOSProfile{
-						ComputerNamePrefix: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
-						AdminUsername:      to.StringPtr("[parameters('linuxAdminUsername')]"),
-						CustomData:         to.StringPtr(expectedCustomDataStr),
+						ComputerNamePrefix: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
+						AdminUsername:      helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+						CustomData:         helpers.PointerToString(expectedCustomDataStr),
 						LinuxConfiguration: &compute.LinuxConfiguration{
-							DisablePasswordAuthentication: to.BoolPtr(true),
+							DisablePasswordAuthentication: helpers.PointerToBool(true),
 							SSH: &compute.SSHConfiguration{
 								PublicKeys: &[]compute.SSHPublicKey{
-									{Path: to.StringPtr("[variables('sshKeyPath')]"),
-										KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
+									{Path: helpers.PointerToString("[variables('sshKeyPath')]"),
+										KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
 									},
 								},
 							},
@@ -1818,10 +1818,10 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					},
 					StorageProfile: &compute.VirtualMachineScaleSetStorageProfile{
 						ImageReference: &compute.ImageReference{
-							Publisher: to.StringPtr("[variables('agentpool1osImagePublisher')]"),
-							Offer:     to.StringPtr("[variables('agentpool1osImageOffer')]"),
-							Sku:       to.StringPtr("[variables('agentpool1osImageSKU')]"),
-							Version:   to.StringPtr("[variables('agentpool1osImageVersion')]"),
+							Publisher: helpers.PointerToString("[variables('agentpool1osImagePublisher')]"),
+							Offer:     helpers.PointerToString("[variables('agentpool1osImageOffer')]"),
+							Sku:       helpers.PointerToString("[variables('agentpool1osImageSKU')]"),
+							Version:   helpers.PointerToString("[variables('agentpool1osImageVersion')]"),
 						},
 						OsDisk: &compute.VirtualMachineScaleSetOSDisk{
 							Caching:      compute.CachingTypes("ReadWrite"),
@@ -1832,10 +1832,10 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					NetworkProfile: &compute.VirtualMachineScaleSetNetworkProfile{
 						NetworkInterfaceConfigurations: &[]compute.VirtualMachineScaleSetNetworkConfiguration{
 							{
-								Name: to.StringPtr("[variables('agentpool1VMNamePrefix')]"),
+								Name: helpers.PointerToString("[variables('agentpool1VMNamePrefix')]"),
 								VirtualMachineScaleSetNetworkConfigurationProperties: &compute.VirtualMachineScaleSetNetworkConfigurationProperties{
-									Primary:                     to.BoolPtr(true),
-									EnableAcceleratedNetworking: to.BoolPtr(true),
+									Primary:                     helpers.PointerToBool(true),
+									EnableAcceleratedNetworking: helpers.PointerToBool(true),
 									IPConfigurations:            getIPConfigs(nil, true, false),
 								},
 							},
@@ -1844,12 +1844,12 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 					ExtensionProfile: &compute.VirtualMachineScaleSetExtensionProfile{
 						Extensions: &[]compute.VirtualMachineScaleSetExtension{
 							{
-								Name: to.StringPtr("vmssCSE"),
+								Name: helpers.PointerToString("vmssCSE"),
 								VirtualMachineScaleSetExtensionProperties: &compute.VirtualMachineScaleSetExtensionProperties{
-									Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
-									Type:                    to.StringPtr("CustomScript"),
-									TypeHandlerVersion:      to.StringPtr("2.0"),
-									AutoUpgradeMinorVersion: to.BoolPtr(true),
+									Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
+									Type:                    helpers.PointerToString("CustomScript"),
+									TypeHandlerVersion:      helpers.PointerToString("2.0"),
+									AutoUpgradeMinorVersion: helpers.PointerToBool(true),
 									Settings:                map[string]interface{}{},
 									ProtectedSettings: map[string]interface{}{
 										"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`}}},
@@ -1881,22 +1881,22 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 	}
 
 	// Test with > 1 LB outbound IP address
-	cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerOutboundIPs = to.IntPtr(3)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerOutboundIPs = helpers.PointerToInt(3)
 	armResources = GenerateARMResources(&cs)
 	agentPublicIPAddress2 := PublicIPAddressARM{
 		ARMResource: ARMResource{
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('agentPublicIPAddressName2')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentPublicIPAddressName2')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 	agentPublicIPAddress3 := PublicIPAddressARM{
@@ -1904,39 +1904,39 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('agentPublicIPAddressName3')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('agentPublicIPAddressName3')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 	agentLoadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.FrontendIPConfigurations = &[]network.FrontendIPConfiguration{
 		{
-			Name: to.StringPtr("[variables('agentLbIPConfigName')]"),
+			Name: helpers.PointerToString("[variables('agentLbIPConfigName')]"),
 			FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 				PublicIPAddress: &network.PublicIPAddress{
-					ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName'))]"),
 				},
 			},
 		},
 		{
-			Name: to.StringPtr("[variables('agentLbIPConfigName2')]"),
+			Name: helpers.PointerToString("[variables('agentLbIPConfigName2')]"),
 			FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 				PublicIPAddress: &network.PublicIPAddress{
-					ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName2'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName2'))]"),
 				},
 			},
 		},
 		{
-			Name: to.StringPtr("[variables('agentLbIPConfigName3')]"),
+			Name: helpers.PointerToString("[variables('agentLbIPConfigName3')]"),
 			FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 				PublicIPAddress: &network.PublicIPAddress{
-					ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName3'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('agentPublicIPAddressName3'))]"),
 				},
 			},
 		},
@@ -1968,21 +1968,21 @@ func TestGenerateARMResourcesWithVMSSAgentPoolAndSLB(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.18.1"
 	armResources = GenerateARMResources(&cs)
 	expectedCustomDataStr = getCustomDataFromJSON(tg.GetMasterCustomDataJSONObject(&cs))
-	(*agentLoadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.OutboundRules)[0].OutboundRulePropertiesFormat.EnableTCPReset = to.BoolPtr(true)
+	(*agentLoadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.OutboundRules)[0].OutboundRulePropertiesFormat.EnableTCPReset = helpers.PointerToBool(true)
 	(*agentLoadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.OutboundRules)[0].OutboundRulePropertiesFormat.FrontendIPConfigurations = &[]network.SubResource{
 		{
-			ID: to.StringPtr("[variables('agentLbIPConfigID')]"),
+			ID: helpers.PointerToString("[variables('agentLbIPConfigID')]"),
 		},
 		{
-			ID: to.StringPtr("[variables('agentLbIPConfigID2')]"),
+			ID: helpers.PointerToString("[variables('agentLbIPConfigID2')]"),
 		},
 		{
-			ID: to.StringPtr("[variables('agentLbIPConfigID3')]"),
+			ID: helpers.PointerToString("[variables('agentLbIPConfigID3')]"),
 		},
 	}
-	masterVM.VirtualMachine.VirtualMachineProperties.OsProfile.CustomData = to.StringPtr(expectedCustomDataStr)
+	masterVM.VirtualMachine.VirtualMachineProperties.OsProfile.CustomData = helpers.PointerToString(expectedCustomDataStr)
 	expectedCustomDataStr = getCustomDataFromJSON(tg.GetKubernetesLinuxNodeCustomDataJSONObject(&cs, cs.Properties.AgentPoolProfiles[0]))
-	agentVMWithAgentLb.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.OsProfile.CustomData = to.StringPtr(expectedCustomDataStr)
+	agentVMWithAgentLb.VirtualMachineScaleSet.VirtualMachineScaleSetProperties.VirtualMachineProfile.OsProfile.CustomData = helpers.PointerToString(expectedCustomDataStr)
 	expected = []interface{}{
 		agentLoadBalancer,
 		agentPublicIPAddress,

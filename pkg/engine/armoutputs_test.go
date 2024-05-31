@@ -10,7 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 func TestGetK8sOutputs(t *testing.T) {
@@ -29,7 +29,7 @@ func TestGetK8sOutputs(t *testing.T) {
 				OrchestratorType: api.Kubernetes,
 				KubernetesConfig: &api.KubernetesConfig{
 					PrivateCluster: &api.PrivateCluster{
-						Enabled: to.BoolPtr(false),
+						Enabled: helpers.PointerToBool(false),
 					},
 				},
 			},
@@ -107,7 +107,7 @@ func TestK8sOutputsWithAvSets(t *testing.T) {
 				OrchestratorType: api.Kubernetes,
 				KubernetesConfig: &api.KubernetesConfig{
 					PrivateCluster: &api.PrivateCluster{
-						Enabled: to.BoolPtr(false),
+						Enabled: helpers.PointerToBool(false),
 					},
 				},
 			},
@@ -211,7 +211,7 @@ func TestK8sOutputsWithAppGwIngressAddon(t *testing.T) {
 					Addons: []api.KubernetesAddon{
 						{
 							Name:    common.AppGwIngressAddonName,
-							Enabled: to.BoolPtr(true),
+							Enabled: helpers.PointerToBool(true),
 						},
 					},
 				},

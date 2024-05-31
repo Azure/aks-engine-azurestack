@@ -5,10 +5,10 @@ package api
 
 import (
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/uuid"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 )
 
 // CreateMockContainerService returns a mock container service for testing purposes
@@ -59,8 +59,8 @@ func CreateMockContainerService(containerServiceName, orchestratorVersion string
 		cs.Properties.OrchestratorProfile.OrchestratorVersion = orchestratorVersion
 	}
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		EnableSecureKubelet:       to.BoolPtr(DefaultSecureKubeletEnabled),
-		EnableRbac:                to.BoolPtr(DefaultRBACEnabled),
+		EnableSecureKubelet:       helpers.PointerToBool(DefaultSecureKubeletEnabled),
+		EnableRbac:                helpers.PointerToBool(DefaultRBACEnabled),
 		EtcdDiskSizeGB:            DefaultEtcdDiskSize,
 		ServiceCIDR:               DefaultKubernetesServiceCIDR,
 		DockerBridgeSubnet:        DefaultDockerBridgeSubnet,

@@ -15,8 +15,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 
@@ -158,12 +156,12 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 	}
 
 	if config.MSIUserAssignedID != "" {
-		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
+		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
 		prop.OrchestratorProfile.KubernetesConfig.UserAssignedID = config.MSIUserAssignedID
 	}
 
 	if prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity == nil && !prop.IsAzureStackCloud() {
-		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(config.UseManagedIdentity)
+		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(config.UseManagedIdentity)
 	}
 
 	if config.ClientID != "" && config.ClientSecret != "" && !(prop.OrchestratorProfile.KubernetesConfig != nil && helpers.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)) {
@@ -188,7 +186,7 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 		}
 		if config.RunVMSSNodePrototype {
 			// In order to better determine the time it takes for nodes to come online let's eliminate any VM reboot considerations
-			prop.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr((false))
+			prop.LinuxProfile.RunUnattendedUpgradesOnBootstrap = helpers.PointerToBool((false))
 		}
 	}
 

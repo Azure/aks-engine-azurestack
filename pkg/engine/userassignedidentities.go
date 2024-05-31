@@ -4,8 +4,8 @@
 package engine
 
 import (
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func createUserAssignedIdentities() UserAssignedIdentitiesARM {
@@ -14,9 +14,9 @@ func createUserAssignedIdentities() UserAssignedIdentitiesARM {
 			APIVersion: "[variables('apiVersionManagedIdentity')]",
 		},
 		Identity: msi.Identity{
-			Type:     to.StringPtr("Microsoft.ManagedIdentity/userAssignedIdentities"),
-			Name:     to.StringPtr("[variables('userAssignedID')]"),
-			Location: to.StringPtr("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.ManagedIdentity/userAssignedIdentities"),
+			Name:     helpers.PointerToString("[variables('userAssignedID')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 }
@@ -27,9 +27,9 @@ func createAppGwUserAssignedIdentities() UserAssignedIdentitiesARM {
 			APIVersion: "[variables('apiVersionManagedIdentity')]",
 		},
 		Identity: msi.Identity{
-			Type:     to.StringPtr("Microsoft.ManagedIdentity/userAssignedIdentities"),
-			Name:     to.StringPtr("[variables('appGwICIdentityName')]"),
-			Location: to.StringPtr("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.ManagedIdentity/userAssignedIdentities"),
+			Name:     helpers.PointerToString("[variables('appGwICIdentityName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
 		},
 	}
 }

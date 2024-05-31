@@ -15,7 +15,6 @@ import (
 	"testing"
 
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
@@ -573,7 +572,7 @@ func TestGenerateKubeConfig(t *testing.T) {
 	}
 
 	containerService.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster = &api.PrivateCluster{
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 	}
 
 	_, err = GenerateKubeConfig(containerService.Properties, "westus2")
@@ -1513,10 +1512,10 @@ func TestVerifyGetBase64EncodedGzippedCustomScriptIsTransparent(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
-							UseManagedIdentity: to.BoolPtr(true),
+							UseManagedIdentity: helpers.PointerToBool(true),
 						},
 					},
 					AgentPoolProfiles: []*api.AgentPoolProfile{
@@ -1624,7 +1623,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "single pool",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -1660,10 +1659,10 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
-							UseManagedIdentity: to.BoolPtr(true),
+							UseManagedIdentity: helpers.PointerToBool(true),
 						},
 					},
 					AgentPoolProfiles: []*api.AgentPoolProfile{
@@ -1696,7 +1695,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "multiple pools",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -1739,10 +1738,10 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
-							UseManagedIdentity: to.BoolPtr(true),
+							UseManagedIdentity: helpers.PointerToBool(true),
 						},
 					},
 					AgentPoolProfiles: []*api.AgentPoolProfile{
@@ -1779,7 +1778,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "no pools",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -1806,10 +1805,10 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
-							UseManagedIdentity: to.BoolPtr(true),
+							UseManagedIdentity: helpers.PointerToBool(true),
 						},
 					},
 					AgentPoolProfiles: []*api.AgentPoolProfile{
@@ -1846,7 +1845,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "non-MSI scenario",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -1889,7 +1888,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
 						},
@@ -1928,7 +1927,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "china scenario",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -1971,7 +1970,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
 						},
@@ -2011,7 +2010,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "german cloud scenario",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -2054,7 +2053,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
 						},
@@ -2094,7 +2093,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 			name: "usgov cloud scenario",
 			addon: api.KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -2137,7 +2136,7 @@ func TestGetClusterAutoscalerAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
 						},
@@ -2303,7 +2302,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2329,7 +2328,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2386,7 +2385,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - Azure Stack",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2412,7 +2411,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2473,7 +2472,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - StorageAccount",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2499,7 +2498,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2556,7 +2555,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - CCM",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2578,12 +2577,12 @@ func TestGetAddonFuncMap(t *testing.T) {
 						OrchestratorType:    api.Kubernetes,
 						OrchestratorVersion: "1.15.4",
 						KubernetesConfig: &api.KubernetesConfig{
-							UseCloudControllerManager: to.BoolPtr(true),
+							UseCloudControllerManager: helpers.PointerToBool(true),
 							NetworkPlugin:             api.NetworkPluginAzure,
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2640,7 +2639,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - Availability Zones",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2663,12 +2662,12 @@ func TestGetAddonFuncMap(t *testing.T) {
 						OrchestratorType:    api.Kubernetes,
 						OrchestratorVersion: "1.17.0",
 						KubernetesConfig: &api.KubernetesConfig{
-							UseCloudControllerManager: to.BoolPtr(true),
+							UseCloudControllerManager: helpers.PointerToBool(true),
 							NetworkPlugin:             api.NetworkPluginAzure,
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2739,7 +2738,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - MasterProfile Availability Zones",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeEnsureExists,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2762,12 +2761,12 @@ func TestGetAddonFuncMap(t *testing.T) {
 						OrchestratorType:    api.Kubernetes,
 						OrchestratorVersion: "1.17.0",
 						KubernetesConfig: &api.KubernetesConfig{
-							UseCloudControllerManager: to.BoolPtr(true),
+							UseCloudControllerManager: helpers.PointerToBool(true),
 							NetworkPlugin:             api.NetworkPluginAzure,
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2830,7 +2829,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - hybrid cluster",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeReconcile,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2853,12 +2852,12 @@ func TestGetAddonFuncMap(t *testing.T) {
 						OrchestratorType:    api.Kubernetes,
 						OrchestratorVersion: "1.18.0",
 						KubernetesConfig: &api.KubernetesConfig{
-							UseCloudControllerManager: to.BoolPtr(true),
+							UseCloudControllerManager: helpers.PointerToBool(true),
 							NetworkPlugin:             api.NetworkPluginAzure,
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -2919,7 +2918,7 @@ func TestGetAddonFuncMap(t *testing.T) {
 			name: "coredns as an example - kubenet",
 			addon: api.KubernetesAddon{
 				Name:    common.CoreDNSAddonName,
-				Enabled: to.BoolPtr(true),
+				Enabled: helpers.PointerToBool(true),
 				Mode:    api.AddonModeReconcile,
 				Config: map[string]string{
 					"foo": "bar",
@@ -2942,12 +2941,12 @@ func TestGetAddonFuncMap(t *testing.T) {
 						OrchestratorType:    api.Kubernetes,
 						OrchestratorVersion: "1.18.0",
 						KubernetesConfig: &api.KubernetesConfig{
-							UseCloudControllerManager: to.BoolPtr(true),
+							UseCloudControllerManager: helpers.PointerToBool(true),
 							NetworkPlugin:             api.NetworkPluginKubenet,
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 									Config: map[string]string{
 										"foo": "bar",
 									},
@@ -3163,7 +3162,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 			components: []api.KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -3176,7 +3175,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -3189,7 +3188,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -3202,7 +3201,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -3215,7 +3214,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.AddonManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.AddonManagerComponentName,
@@ -3275,7 +3274,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 			components: []api.KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -3288,7 +3287,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -3301,7 +3300,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -3314,7 +3313,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -3327,7 +3326,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 				},
 				{
 					Name:    common.AddonManagerComponentName,
-					Enabled: to.BoolPtr(true),
+					Enabled: helpers.PointerToBool(true),
 					Containers: []api.KubernetesContainerSpec{
 						{
 							Name:  common.AddonManagerComponentName,

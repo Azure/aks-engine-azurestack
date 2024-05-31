@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
-	"github.com/Azure/go-autorest/autorest/to"
 
 	authorization "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/authorization/armauthorization"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
@@ -336,8 +336,8 @@ func (mc *MockAKSEngineClient) DeployTemplate(ctx context.Context, resourceGroup
 		return resources.DeploymentExtended{
 				Properties: &resources.DeploymentPropertiesExtended{
 					Error: &resources.ErrorResponse{
-						Code:    to.StringPtr("400"),
-						Message: to.StringPtr(resp),
+						Code:    helpers.PointerToString("400"),
+						Message: helpers.PointerToString(resp),
 					},
 				},
 			},
@@ -357,8 +357,8 @@ func (mc *MockAKSEngineClient) DeployTemplate(ctx context.Context, resourceGroup
 		return resources.DeploymentExtended{
 				Properties: &resources.DeploymentPropertiesExtended{
 					Error: &resources.ErrorResponse{
-						Code:    to.StringPtr("200"),
-						Message: to.StringPtr(resp),
+						Code:    helpers.PointerToString("200"),
+						Message: helpers.PointerToString(resp),
 					},
 				},
 			},
@@ -379,8 +379,8 @@ func (mc *MockAKSEngineClient) DeployTemplate(ctx context.Context, resourceGroup
 		return resources.DeploymentExtended{
 				Properties: &resources.DeploymentPropertiesExtended{
 					Error: &resources.ErrorResponse{
-						Code:    to.StringPtr("200"),
-						Message: to.StringPtr(resp),
+						Code:    helpers.PointerToString("200"),
+						Message: helpers.PointerToString(resp),
 					},
 					ProvisioningState: &provisioningState,
 				},
@@ -408,7 +408,7 @@ func (mc *MockAKSEngineClient) ListVirtualMachines(ctx context.Context, resource
 		mc.FakeListVirtualMachineResult = func() []*compute.VirtualMachine {
 			machine := mc.MakeFakeVirtualMachine(DefaultFakeVMName, defaultK8sVersionForFakeVMs)
 			machine.Properties.AvailabilitySet = &compute.SubResource{
-				ID: to.StringPtr("MockAvailabilitySet"),
+				ID: helpers.PointerToString("MockAvailabilitySet"),
 			}
 			return []*compute.VirtualMachine{&machine}
 		}

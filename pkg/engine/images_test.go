@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -26,7 +26,7 @@ func TestCreateWindowsImageReference(t *testing.T) {
 				WindowsImageSourceURL: "https://some/image.vhd",
 			},
 			expected: compute.ImageReference{
-				ID: to.StringPtr("[resourceId('Microsoft.Compute/images', 'foobarCustomWindowsImage')]"),
+				ID: helpers.PointerToString("[resourceId('Microsoft.Compute/images', 'foobarCustomWindowsImage')]"),
 			},
 		},
 		{
@@ -42,7 +42,7 @@ func TestCreateWindowsImageReference(t *testing.T) {
 				},
 			},
 			expected: compute.ImageReference{
-				ID: to.StringPtr("[concat('/subscriptions/', '00000000-0000-0000-0000-000000000000', '/resourceGroups/', parameters('agentWindowsImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'gallery', '/images/', parameters('agentWindowsImageName'), '/versions/', '0.1.0')]"),
+				ID: helpers.PointerToString("[concat('/subscriptions/', '00000000-0000-0000-0000-000000000000', '/resourceGroups/', parameters('agentWindowsImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', 'gallery', '/images/', parameters('agentWindowsImageName'), '/versions/', '0.1.0')]"),
 			},
 		},
 		{
@@ -55,7 +55,7 @@ func TestCreateWindowsImageReference(t *testing.T) {
 				},
 			},
 			expected: compute.ImageReference{
-				ID: to.StringPtr("[resourceId(parameters('agentWindowsImageResourceGroup'), 'Microsoft.Compute/images', parameters('agentWindowsImageName'))]"),
+				ID: helpers.PointerToString("[resourceId(parameters('agentWindowsImageResourceGroup'), 'Microsoft.Compute/images', parameters('agentWindowsImageName'))]"),
 			},
 		},
 		{
@@ -68,10 +68,10 @@ func TestCreateWindowsImageReference(t *testing.T) {
 				ImageVersion:     "ver",
 			},
 			expected: compute.ImageReference{
-				Offer:     to.StringPtr("[parameters('agentWindowsOffer')]"),
-				Publisher: to.StringPtr("[parameters('agentWindowsPublisher')]"),
-				Sku:       to.StringPtr("[parameters('agentWindowsSku')]"),
-				Version:   to.StringPtr("[parameters('agentWindowsVersion')]"),
+				Offer:     helpers.PointerToString("[parameters('agentWindowsOffer')]"),
+				Publisher: helpers.PointerToString("[parameters('agentWindowsPublisher')]"),
+				Sku:       helpers.PointerToString("[parameters('agentWindowsSku')]"),
+				Version:   helpers.PointerToString("[parameters('agentWindowsVersion')]"),
 			},
 		},
 		{
@@ -79,10 +79,10 @@ func TestCreateWindowsImageReference(t *testing.T) {
 			profileName: "qux",
 			w:           api.WindowsProfile{},
 			expected: compute.ImageReference{
-				Offer:     to.StringPtr("[parameters('agentWindowsOffer')]"),
-				Publisher: to.StringPtr("[parameters('agentWindowsPublisher')]"),
-				Sku:       to.StringPtr("[parameters('agentWindowsSku')]"),
-				Version:   to.StringPtr("[parameters('agentWindowsVersion')]"),
+				Offer:     helpers.PointerToString("[parameters('agentWindowsOffer')]"),
+				Publisher: helpers.PointerToString("[parameters('agentWindowsPublisher')]"),
+				Sku:       helpers.PointerToString("[parameters('agentWindowsSku')]"),
+				Version:   helpers.PointerToString("[parameters('agentWindowsVersion')]"),
 			},
 		},
 	}
@@ -116,15 +116,15 @@ func TestCreateWindowsImage(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		Image: compute.Image{
-			Type:     to.StringPtr("Microsoft.Compute/images"),
-			Name:     to.StringPtr("foobarCustomWindowsImage"),
-			Location: to.StringPtr("[variables('location')]"),
+			Type:     helpers.PointerToString("Microsoft.Compute/images"),
+			Name:     helpers.PointerToString("foobarCustomWindowsImage"),
+			Location: helpers.PointerToString("[variables('location')]"),
 			ImageProperties: &compute.ImageProperties{
 				StorageProfile: &compute.ImageStorageProfile{
 					OsDisk: &compute.ImageOSDisk{
 						OsType:             "Windows",
 						OsState:            compute.Generalized,
-						BlobURI:            to.StringPtr("[parameters('agentWindowsSourceUrl')]"),
+						BlobURI:            helpers.PointerToString("[parameters('agentWindowsSourceUrl')]"),
 						StorageAccountType: compute.StorageAccountTypesStandardLRS,
 					},
 				},

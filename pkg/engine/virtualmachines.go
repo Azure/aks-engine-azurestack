@@ -13,7 +13,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
@@ -47,11 +46,11 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	}
 
 	vmTags := map[string]*string{
-		"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-		"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
-		"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-		"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
-		"poolName":           to.StringPtr("master"),
+		"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+		"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
+		"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+		"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
+		"poolName":           helpers.PointerToString("master"),
 	}
 
 	if kubernetesConfig != nil && kubernetesConfig.IsContainerMonitoringAddonEnabled() {
@@ -60,15 +59,15 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 		if cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.DNSPrefix != "" {
 			clusterDNSPrefix = cs.Properties.MasterProfile.DNSPrefix
 		}
-		vmTags["logAnalyticsWorkspaceResourceId"] = to.StringPtr(addon.Config["logAnalyticsWorkspaceResourceId"])
-		vmTags["clusterName"] = to.StringPtr(clusterDNSPrefix)
+		vmTags["logAnalyticsWorkspaceResourceId"] = helpers.PointerToString(addon.Config["logAnalyticsWorkspaceResourceId"])
+		vmTags["clusterName"] = helpers.PointerToString(clusterDNSPrefix)
 	}
 
 	virtualMachine := compute.VirtualMachine{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
 		Tags:     vmTags,
-		Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
+		Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
 	}
 
 	addCustomTagsToVM(cs.Properties.MasterProfile.CustomVMTags, &virtualMachine)
@@ -96,7 +95,7 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 
 	if !hasAvailabilityZones {
 		vmProperties.AvailabilitySet = &compute.SubResource{
-			ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
+			ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
 		}
 	}
 
@@ -107,16 +106,16 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	vmProperties.NetworkProfile = &compute.NetworkProfile{
 		NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 			{
-				ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
+				ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
 			},
 		},
 	}
 
 	osProfile := &compute.OSProfile{
-		AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
-		ComputerName:  to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+		AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+		ComputerName:  helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
 		LinuxConfiguration: &compute.LinuxConfiguration{
-			DisablePasswordAuthentication: to.BoolPtr(true),
+			DisablePasswordAuthentication: helpers.PointerToBool(true),
 		},
 	}
 
@@ -139,8 +138,8 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 		osProfile.LinuxConfiguration.SSH = &compute.SSHConfiguration{
 			PublicKeys: &[]compute.SSHPublicKey{
 				{
-					KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-					Path:    to.StringPtr("[variables('sshKeyPath')]"),
+					KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+					Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 				},
 			},
 		}
@@ -149,7 +148,7 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	t, err := InitializeTemplateGenerator(Context{})
 
 	customDataStr := getCustomDataFromJSON(t.GetMasterCustomDataJSONObject(cs))
-	osProfile.CustomData = to.StringPtr(customDataStr)
+	osProfile.CustomData = helpers.PointerToString(customDataStr)
 
 	if err != nil {
 		panic(err)
@@ -167,13 +166,13 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	if !cs.Properties.MasterProfile.HasCosmosEtcd() {
 		dataDisk := compute.DataDisk{
 			CreateOption: compute.DiskCreateOptionTypesEmpty,
-			DiskSizeGB:   to.Int32Ptr(int32(etcdSizeGB)),
-			Lun:          to.Int32Ptr(0),
-			Name:         to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
+			DiskSizeGB:   helpers.PointerToInt32(int32(etcdSizeGB)),
+			Lun:          helpers.PointerToInt32(0),
+			Name:         helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
 		}
 		if cs.Properties.MasterProfile.IsStorageAccount() {
 			dataDisk.Vhd = &compute.VirtualHardDisk{
-				URI: to.StringPtr("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('masterStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/', variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')),'-etcddisk.vhd')]"),
+				URI: helpers.PointerToString("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('masterStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/', variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')),'-etcddisk.vhd')]"),
 			}
 		}
 		storageProfile.DataDisks = &[]compute.DataDisk{
@@ -183,15 +182,15 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	imgReference := &compute.ImageReference{}
 	if cs.Properties.MasterProfile.HasImageRef() {
 		if cs.Properties.MasterProfile.HasImageGallery() {
-			imgReference.ID = to.StringPtr(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('osImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, imageRef.Gallery, imageRef.Version))
+			imgReference.ID = helpers.PointerToString(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('osImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('osImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, imageRef.Gallery, imageRef.Version))
 		} else {
-			imgReference.ID = to.StringPtr("[resourceId(parameters('osImageResourceGroup'), 'Microsoft.Compute/images', parameters('osImageName'))]")
+			imgReference.ID = helpers.PointerToString("[resourceId(parameters('osImageResourceGroup'), 'Microsoft.Compute/images', parameters('osImageName'))]")
 		}
 	} else {
-		imgReference.Offer = to.StringPtr("[parameters('osImageOffer')]")
-		imgReference.Publisher = to.StringPtr("[parameters('osImagePublisher')]")
-		imgReference.Sku = to.StringPtr("[parameters('osImageSku')]")
-		imgReference.Version = to.StringPtr("[parameters('osImageVersion')]")
+		imgReference.Offer = helpers.PointerToString("[parameters('osImageOffer')]")
+		imgReference.Publisher = helpers.PointerToString("[parameters('osImagePublisher')]")
+		imgReference.Sku = helpers.PointerToString("[parameters('osImageSku')]")
+		imgReference.Version = helpers.PointerToString("[parameters('osImageVersion')]")
 	}
 
 	osDisk := &compute.OSDisk{
@@ -200,19 +199,19 @@ func CreateMasterVM(cs *api.ContainerService) VirtualMachineARM {
 	}
 
 	if isStorageAccount {
-		osDisk.Name = to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-osdisk')]")
+		osDisk.Name = helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-osdisk')]")
 		osDisk.Vhd = &compute.VirtualHardDisk{
-			URI: to.StringPtr("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('masterStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')),'-osdisk.vhd')]"),
+			URI: helpers.PointerToString("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('masterStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')),'-osdisk.vhd')]"),
 		}
 	}
 
 	if cs.Properties.MasterProfile.OSDiskSizeGB > 0 {
-		osDisk.DiskSizeGB = to.Int32Ptr(int32(cs.Properties.MasterProfile.OSDiskSizeGB))
+		osDisk.DiskSizeGB = helpers.PointerToInt32(int32(cs.Properties.MasterProfile.OSDiskSizeGB))
 	}
 
 	if helpers.Bool(cs.Properties.MasterProfile.UltraSSDEnabled) {
 		vmProperties.AdditionalCapabilities = &compute.AdditionalCapabilities{
-			UltraSSDEnabled: to.BoolPtr(true),
+			UltraSSDEnabled: helpers.PointerToBool(true),
 		}
 	}
 
@@ -239,17 +238,17 @@ func createJumpboxVirtualMachine(cs *api.ContainerService) VirtualMachineARM {
 	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig
 
 	vm := compute.VirtualMachine{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[parameters('jumpboxVMName')]"),
-		Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[parameters('jumpboxVMName')]"),
+		Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
 	}
 
 	storageProfile := compute.StorageProfile{
 		ImageReference: &compute.ImageReference{
-			Publisher: to.StringPtr("Canonical"),
-			Offer:     to.StringPtr("UbuntuServer"),
-			Sku:       to.StringPtr("16.04-LTS"),
-			Version:   to.StringPtr("latest"),
+			Publisher: helpers.PointerToString("Canonical"),
+			Offer:     helpers.PointerToString("UbuntuServer"),
+			Sku:       helpers.PointerToString("16.04-LTS"),
+			Version:   helpers.PointerToString("latest"),
 		},
 		DataDisks: &[]compute.DataDisk{},
 	}
@@ -262,7 +261,7 @@ func createJumpboxVirtualMachine(cs *api.ContainerService) VirtualMachineARM {
 	if jumpBoxIsManagedDisks {
 		storageProfile.OsDisk = &compute.OSDisk{
 			CreateOption: compute.DiskCreateOptionTypesFromImage,
-			DiskSizeGB:   to.Int32Ptr(int32(kubernetesConfig.PrivateCluster.JumpboxProfile.OSDiskSizeGB)),
+			DiskSizeGB:   helpers.PointerToInt32(int32(kubernetesConfig.PrivateCluster.JumpboxProfile.OSDiskSizeGB)),
 			ManagedDisk: &compute.ManagedDiskParameters{
 				StorageAccountType: "[variables('vmSizesMap')[parameters('jumpboxVMSize')].storageAccountType]",
 			},
@@ -271,9 +270,9 @@ func createJumpboxVirtualMachine(cs *api.ContainerService) VirtualMachineARM {
 		storageProfile.OsDisk = &compute.OSDisk{
 			CreateOption: compute.DiskCreateOptionTypesFromImage,
 			Vhd: &compute.VirtualHardDisk{
-				URI: to.StringPtr("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('jumpboxStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',parameters('jumpboxVMName'),'jumpboxdisk.vhd')]"),
+				URI: helpers.PointerToString("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('jumpboxStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',parameters('jumpboxVMName'),'jumpboxdisk.vhd')]"),
 			},
-			Name: to.StringPtr("[variables('jumpboxOSDiskName')]"),
+			Name: helpers.PointerToString("[variables('jumpboxOSDiskName')]"),
 		}
 	}
 
@@ -290,25 +289,25 @@ func createJumpboxVirtualMachine(cs *api.ContainerService) VirtualMachineARM {
 			VMSize: "[parameters('jumpboxVMSize')]",
 		},
 		OsProfile: &compute.OSProfile{
-			ComputerName:  to.StringPtr("[parameters('jumpboxVMName')]"),
-			AdminUsername: to.StringPtr("[parameters('jumpboxUsername')]"),
+			ComputerName:  helpers.PointerToString("[parameters('jumpboxVMName')]"),
+			AdminUsername: helpers.PointerToString("[parameters('jumpboxUsername')]"),
 			LinuxConfiguration: &compute.LinuxConfiguration{
-				DisablePasswordAuthentication: to.BoolPtr(true),
+				DisablePasswordAuthentication: helpers.PointerToBool(true),
 				SSH: &compute.SSHConfiguration{
 					PublicKeys: &[]compute.SSHPublicKey{
 						{
-							Path:    to.StringPtr("[concat('/home/', parameters('jumpboxUsername'), '/.ssh/authorized_keys')]"),
-							KeyData: to.StringPtr("[parameters('jumpboxPublicKey')]"),
+							Path:    helpers.PointerToString("[concat('/home/', parameters('jumpboxUsername'), '/.ssh/authorized_keys')]"),
+							KeyData: helpers.PointerToString("[parameters('jumpboxPublicKey')]"),
 						},
 					},
 				},
 			},
-			CustomData: to.StringPtr(customDataStr),
+			CustomData: helpers.PointerToString(customDataStr),
 		},
 		NetworkProfile: &compute.NetworkProfile{
 			NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 				{
-					ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNetworkInterfaceName'))]"),
+					ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNetworkInterfaceName'))]"),
 				},
 			},
 		},
@@ -359,16 +358,16 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	tags := map[string]*string{
-		"creationSource":   to.StringPtr(fmt.Sprintf("[concat(parameters('generatorCode'), '-', variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
-		"orchestrator":     to.StringPtr("[variables('orchestratorNameVersionTag')]"),
-		"aksEngineVersion": to.StringPtr("[parameters('aksEngineVersion')]"),
-		"poolName":         to.StringPtr(profile.Name),
+		"creationSource":   helpers.PointerToString(fmt.Sprintf("[concat(parameters('generatorCode'), '-', variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
+		"orchestrator":     helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
+		"aksEngineVersion": helpers.PointerToString("[parameters('aksEngineVersion')]"),
+		"poolName":         helpers.PointerToString(profile.Name),
 	}
 
 	if profile.IsWindows() {
-		tags["resourceNameSuffix"] = to.StringPtr("[variables('winResourceNamePrefix')]")
+		tags["resourceNameSuffix"] = helpers.PointerToString("[variables('winResourceNamePrefix')]")
 	} else {
-		tags["resourceNameSuffix"] = to.StringPtr("[parameters('nameSuffix')]")
+		tags["resourceNameSuffix"] = helpers.PointerToString("[parameters('nameSuffix')]")
 	}
 
 	armResource := ARMResource{
@@ -381,14 +380,14 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	virtualMachine := compute.VirtualMachine{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
-		Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
+		Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
 		VirtualMachineProperties: &compute.VirtualMachineProperties{
 			NetworkProfile: &compute.NetworkProfile{
 				NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 					{
-						ID: to.StringPtr(fmt.Sprintf("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('%[1]sVMNamePrefix'), 'nic-', copyIndex(variables('%[1]sOffset'))))]", profile.Name)),
+						ID: helpers.PointerToString(fmt.Sprintf("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('%[1]sVMNamePrefix'), 'nic-', copyIndex(variables('%[1]sOffset'))))]", profile.Name)),
 					},
 				},
 			},
@@ -398,9 +397,9 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 
 	if profile.IsFlatcar() {
 		virtualMachine.Plan = &compute.Plan{
-			Publisher: to.StringPtr(fmt.Sprintf("[parameters('%sosImagePublisher')]", profile.Name)),
-			Name:      to.StringPtr(fmt.Sprintf("[parameters('%sosImageSKU')]", profile.Name)),
-			Product:   to.StringPtr(fmt.Sprintf("[parameters('%sosImageOffer')]", profile.Name)),
+			Publisher: helpers.PointerToString(fmt.Sprintf("[parameters('%sosImagePublisher')]", profile.Name)),
+			Name:      helpers.PointerToString(fmt.Sprintf("[parameters('%sosImageSKU')]", profile.Name)),
+			Product:   helpers.PointerToString(fmt.Sprintf("[parameters('%sosImageOffer')]", profile.Name)),
 		}
 	}
 
@@ -422,7 +421,7 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	virtualMachine.AvailabilitySet = &compute.SubResource{
-		ID: to.StringPtr(fmt.Sprintf("[resourceId('Microsoft.Compute/availabilitySets',variables('%sAvailabilitySet'))]", profile.Name)),
+		ID: helpers.PointerToString(fmt.Sprintf("[resourceId('Microsoft.Compute/availabilitySets',variables('%sAvailabilitySet'))]", profile.Name)),
 	}
 
 	vmSize := fmt.Sprintf("[variables('%sVMSize')]", profile.Name)
@@ -432,15 +431,15 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	osProfile := compute.OSProfile{
-		ComputerName: to.StringPtr(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
+		ComputerName: helpers.PointerToString(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')))]", profile.Name)),
 	}
 
 	t, err := InitializeTemplateGenerator(Context{})
 
 	if !profile.IsWindows() {
-		osProfile.AdminUsername = to.StringPtr("[parameters('linuxAdminUsername')]")
+		osProfile.AdminUsername = helpers.PointerToString("[parameters('linuxAdminUsername')]")
 		osProfile.LinuxConfiguration = &compute.LinuxConfiguration{
-			DisablePasswordAuthentication: to.BoolPtr(true),
+			DisablePasswordAuthentication: helpers.PointerToBool(true),
 		}
 
 		linuxProfile := cs.Properties.LinuxProfile
@@ -462,8 +461,8 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 			osProfile.LinuxConfiguration.SSH = &compute.SSHConfiguration{
 				PublicKeys: &[]compute.SSHPublicKey{
 					{
-						KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
-						Path:    to.StringPtr("[variables('sshKeyPath')]"),
+						KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+						Path:    helpers.PointerToString("[variables('sshKeyPath')]"),
 					},
 				},
 			}
@@ -474,20 +473,20 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 		}
 
 		agentCustomData := getCustomDataFromJSON(t.GetKubernetesLinuxNodeCustomDataJSONObject(cs, profile))
-		osProfile.CustomData = to.StringPtr(agentCustomData)
+		osProfile.CustomData = helpers.PointerToString(agentCustomData)
 
 		if linuxProfile != nil && linuxProfile.HasSecrets() {
 			vsg := getVaultSecretGroup(linuxProfile)
 			osProfile.Secrets = &vsg
 		}
 	} else {
-		osProfile.AdminUsername = to.StringPtr("[parameters('windowsAdminUsername')]")
-		osProfile.AdminPassword = to.StringPtr("[parameters('windowsAdminPassword')]")
+		osProfile.AdminUsername = helpers.PointerToString("[parameters('windowsAdminUsername')]")
+		osProfile.AdminPassword = helpers.PointerToString("[parameters('windowsAdminPassword')]")
 		osProfile.WindowsConfiguration = &compute.WindowsConfiguration{
-			EnableAutomaticUpdates: to.BoolPtr(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
+			EnableAutomaticUpdates: helpers.PointerToBool(cs.Properties.WindowsProfile.GetEnableWindowsUpdate()),
 		}
 		agentCustomData := getCustomDataFromJSON(t.GetKubernetesWindowsNodeCustomDataJSONObject(cs, profile))
-		osProfile.CustomData = to.StringPtr(agentCustomData)
+		osProfile.CustomData = helpers.PointerToString(agentCustomData)
 
 		if cs.Properties.WindowsProfile.HasEnableAHUB() {
 			licenseType := api.WindowsLicenseTypeNone
@@ -513,19 +512,19 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 		if profile.HasImageRef() {
 			if profile.HasImageGallery() {
 				storageProfile.ImageReference = &compute.ImageReference{
-					ID: to.StringPtr(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('%sosImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('%sosImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, profile.Name, imageRef.Gallery, profile.Name, imageRef.Version)),
+					ID: helpers.PointerToString(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('%sosImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('%sosImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, profile.Name, imageRef.Gallery, profile.Name, imageRef.Version)),
 				}
 			} else {
 				storageProfile.ImageReference = &compute.ImageReference{
-					ID: to.StringPtr(fmt.Sprintf("[resourceId(variables('%[1]sosImageResourceGroup'), 'Microsoft.Compute/images', variables('%[1]sosImageName'))]", profile.Name)),
+					ID: helpers.PointerToString(fmt.Sprintf("[resourceId(variables('%[1]sosImageResourceGroup'), 'Microsoft.Compute/images', variables('%[1]sosImageName'))]", profile.Name)),
 				}
 			}
 		} else {
 			storageProfile.ImageReference = &compute.ImageReference{
-				Offer:     to.StringPtr(fmt.Sprintf("[variables('%sosImageOffer')]", profile.Name)),
-				Publisher: to.StringPtr(fmt.Sprintf("[variables('%sosImagePublisher')]", profile.Name)),
-				Sku:       to.StringPtr(fmt.Sprintf("[variables('%sosImageSKU')]", profile.Name)),
-				Version:   to.StringPtr(fmt.Sprintf("[variables('%sosImageVersion')]", profile.Name)),
+				Offer:     helpers.PointerToString(fmt.Sprintf("[variables('%sosImageOffer')]", profile.Name)),
+				Publisher: helpers.PointerToString(fmt.Sprintf("[variables('%sosImagePublisher')]", profile.Name)),
+				Sku:       helpers.PointerToString(fmt.Sprintf("[variables('%sosImageSKU')]", profile.Name)),
+				Version:   helpers.PointerToString(fmt.Sprintf("[variables('%sosImageVersion')]", profile.Name)),
 			}
 			storageProfile.DataDisks = getArmDataDisks(profile)
 		}
@@ -537,9 +536,9 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	if profile.IsStorageAccount() {
-		osDisk.Name = to.StringPtr(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')),'-osdisk')]", profile.Name))
+		osDisk.Name = helpers.PointerToString(fmt.Sprintf("[concat(variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')),'-osdisk')]", profile.Name))
 		osDisk.Vhd = &compute.VirtualHardDisk{
-			URI: to.StringPtr(fmt.Sprintf("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('storageAccountPrefixes')[mod(add(div(copyIndex(variables('%[1]sOffset')),variables('maxVMsPerStorageAccount')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(div(copyIndex(variables('%[1]sOffset')),variables('maxVMsPerStorageAccount')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'osdisk/', variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')), '-osdisk.vhd')]", profile.Name)),
+			URI: helpers.PointerToString(fmt.Sprintf("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('storageAccountPrefixes')[mod(add(div(copyIndex(variables('%[1]sOffset')),variables('maxVMsPerStorageAccount')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(div(copyIndex(variables('%[1]sOffset')),variables('maxVMsPerStorageAccount')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'osdisk/', variables('%[1]sVMNamePrefix'), copyIndex(variables('%[1]sOffset')), '-osdisk.vhd')]", profile.Name)),
 		}
 	}
 
@@ -550,18 +549,18 @@ func createAgentAvailabilitySetVM(cs *api.ContainerService, profile *api.AgentPo
 	}
 
 	if profile.OSDiskSizeGB > 0 {
-		osDisk.DiskSizeGB = to.Int32Ptr(int32(profile.OSDiskSizeGB))
+		osDisk.DiskSizeGB = helpers.PointerToInt32(int32(profile.OSDiskSizeGB))
 	}
 
 	if profile.DiskEncryptionSetID != "" {
 		osDisk.ManagedDisk = &compute.ManagedDiskParameters{
-			DiskEncryptionSet: &compute.DiskEncryptionSetParameters{ID: to.StringPtr(profile.DiskEncryptionSetID)},
+			DiskEncryptionSet: &compute.DiskEncryptionSetParameters{ID: helpers.PointerToString(profile.DiskEncryptionSetID)},
 		}
 	}
 
 	if helpers.Bool(profile.UltraSSDEnabled) {
 		virtualMachine.AdditionalCapabilities = &compute.AdditionalCapabilities{
-			UltraSSDEnabled: to.BoolPtr(true),
+			UltraSSDEnabled: helpers.PointerToBool(true),
 		}
 	}
 
@@ -579,15 +578,15 @@ func getArmDataDisks(profile *api.AgentPoolProfile) *[]compute.DataDisk {
 	var dataDisks []compute.DataDisk
 	for i, diskSize := range profile.DiskSizesGB {
 		dataDisk := compute.DataDisk{
-			DiskSizeGB:   to.Int32Ptr(int32(diskSize)),
-			Lun:          to.Int32Ptr(int32(i)),
+			DiskSizeGB:   helpers.PointerToInt32(int32(diskSize)),
+			Lun:          helpers.PointerToInt32(int32(i)),
 			CreateOption: compute.DiskCreateOptionTypesEmpty,
 			Caching:      compute.CachingTypes(profile.DataDiskCachingType),
 		}
 		if profile.StorageProfile == api.StorageAccount {
-			dataDisk.Name = to.StringPtr(fmt.Sprintf("[concat(variables('%sVMNamePrefix'), copyIndex(),'-datadisk%d')]", profile.Name, i))
+			dataDisk.Name = helpers.PointerToString(fmt.Sprintf("[concat(variables('%sVMNamePrefix'), copyIndex(),'-datadisk%d')]", profile.Name, i))
 			dataDisk.Vhd = &compute.VirtualHardDisk{
-				URI: to.StringPtr(fmt.Sprintf("[concat('http://',variables('storageAccountPrefixes')[mod(add(add(div(copyIndex(),variables('maxVMsPerStorageAccount')),variables('%sStorageAccountOffset')),variables('dataStorageAccountPrefixSeed')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(add(div(copyIndex(),variables('maxVMsPerStorageAccount')),variables('%sStorageAccountOffset')),variables('dataStorageAccountPrefixSeed')),variables('storageAccountPrefixesCount'))],variables('%sDataAccountName'),'.blob.core.windows.net/vhds/',variables('%sVMNamePrefix'),copyIndex(), '--datadisk%d.vhd')]",
+				URI: helpers.PointerToString(fmt.Sprintf("[concat('http://',variables('storageAccountPrefixes')[mod(add(add(div(copyIndex(),variables('maxVMsPerStorageAccount')),variables('%sStorageAccountOffset')),variables('dataStorageAccountPrefixSeed')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(add(div(copyIndex(),variables('maxVMsPerStorageAccount')),variables('%sStorageAccountOffset')),variables('dataStorageAccountPrefixSeed')),variables('storageAccountPrefixesCount'))],variables('%sDataAccountName'),'.blob.core.windows.net/vhds/',variables('%sVMNamePrefix'),copyIndex(), '--datadisk%d.vhd')]",
 					profile.Name, profile.Name, profile.Name, profile.Name, i)),
 			}
 		}
@@ -611,13 +610,13 @@ func getVaultSecretGroup(linuxProfile *api.LinuxProfile) []compute.VaultSecretGr
 		for idx, lVault := range linuxProfile.Secrets {
 			computeVault := compute.VaultSecretGroup{
 				SourceVault: &compute.SubResource{
-					ID: to.StringPtr(fmt.Sprintf("[parameters('linuxKeyVaultID%d')]", idx)),
+					ID: helpers.PointerToString(fmt.Sprintf("[parameters('linuxKeyVaultID%d')]", idx)),
 				},
 			}
 			var vaultCerts []compute.VaultCertificate
 			for certIdx := range lVault.VaultCertificates {
 				vaultCert := compute.VaultCertificate{
-					CertificateURL: to.StringPtr(fmt.Sprintf("[parameters('linuxKeyVaultID%dCertificateURL%d')]", idx, certIdx)),
+					CertificateURL: helpers.PointerToString(fmt.Sprintf("[parameters('linuxKeyVaultID%dCertificateURL%d')]", idx, certIdx)),
 				}
 				vaultCerts = append(vaultCerts, vaultCert)
 			}
@@ -632,7 +631,7 @@ func addCustomTagsToVM(tags map[string]string, vm *compute.VirtualMachine) {
 	for key, value := range tags {
 		_, found := vm.Tags[key]
 		if !found {
-			vm.Tags[key] = to.StringPtr(value)
+			vm.Tags[key] = helpers.PointerToString(value)
 		}
 	}
 }

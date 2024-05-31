@@ -6,8 +6,8 @@ package engine
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func CreateVirtualNetwork(cs *api.ContainerService) VirtualNetworkARM {
@@ -27,11 +27,11 @@ func CreateVirtualNetwork(cs *api.ContainerService) VirtualNetworkARM {
 	}
 
 	subnet := network.Subnet{
-		Name: to.StringPtr("[variables('subnetName')]"),
+		Name: helpers.PointerToString("[variables('subnetName')]"),
 		SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-			AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
+			AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
 			NetworkSecurityGroup: &network.SecurityGroup{
-				ID: to.StringPtr("[variables('nsgID')]"),
+				ID: helpers.PointerToString("[variables('nsgID')]"),
 			},
 		},
 	}
@@ -47,7 +47,7 @@ func CreateVirtualNetwork(cs *api.ContainerService) VirtualNetworkARM {
 
 	if requireRouteTable {
 		subnet.RouteTable = &network.RouteTable{
-			ID: to.StringPtr("[variables('routeTableID')]"),
+			ID: helpers.PointerToString("[variables('routeTableID')]"),
 		}
 	}
 
@@ -59,9 +59,9 @@ func CreateVirtualNetwork(cs *api.ContainerService) VirtualNetworkARM {
 	}
 
 	virtualNetwork := network.VirtualNetwork{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[variables('virtualNetworkName')]"),
-		Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
+		Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
 		VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 			AddressSpace: &network.AddressSpace{
 				AddressPrefixes: &addressPrefixes,
@@ -74,9 +74,9 @@ func CreateVirtualNetwork(cs *api.ContainerService) VirtualNetworkARM {
 
 	if cs.Properties.OrchestratorProfile.KubernetesConfig.IsAddonEnabled(common.AppGwIngressAddonName) {
 		subnetAppGw := network.Subnet{
-			Name: to.StringPtr("[variables('appGwSubnetName')]"),
+			Name: helpers.PointerToString("[variables('appGwSubnetName')]"),
 			SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-				AddressPrefix: to.StringPtr("[parameters('appGwSubnet')]"),
+				AddressPrefix: helpers.PointerToString("[parameters('appGwSubnet')]"),
 			},
 		}
 
@@ -107,11 +107,11 @@ func createVirtualNetworkVMSS(cs *api.ContainerService) VirtualNetworkARM {
 	}
 
 	subnetMaster := network.Subnet{
-		Name: to.StringPtr("subnetmaster"),
+		Name: helpers.PointerToString("subnetmaster"),
 		SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-			AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
+			AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
 			NetworkSecurityGroup: &network.SecurityGroup{
-				ID: to.StringPtr("[variables('nsgID')]"),
+				ID: helpers.PointerToString("[variables('nsgID')]"),
 			},
 		},
 	}
@@ -126,23 +126,23 @@ func createVirtualNetworkVMSS(cs *api.ContainerService) VirtualNetworkARM {
 
 	if requireRouteTable {
 		subnetMaster.RouteTable = &network.RouteTable{
-			ID: to.StringPtr("[variables('routeTableID')]"),
+			ID: helpers.PointerToString("[variables('routeTableID')]"),
 		}
 	}
 
 	subnetAgent := network.Subnet{
-		Name: to.StringPtr("subnetagent"),
+		Name: helpers.PointerToString("subnetagent"),
 		SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-			AddressPrefix: to.StringPtr("[parameters('agentSubnet')]"),
+			AddressPrefix: helpers.PointerToString("[parameters('agentSubnet')]"),
 			NetworkSecurityGroup: &network.SecurityGroup{
-				ID: to.StringPtr("[variables('nsgID')]"),
+				ID: helpers.PointerToString("[variables('nsgID')]"),
 			},
 		},
 	}
 
 	if requireRouteTable {
 		subnetAgent.RouteTable = &network.RouteTable{
-			ID: to.StringPtr("[variables('routeTableID')]"),
+			ID: helpers.PointerToString("[variables('routeTableID')]"),
 		}
 	}
 
@@ -154,9 +154,9 @@ func createVirtualNetworkVMSS(cs *api.ContainerService) VirtualNetworkARM {
 	}
 
 	virtualNetwork := network.VirtualNetwork{
-		Location: to.StringPtr("[variables('location')]"),
-		Name:     to.StringPtr("[variables('virtualNetworkName')]"),
-		Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
+		Location: helpers.PointerToString("[variables('location')]"),
+		Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
+		Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
 		VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 			AddressSpace: &network.AddressSpace{
 				AddressPrefixes: &addressPrefixes,
@@ -170,9 +170,9 @@ func createVirtualNetworkVMSS(cs *api.ContainerService) VirtualNetworkARM {
 
 	if cs.Properties.OrchestratorProfile.KubernetesConfig.IsAddonEnabled(common.AppGwIngressAddonName) {
 		subnetAppGw := network.Subnet{
-			Name: to.StringPtr("[variables('appGwSubnetName')]"),
+			Name: helpers.PointerToString("[variables('appGwSubnetName')]"),
 			SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-				AddressPrefix: to.StringPtr("[parameters('appGwSubnet')]"),
+				AddressPrefix: helpers.PointerToString("[parameters('appGwSubnet')]"),
 			},
 		}
 

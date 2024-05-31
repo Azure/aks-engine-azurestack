@@ -9,8 +9,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/google/go-cmp/cmp"
@@ -27,7 +25,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.AADPodIdentityAddonName,
-			Enabled: to.BoolPtr(true),
+			Enabled: helpers.PointerToBool(true),
 		},
 	}
 	cs.setKubeletConfig(false)
@@ -139,7 +137,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.AADPodIdentityAddonName,
-			Enabled: to.BoolPtr(false),
+			Enabled: helpers.PointerToBool(false),
 		},
 	}
 	cs.setKubeletConfig(false)
@@ -157,7 +155,7 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.IPMASQAgentAddonName,
-			Enabled: to.BoolPtr(false),
+			Enabled: helpers.PointerToBool(false),
 		},
 	}
 
@@ -350,7 +348,7 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.IPMASQAgentAddonName,
-			Enabled: to.BoolPtr(false),
+			Enabled: helpers.PointerToBool(false),
 		},
 	}
 
@@ -430,7 +428,7 @@ func TestKubeletConfigDefaultsRemovals(t *testing.T) {
 func TestKubeletConfigUseCloudControllerManager(t *testing.T) {
 	// Test UseCloudControllerManager = true
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = helpers.PointerToBool(true)
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	if k["--cloud-provider"] != "external" {
@@ -440,7 +438,7 @@ func TestKubeletConfigUseCloudControllerManager(t *testing.T) {
 
 	// Test UseCloudControllerManager = false
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = helpers.PointerToBool(false)
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	if k["--cloud-provider"] != "azure" {
@@ -513,7 +511,7 @@ func TestKubeletConfigNetworkPlugin(t *testing.T) {
 func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
 	// Test EnableSecureKubelet = true
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(true)
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	ka := cs.Properties.AgentPoolProfiles[0].KubernetesConfig.KubeletConfig
@@ -534,7 +532,7 @@ func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
 
 	// Test EnableSecureKubelet = false
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(false)
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	ka = cs.Properties.AgentPoolProfiles[0].KubernetesConfig.KubeletConfig
@@ -551,7 +549,7 @@ func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", "", 3, 1, false)
 	p := GetK8sDefaultProperties(true)
 	cs.Properties = p
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(false)
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	ka = cs.Properties.AgentPoolProfiles[0].KubernetesConfig.KubeletConfig
@@ -568,7 +566,7 @@ func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", "", 3, 1, false)
 	p = GetK8sDefaultProperties(true)
 	cs.Properties = p
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(false)
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	ka = cs.Properties.AgentPoolProfiles[0].KubernetesConfig.KubeletConfig
@@ -585,7 +583,7 @@ func TestKubeletConfigEnableSecureKubelet(t *testing.T) {
 	cs = CreateMockContainerService("testcluster", "", 3, 1, false)
 	p = GetK8sDefaultProperties(true)
 	cs.Properties = p
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(true)
 	cs.setKubeletConfig(false)
 	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	kubernetesConfigWindowsAgentPool := cs.Properties.AgentPoolProfiles[0].KubernetesConfig.KubeletConfig
@@ -870,7 +868,7 @@ func TestStaticWindowsConfig(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 1, false)
 	p := GetK8sDefaultProperties(true)
 	cs.Properties = p
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = to.BoolPtr(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableSecureKubelet = helpers.PointerToBool(true)
 
 	// Start with copy of Linux config
 	staticLinuxKubeletConfig := map[string]string{

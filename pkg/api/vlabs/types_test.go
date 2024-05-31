@@ -10,7 +10,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func TestOrchestratorProfile(t *testing.T) {
@@ -851,7 +850,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(false),
+						UseCloudControllerManager: helpers.PointerToBool(false),
 					},
 				},
 			},
@@ -864,7 +863,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.16.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 			},
@@ -877,7 +876,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.13.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 			},
@@ -890,7 +889,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.13.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 			},
@@ -903,7 +902,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.15.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 			},
@@ -916,7 +915,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.16.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 			},
@@ -929,7 +928,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -947,7 +946,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -965,7 +964,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -983,7 +982,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.17.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: to.BoolPtr(true),
+						UseCloudControllerManager: helpers.PointerToBool(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{

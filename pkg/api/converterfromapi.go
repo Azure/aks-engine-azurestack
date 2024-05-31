@@ -7,8 +7,8 @@ import (
 	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/blang/semver"
 )
 
@@ -211,7 +211,7 @@ func convertWindowsProfileToVLabs(api *WindowsProfile, vlabsProfile *vlabs.Windo
 	}
 	vlabsProfile.EnableAutomaticUpdates = api.EnableAutomaticUpdates
 	if api.GetEnableAHUB() {
-		vlabsProfile.EnableAHUB = to.BoolPtr(true)
+		vlabsProfile.EnableAHUB = helpers.PointerToBool(true)
 	}
 	vlabsProfile.AlwaysPullWindowsPauseImage = api.AlwaysPullWindowsPauseImage
 	if api.WindowsRuntimes != nil {

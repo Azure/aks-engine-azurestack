@@ -6,7 +6,6 @@ package api
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
@@ -16,7 +15,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig
 	defaultSchedulerComponentConfig := KubernetesComponent{
 		Name:    common.SchedulerComponentName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.SchedulerComponentName,
@@ -30,7 +29,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultControllerManagerComponentConfig := KubernetesComponent{
 		Name:    common.ControllerManagerComponentName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.ControllerManagerComponentName,
@@ -44,7 +43,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultCloudControllerManagerComponentConfig := KubernetesComponent{
 		Name:    common.CloudControllerManagerComponentName,
-		Enabled: to.BoolPtr(helpers.Bool(kubernetesConfig.UseCloudControllerManager)),
+		Enabled: helpers.PointerToBool(helpers.Bool(kubernetesConfig.UseCloudControllerManager)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.CloudControllerManagerComponentName,
@@ -58,7 +57,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultAPIServerComponentConfig := KubernetesComponent{
 		Name:    common.APIServerComponentName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.APIServerComponentName,
@@ -72,7 +71,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultAddonManagerComponentConfig := KubernetesComponent{
 		Name:    common.AddonManagerComponentName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.AddonManagerComponentName,
@@ -83,7 +82,7 @@ func (cs *ContainerService) setComponentsConfig(isUpgrade bool) {
 
 	defaultAzureKMSProviderComponentConfig := KubernetesComponent{
 		Name:    common.AzureKMSProviderComponentName,
-		Enabled: to.BoolPtr(helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)),
+		Enabled: helpers.PointerToBool(helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.AzureKMSProviderComponentName,

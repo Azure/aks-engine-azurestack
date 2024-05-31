@@ -6,8 +6,8 @@ package engine
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func createApplicationGateway(prop *api.Properties) ApplicationGatewayARM {
@@ -21,45 +21,45 @@ func createApplicationGateway(prop *api.Properties) ApplicationGatewayARM {
 			},
 		},
 		ApplicationGateway: network.ApplicationGateway{
-			Location: to.StringPtr("[variables('location')]"),
-			Name:     to.StringPtr("[variables('appGwName')]"),
+			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     helpers.PointerToString("[variables('appGwName')]"),
 			ApplicationGatewayPropertiesFormat: &network.ApplicationGatewayPropertiesFormat{
 				Sku: &network.ApplicationGatewaySku{
 					Name:     network.ApplicationGatewaySkuName("[parameters('appGwSku')]"),
 					Tier:     network.ApplicationGatewayTier("[parameters('appGwSku')]"),
-					Capacity: to.Int32Ptr(2),
+					Capacity: helpers.PointerToInt32(2),
 				},
 				GatewayIPConfigurations: &[]network.ApplicationGatewayIPConfiguration{
 					{
-						Name: to.StringPtr("gatewayIP"),
+						Name: helpers.PointerToString("gatewayIP"),
 						ApplicationGatewayIPConfigurationPropertiesFormat: &network.ApplicationGatewayIPConfigurationPropertiesFormat{
 							Subnet: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('vnetID'),'/subnets/',variables('appGwSubnetName'))]"),
+								ID: helpers.PointerToString("[concat(variables('vnetID'),'/subnets/',variables('appGwSubnetName'))]"),
 							},
 						},
 					},
 				},
 				FrontendIPConfigurations: &[]network.ApplicationGatewayFrontendIPConfiguration{
 					{
-						Name: to.StringPtr("frontendIP"),
+						Name: helpers.PointerToString("frontendIP"),
 						ApplicationGatewayFrontendIPConfigurationPropertiesFormat: &network.ApplicationGatewayFrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.SubResource{
-								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('appGwPublicIPAddressName'))]"),
+								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('appGwPublicIPAddressName'))]"),
 							},
 						},
 					},
 				},
 				FrontendPorts: &[]network.ApplicationGatewayFrontendPort{
 					{
-						Name: to.StringPtr("httpPort"),
+						Name: helpers.PointerToString("httpPort"),
 						ApplicationGatewayFrontendPortPropertiesFormat: &network.ApplicationGatewayFrontendPortPropertiesFormat{
-							Port: to.Int32Ptr(80),
+							Port: helpers.PointerToInt32(80),
 						},
 					},
 				},
 				BackendAddressPools: &[]network.ApplicationGatewayBackendAddressPool{
 					{
-						Name: to.StringPtr("pool"),
+						Name: helpers.PointerToString("pool"),
 						ApplicationGatewayBackendAddressPoolPropertiesFormat: &network.ApplicationGatewayBackendAddressPoolPropertiesFormat{
 							BackendAddresses: &[]network.ApplicationGatewayBackendAddress{},
 						},
@@ -67,51 +67,51 @@ func createApplicationGateway(prop *api.Properties) ApplicationGatewayARM {
 				},
 				HTTPListeners: &[]network.ApplicationGatewayHTTPListener{
 					{
-						Name: to.StringPtr("httpListener"),
+						Name: helpers.PointerToString("httpListener"),
 						ApplicationGatewayHTTPListenerPropertiesFormat: &network.ApplicationGatewayHTTPListenerPropertiesFormat{
 							Protocol: network.HTTP,
 							FrontendPort: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('appGwId'), '/frontendPorts/httpPort')]"),
+								ID: helpers.PointerToString("[concat(variables('appGwId'), '/frontendPorts/httpPort')]"),
 							},
 							FrontendIPConfiguration: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('appGwId'), '/frontendIPConfigurations/frontendIP')]"),
+								ID: helpers.PointerToString("[concat(variables('appGwId'), '/frontendIPConfigurations/frontendIP')]"),
 							},
 						},
 					},
 				},
 				BackendHTTPSettingsCollection: &[]network.ApplicationGatewayBackendHTTPSettings{
 					{
-						Name: to.StringPtr("setting"),
+						Name: helpers.PointerToString("setting"),
 						ApplicationGatewayBackendHTTPSettingsPropertiesFormat: &network.ApplicationGatewayBackendHTTPSettingsPropertiesFormat{
-							Port:     to.Int32Ptr(80),
+							Port:     helpers.PointerToInt32(80),
 							Protocol: network.HTTP,
 						},
 					},
 				},
 				RequestRoutingRules: &[]network.ApplicationGatewayRequestRoutingRule{
 					{
-						Name: to.StringPtr("rule"),
+						Name: helpers.PointerToString("rule"),
 						ApplicationGatewayRequestRoutingRulePropertiesFormat: &network.ApplicationGatewayRequestRoutingRulePropertiesFormat{
 							HTTPListener: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('appGwId'), '/httpListeners/httpListener')]"),
+								ID: helpers.PointerToString("[concat(variables('appGwId'), '/httpListeners/httpListener')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('appGwId'), '/backendAddressPools/pool')]"),
+								ID: helpers.PointerToString("[concat(variables('appGwId'), '/backendAddressPools/pool')]"),
 							},
 							BackendHTTPSettings: &network.SubResource{
-								ID: to.StringPtr("[concat(variables('appGwId'), '/backendHttpSettingsCollection/setting')]"),
+								ID: helpers.PointerToString("[concat(variables('appGwId'), '/backendHttpSettingsCollection/setting')]"),
 							},
 						},
 					},
 				},
 			},
-			Type: to.StringPtr("Microsoft.Network/applicationGateways"),
+			Type: helpers.PointerToString("Microsoft.Network/applicationGateways"),
 		},
 	}
 
 	if prop.OrchestratorProfile.KubernetesConfig.GetAddonByName(common.AppGwIngressAddonName).Config["appgw-sku"] == "WAF_v2" {
 		applicationGateway.ApplicationGateway.ApplicationGatewayPropertiesFormat.WebApplicationFirewallConfiguration = &network.ApplicationGatewayWebApplicationFirewallConfiguration{
-			Enabled:      to.BoolPtr(true),
+			Enabled:      helpers.PointerToBool(true),
 			FirewallMode: network.Detection,
 		}
 	}
@@ -121,9 +121,9 @@ func createApplicationGateway(prop *api.Properties) ApplicationGatewayARM {
 		frontendIPConfigurations := append(
 			*applicationGateway.ApplicationGateway.ApplicationGatewayPropertiesFormat.FrontendIPConfigurations,
 			network.ApplicationGatewayFrontendIPConfiguration{
-				Name: to.StringPtr("privateIp"),
+				Name: helpers.PointerToString("privateIp"),
 				ApplicationGatewayFrontendIPConfigurationPropertiesFormat: &network.ApplicationGatewayFrontendIPConfigurationPropertiesFormat{
-					PrivateIPAddress: to.StringPtr(privateIP),
+					PrivateIPAddress: helpers.PointerToString(privateIP),
 				},
 			})
 		applicationGateway.ApplicationGateway.ApplicationGatewayPropertiesFormat.FrontendIPConfigurations = &frontendIPConfigurations

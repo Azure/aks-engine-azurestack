@@ -16,7 +16,6 @@ import (
 
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jarcoal/httpmock"
 	"github.com/pkg/errors"
@@ -329,7 +328,7 @@ func getFakeAddons(defaultAddonMap map[string]string, customImage string) []Kube
 		}
 		customAddon := KubernetesAddon{
 			Name:    addonName,
-			Enabled: to.BoolPtr(true),
+			Enabled: helpers.PointerToBool(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:           containerName,
@@ -358,7 +357,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	// Verify that an addon with all custom values provided remains unmodified during default value assignment
 	customAddon := KubernetesAddon{
 		Name:    addonName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           addonName,
@@ -395,7 +394,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	// Verify that an addon with no custom values provided gets all the appropriate defaults
 	customAddon = KubernetesAddon{
 		Name:    addonName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name: addonName,
@@ -423,7 +422,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	// More checking to verify default interpolation
 	customAddon = KubernetesAddon{
 		Name:    addonName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:         addonName,
@@ -453,7 +452,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 	// Verify that an addon with a custom image value will be overridden during upgrade/scale
 	customAddon = KubernetesAddon{
 		Name:    addonName,
-		Enabled: to.BoolPtr(true),
+		Enabled: helpers.PointerToBool(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  addonName,
@@ -493,7 +492,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 		},
 	}
 	isUpdate = false
-	addonWithDefaults.Enabled = to.BoolPtr(true)
+	addonWithDefaults.Enabled = helpers.PointerToBool(true)
 	modifiedAddon = assignDefaultAddonVals(customAddon, addonWithDefaults, isUpdate)
 	if helpers.Bool(modifiedAddon.Enabled) != helpers.Bool(addonWithDefaults.Enabled) {
 		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", helpers.Bool(addonWithDefaults.Enabled), helpers.Bool(modifiedAddon.Enabled))
@@ -509,7 +508,7 @@ func TestAssignDefaultAddonVals(t *testing.T) {
 		},
 	}
 	isUpdate = false
-	addonWithDefaults.Enabled = to.BoolPtr(false)
+	addonWithDefaults.Enabled = helpers.PointerToBool(false)
 	modifiedAddon = assignDefaultAddonVals(customAddon, addonWithDefaults, isUpdate)
 	if helpers.Bool(modifiedAddon.Enabled) != helpers.Bool(addonWithDefaults.Enabled) {
 		t.Errorf("assignDefaultAddonVals() should have assigned a default 'Enabled' value of %t, instead assigned %t,", helpers.Bool(addonWithDefaults.Enabled), helpers.Bool(modifiedAddon.Enabled))
@@ -667,7 +666,7 @@ func TestVMSSOverProvisioning(t *testing.T) {
 
 	mockCS = getMockBaseContainerService("1.10.8")
 	mockCS.Properties.AgentPoolProfiles[0].AvailabilityProfile = VirtualMachineScaleSets
-	mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled = to.BoolPtr(true)
+	mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled = helpers.PointerToBool(true)
 	_, err = mockCS.SetPropertiesDefaults(PropertiesDefaultsParams{
 		IsScale:    false,
 		IsUpgrade:  false,
@@ -684,7 +683,7 @@ func TestVMSSOverProvisioning(t *testing.T) {
 
 	mockCS = getMockBaseContainerService("1.10.8")
 	mockCS.Properties.AgentPoolProfiles[0].AvailabilityProfile = VirtualMachineScaleSets
-	mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled = to.BoolPtr(false)
+	mockCS.Properties.AgentPoolProfiles[0].VMSSOverProvisioningEnabled = helpers.PointerToBool(false)
 	_, err = mockCS.SetPropertiesDefaults(PropertiesDefaultsParams{
 		IsScale:    false,
 		IsUpgrade:  false,
@@ -749,7 +748,7 @@ func TestAuditDEnabled(t *testing.T) {
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
-	mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled = to.BoolPtr(true)
+	mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled = helpers.PointerToBool(true)
 	mockCS.Properties.setAgentProfileDefaults(false, false)
 
 	// In create scenario with explicit true, AuditDEnabled should be true
@@ -758,7 +757,7 @@ func TestAuditDEnabled(t *testing.T) {
 	}
 
 	mockCS = getMockBaseContainerService("1.10.8")
-	mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled = to.BoolPtr(false)
+	mockCS.Properties.AgentPoolProfiles[0].AuditDEnabled = helpers.PointerToBool(false)
 	mockCS.Properties.setAgentProfileDefaults(false, false)
 
 	// In create scenario with explicit false, AuditDEnabled should be false
@@ -829,7 +828,7 @@ func TestDefaultUseManagedIdentity(t *testing.T) {
 	}
 
 	mockCS = getMockBaseContainerService("1.18.8")
-	mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(false)
+	mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(false)
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
 	if helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 		t.Errorf("expected UseManagedIdentity=false config to be honored by defaults enforcement, instead got %t", helpers.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity))
@@ -1503,8 +1502,8 @@ func TestStorageProfile(t *testing.T) {
 	properties := mockCS.Properties
 	properties.MasterProfile.Count = 1
 	properties.OrchestratorProfile.KubernetesConfig.PrivateCluster = &PrivateCluster{
-		Enabled:                to.BoolPtr(true),
-		EnableHostsConfigAgent: to.BoolPtr(true),
+		Enabled:                helpers.PointerToBool(true),
+		EnableHostsConfigAgent: helpers.PointerToBool(true),
 		JumpboxProfile:         &PrivateJumpboxProfile{},
 	}
 	_, err := mockCS.SetPropertiesDefaults(PropertiesDefaultsParams{
@@ -2048,7 +2047,7 @@ func TestAgentPoolProfile(t *testing.T) {
 			*properties.AgentPoolProfiles[0].SpotMaxPrice, float64(-1))
 	}
 
-	properties.AgentPoolProfiles[0].SpotMaxPrice = to.Float64Ptr(float64(88))
+	properties.AgentPoolProfiles[0].SpotMaxPrice = helpers.PointerToFloat64(float64(88))
 	_, err = mockCS.SetPropertiesDefaults(PropertiesDefaultsParams{
 		IsScale:    false,
 		IsUpgrade:  false,
@@ -3645,7 +3644,7 @@ func TestAzureCNIVersionString(t *testing.T) {
 func TestEnableAggregatedAPIs(t *testing.T) {
 	mockCS := getMockBaseContainerService("1.10.3")
 	properties := mockCS.Properties
-	properties.OrchestratorProfile.KubernetesConfig.EnableRbac = to.BoolPtr(false)
+	properties.OrchestratorProfile.KubernetesConfig.EnableRbac = helpers.PointerToBool(false)
 	mockCS.setOrchestratorDefaults(true, true)
 
 	if properties.OrchestratorProfile.KubernetesConfig.EnableAggregatedAPIs {
@@ -3655,7 +3654,7 @@ func TestEnableAggregatedAPIs(t *testing.T) {
 
 	mockCS = getMockBaseContainerService("1.10.3")
 	properties = mockCS.Properties
-	properties.OrchestratorProfile.KubernetesConfig.EnableRbac = to.BoolPtr(true)
+	properties.OrchestratorProfile.KubernetesConfig.EnableRbac = helpers.PointerToBool(true)
 	mockCS.setOrchestratorDefaults(true, true)
 
 	if !properties.OrchestratorProfile.KubernetesConfig.EnableAggregatedAPIs {
@@ -3681,8 +3680,8 @@ func TestDefaultCloudProvider(t *testing.T) {
 
 	mockCS = getMockBaseContainerService("1.10.3")
 	properties = mockCS.Properties
-	properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff = to.BoolPtr(false)
-	properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit = to.BoolPtr(false)
+	properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff = helpers.PointerToBool(false)
+	properties.OrchestratorProfile.KubernetesConfig.CloudProviderRateLimit = helpers.PointerToBool(false)
 	mockCS.setOrchestratorDefaults(true, true)
 
 	if helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.CloudProviderBackoff) {
@@ -3716,12 +3715,12 @@ func TestCloudProviderBackoff(t *testing.T) {
 			},
 			expected: KubernetesConfig{
 				CloudProviderBackoffMode:          "v2",
-				CloudProviderBackoff:              to.BoolPtr(true),
+				CloudProviderBackoff:              helpers.PointerToBool(true),
 				CloudProviderBackoffRetries:       DefaultKubernetesCloudProviderBackoffRetries,
 				CloudProviderBackoffJitter:        0,
 				CloudProviderBackoffDuration:      DefaultKubernetesCloudProviderBackoffDuration,
 				CloudProviderBackoffExponent:      0,
-				CloudProviderRateLimit:            to.BoolPtr(DefaultKubernetesCloudProviderRateLimit),
+				CloudProviderRateLimit:            helpers.PointerToBool(DefaultKubernetesCloudProviderRateLimit),
 				CloudProviderRateLimitQPS:         DefaultKubernetesCloudProviderRateLimitQPS,
 				CloudProviderRateLimitQPSWrite:    DefaultKubernetesCloudProviderRateLimitQPSWrite,
 				CloudProviderRateLimitBucket:      DefaultKubernetesCloudProviderRateLimitBucket,
@@ -3741,12 +3740,12 @@ func TestCloudProviderBackoff(t *testing.T) {
 			},
 			expected: KubernetesConfig{
 				CloudProviderBackoffMode:          "v2",
-				CloudProviderBackoff:              to.BoolPtr(true),
+				CloudProviderBackoff:              helpers.PointerToBool(true),
 				CloudProviderBackoffRetries:       DefaultKubernetesCloudProviderBackoffRetries,
 				CloudProviderBackoffJitter:        0,
 				CloudProviderBackoffDuration:      DefaultKubernetesCloudProviderBackoffDuration,
 				CloudProviderBackoffExponent:      0,
-				CloudProviderRateLimit:            to.BoolPtr(DefaultKubernetesCloudProviderRateLimit),
+				CloudProviderRateLimit:            helpers.PointerToBool(DefaultKubernetesCloudProviderRateLimit),
 				CloudProviderRateLimitQPS:         DefaultKubernetesCloudProviderRateLimitQPS,
 				CloudProviderRateLimitQPSWrite:    DefaultKubernetesCloudProviderRateLimitQPSWrite,
 				CloudProviderRateLimitBucket:      DefaultKubernetesCloudProviderRateLimitBucket,
@@ -5043,7 +5042,7 @@ func TestEnableRBAC(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.GetLatestPatchVersion("1.15", common.GetAllSupportedKubernetesVersions(false, false, false)),
 						KubernetesConfig: &KubernetesConfig{
-							EnableRbac: to.BoolPtr(false),
+							EnableRbac: helpers.PointerToBool(false),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5060,7 +5059,7 @@ func TestEnableRBAC(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.GetLatestPatchVersion("1.16", common.GetAllSupportedKubernetesVersions(false, false, false)),
 						KubernetesConfig: &KubernetesConfig{
-							EnableRbac: to.BoolPtr(false),
+							EnableRbac: helpers.PointerToBool(false),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5195,7 +5194,7 @@ func TestDefaultCloudProviderDisableOutboundSNAT(t *testing.T) {
 						OrchestratorVersion: "1.18.2",
 						KubernetesConfig: &KubernetesConfig{
 							LoadBalancerSku:                  BasicLoadBalancerSku,
-							CloudProviderDisableOutboundSNAT: to.BoolPtr(true),
+							CloudProviderDisableOutboundSNAT: helpers.PointerToBool(true),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5212,7 +5211,7 @@ func TestDefaultCloudProviderDisableOutboundSNAT(t *testing.T) {
 						OrchestratorVersion: "1.18.2",
 						KubernetesConfig: &KubernetesConfig{
 							LoadBalancerSku:                  BasicLoadBalancerSku,
-							CloudProviderDisableOutboundSNAT: to.BoolPtr(false),
+							CloudProviderDisableOutboundSNAT: helpers.PointerToBool(false),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5229,7 +5228,7 @@ func TestDefaultCloudProviderDisableOutboundSNAT(t *testing.T) {
 						OrchestratorVersion: "1.18.2",
 						KubernetesConfig: &KubernetesConfig{
 							LoadBalancerSku:                  StandardLoadBalancerSku,
-							CloudProviderDisableOutboundSNAT: to.BoolPtr(true),
+							CloudProviderDisableOutboundSNAT: helpers.PointerToBool(true),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5246,7 +5245,7 @@ func TestDefaultCloudProviderDisableOutboundSNAT(t *testing.T) {
 						OrchestratorVersion: "1.18.2",
 						KubernetesConfig: &KubernetesConfig{
 							LoadBalancerSku:                  StandardLoadBalancerSku,
-							CloudProviderDisableOutboundSNAT: to.BoolPtr(false),
+							CloudProviderDisableOutboundSNAT: helpers.PointerToBool(false),
 						},
 					},
 					MasterProfile: &MasterProfile{},
@@ -5949,51 +5948,51 @@ func TestDefaultIPAddressCount(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AADPodIdentityAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.AntreaAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.AzureNetworkPolicyAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.AzureDiskCSIDriverAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.AzureFileCSIDriverAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.CalicoAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.CiliumAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.CloudNodeManagerAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.FlannelAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.IPMASQAgentAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.KubeProxyAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 								{
 									Name:    common.SecretsStoreCSIDriverAddonName,
-									Enabled: to.BoolPtr(true),
+									Enabled: helpers.PointerToBool(true),
 								},
 							},
 						},
@@ -6129,7 +6128,7 @@ func TestSetCSIProxyDefaults(t *testing.T) {
 		{
 			name: "enabledCSIProxy is false",
 			windowsProfile: &WindowsProfile{
-				EnableCSIProxy: to.BoolPtr(false),
+				EnableCSIProxy: helpers.PointerToBool(false),
 				CSIProxyURL:    "",
 			},
 			useCloudControllerManager: true,
@@ -6139,7 +6138,7 @@ func TestSetCSIProxyDefaults(t *testing.T) {
 		{
 			name: "enabledCSIProxy is true",
 			windowsProfile: &WindowsProfile{
-				EnableCSIProxy: to.BoolPtr(true),
+				EnableCSIProxy: helpers.PointerToBool(true),
 				CSIProxyURL:    "",
 			},
 			useCloudControllerManager: true,
@@ -6153,7 +6152,7 @@ func TestSetCSIProxyDefaults(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			cs := getMockBaseContainerService("1.18.0")
-			cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(c.useCloudControllerManager)
+			cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = helpers.PointerToBool(c.useCloudControllerManager)
 			cs.Properties.WindowsProfile = c.windowsProfile
 			cs.setCSIProxyDefaults()
 			if helpers.Bool(cs.Properties.WindowsProfile.EnableCSIProxy) != c.expectedEnableCSIProxy {
@@ -6244,7 +6243,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 			name: "explicit true",
 			p: &Properties{
 				LinuxProfile: &LinuxProfile{
-					RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+					RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 			},
@@ -6255,7 +6254,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 			name: "explicit false",
 			p: &Properties{
 				LinuxProfile: &LinuxProfile{
-					RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+					RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 			},
@@ -6278,7 +6277,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 			name: "custom cloud explicit true",
 			p: &Properties{
 				LinuxProfile: &LinuxProfile{
-					RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+					RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 				CustomCloudProfile: &CustomCloudProfile{
@@ -6292,7 +6291,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 			name: "custom cloud explicit false",
 			p: &Properties{
 				LinuxProfile: &LinuxProfile{
-					RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+					RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 				CustomCloudProfile: &CustomCloudProfile{
