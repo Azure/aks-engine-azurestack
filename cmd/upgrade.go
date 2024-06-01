@@ -261,7 +261,7 @@ func (uc *upgradeCmd) loadCluster() error {
 		return err
 	}
 
-	if uc.client, err = uc.getAuthArgs().getClient(); err != nil {
+	if uc.client, err = uc.getAuthArgs().getClient(uc.containerService.Properties.CustomCloudProfile.Environment); err != nil {
 		return errors.Wrap(err, "failed to get client")
 	}
 

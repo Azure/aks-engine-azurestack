@@ -9,7 +9,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 const (
@@ -853,7 +852,7 @@ func TestGetContainerImages(t *testing.T) {
 	csOneDotFifteenCustomImagesComponents := GetK8sComponentsByVersionMap(&KubernetesConfig{KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR})
 	csOneDotFifteenAzureStack := getContainerServicesMap()["1.15"]
 	csOneDotFifteenAzureStack.Properties.CustomCloudProfile = &CustomCloudProfile{
-		Environment: &azure.Environment{
+		Environment: &Environment{
 			Name: "AzureStackCloud",
 		},
 	}
@@ -864,7 +863,7 @@ func TestGetContainerImages(t *testing.T) {
 	csOneDotSixteenCustomImagesComponents := GetK8sComponentsByVersionMap(&KubernetesConfig{KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR})
 	csOneDotSixteenAzureStack := getContainerServicesMap()["1.16"]
 	csOneDotSixteenAzureStack.Properties.CustomCloudProfile = &CustomCloudProfile{
-		Environment: &azure.Environment{
+		Environment: &Environment{
 			Name: "AzureStackCloud",
 		},
 	}
@@ -875,7 +874,7 @@ func TestGetContainerImages(t *testing.T) {
 	csOneDotSeventeenCustomImagesComponents := GetK8sComponentsByVersionMap(&KubernetesConfig{KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR})
 	csOneDotSeventeenAzureStack := getContainerServicesMap()["1.17"]
 	csOneDotSeventeenAzureStack.Properties.CustomCloudProfile = &CustomCloudProfile{
-		Environment: &azure.Environment{
+		Environment: &Environment{
 			Name: "AzureStackCloud",
 		},
 	}
@@ -886,7 +885,7 @@ func TestGetContainerImages(t *testing.T) {
 	csOneDotEighteenCustomImagesComponents := GetK8sComponentsByVersionMap(&KubernetesConfig{KubernetesImageBaseType: common.KubernetesImageBaseTypeMCR})
 	csOneDotEighteenAzureStack := getContainerServicesMap()["1.18"]
 	csOneDotEighteenAzureStack.Properties.CustomCloudProfile = &CustomCloudProfile{
-		Environment: &azure.Environment{
+		Environment: &Environment{
 			Name: "AzureStackCloud",
 		},
 	}

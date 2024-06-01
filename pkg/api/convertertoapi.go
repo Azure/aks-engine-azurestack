@@ -8,7 +8,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 ///////////////////////////////////////////////////////////
@@ -708,7 +707,7 @@ func convertVLabsAADProfile(vlabs *vlabs.AADProfile, api *AADProfile) {
 
 func convertVLabsCustomCloudProfile(vlabs *vlabs.CustomCloudProfile, api *CustomCloudProfile) {
 	if vlabs.Environment != nil {
-		api.Environment = &azure.Environment{}
+		api.Environment = &Environment{}
 		api.Environment.Name = vlabs.Environment.Name
 		api.Environment.ManagementPortalURL = vlabs.Environment.ManagementPortalURL
 		api.Environment.PublishSettingsURL = vlabs.Environment.PublishSettingsURL
@@ -729,7 +728,7 @@ func convertVLabsCustomCloudProfile(vlabs *vlabs.CustomCloudProfile, api *Custom
 		api.Environment.ResourceManagerVMDNSSuffix = vlabs.Environment.ResourceManagerVMDNSSuffix
 		api.Environment.ContainerRegistryDNSSuffix = vlabs.Environment.ContainerRegistryDNSSuffix
 		api.Environment.TokenAudience = vlabs.Environment.TokenAudience
-		api.Environment.ResourceIdentifiers = azure.ResourceIdentifier{
+		api.Environment.ResourceIdentifiers = ResourceIdentifier{
 			Graph:               vlabs.Environment.ResourceIdentifiers.Graph,
 			KeyVault:            vlabs.Environment.ResourceIdentifiers.KeyVault,
 			Datalake:            vlabs.Environment.ResourceIdentifiers.Datalake,

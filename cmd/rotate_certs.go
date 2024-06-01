@@ -208,7 +208,7 @@ func (rcc *rotateCertsCmd) loadAPIModel() (err error) {
 	if err = rcc.getAuthArgs().validateAuthArgs(); err != nil {
 		return errors.Wrap(err, "failed to get validate auth args")
 	}
-	armClient, err := rcc.authProvider.getClient()
+	armClient, err := rcc.authProvider.getClient(rcc.cs.Properties.CustomCloudProfile.Environment)
 	if err != nil {
 		return errors.Wrap(err, "failed to get ARM client")
 	}

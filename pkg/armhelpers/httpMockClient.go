@@ -12,7 +12,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers/testserver"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 const (
@@ -211,10 +210,11 @@ func (mc *HTTPMockClient) DeactivateAndReset() {
 	mc.server = nil
 }
 
-// GetEnvironment return azure.Environment for Azure Stack
+// GetEnvironment return Environment for Azure
 func (mc HTTPMockClient) GetEnvironment() cloud.Configuration {
-	env, _ := azure.EnvironmentFromName("AZUREPUBLICCLOUD")
+	env := api.Environment{}
 	env.Name = "AzurePublicCloud"
+	env.ServiceManagementEndpoint = "https://management.azure.com/"
 
 	if mc.server != nil {
 		mockURI := fmt.Sprintf("http://localhost:%d/", mc.server.Port)

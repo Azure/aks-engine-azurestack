@@ -4,7 +4,6 @@
 package api
 
 import (
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/uuid"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
@@ -177,7 +176,7 @@ func GetMockPropertiesWithCustomCloudProfile(name string, hasCustomCloudProfile,
 	if hasCustomCloudProfile {
 		p.CustomCloudProfile = &CustomCloudProfile{}
 		if hasEnvironment {
-			p.CustomCloudProfile.Environment = &azure.Environment{
+			p.CustomCloudProfile.Environment = &Environment{
 				Name:                         name,
 				ManagementPortalURL:          managementPortalURL,
 				PublishSettingsURL:           publishSettingsURL,

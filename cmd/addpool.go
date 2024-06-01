@@ -165,7 +165,7 @@ func (apc *addPoolCmd) load() error {
 		return err
 	}
 
-	if apc.client, err = apc.authArgs.getClient(); err != nil {
+	if apc.client, err = apc.authArgs.getClient(apc.containerService.Properties.CustomCloudProfile.Environment); err != nil {
 		return errors.Wrap(err, "failed to get client")
 	}
 

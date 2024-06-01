@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -23,7 +24,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/cloud"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
@@ -103,7 +103,7 @@ func writeDefaultModel(out io.Writer) error {
 
 type authProvider interface {
 	getAuthArgs() *authArgs
-	getClient() (armhelpers.AKSEngineClient, error)
+	getClient(env *api.Environment) (armhelpers.AKSEngineClient, error)
 }
 
 type authArgs struct {
@@ -175,7 +175,16 @@ func (authArgs *authArgs) validateAuthArgs() error {
 		authArgs.SubscriptionID = subID
 	}
 
-	if _, err = azure.EnvironmentFromName(authArgs.RawAzureEnvironment); err != nil {
+	switch authArgs.RawAzureEnvironment {
+	case "AZURESTACKCLOUD":
+		// Azure stack cloud environment, verify file path can be read
+		if fileContents, err := ioutil.ReadFile(os.Getenv("AZURE_ENVIRONMENT_FILEPATH")); err != nil ||
+			json.Unmarshal(fileContents, &api.Environment{}) != nil {
+			return errors.New("failed to parse --azure-env as a valid target Azure cloud environment")
+		}
+	case "AZURECHINACLOUD", "AZUREGERMANCLOUD", "AZUREPUBLICCLOUD", "AZUREUSGOVERNMENTCLOUD":
+		// Known environment, no action needed
+	default:
 		return errors.New("failed to parse --azure-env as a valid target Azure cloud environment")
 	}
 	return nil
@@ -220,7 +229,7 @@ func getCloudSubFromAzConfig(cloud string, f *ini.File) (uuid.UUID, error) {
 	return uuid.Parse(sub.String())
 }
 
-func (authArgs *authArgs) getClient() (armhelpers.AKSEngineClient, error) {
+func (authArgs *authArgs) getClient(env *api.Environment) (armhelpers.AKSEngineClient, error) {
 	var cc cloud.Configuration
 	switch authArgs.RawAzureEnvironment {
 	case api.AzureUSGovernmentCloud:
@@ -231,10 +240,6 @@ func (authArgs *authArgs) getClient() (armhelpers.AKSEngineClient, error) {
 		cc = cloud.AzurePublic
 	}
 	if authArgs.isAzureStackCloud() {
-		env, err := azure.EnvironmentFromName(authArgs.RawAzureEnvironment)
-		if err != nil {
-			return nil, err
-		}
 		cc = cloud.Configuration{
 			ActiveDirectoryAuthorityHost: env.ActiveDirectoryEndpoint,
 			Services: map[cloud.ServiceName]cloud.ServiceConfiguration{

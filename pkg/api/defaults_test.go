@@ -15,7 +15,6 @@ import (
 	"testing"
 
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 	"github.com/jarcoal/httpmock"
 	"github.com/pkg/errors"
@@ -794,7 +793,7 @@ func TestDefaultUseManagedIdentity(t *testing.T) {
 	}
 	mockCS = getMockBaseContainerService("1.18.8")
 	mockCS.Properties.CustomCloudProfile = &CustomCloudProfile{
-		Environment: &azure.Environment{},
+		Environment: &Environment{},
 	}
 	mockCS.setOrchestratorDefaults(isUpgrade, isScale)
 	if to.Bool(mockCS.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
@@ -1227,7 +1226,7 @@ func TestAzureStackKubernetesConfigDefaults(t *testing.T) {
 		properties.OrchestratorProfile.KubernetesConfig.MCRKubernetesImageBase = "mcr.microsoft.com/k8s/core/"
 		properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku = StandardLoadBalancerSku
 		properties.CustomCloudProfile = &CustomCloudProfile{}
-		properties.CustomCloudProfile.Environment = &azure.Environment{}
+		properties.CustomCloudProfile.Environment = &Environment{}
 		return mockCS
 	}
 
@@ -4261,7 +4260,7 @@ func TestSetCustomCloudProfileEnvironmentDefaults(t *testing.T) {
 		},
 	}
 
-	expectedEnv := &azure.Environment{
+	expectedEnv := &Environment{
 		Name:                       "AzureStackCloud",
 		ManagementPortalURL:        "https://portal.testlocation.contoso.com/",
 		ServiceManagementEndpoint:  "https://management.adfs.azurestack.testlocation/ce080287-be51-42e5-b99e-9de760fecae7",
@@ -6264,7 +6263,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 				LinuxProfile:        &LinuxProfile{},
 				OrchestratorProfile: &OrchestratorProfile{},
 				CustomCloudProfile: &CustomCloudProfile{
-					Environment: &azure.Environment{},
+					Environment: &Environment{},
 				},
 			},
 			expectedRunUnattendedUpgradesOnBootstrap: false,
@@ -6278,7 +6277,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 				CustomCloudProfile: &CustomCloudProfile{
-					Environment: &azure.Environment{},
+					Environment: &Environment{},
 				},
 			},
 			expectedRunUnattendedUpgradesOnBootstrap: true,
@@ -6292,7 +6291,7 @@ func TestSetLinuxProfileDefaults(t *testing.T) {
 				},
 				OrchestratorProfile: &OrchestratorProfile{},
 				CustomCloudProfile: &CustomCloudProfile{
-					Environment: &azure.Environment{},
+					Environment: &Environment{},
 				},
 			},
 			expectedRunUnattendedUpgradesOnBootstrap: false,

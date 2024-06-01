@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/pkg/errors"
 )
 
@@ -47,12 +46,12 @@ func (cs *ContainerService) setCustomCloudProfileDefaults(params CustomCloudProf
 	return nil
 }
 
-// SetCustomCloudProfileEnvironment retrieves the endpoints from metadata endpoint (when required) and sets the values for azure.Environment
+// SetCustomCloudProfileEnvironment retrieves the endpoints from metadata endpoint (when required) and sets the values for Environment
 func (cs *ContainerService) SetCustomCloudProfileEnvironment() error {
 	p := cs.Properties
 	if p.IsCustomCloudProfile() {
 		if p.CustomCloudProfile.Environment == nil {
-			p.CustomCloudProfile.Environment = &azure.Environment{}
+			p.CustomCloudProfile.Environment = &Environment{}
 		}
 
 		env := p.CustomCloudProfile.Environment

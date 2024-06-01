@@ -16,7 +16,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/pkg/errors"
 )
 
@@ -608,7 +607,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 			cs: &api.ContainerService{
 				Properties: &api.Properties{
 					CustomCloudProfile: &api.CustomCloudProfile{
-						Environment: &azure.Environment{
+						Environment: &Environment{
 							Name: api.AzureStackCloud,
 						},
 					},

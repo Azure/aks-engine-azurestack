@@ -18,7 +18,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/blang/semver"
 )
 
@@ -718,9 +717,61 @@ type AzureStackMetadataAuthentication struct {
 // DependenciesLocation represents location to retrieve the dependencies.
 type DependenciesLocation string
 
+// ResourceIdentifier contains a set of Azure resource IDs.
+type ResourceIdentifier struct {
+	Graph               string `json:"graph"`
+	KeyVault            string `json:"keyVault"`
+	Datalake            string `json:"datalake"`
+	Batch               string `json:"batch"`
+	OperationalInsights string `json:"operationalInsights"`
+	OSSRDBMS            string `json:"ossRDBMS"`
+	Storage             string `json:"storage"`
+	Synapse             string `json:"synapse"`
+	ServiceBus          string `json:"serviceBus"`
+	SQLDatabase         string `json:"sqlDatabase"`
+	CosmosDB            string `json:"cosmosDB"`
+	ManagedHSM          string `json:"managedHSM"`
+	MicrosoftGraph      string `json:"microsoftGraph"`
+}
+
+// Environment represents a set of endpoints for each of Azure's Clouds.
+type Environment struct {
+	Name                         string             `json:"name"`
+	ManagementPortalURL          string             `json:"managementPortalURL"`
+	PublishSettingsURL           string             `json:"publishSettingsURL"`
+	ServiceManagementEndpoint    string             `json:"serviceManagementEndpoint"`
+	ResourceManagerEndpoint      string             `json:"resourceManagerEndpoint"`
+	ActiveDirectoryEndpoint      string             `json:"activeDirectoryEndpoint"`
+	GalleryEndpoint              string             `json:"galleryEndpoint"`
+	KeyVaultEndpoint             string             `json:"keyVaultEndpoint"`
+	ManagedHSMEndpoint           string             `json:"managedHSMEndpoint"`
+	GraphEndpoint                string             `json:"graphEndpoint"`
+	ServiceBusEndpoint           string             `json:"serviceBusEndpoint"`
+	BatchManagementEndpoint      string             `json:"batchManagementEndpoint"`
+	MicrosoftGraphEndpoint       string             `json:"microsoftGraphEndpoint"`
+	StorageEndpointSuffix        string             `json:"storageEndpointSuffix"`
+	CosmosDBDNSSuffix            string             `json:"cosmosDBDNSSuffix"`
+	MariaDBDNSSuffix             string             `json:"mariaDBDNSSuffix"`
+	MySQLDatabaseDNSSuffix       string             `json:"mySqlDatabaseDNSSuffix"`
+	PostgresqlDatabaseDNSSuffix  string             `json:"postgresqlDatabaseDNSSuffix"`
+	SQLDatabaseDNSSuffix         string             `json:"sqlDatabaseDNSSuffix"`
+	TrafficManagerDNSSuffix      string             `json:"trafficManagerDNSSuffix"`
+	KeyVaultDNSSuffix            string             `json:"keyVaultDNSSuffix"`
+	ManagedHSMDNSSuffix          string             `json:"managedHSMDNSSuffix"`
+	ServiceBusEndpointSuffix     string             `json:"serviceBusEndpointSuffix"`
+	ServiceManagementVMDNSSuffix string             `json:"serviceManagementVMDNSSuffix"`
+	ResourceManagerVMDNSSuffix   string             `json:"resourceManagerVMDNSSuffix"`
+	ContainerRegistryDNSSuffix   string             `json:"containerRegistryDNSSuffix"`
+	TokenAudience                string             `json:"tokenAudience"`
+	APIManagementHostNameSuffix  string             `json:"apiManagementHostNameSuffix"`
+	SynapseEndpointSuffix        string             `json:"synapseEndpointSuffix"`
+	DatalakeSuffix               string             `json:"datalakeSuffix"`
+	ResourceIdentifiers          ResourceIdentifier `json:"resourceIdentifiers"`
+}
+
 // CustomCloudProfile represents the custom cloud profile
 type CustomCloudProfile struct {
-	Environment                 *azure.Environment          `json:"environment,omitempty"`
+	Environment                 *Environment                `json:"environment,omitempty"`
 	AzureEnvironmentSpecConfig  *AzureEnvironmentSpecConfig `json:"azureEnvironmentSpecConfig,omitempty"`
 	IdentitySystem              string                      `json:"identitySystem,omitempty"`
 	AuthenticationMethod        string                      `json:"authenticationMethod,omitempty"`

@@ -11,7 +11,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -153,7 +152,7 @@ func TestCustomCloudProfile(t *testing.T) {
 			CustomCloudProfile: &vlabs.CustomCloudProfile{
 				IdentitySystem:       ADFSIdentitySystem,
 				AuthenticationMethod: ClientCertificateAuthMethod,
-				Environment: &azure.Environment{
+				Environment: &Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
@@ -174,7 +173,7 @@ func TestCustomCloudProfile(t *testing.T) {
 					ResourceManagerVMDNSSuffix:   resourceManagerVMDNSSuffix,
 					ContainerRegistryDNSSuffix:   containerRegistryDNSSuffix,
 					TokenAudience:                tokenAudience,
-					ResourceIdentifiers: azure.ResourceIdentifier{
+					ResourceIdentifiers: ResourceIdentifier{
 						Graph:               graphResourceIdentifier,
 						KeyVault:            keyVaultResourceIdentifier,
 						Datalake:            datalakeResourceIdentifier,

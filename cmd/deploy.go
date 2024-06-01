@@ -258,7 +258,7 @@ func (dc *deployCmd) loadAPIModel() error {
 		return err
 	}
 
-	dc.client, err = dc.authProvider.getClient()
+	dc.client, err = dc.authProvider.getClient(dc.containerService.Properties.CustomCloudProfile.Environment)
 	if err != nil {
 		return errors.Wrap(err, "failed to get client")
 	}

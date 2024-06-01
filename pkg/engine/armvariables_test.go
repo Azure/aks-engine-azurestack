@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
@@ -478,7 +477,7 @@ func TestK8sVars(t *testing.T) {
 			CustomCloudProfile: &api.CustomCloudProfile{
 				IdentitySystem:       api.AzureADIdentitySystem,
 				AuthenticationMethod: api.ClientSecretAuthMethod,
-				Environment: &azure.Environment{
+				Environment: &Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
