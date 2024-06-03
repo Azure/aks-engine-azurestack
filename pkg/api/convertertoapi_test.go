@@ -152,7 +152,7 @@ func TestCustomCloudProfile(t *testing.T) {
 			CustomCloudProfile: &vlabs.CustomCloudProfile{
 				IdentitySystem:       ADFSIdentitySystem,
 				AuthenticationMethod: ClientCertificateAuthMethod,
-				Environment: &Environment{
+				Environment: &vlabs.Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
@@ -173,7 +173,7 @@ func TestCustomCloudProfile(t *testing.T) {
 					ResourceManagerVMDNSSuffix:   resourceManagerVMDNSSuffix,
 					ContainerRegistryDNSSuffix:   containerRegistryDNSSuffix,
 					TokenAudience:                tokenAudience,
-					ResourceIdentifiers: ResourceIdentifier{
+					ResourceIdentifiers: vlabs.ResourceIdentifier{
 						Graph:               graphResourceIdentifier,
 						KeyVault:            keyVaultResourceIdentifier,
 						Datalake:            datalakeResourceIdentifier,

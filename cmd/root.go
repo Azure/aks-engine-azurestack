@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -178,7 +177,7 @@ func (authArgs *authArgs) validateAuthArgs() error {
 	switch strings.ToUpper(authArgs.RawAzureEnvironment) {
 	case "AZURESTACKCLOUD":
 		// Azure stack cloud environment, verify file path can be read
-		if fileContents, err := ioutil.ReadFile(os.Getenv("AZURE_ENVIRONMENT_FILEPATH")); err != nil ||
+		if fileContents, err := os.ReadFile(os.Getenv("AZURE_ENVIRONMENT_FILEPATH")); err != nil ||
 			json.Unmarshal(fileContents, &api.Environment{}) != nil {
 			return errors.New("failed to parse --azure-env as a valid target Azure cloud environment: AZURESTACKCLOUD")
 		}

@@ -607,7 +607,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 			cs: &api.ContainerService{
 				Properties: &api.Properties{
 					CustomCloudProfile: &api.CustomCloudProfile{
-						Environment: &Environment{
+						Environment: &api.Environment{
 							Name: api.AzureStackCloud,
 						},
 					},

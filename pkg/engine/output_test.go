@@ -77,7 +77,7 @@ func TestWriteTLSArtifacts(t *testing.T) {
 	csCustom := api.CreateMockContainerService("testcluster", "", 1, 2, false)
 	csCustom.Location = "customlocation"
 	csCustom.Properties.CustomCloudProfile = &api.CustomCloudProfile{
-		Environment: &Environment{
+		Environment: &api.Environment{
 			Name:                         "azurestackcloud",
 			ManagementPortalURL:          "managementPortalURL",
 			PublishSettingsURL:           "publishSettingsURL",

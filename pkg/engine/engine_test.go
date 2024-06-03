@@ -3359,7 +3359,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 						},
 					},
 					CustomCloudProfile: &api.CustomCloudProfile{
-						Environment: &Environment{
+						Environment: &api.Environment{
 							Name: "AzureStackCloud",
 						},
 					},

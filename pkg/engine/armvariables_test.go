@@ -477,7 +477,7 @@ func TestK8sVars(t *testing.T) {
 			CustomCloudProfile: &api.CustomCloudProfile{
 				IdentitySystem:       api.AzureADIdentitySystem,
 				AuthenticationMethod: api.ClientSecretAuthMethod,
-				Environment: &Environment{
+				Environment: &api.Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
