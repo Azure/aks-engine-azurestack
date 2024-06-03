@@ -605,14 +605,9 @@ type ResourceIdentifier struct {
 	Datalake            string `json:"datalake"`
 	Batch               string `json:"batch"`
 	OperationalInsights string `json:"operationalInsights"`
-	OSSRDBMS            string `json:"ossRDBMS"`
 	Storage             string `json:"storage"`
 	Synapse             string `json:"synapse"`
 	ServiceBus          string `json:"serviceBus"`
-	SQLDatabase         string `json:"sqlDatabase"`
-	CosmosDB            string `json:"cosmosDB"`
-	ManagedHSM          string `json:"managedHSM"`
-	MicrosoftGraph      string `json:"microsoftGraph"`
 }
 
 // Environment represents a set of endpoints for each of Azure's Clouds.
@@ -625,28 +620,21 @@ type Environment struct {
 	ActiveDirectoryEndpoint      string             `json:"activeDirectoryEndpoint"`
 	GalleryEndpoint              string             `json:"galleryEndpoint"`
 	KeyVaultEndpoint             string             `json:"keyVaultEndpoint"`
-	ManagedHSMEndpoint           string             `json:"managedHSMEndpoint"`
 	GraphEndpoint                string             `json:"graphEndpoint"`
 	ServiceBusEndpoint           string             `json:"serviceBusEndpoint"`
 	BatchManagementEndpoint      string             `json:"batchManagementEndpoint"`
-	MicrosoftGraphEndpoint       string             `json:"microsoftGraphEndpoint"`
 	StorageEndpointSuffix        string             `json:"storageEndpointSuffix"`
-	CosmosDBDNSSuffix            string             `json:"cosmosDBDNSSuffix"`
-	MariaDBDNSSuffix             string             `json:"mariaDBDNSSuffix"`
-	MySQLDatabaseDNSSuffix       string             `json:"mySqlDatabaseDNSSuffix"`
-	PostgresqlDatabaseDNSSuffix  string             `json:"postgresqlDatabaseDNSSuffix"`
 	SQLDatabaseDNSSuffix         string             `json:"sqlDatabaseDNSSuffix"`
 	TrafficManagerDNSSuffix      string             `json:"trafficManagerDNSSuffix"`
 	KeyVaultDNSSuffix            string             `json:"keyVaultDNSSuffix"`
-	ManagedHSMDNSSuffix          string             `json:"managedHSMDNSSuffix"`
 	ServiceBusEndpointSuffix     string             `json:"serviceBusEndpointSuffix"`
 	ServiceManagementVMDNSSuffix string             `json:"serviceManagementVMDNSSuffix"`
 	ResourceManagerVMDNSSuffix   string             `json:"resourceManagerVMDNSSuffix"`
 	ContainerRegistryDNSSuffix   string             `json:"containerRegistryDNSSuffix"`
+	CosmosDBDNSSuffix            string             `json:"cosmosDBDNSSuffix"`
 	TokenAudience                string             `json:"tokenAudience"`
 	APIManagementHostNameSuffix  string             `json:"apiManagementHostNameSuffix"`
 	SynapseEndpointSuffix        string             `json:"synapseEndpointSuffix"`
-	DatalakeSuffix               string             `json:"datalakeSuffix"`
 	ResourceIdentifiers          ResourceIdentifier `json:"resourceIdentifiers"`
 }
 

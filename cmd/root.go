@@ -175,12 +175,12 @@ func (authArgs *authArgs) validateAuthArgs() error {
 		authArgs.SubscriptionID = subID
 	}
 
-	switch authArgs.RawAzureEnvironment {
+	switch strings.ToUpper(authArgs.RawAzureEnvironment) {
 	case "AZURESTACKCLOUD":
 		// Azure stack cloud environment, verify file path can be read
 		if fileContents, err := ioutil.ReadFile(os.Getenv("AZURE_ENVIRONMENT_FILEPATH")); err != nil ||
 			json.Unmarshal(fileContents, &api.Environment{}) != nil {
-			return errors.New("failed to parse --azure-env as a valid target Azure cloud environment")
+			return errors.New("failed to parse --azure-env as a valid target Azure cloud environment: AZURESTACKCLOUD")
 		}
 	case "AZURECHINACLOUD", "AZUREGERMANCLOUD", "AZUREPUBLICCLOUD", "AZUREUSGOVERNMENTCLOUD":
 		// Known environment, no action needed
@@ -240,6 +240,9 @@ func (authArgs *authArgs) getClient(env *api.Environment) (armhelpers.AKSEngineC
 		cc = cloud.AzurePublic
 	}
 	if authArgs.isAzureStackCloud() {
+		if env == nil {
+			return nil, errors.New("failed to get azure stack cloud client, environment cannot be nil")
+		}
 		cc = cloud.Configuration{
 			ActiveDirectoryAuthorityHost: env.ActiveDirectoryEndpoint,
 			Services: map[cloud.ServiceName]cloud.ServiceConfiguration{
