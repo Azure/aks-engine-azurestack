@@ -4,8 +4,8 @@
 package engine
 
 import (
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func createAzureStackTelemetry(azureTelemetryPID string) DeploymentARM {

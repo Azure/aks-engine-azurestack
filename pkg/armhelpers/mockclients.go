@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
-	"github.com/Azure/go-autorest/autorest/to"
 
 	authorization "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/authorization/armauthorization"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"

@@ -5,10 +5,10 @@ package api
 
 import (
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/google/uuid"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 // CreateMockContainerService returns a mock container service for testing purposes

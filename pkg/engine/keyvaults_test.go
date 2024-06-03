@@ -9,7 +9,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func TestCreateKeyVault(t *testing.T) {

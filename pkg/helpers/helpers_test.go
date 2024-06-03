@@ -14,8 +14,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/pkg/errors"
 )
@@ -99,81 +97,6 @@ func TestGetEnglishOrderedListWithOxfordCommas(t *testing.T) {
 		if c.expectedResult != result {
 			t.Fatalf("GetEnglishOrderedQuotedListWithOxfordCommas returned unexpected result: expected %s but got %s", c.expectedResult, result)
 		}
-	}
-}
-
-func TestPointerToBool(t *testing.T) {
-	boolVar := true
-	ret := PointerToBool(boolVar)
-	if !*ret {
-		t.Fatal("expected PointerToBool(true) to return true")
-	}
-
-	if !IsTrueBoolPointer(ret) {
-		t.Fatal("expected IsTrueBoolPointer(*true) to return true")
-	}
-	ret = to.BoolPtr(boolVar)
-	if !*ret {
-		t.Fatal("expected to.BoolPtr(true) to return true")
-	}
-
-	if !to.Bool(ret) {
-		t.Fatal("expected to.Bool(*true) to return true")
-	}
-
-	boolVar = false
-	ret = PointerToBool(boolVar)
-	if *ret {
-		t.Fatal("expected PointerToBool(false) to return false")
-	}
-
-	if !IsFalseBoolPointer(ret) {
-		t.Fatal("expected IsFalseBoolPointer(*false) to return true")
-	}
-
-	ret = to.BoolPtr(boolVar)
-	if *ret {
-		t.Fatal("expected to.BoolPtr(false) to return false")
-	}
-
-	if to.Bool(ret) {
-		t.Fatal("expected to.Bool(*true) to return false")
-	}
-
-	boolVar = true
-	ret = PointerToBool(boolVar)
-	if IsFalseBoolPointer(ret) {
-		t.Fatal("expected IsFalseBoolPointer(*true) to return false")
-	}
-
-	if !to.Bool(ret) {
-		t.Fatal("expected !to.Bool(*true) to return false")
-	}
-}
-
-func TestPointerToInt(t *testing.T) {
-	int1 := 1
-	int2 := 2
-	ret1 := PointerToInt(int1)
-	if *ret1 != int1 {
-		t.Fatalf("expected PointerToInt(1) to return *1, instead returned %#v", ret1)
-	}
-	ret2 := PointerToInt(int2)
-	if *ret2 != int2 {
-		t.Fatalf("expected PointerToInt(2) to return *2, instead returned %#v", ret2)
-	}
-
-	if *ret2 <= *ret1 {
-		t.Fatalf("Pointers to ints messed up their values and made 2 <= 1")
-	}
-}
-
-func TestPointerToString(t *testing.T) {
-	str := "foobar"
-	ret := PointerToString(str)
-
-	if *ret != str {
-		t.Fatalf("expected PointerToString(foobar) to return *foobar, instead returned %#v", ret)
 	}
 }
 

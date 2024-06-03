@@ -51,40 +51,6 @@ func JSONMarshal(content interface{}, escape bool) ([]byte, error) {
 	return buf.Bytes(), nil
 }
 
-// IsTrueBoolPointer is a simple boolean helper function for boolean pointers
-func IsTrueBoolPointer(b *bool) bool {
-	if b != nil && *b {
-		return true
-	}
-	return false
-}
-
-// IsFalseBoolPointer is a simple boolean helper function for boolean pointers
-func IsFalseBoolPointer(b *bool) bool {
-	if b != nil && !*b {
-		return true
-	}
-	return false
-}
-
-// PointerToBool returns a pointer to a bool
-func PointerToBool(b bool) *bool {
-	p := b
-	return &p
-}
-
-// PointerToString returns a pointer to a string
-func PointerToString(s string) *string {
-	p := s
-	return &p
-}
-
-// PointerToInt returns a pointer to a int
-func PointerToInt(i int) *int {
-	p := i
-	return &p
-}
-
 // EqualError is a nil-safe method which reports whether errors a and b are considered equal.
 // They're equal if both are nil, or both are not nil and a.Error() == b.Error().
 func EqualError(a, b error) bool {

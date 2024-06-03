@@ -17,9 +17,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/go-autorest/autorest/to"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/azure"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"

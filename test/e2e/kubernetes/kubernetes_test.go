@@ -28,6 +28,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/daemonset"
@@ -46,7 +47,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
 	"github.com/Azure/go-autorest/autorest/azure"
-	"github.com/Azure/go-autorest/autorest/to"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )

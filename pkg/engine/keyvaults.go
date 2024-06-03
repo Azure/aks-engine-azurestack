@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/go-autorest/autorest/to"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func CreateKeyVaultVMAS(cs *api.ContainerService) map[string]interface{} {

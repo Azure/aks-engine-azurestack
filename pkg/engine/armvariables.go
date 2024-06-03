@@ -12,9 +12,8 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
-
-	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func GetKubernetesVariables(cs *api.ContainerService) (map[string]interface{}, error) {
