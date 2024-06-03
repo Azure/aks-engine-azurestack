@@ -6,9 +6,10 @@ package api
 import (
 	"testing"
 
+	"github.com/Azure/go-autorest/autorest/to"
+
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )

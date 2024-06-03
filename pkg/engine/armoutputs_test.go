@@ -10,7 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
+	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func TestGetK8sOutputs(t *testing.T) {

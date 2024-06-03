@@ -6,6 +6,7 @@ require (
 	github.com/Azure/aks-engine-azurestack v0.43.0
 	github.com/Azure/azure-sdk-for-go/profile/p20200901 v0.1.1
 	github.com/Azure/go-autorest/autorest v0.11.12
+	github.com/Azure/go-autorest/autorest/to v0.3.0
 	github.com/influxdata/influxdb v1.7.9
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/onsi/ginkgo/v2 v2.17.1

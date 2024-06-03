@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
+	"github.com/Azure/go-autorest/autorest/to"
 )
 
 var defaultTestClusterVer = common.RationalizeReleaseAndVersion(Kubernetes, common.KubernetesDefaultRelease, "", false, false, false)

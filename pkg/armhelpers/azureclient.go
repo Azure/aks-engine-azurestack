@@ -10,7 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/kubernetes"
 	authorization "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/authorization/armauthorization"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
@@ -21,6 +20,7 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/arm"
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/storage/azblob"
+	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )

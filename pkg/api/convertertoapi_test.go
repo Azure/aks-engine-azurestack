@@ -6,11 +6,12 @@ package api
 import (
 	"testing"
 
+	"github.com/Azure/go-autorest/autorest/to"
+
 	"github.com/davecgh/go-spew/spew"
 	"k8s.io/apimachinery/pkg/api/equality"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )

@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
+	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{} {

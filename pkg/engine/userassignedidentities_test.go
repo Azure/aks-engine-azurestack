@@ -8,8 +8,8 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/services/preview/msi/mgmt/2015-08-31-preview/msi"
+	"github.com/Azure/go-autorest/autorest/to"
 )
 
 func TestCreateUserAssignedIdentities(t *testing.T) {

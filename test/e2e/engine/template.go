@@ -15,6 +15,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/Azure/go-autorest/autorest/to"
+
 	"github.com/kelseyhightower/envconfig"
 	"github.com/pkg/errors"
 

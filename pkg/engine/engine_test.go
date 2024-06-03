@@ -15,6 +15,7 @@ import (
 	"testing"
 
 	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/Azure/go-autorest/autorest/to"
 
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
@@ -24,7 +25,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/engine/transform"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 )
 

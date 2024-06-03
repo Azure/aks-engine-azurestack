@@ -12,11 +12,11 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/go-autorest/autorest/azure"
+	"github.com/Azure/go-autorest/autorest/to"
 	"github.com/pkg/errors"
 )
 
