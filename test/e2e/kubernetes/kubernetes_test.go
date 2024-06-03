@@ -78,7 +78,7 @@ var (
 	dnsAddonName                    string
 	singleCommandTimeout            time.Duration
 	stabilityCommandTimeout         time.Duration
-	env                             Environment
+	env                             api.Environment
 	firstMasterRegexStr             = fmt.Sprintf("^%s-.*-0", common.LegacyControlPlaneVMPrefix)
 	vmssHealthCommand               *exec.Cmd
 	vmssHealthCommandStdOut         string
