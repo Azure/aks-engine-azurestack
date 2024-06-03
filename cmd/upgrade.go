@@ -17,6 +17,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/operations/kubernetesupgrade"
 	"github.com/blang/semver"
@@ -175,8 +176,8 @@ func (uc *upgradeCmd) loadCluster() error {
 	}
 	if uc.containerService.Properties.OrchestratorProfile != nil &&
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig != nil &&
-		helpers.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) &&
-		helpers.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) &&
+		to.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) &&
+		to.Bool(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) &&
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
 		return errors.Errorf("clusters with enableEncryptionWithExternalKms=true and system-assigned identity are not upgradable using `aks-engine upgrade`")
 	}
@@ -227,7 +228,7 @@ func (uc *upgradeCmd) loadCluster() error {
 	// Enforce UseCloudControllerManager for Kubernetes 1.21+ on Azure Stack cloud
 	if uc.containerService.Properties.IsAzureStackCloud() && common.IsKubernetesVersionGe(uc.upgradeVersion, "1.21.0") {
 		log.Infoln("The in-tree cloud provider is not longer supported on Azure Stack Hub for v1.21+ clusters, overwriting UseCloudControllerManager to 'true'")
-		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = helpers.PointerToBool(true)
+		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(true)
 	}
 
 	// Only containerd runtime is allowed for Kubernetes 1.24+ on Azure Stack cloud
@@ -240,7 +241,7 @@ func (uc *upgradeCmd) loadCluster() error {
 	if i := api.GetComponentsIndexByName(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components, common.ClusterInitComponentName); i > -1 {
 		if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].IsEnabled() {
 			uc.disableClusterInitComponentDuringUpgrade = true
-			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = helpers.PointerToBool(false)
+			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = to.BoolPtr(false)
 		}
 	}
 
@@ -397,7 +398,7 @@ func (uc *upgradeCmd) run(cmd *cobra.Command, args []string) error {
 	// Restore the original cluster-init component enabled value, if it was disabled during upgrade
 	if uc.disableClusterInitComponentDuringUpgrade {
 		if i := api.GetComponentsIndexByName(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components, common.ClusterInitComponentName); i > -1 {
-			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = helpers.PointerToBool(true)
+			uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].Enabled = to.BoolPtr(true)
 		}
 	}
 	apiloader := &api.Apiloader{

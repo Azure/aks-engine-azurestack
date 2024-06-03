@@ -8,7 +8,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func assignKubernetesParameters(properties *api.Properties, parametersMap paramsMap,
@@ -30,7 +30,7 @@ func assignKubernetesParameters(properties *api.Properties, parametersMap params
 			aadPodIdentityAddon := kubernetesConfig.GetAddonByName(common.AADPodIdentityAddonName)
 			aadIndex := aadPodIdentityAddon.GetAddonContainersIndexByName(common.AADPodIdentityAddonName)
 			if aadIndex > -1 {
-				addValue(parametersMap, "kubernetesAADPodIdentityEnabled", helpers.Bool(aadPodIdentityAddon.Enabled))
+				addValue(parametersMap, "kubernetesAADPodIdentityEnabled", to.Bool(aadPodIdentityAddon.Enabled))
 			}
 		}
 		addValue(parametersMap, "cloudproviderConfig", api.CloudProviderConfig{
@@ -99,7 +99,7 @@ func assignKubernetesParameters(properties *api.Properties, parametersMap params
 	}
 
 	if kubernetesConfig == nil ||
-		!helpers.Bool(kubernetesConfig.UseManagedIdentity) {
+		!to.Bool(kubernetesConfig.UseManagedIdentity) {
 		servicePrincipalProfile := properties.ServicePrincipalProfile
 
 		if servicePrincipalProfile != nil {
@@ -117,13 +117,13 @@ func assignKubernetesParameters(properties *api.Properties, parametersMap params
 	}
 
 	// configure params required for external kms
-	if kubernetesConfig != nil && helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms) {
+	if kubernetesConfig != nil && to.Bool(kubernetesConfig.EnableEncryptionWithExternalKms) {
 		servicePrincipalProfile := properties.ServicePrincipalProfile
 
 		if kubernetesConfig.KeyVaultSku != "" {
 			addValue(parametersMap, "clusterKeyVaultSku", kubernetesConfig.KeyVaultSku)
 		}
-		if !helpers.Bool(kubernetesConfig.UseManagedIdentity) && servicePrincipalProfile.ObjectID != "" {
+		if !to.Bool(kubernetesConfig.UseManagedIdentity) && servicePrincipalProfile.ObjectID != "" {
 			addValue(parametersMap, "servicePrincipalObjectId", servicePrincipalProfile.ObjectID)
 		}
 	}

@@ -17,6 +17,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 
@@ -325,7 +326,7 @@ func getContainerServiceFuncMap(cs *api.ContainerService) template.FuncMap {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateJumpboxProvision()
 		},
 		"UseManagedIdentity": func() bool {
-			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 		},
 		"GetVNETSubnetDependencies": func() string {
 			return getVNETSubnetDependencies(cs.Properties)
@@ -547,10 +548,10 @@ func getContainerServiceFuncMap(cs *api.ContainerService) template.FuncMap {
 			return cs.Properties.AADProfile != nil && cs.Properties.AADProfile.AdminGroupID != ""
 		},
 		"EnableDataEncryptionAtRest": func() bool {
-			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableDataEncryptionAtRest)
+			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableDataEncryptionAtRest)
 		},
 		"EnableEncryptionWithExternalKms": func() bool {
-			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms)
+			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms)
 		},
 		"EnableAggregatedAPIs": func() bool {
 			if cs.Properties.OrchestratorProfile.KubernetesConfig.EnableAggregatedAPIs {
@@ -682,7 +683,7 @@ version = 2
 			return common.AADPodIdentityTaintKey
 		},
 		"HasCustomPodSecurityPolicy": func() bool {
-			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) &&
+			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.EnablePodSecurityPolicy) &&
 				cs.Properties.OrchestratorProfile.KubernetesConfig.PodSecurityPolicyConfig != nil {
 				return true
 			}
@@ -824,13 +825,13 @@ version = 2
 		},
 		"RunUnattendedUpgradesOnBootstrap": func() bool {
 			if cs.Properties.LinuxProfile != nil {
-				return helpers.Bool(cs.Properties.LinuxProfile.RunUnattendedUpgradesOnBootstrap)
+				return to.Bool(cs.Properties.LinuxProfile.RunUnattendedUpgradesOnBootstrap)
 			}
 			return false
 		},
 		"EnableUnattendedUpgrades": func() bool {
 			if cs.Properties.LinuxProfile != nil {
-				return helpers.Bool(cs.Properties.LinuxProfile.EnableUnattendedUpgrades)
+				return to.Bool(cs.Properties.LinuxProfile.EnableUnattendedUpgrades)
 			}
 			return false
 		},

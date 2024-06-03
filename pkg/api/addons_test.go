@@ -10,7 +10,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 )
 
@@ -69,7 +69,7 @@ func TestPodSecurityPolicyConfigUpgrade(t *testing.T) {
 	o.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.PodSecurityPolicyAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Data:    base64DataPSP,
 		},
 	}
@@ -93,7 +93,7 @@ func TestPodSecurityPolicyConfigUpgrade(t *testing.T) {
 func TestDisabledAddons(t *testing.T) {
 	defaultAddon := KubernetesAddon{
 		Name:    "mockAddon",
-		Enabled: helpers.PointerToBool(false),
+		Enabled: to.BoolPtr(false),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           "mockAddon",
@@ -120,12 +120,12 @@ func TestDisabledAddons(t *testing.T) {
 			name: "default addon enabled",
 			myAddon: KubernetesAddon{
 				Name:    "mockAddon",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			isUpgrade: false,
 			expectedResultAddon: KubernetesAddon{
 				Name:    "mockAddon",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:           "mockAddon",
@@ -150,19 +150,19 @@ func TestDisabledAddons(t *testing.T) {
 			isUpgrade: false,
 			expectedResultAddon: KubernetesAddon{
 				Name:    "mockAddon",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 		},
 		{
 			name: "addon disabled, isUpgrade=true",
 			myAddon: KubernetesAddon{
 				Name:    "mockAddon",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 			isUpgrade: true,
 			expectedResultAddon: KubernetesAddon{
 				Name:    "mockAddon",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 		},
 	}
@@ -298,7 +298,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.TillerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -309,7 +309,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.TillerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.TillerAddonName,
@@ -344,7 +344,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -361,7 +361,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "1m",
 						"expendable-pods-priority-cutoff":       "-10",
@@ -438,7 +438,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"min-nodes": "1",
 										"max-nodes": "3",
@@ -459,7 +459,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "1m",
 						"expendable-pods-priority-cutoff":       "-10",
@@ -536,7 +536,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -561,7 +561,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "1m",
 						"expendable-pods-priority-cutoff":       "-10",
@@ -652,7 +652,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"min-nodes": "5",
 										"max-nodes": "100",
@@ -681,7 +681,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "1m",
 						"expendable-pods-priority-cutoff":       "-10",
@@ -772,7 +772,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"scan-interval":                         "30s",
 										"expendable-pods-priority-cutoff":       "-20",
@@ -856,7 +856,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "30s",
 						"expendable-pods-priority-cutoff":       "-20",
@@ -947,7 +947,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"scan-interval":                         "30s",
 										"expendable-pods-priority-cutoff":       "-20",
@@ -1031,7 +1031,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "30s",
 						"expendable-pods-priority-cutoff":       "-20",
@@ -1122,7 +1122,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"scan-interval":                        "30s",
 										"expendable-pods-priority-cutoff":      "-20",
@@ -1170,7 +1170,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "30s",
 						"expendable-pods-priority-cutoff":       "-20",
@@ -1247,7 +1247,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"scan-interval":                        "30s",
 										"expendable-pods-priority-cutoff":      "-20",
@@ -1295,7 +1295,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.ClusterAutoscalerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"scan-interval":                         "30s",
 						"expendable-pods-priority-cutoff":       "-20",
@@ -1372,7 +1372,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.SMBFlexVolumeAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -1383,7 +1383,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.SMBFlexVolumeAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.SMBFlexVolumeAddonName,
@@ -1425,7 +1425,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.NVIDIADevicePluginAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.NVIDIADevicePluginAddonName,
@@ -1463,7 +1463,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureNetworkPolicyAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.AzureNetworkPolicyAddonName,
@@ -1496,7 +1496,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzureNetworkPolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Containers: []KubernetesContainerSpec{
 										{
 											Name:  common.AzureNetworkPolicyAddonName,
@@ -1517,7 +1517,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureNetworkPolicyAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.AzureNetworkPolicyAddonName,
@@ -1555,7 +1555,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CalicoAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"logSeverityScreen":     "info",
 						"usageReportingEnabled": "true",
@@ -1604,7 +1604,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.CalicoAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"logSeverityScreen":     "error",
 										"usageReportingEnabled": "false",
@@ -1619,7 +1619,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CalicoAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"logSeverityScreen":     "error",
 						"usageReportingEnabled": "false",
@@ -1668,7 +1668,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.CalicoAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 									Config: map[string]string{
 										"logSeverityScreen":     "info",
 										"usageReportingEnabled": "true",
@@ -1705,7 +1705,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CalicoAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"logSeverityScreen":     "info",
 						"usageReportingEnabled": "true",
@@ -1753,7 +1753,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AADPodIdentityAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -1764,7 +1764,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AADPodIdentityAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"probePort": "8085",
 					},
@@ -1807,7 +1807,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzurePolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -1818,7 +1818,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzurePolicyAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"auditInterval":             "60",
 						"constraintViolationsLimit": "100",
@@ -1868,7 +1868,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: omitFromAddons([]string{common.IPMASQAgentAddonName}, concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CiliumAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.CiliumAgentContainerName,
@@ -1923,7 +1923,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: []KubernetesAddon{
 				{
 					Name:    common.DashboardAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.DashboardAddonName,
@@ -1937,7 +1937,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.MetricsServerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.MetricsServerAddonName,
@@ -1947,7 +1947,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.IPMASQAgentAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.IPMASQAgentAddonName,
@@ -1966,7 +1966,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CoreDNSAddonName,
-					Enabled: helpers.PointerToBool(DefaultCoreDNSAddonEnabled),
+					Enabled: to.BoolPtr(DefaultCoreDNSAddonEnabled),
 					Config: map[string]string{
 						"domain":            "cluster.local",
 						"clusterIP":         DefaultKubernetesDNSServiceIP,
@@ -1987,7 +1987,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+					Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 					Config: map[string]string{
 						"cluster-cidr": DefaultKubernetesSubnet,
 						"proxy-mode":   string(KubeProxyModeIPTables),
@@ -2002,7 +2002,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.PodSecurityPolicyAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			},
 		},
@@ -2021,7 +2021,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 						},
 					},
 				},
@@ -2030,7 +2030,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2108,7 +2108,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2209,7 +2209,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 						},
 					},
 				},
@@ -2218,7 +2218,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2296,7 +2296,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2382,7 +2382,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.16.1"),
 		},
@@ -2401,7 +2401,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*AgentPoolProfile{
@@ -2415,15 +2415,15 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 				},
 			}, "1.17.0"),
 		},
@@ -2442,7 +2442,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*AgentPoolProfile{
@@ -2456,7 +2456,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2534,7 +2534,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2620,7 +2620,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.18.0"),
 		},
@@ -2639,7 +2639,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 						},
 					},
 				},
@@ -2648,7 +2648,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2726,7 +2726,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2812,7 +2812,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.17.0"),
 		},
@@ -2831,19 +2831,19 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzureDiskCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.AzureFileCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.CloudNodeManagerAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -2854,7 +2854,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -2932,7 +2932,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3018,7 +3018,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.17.0"),
 		},
@@ -3037,19 +3037,19 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzureDiskCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.AzureFileCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.CloudNodeManagerAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -3065,7 +3065,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3143,7 +3143,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3229,7 +3229,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.18.0"),
 		},
@@ -3248,19 +3248,19 @@ func TestSetAddonsConfig(t *testing.T) {
 							ClusterSubnet:             DefaultKubernetesSubnet,
 							ProxyMode:                 KubeProxyModeIPTables,
 							NetworkPlugin:             NetworkPluginAzure,
-							UseCloudControllerManager: helpers.PointerToBool(true),
+							UseCloudControllerManager: to.BoolPtr(true),
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzureDiskCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.AzureFileCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 								{
 									Name:    common.CloudNodeManagerAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -3271,7 +3271,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AzureFileCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(false),
+					Enabled: to.BoolPtr(false),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3349,7 +3349,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.AzureDiskCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.CSIProvisionerContainerName,
@@ -3435,7 +3435,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudNodeManagerAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 				},
 			}, "1.16.1"),
 		},
@@ -3480,7 +3480,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.KubeDNSAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3491,7 +3491,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: omitFromAddons([]string{common.CoreDNSAddonName}, concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.KubeDNSAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"domain":    "cluster.local",
 						"clusterIP": DefaultKubernetesDNSServiceIP,
@@ -3531,7 +3531,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3559,7 +3559,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.KubeDNSAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3570,7 +3570,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: omitFromAddons([]string{common.CoreDNSAddonName}, concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.KubeDNSAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"domain":    "cluster.local",
 						"clusterIP": DefaultKubernetesDNSServiceIP,
@@ -3610,7 +3610,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3638,7 +3638,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.CoreDNSAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"min-replicas": "3",
 									},
@@ -3652,7 +3652,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: overwriteDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CoreDNSAddonName,
-					Enabled: helpers.PointerToBool(DefaultCoreDNSAddonEnabled),
+					Enabled: to.BoolPtr(DefaultCoreDNSAddonEnabled),
 					Config: map[string]string{
 						"domain":            "cluster.local",
 						"clusterIP":         DefaultKubernetesDNSServiceIP,
@@ -3691,7 +3691,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AzureCNINetworkMonitorAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3719,7 +3719,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.KubeProxyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"cluster-cidr": "foo",
 										"proxy-mode":   "bar",
@@ -3741,7 +3741,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: overwriteDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+					Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 					Config: map[string]string{
 						"cluster-cidr": "foo",
 						"proxy-mode":   "bar",
@@ -3774,7 +3774,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.KubeProxyAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -3802,7 +3802,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.NodeProblemDetectorAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -3813,7 +3813,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.NodeProblemDetectorAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"customPluginMonitor": "/config/kernel-monitor-counter.json,/config/systemd-monitor-counter.json",
 						"systemLogMonitor":    "/config/kernel-monitor.json,/config/docker-monitor.json,/config/systemd-monitor.json",
@@ -3873,7 +3873,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -3901,7 +3901,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -3973,7 +3973,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -4001,7 +4001,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -4029,7 +4029,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AuditPolicyAddonName,
-									Enabled: helpers.PointerToBool(false),
+									Enabled: to.BoolPtr(false),
 								},
 							},
 						},
@@ -4065,7 +4065,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AADAdminGroupAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"adminGroupID": "7d04bcd3-3c48-49ab-a064-c0b7d69896da",
 					},
@@ -4090,7 +4090,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AntreaAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"serviceCidr":      DefaultKubernetesServiceCIDR,
 										"trafficEncapMode": common.AntreaDefaultTrafficEncapMode,
@@ -4106,7 +4106,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: omitFromAddons([]string{common.IPMASQAgentAddonName}, concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AntreaAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"serviceCidr":      DefaultKubernetesServiceCIDR,
 						"trafficEncapMode": common.AntreaDefaultTrafficEncapMode,
@@ -4134,7 +4134,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.AntreaAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Config: map[string]string{
 										"serviceCidr": DefaultKubernetesServiceCIDR,
 									},
@@ -4148,7 +4148,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.AntreaAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"trafficEncapMode": common.AntreaNetworkPolicyOnlyMode,
 						"installCniCmd":    common.AntreaInstallCniChainCmd,
@@ -4193,7 +4193,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: overwriteDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.CoreDNSAddonName,
-					Enabled: helpers.PointerToBool(DefaultCoreDNSAddonEnabled),
+					Enabled: to.BoolPtr(DefaultCoreDNSAddonEnabled),
 					Config: map[string]string{
 						"domain":            "cluster.local",
 						"clusterIP":         DefaultKubernetesDNSServiceIPv6,
@@ -4215,7 +4215,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.IPMASQAgentAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.IPMASQAgentAddonName,
@@ -4235,7 +4235,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+					Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 					Config: map[string]string{
 						"cluster-cidr":         DefaultKubernetesClusterSubnetIPv6,
 						"proxy-mode":           string(KubeProxyModeIPTables),
@@ -4287,7 +4287,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: overwriteDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.IPMASQAgentAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:           common.IPMASQAgentAddonName,
@@ -4307,7 +4307,7 @@ func TestSetAddonsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+					Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 					Config: map[string]string{
 						"cluster-cidr": DefaultKubernetesClusterSubnet + "," + DefaultKubernetesClusterSubnetIPv6,
 						"proxy-mode":   string(KubeProxyModeIPVS),
@@ -4346,7 +4346,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: overwriteDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+					Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 					Config: map[string]string{
 						"cluster-cidr": DefaultKubernetesSubnet,
 						"proxy-mode":   string(KubeProxyModeIPTables),
@@ -4379,7 +4379,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.SecretsStoreCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -4390,7 +4390,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.SecretsStoreCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"metricsPort":          "8095",
 						"enableSecretRotation": "false",
@@ -4417,7 +4417,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.SecretsStoreCSIDriverAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -4428,7 +4428,7 @@ func TestSetAddonsConfig(t *testing.T) {
 			expectedAddons: concatenateDefaultAddons([]KubernetesAddon{
 				{
 					Name:    common.SecretsStoreCSIDriverAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Config: map[string]string{
 						"metricsPort":          "8095",
 						"enableSecretRotation": "false",
@@ -4489,7 +4489,7 @@ func TestSetAddonsConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.IPMASQAgentAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Containers: []KubernetesContainerSpec{
 										{
 											Name:  common.IPMASQAgentAddonName,
@@ -4542,8 +4542,8 @@ func TestSetAddonsConfig(t *testing.T) {
 						t.Fatalf("got addon %s that we weren't expecting", addon.Name)
 					}
 					expectedAddon := test.expectedAddons[getAddonsIndexByName(test.expectedAddons, addonName)]
-					if helpers.Bool(addon.Enabled) != helpers.Bool(expectedAddon.Enabled) {
-						t.Fatalf("expected addon %s to have Enabled value %t, instead got %t", expectedAddon.Name, helpers.Bool(expectedAddon.Enabled), helpers.Bool(addon.Enabled))
+					if to.Bool(addon.Enabled) != to.Bool(expectedAddon.Enabled) {
+						t.Fatalf("expected addon %s to have Enabled value %t, instead got %t", expectedAddon.Name, to.Bool(expectedAddon.Enabled), to.Bool(addon.Enabled))
 					}
 					if expectedAddon.Containers != nil {
 						if len(expectedAddon.Containers) != len(addon.Containers) {
@@ -4603,7 +4603,7 @@ func TestSetAddonsConfig(t *testing.T) {
 					}
 				} else {
 					if i := getAddonsIndexByName(test.expectedAddons, addonName); i > -1 {
-						if helpers.Bool(test.expectedAddons[i].Enabled) {
+						if to.Bool(test.expectedAddons[i].Enabled) {
 							t.Fatalf("expected addon %s to be enabled, instead it was disabled", addonName)
 						}
 					}
@@ -4758,7 +4758,7 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 			name: "1 pool",
 			addon: KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Mode:    AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -4794,10 +4794,10 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
-							UseManagedIdentity: helpers.PointerToBool(true),
+							UseManagedIdentity: to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*AgentPoolProfile{
@@ -4815,7 +4815,7 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 			name: "multiple pools",
 			addon: KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Mode:    AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -4858,10 +4858,10 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
-							UseManagedIdentity: helpers.PointerToBool(true),
+							UseManagedIdentity: to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*AgentPoolProfile{
@@ -4884,7 +4884,7 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 			name: "no pools",
 			addon: KubernetesAddon{
 				Name:    common.ClusterAutoscalerAddonName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Mode:    AddonModeEnsureExists,
 				Config: map[string]string{
 					"scan-interval": "1m",
@@ -4911,10 +4911,10 @@ func TestGetClusterAutoscalerNodesConfig(t *testing.T) {
 							Addons: []KubernetesAddon{
 								{
 									Name:    common.ClusterAutoscalerAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
-							UseManagedIdentity: helpers.PointerToBool(true),
+							UseManagedIdentity: to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*AgentPoolProfile{
@@ -5001,7 +5001,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 	k8sComponentsByVersionMap := GetK8sComponentsByVersionMap(&KubernetesConfig{KubernetesImageBaseType: kubernetesImageBaseType})
 	metricsServerAddon := KubernetesAddon{
 		Name:    common.MetricsServerAddonName,
-		Enabled: helpers.PointerToBool(true),
+		Enabled: to.BoolPtr(true),
 		Mode:    AddonModeEnsureExists,
 		Containers: []KubernetesContainerSpec{
 			{
@@ -5016,7 +5016,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 	addons := []KubernetesAddon{
 		{
 			Name:    common.DashboardAddonName,
-			Enabled: helpers.PointerToBool(false),
+			Enabled: to.BoolPtr(false),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:           common.DashboardAddonName,
@@ -5031,7 +5031,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 		metricsServerAddon,
 		{
 			Name:    common.IPMASQAgentAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:           common.IPMASQAgentAddonName,
@@ -5050,15 +5050,15 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 		},
 		{
 			Name:    common.AuditPolicyAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 		},
 		{
 			Name:    common.AzureCloudProviderAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 		},
 		{
 			Name:    common.CoreDNSAddonName,
-			Enabled: helpers.PointerToBool(DefaultCoreDNSAddonEnabled),
+			Enabled: to.BoolPtr(DefaultCoreDNSAddonEnabled),
 			Config: map[string]string{
 				"domain":            "cluster.local",
 				"clusterIP":         DefaultKubernetesDNSServiceIP,
@@ -5079,7 +5079,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 		},
 		{
 			Name:    common.KubeProxyAddonName,
-			Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+			Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 			Config: map[string]string{
 				"cluster-cidr": DefaultKubernetesSubnet,
 				"proxy-mode":   string(KubeProxyModeIPTables),
@@ -5094,7 +5094,7 @@ func getDefaultAddons(version, kubernetesImageBase, kubernetesImageBaseType stri
 		},
 		{
 			Name:    common.PodSecurityPolicyAddonName,
-			Enabled: helpers.PointerToBool(!common.ShouldDisablePodSecurityPolicyAddon(version)),
+			Enabled: to.BoolPtr(!common.ShouldDisablePodSecurityPolicyAddon(version)),
 		},
 	}
 

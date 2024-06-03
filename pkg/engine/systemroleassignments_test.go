@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
@@ -30,11 +30,11 @@ func TestCreateVmasRoleAssignment(t *testing.T) {
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Name: helpers.PointerToString("[guid(concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), 'vmidentity'))]"),
-			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
+			Name: to.StringPtr("[guid(concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), 'vmidentity'))]"),
+			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString("[variables('contributorRoleDefinitionId')]"),
-				PrincipalID:      helpers.PointerToString("[reference(concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset'))), '2017-03-30', 'Full').identity.principalId]"),
+				RoleDefinitionID: to.StringPtr("[variables('contributorRoleDefinitionId')]"),
+				PrincipalID:      to.StringPtr("[reference(concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset'))), '2017-03-30', 'Full').identity.principalId]"),
 				PrincipalType:    authorization.ServicePrincipal,
 			},
 		},
@@ -66,11 +66,11 @@ func TestCreateAgentVmasSysRoleAssignment(t *testing.T) {
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Name: helpers.PointerToString("[guid(concat('Microsoft.Compute/virtualMachines/', variables('fooprofileVMNamePrefix'), copyIndex(variables('fooprofileOffset')), 'vmidentity'))]"),
-			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
+			Name: to.StringPtr("[guid(concat('Microsoft.Compute/virtualMachines/', variables('fooprofileVMNamePrefix'), copyIndex(variables('fooprofileOffset')), 'vmidentity'))]"),
+			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString("[variables('readerRoleDefinitionId')]"),
-				PrincipalID:      helpers.PointerToString("[reference(concat('Microsoft.Compute/virtualMachines/', variables('fooprofileVMNamePrefix'), copyIndex(variables('fooprofileOffset'))), '2017-03-30', 'Full').identity.principalId]"),
+				RoleDefinitionID: to.StringPtr("[variables('readerRoleDefinitionId')]"),
+				PrincipalID:      to.StringPtr("[reference(concat('Microsoft.Compute/virtualMachines/', variables('fooprofileVMNamePrefix'), copyIndex(variables('fooprofileOffset'))), '2017-03-30', 'Full').identity.principalId]"),
 				PrincipalType:    authorization.ServicePrincipal,
 			},
 		},
@@ -99,11 +99,11 @@ func TestCreateAgentVmssSysRoleAssignment(t *testing.T) {
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Name: helpers.PointerToString("[guid(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('fooprofileVMNamePrefix'), 'vmidentity'))]"),
-			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
+			Name: to.StringPtr("[guid(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('fooprofileVMNamePrefix'), 'vmidentity'))]"),
+			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString("[variables('readerRoleDefinitionId')]"),
-				PrincipalID:      helpers.PointerToString("[reference(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('fooprofileVMNamePrefix')), '2017-03-30', 'Full').identity.principalId]"),
+				RoleDefinitionID: to.StringPtr("[variables('readerRoleDefinitionId')]"),
+				PrincipalID:      to.StringPtr("[reference(concat('Microsoft.Compute/virtualMachineScaleSets/', variables('fooprofileVMNamePrefix')), '2017-03-30', 'Full').identity.principalId]"),
 				PrincipalType:    authorization.ServicePrincipal,
 			},
 		},
@@ -142,10 +142,10 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 					"[concat(variables('masterVMNamePrefix'), 1)]",
 				},
 			},
-			ResourceGroup: helpers.PointerToString("[variables('agentProfile1SubnetResourceGroup')]"),
+			ResourceGroup: to.StringPtr("[variables('agentProfile1SubnetResourceGroup')]"),
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat('masterMsiRoleAssignment-', variables('agentProfile1VMNamePrefix'))]"),
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Name: to.StringPtr("[concat('masterMsiRoleAssignment-', variables('agentProfile1VMNamePrefix'))]"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					Mode: "Incremental",
 					Template: map[string]interface{}{
@@ -155,11 +155,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},
@@ -168,11 +168,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},
@@ -212,10 +212,10 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 					"[concat(variables('masterVMNamePrefix'), 1)]",
 				},
 			},
-			ResourceGroup: helpers.PointerToString("[variables('agentProfile1SubnetResourceGroup')]"),
+			ResourceGroup: to.StringPtr("[variables('agentProfile1SubnetResourceGroup')]"),
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat('masterMsiRoleAssignment-', variables('agentProfile1VMNamePrefix'))]"),
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Name: to.StringPtr("[concat('masterMsiRoleAssignment-', variables('agentProfile1VMNamePrefix'))]"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					Mode: "Incremental",
 					Template: map[string]interface{}{
@@ -225,11 +225,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},
@@ -238,11 +238,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile1Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},
@@ -261,10 +261,10 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 					"[concat(variables('masterVMNamePrefix'), 1)]",
 				},
 			},
-			ResourceGroup: helpers.PointerToString("[variables('agentProfile2SubnetResourceGroup')]"),
+			ResourceGroup: to.StringPtr("[variables('agentProfile2SubnetResourceGroup')]"),
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat('masterMsiRoleAssignment-', variables('agentProfile2VMNamePrefix'))]"),
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Name: to.StringPtr("[concat('masterMsiRoleAssignment-', variables('agentProfile2VMNamePrefix'))]"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					Mode: "Incremental",
 					Template: map[string]interface{}{
@@ -274,11 +274,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile2Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile2Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 0)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},
@@ -287,11 +287,11 @@ func TestCreateKubernetesMasterRoleAssignmentForAgentPools(t *testing.T) {
 									APIVersion: "[variables('apiVersionAuthorizationSystem')]",
 								},
 								RoleAssignment: authorization.RoleAssignment{
-									Name: helpers.PointerToString("[concat(variables('agentProfile2Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
-									Type: helpers.PointerToString("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
+									Name: to.StringPtr("[concat(variables('agentProfile2Vnet'), '/Microsoft.Authorization/', guid(uniqueString(reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId)))]"),
+									Type: to.StringPtr("Microsoft.Network/virtualNetworks/providers/roleAssignments"),
 									RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-										RoleDefinitionID: helpers.PointerToString("[variables('networkContributorRoleDefinitionId')]"),
-										PrincipalID:      helpers.PointerToString("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
+										RoleDefinitionID: to.StringPtr("[variables('networkContributorRoleDefinitionId')]"),
+										PrincipalID:      to.StringPtr("[reference(resourceId(resourceGroup().name, 'Microsoft.Compute/virtualMachines', concat(variables('masterVMNamePrefix'), 1)), '2017-03-30', 'Full').identity.principalId]"),
 									},
 								},
 							},

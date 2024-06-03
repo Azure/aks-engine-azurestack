@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
 )
 
@@ -23,9 +23,9 @@ func createStorageAccount(cs *api.ContainerService) StorageAccountARM {
 	}
 
 	storageAccount := storage.Account{
-		Location: helpers.PointerToString("[variables('location')]"),
-		Name:     helpers.PointerToString("[variables('masterStorageAccountName')]"),
-		Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
+		Location: to.StringPtr("[variables('location')]"),
+		Name:     to.StringPtr("[variables('masterStorageAccountName')]"),
+		Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
 		Sku: &storage.Sku{
 			Name: storage.SkuName("[variables('vmSizesMap')[parameters('masterVMSize')].storageAccountType]"),
 		},
@@ -43,9 +43,9 @@ func createJumpboxStorageAccount() StorageAccountARM {
 	}
 
 	storageAccount := storage.Account{
-		Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
-		Name:     helpers.PointerToString("[variables('jumpboxStorageAccountName')]"),
-		Location: helpers.PointerToString("[variables('location')]"),
+		Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+		Name:     to.StringPtr("[variables('jumpboxStorageAccountName')]"),
+		Location: to.StringPtr("[variables('location')]"),
 		Sku: &storage.Sku{
 			Name: storage.SkuName("[variables('vmSizesMap')[parameters('jumpboxVMSize')].storageAccountType]"),
 		},
@@ -63,9 +63,9 @@ func createKeyVaultStorageAccount() StorageAccountARM {
 			APIVersion: "[variables('apiVersionStorage')]",
 		},
 		Account: storage.Account{
-			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
-			Name:     helpers.PointerToString("[variables('clusterKeyVaultName')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+			Name:     to.StringPtr("[variables('clusterKeyVaultName')]"),
+			Location: to.StringPtr("[variables('location')]"),
 			Sku: &storage.Sku{
 				Name: storage.StandardLRS,
 			},
@@ -96,17 +96,17 @@ func createAgentVMASStorageAccount(cs *api.ContainerService, profile *api.AgentP
 	}
 
 	storageAccount := storage.Account{
-		Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
-		Location: helpers.PointerToString("[variables('location')]"),
+		Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
+		Location: to.StringPtr("[variables('location')]"),
 		Sku: &storage.Sku{
 			Name: storage.SkuName(fmt.Sprintf("[variables('vmSizesMap')[variables('%sVMSize')].storageAccountType]", profile.Name)),
 		},
 	}
 
 	if isDataDisk {
-		storageAccount.Name = helpers.PointerToString(fmt.Sprintf("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sDataAccountName'))]", profile.Name))
+		storageAccount.Name = to.StringPtr(fmt.Sprintf("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(variables('dataStorageAccountPrefixSeed')),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sDataAccountName'))]", profile.Name))
 	} else {
-		storageAccount.Name = helpers.PointerToString(fmt.Sprintf("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sAccountName'))]", profile.Name))
+		storageAccount.Name = to.StringPtr(fmt.Sprintf("[concat(variables('storageAccountPrefixes')[mod(add(copyIndex(),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('storageAccountPrefixes')[div(add(copyIndex(),variables('%[1]sStorageAccountOffset')),variables('storageAccountPrefixesCount'))],variables('%[1]sAccountName'))]", profile.Name))
 	}
 
 	return StorageAccountARM{

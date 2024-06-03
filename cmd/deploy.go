@@ -19,6 +19,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/engine/transform"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
@@ -336,7 +337,7 @@ func autofillApimodel(dc *deployCmd) error {
 
 	k8sConfig := dc.containerService.Properties.OrchestratorProfile.KubernetesConfig
 
-	useManagedIdentity := k8sConfig != nil && helpers.Bool(k8sConfig.UseManagedIdentity)
+	useManagedIdentity := k8sConfig != nil && to.Bool(k8sConfig.UseManagedIdentity)
 
 	if !useManagedIdentity {
 		spp := dc.containerService.Properties.ServicePrincipalProfile

@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 )
 
@@ -16,25 +16,25 @@ func createWindowsImageReference(agentPoolProfileName string, windowsProfile *ap
 
 	if windowsProfile.HasCustomImage() {
 		computeImageRef = compute.ImageReference{
-			ID: helpers.PointerToString(fmt.Sprintf("[resourceId('Microsoft.Compute/images', '%sCustomWindowsImage')]", agentPoolProfileName)),
+			ID: to.StringPtr(fmt.Sprintf("[resourceId('Microsoft.Compute/images', '%sCustomWindowsImage')]", agentPoolProfileName)),
 		}
 	} else if windowsProfile.HasImageRef() {
 		imageRef := windowsProfile.ImageRef
 		if windowsProfile.HasImageGallery() {
 			computeImageRef = compute.ImageReference{
-				ID: helpers.PointerToString(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('agentWindowsImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('agentWindowsImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, imageRef.Gallery, imageRef.Version)),
+				ID: to.StringPtr(fmt.Sprintf("[concat('/subscriptions/', '%s', '/resourceGroups/', parameters('agentWindowsImageResourceGroup'), '/providers/Microsoft.Compute/galleries/', '%s', '/images/', parameters('agentWindowsImageName'), '/versions/', '%s')]", imageRef.SubscriptionID, imageRef.Gallery, imageRef.Version)),
 			}
 		} else {
 			computeImageRef = compute.ImageReference{
-				ID: helpers.PointerToString("[resourceId(parameters('agentWindowsImageResourceGroup'), 'Microsoft.Compute/images', parameters('agentWindowsImageName'))]"),
+				ID: to.StringPtr("[resourceId(parameters('agentWindowsImageResourceGroup'), 'Microsoft.Compute/images', parameters('agentWindowsImageName'))]"),
 			}
 		}
 	} else {
 		computeImageRef = compute.ImageReference{
-			Offer:     helpers.PointerToString("[parameters('agentWindowsOffer')]"),
-			Publisher: helpers.PointerToString("[parameters('agentWindowsPublisher')]"),
-			Sku:       helpers.PointerToString("[parameters('agentWindowsSku')]"),
-			Version:   helpers.PointerToString("[parameters('agentWindowsVersion')]"),
+			Offer:     to.StringPtr("[parameters('agentWindowsOffer')]"),
+			Publisher: to.StringPtr("[parameters('agentWindowsPublisher')]"),
+			Sku:       to.StringPtr("[parameters('agentWindowsSku')]"),
+			Version:   to.StringPtr("[parameters('agentWindowsVersion')]"),
 		}
 	}
 
@@ -47,15 +47,15 @@ func createWindowsImage(profile *api.AgentPoolProfile) ImageARM {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		Image: compute.Image{
-			Type:     helpers.PointerToString("Microsoft.Compute/images"),
-			Name:     helpers.PointerToString(fmt.Sprintf("%sCustomWindowsImage", profile.Name)),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/images"),
+			Name:     to.StringPtr(fmt.Sprintf("%sCustomWindowsImage", profile.Name)),
+			Location: to.StringPtr("[variables('location')]"),
 			ImageProperties: &compute.ImageProperties{
 				StorageProfile: &compute.ImageStorageProfile{
 					OsDisk: &compute.ImageOSDisk{
 						OsType:             "Windows",
 						OsState:            compute.Generalized,
-						BlobURI:            helpers.PointerToString("[parameters('agentWindowsSourceUrl')]"),
+						BlobURI:            to.StringPtr("[parameters('agentWindowsSourceUrl')]"),
 						StorageAccountType: compute.StorageAccountTypesStandardLRS,
 					},
 				},

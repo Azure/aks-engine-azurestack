@@ -21,6 +21,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/pkg/errors"
 
 	_ "k8s.io/client-go/plugin/pkg/client/auth/azure" // register azure (AD) authentication plugin
@@ -53,7 +54,7 @@ func GenerateKubeConfig(properties *api.Properties, location string) (string, er
 	if properties.OrchestratorProfile != nil &&
 		properties.OrchestratorProfile.KubernetesConfig != nil &&
 		properties.OrchestratorProfile.KubernetesConfig.PrivateCluster != nil &&
-		helpers.Bool(properties.OrchestratorProfile.KubernetesConfig.PrivateCluster.Enabled) {
+		to.Bool(properties.OrchestratorProfile.KubernetesConfig.PrivateCluster.Enabled) {
 		if properties.MasterProfile.HasMultipleNodes() {
 			// more than 1 master, use the internal lb IP
 			firstMasterIP := net.ParseIP(properties.MasterProfile.FirstConsecutiveStaticIP).To4()
@@ -588,7 +589,7 @@ func getAddonFuncMap(addon api.KubernetesAddon, cs *api.ContainerService) templa
 			return len(cs.Properties.AgentPoolProfiles) > 0 && cs.Properties.AgentPoolProfiles[0].StorageProfile == api.ManagedDisks
 		},
 		"UsesCloudControllerManager": func() bool {
-			return helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
+			return to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
 		},
 		"HasAvailabilityZones": func() bool {
 			return cs.Properties.HasAvailabilityZones()
@@ -722,19 +723,19 @@ func getClusterAutoscalerAddonFuncMap(addon api.KubernetesAddon, cs *api.Contain
 			return base64.StdEncoding.EncodeToString([]byte(cs.Properties.GetVMType()))
 		},
 		"GetVolumeMounts": func() string {
-			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 				return "\n        - mountPath: /var/lib/waagent/\n          name: waagent\n          readOnly: true"
 			}
 			return ""
 		},
 		"GetVolumes": func() string {
-			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 				return "\n      - hostPath:\n          path: /var/lib/waagent/\n        name: waagent"
 			}
 			return ""
 		},
 		"GetHostNetwork": func() string {
-			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 				return "\n      hostNetwork: true"
 			}
 			return ""
@@ -744,7 +745,7 @@ func getClusterAutoscalerAddonFuncMap(addon api.KubernetesAddon, cs *api.Contain
 			return cloudSpecConfig.CloudName
 		},
 		"UseManagedIdentity": func() string {
-			if helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+			if to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 				return "true"
 			}
 			return "false"

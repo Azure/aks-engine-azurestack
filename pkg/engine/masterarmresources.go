@@ -7,7 +7,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{} {
@@ -86,7 +86,7 @@ func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{}
 
 	var isKMSEnabled bool
 	if kubernetesConfig != nil {
-		isKMSEnabled = helpers.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)
+		isKMSEnabled = to.Bool(kubernetesConfig.EnableEncryptionWithExternalKms)
 	}
 
 	if isKMSEnabled {
@@ -110,7 +110,7 @@ func createKubernetesMasterResourcesVMAS(cs *api.ContainerService) []interface{}
 	masterResources = append(masterResources, masterVM)
 
 	var useManagedIdentity, userAssignedIDEnabled bool
-	useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
+	useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
 	userAssignedIDEnabled = kubernetesConfig.UserAssignedIDEnabled()
 
 	if useManagedIdentity && !userAssignedIDEnabled {

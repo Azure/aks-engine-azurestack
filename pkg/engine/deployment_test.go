@@ -6,7 +6,7 @@ package engine
 import (
 	"testing"
 
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
 	"github.com/google/go-cmp/cmp"
 )
@@ -28,8 +28,8 @@ func TestCreateAzurestackTelemetry(t *testing.T) {
 			APIVersion: "2015-01-01",
 		},
 		DeploymentExtended: resources.DeploymentExtended{
-			Name:       helpers.PointerToString(pid),
-			Type:       helpers.PointerToString("Microsoft.Resources/deployments"),
+			Name:       to.StringPtr(pid),
+			Type:       to.StringPtr("Microsoft.Resources/deployments"),
 			Properties: &properties,
 		},
 	}

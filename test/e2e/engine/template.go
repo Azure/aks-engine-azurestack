@@ -156,15 +156,15 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 	}
 
 	if config.MSIUserAssignedID != "" {
-		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 		prop.OrchestratorProfile.KubernetesConfig.UserAssignedID = config.MSIUserAssignedID
 	}
 
 	if prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity == nil && !prop.IsAzureStackCloud() {
-		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(config.UseManagedIdentity)
+		prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(config.UseManagedIdentity)
 	}
 
-	if config.ClientID != "" && config.ClientSecret != "" && !(prop.OrchestratorProfile.KubernetesConfig != nil && helpers.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)) {
+	if config.ClientID != "" && config.ClientSecret != "" && !(prop.OrchestratorProfile.KubernetesConfig != nil && to.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)) {
 		if !prop.IsAzureStackCloud() {
 			prop.ServicePrincipalProfile = &vlabs.ServicePrincipalProfile{
 				ClientID: config.ClientID,
@@ -186,7 +186,7 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 		}
 		if config.RunVMSSNodePrototype {
 			// In order to better determine the time it takes for nodes to come online let's eliminate any VM reboot considerations
-			prop.LinuxProfile.RunUnattendedUpgradesOnBootstrap = helpers.PointerToBool((false))
+			prop.LinuxProfile.RunUnattendedUpgradesOnBootstrap = to.BoolPtr((false))
 		}
 	}
 
@@ -328,7 +328,7 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 
 	if len(prop.OrchestratorProfile.KubernetesConfig.Addons) > 0 {
 		for _, addon := range prop.OrchestratorProfile.KubernetesConfig.Addons {
-			if addon.Name == common.AzureArcOnboardingAddonName && helpers.Bool(addon.Enabled) {
+			if addon.Name == common.AzureArcOnboardingAddonName && to.Bool(addon.Enabled) {
 				if addon.Config == nil {
 					addon.Config = make(map[string]string)
 				}
@@ -523,7 +523,7 @@ func (e *Engine) GetWindowsTestImages() (*WindowsTestImages, error) {
 func (e *Engine) HasAddon(name string) (bool, api.KubernetesAddon) {
 	for _, addon := range e.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.Addons {
 		if addon.Name == name {
-			return helpers.Bool(addon.Enabled), addon
+			return to.Bool(addon.Enabled), addon
 		}
 	}
 	return false, api.KubernetesAddon{}

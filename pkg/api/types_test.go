@@ -13,6 +13,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 const exampleCustomHyperkubeImage = `example.azurecr.io/example/hyperkube-amd64:custom`
@@ -257,14 +258,14 @@ func TestAgentPoolProfileIsAuditDEnabled(t *testing.T) {
 		{
 			name: "true",
 			ap: AgentPoolProfile{
-				AuditDEnabled: helpers.PointerToBool(true),
+				AuditDEnabled: to.BoolPtr(true),
 			},
 			expected: true,
 		},
 		{
 			name: "false",
 			ap: AgentPoolProfile{
-				AuditDEnabled: helpers.PointerToBool(false),
+				AuditDEnabled: to.BoolPtr(false),
 			},
 			expected: false,
 		},
@@ -295,14 +296,14 @@ func TestMasterProfileIsAuditDEnabled(t *testing.T) {
 		{
 			name: "true",
 			mp: MasterProfile{
-				AuditDEnabled: helpers.PointerToBool(true),
+				AuditDEnabled: to.BoolPtr(true),
 			},
 			expected: true,
 		},
 		{
 			name: "false",
 			mp: MasterProfile{
-				AuditDEnabled: helpers.PointerToBool(false),
+				AuditDEnabled: to.BoolPtr(false),
 			},
 			expected: false,
 		},
@@ -329,7 +330,7 @@ func TestNeedsAuditdRules(t *testing.T) {
 			name: "enabled on control plane",
 			p: &Properties{
 				MasterProfile: &MasterProfile{
-					AuditDEnabled: helpers.PointerToBool(true),
+					AuditDEnabled: to.BoolPtr(true),
 				},
 			},
 			expected: true,
@@ -345,10 +346,10 @@ func TestNeedsAuditdRules(t *testing.T) {
 						AuditDEnabled: nil,
 					},
 					{
-						AuditDEnabled: helpers.PointerToBool(true),
+						AuditDEnabled: to.BoolPtr(true),
 					},
 					{
-						AuditDEnabled: helpers.PointerToBool(false),
+						AuditDEnabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -358,14 +359,14 @@ func TestNeedsAuditdRules(t *testing.T) {
 			name: "enabled",
 			p: &Properties{
 				MasterProfile: &MasterProfile{
-					AuditDEnabled: helpers.PointerToBool(true),
+					AuditDEnabled: to.BoolPtr(true),
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
 					{
-						AuditDEnabled: helpers.PointerToBool(true),
+						AuditDEnabled: to.BoolPtr(true),
 					},
 					{
-						AuditDEnabled: helpers.PointerToBool(true),
+						AuditDEnabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -382,7 +383,7 @@ func TestNeedsAuditdRules(t *testing.T) {
 						AuditDEnabled: nil,
 					},
 					{
-						AuditDEnabled: helpers.PointerToBool(false),
+						AuditDEnabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -723,14 +724,14 @@ func TestMasterProfileHasCosmosEtcd(t *testing.T) {
 		{
 			name: "enabled",
 			m: MasterProfile{
-				CosmosEtcd: helpers.PointerToBool(true),
+				CosmosEtcd: to.BoolPtr(true),
 			},
 			expected: true,
 		},
 		{
 			name: "disabled",
 			m: MasterProfile{
-				CosmosEtcd: helpers.PointerToBool(false),
+				CosmosEtcd: to.BoolPtr(false),
 			},
 			expected: false,
 		},
@@ -762,7 +763,7 @@ func TestMasterProfileGetCosmosEndPointURI(t *testing.T) {
 		{
 			name: "valid DNS prefix",
 			m: MasterProfile{
-				CosmosEtcd: helpers.PointerToBool(true),
+				CosmosEtcd: to.BoolPtr(true),
 				DNSPrefix:  dnsPrefix,
 			},
 			expected: fmt.Sprintf(etcdEndpointURIFmt, dnsPrefix),
@@ -770,14 +771,14 @@ func TestMasterProfileGetCosmosEndPointURI(t *testing.T) {
 		{
 			name: "no DNS prefix",
 			m: MasterProfile{
-				CosmosEtcd: helpers.PointerToBool(true),
+				CosmosEtcd: to.BoolPtr(true),
 			},
 			expected: fmt.Sprintf(etcdEndpointURIFmt, ""),
 		},
 		{
 			name: "cosmos etcd disabled",
 			m: MasterProfile{
-				CosmosEtcd: helpers.PointerToBool(false),
+				CosmosEtcd: to.BoolPtr(false),
 			},
 			expected: "",
 		},
@@ -933,8 +934,8 @@ func TestHasStorageProfile(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							Enabled:                helpers.PointerToBool(true),
-							EnableHostsConfigAgent: helpers.PointerToBool(true),
+							Enabled:                to.BoolPtr(true),
+							EnableHostsConfigAgent: to.BoolPtr(true),
 							JumpboxProfile: &PrivateJumpboxProfile{
 								StorageProfile: ManagedDisks,
 							},
@@ -964,7 +965,7 @@ func TestHasStorageProfile(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							Enabled: helpers.PointerToBool(true),
+							Enabled: to.BoolPtr(true),
 							JumpboxProfile: &PrivateJumpboxProfile{
 								StorageProfile: StorageAccount,
 							},
@@ -1023,16 +1024,16 @@ func TestHasStorageProfile(t *testing.T) {
 				},
 				MasterProfile: &MasterProfile{
 					StorageProfile:  ManagedDisks,
-					UltraSSDEnabled: helpers.PointerToBool(true),
+					UltraSSDEnabled: to.BoolPtr(true),
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
 					{
 						StorageProfile:  ManagedDisks,
-						UltraSSDEnabled: helpers.PointerToBool(true),
+						UltraSSDEnabled: to.BoolPtr(true),
 					},
 					{
 						StorageProfile:  ManagedDisks,
-						UltraSSDEnabled: helpers.PointerToBool(true),
+						UltraSSDEnabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -1052,16 +1053,16 @@ func TestHasStorageProfile(t *testing.T) {
 				},
 				MasterProfile: &MasterProfile{
 					StorageProfile:   ManagedDisks,
-					EncryptionAtHost: helpers.PointerToBool(true),
+					EncryptionAtHost: to.BoolPtr(true),
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
 					{
 						StorageProfile:   ManagedDisks,
-						EncryptionAtHost: helpers.PointerToBool(true),
+						EncryptionAtHost: to.BoolPtr(true),
 					},
 					{
 						StorageProfile:   ManagedDisks,
-						EncryptionAtHost: helpers.PointerToBool(true),
+						EncryptionAtHost: to.BoolPtr(true),
 					},
 				},
 			},
@@ -1091,11 +1092,11 @@ func TestHasStorageProfile(t *testing.T) {
 			if c.p.MasterProfile.IsStorageAccount() == c.expectedMasterMD {
 				t.Fatalf("expected IsStorageAccount() to return %t but instead returned %t", !c.expectedMasterMD, c.p.MasterProfile.IsStorageAccount())
 			}
-			if helpers.Bool(c.p.MasterProfile.UltraSSDEnabled) != c.expectedUltraSSDEnabled {
-				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.MasterProfile.UltraSSDEnabled))
+			if to.Bool(c.p.MasterProfile.UltraSSDEnabled) != c.expectedUltraSSDEnabled {
+				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.MasterProfile.UltraSSDEnabled))
 			}
-			if helpers.Bool(c.p.MasterProfile.EncryptionAtHost) != c.expectedEncryptionAtHost {
-				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedEncryptionAtHost, helpers.Bool(c.p.MasterProfile.EncryptionAtHost))
+			if to.Bool(c.p.MasterProfile.EncryptionAtHost) != c.expectedEncryptionAtHost {
+				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedEncryptionAtHost, to.Bool(c.p.MasterProfile.EncryptionAtHost))
 			}
 			if c.p.AgentPoolProfiles[0].IsManagedDisks() != c.expectedAgent0MD {
 				t.Fatalf("expected IsManagedDisks() to return %t but instead returned %t", c.expectedAgent0MD, c.p.AgentPoolProfiles[0].IsManagedDisks())
@@ -1116,11 +1117,11 @@ func TestHasStorageProfile(t *testing.T) {
 			if c.p.AgentPoolProfiles[0].DiskEncryptionSetID != c.expectedDesID {
 				t.Fatalf("expected DiskEncryptionSetID to return %s but instead returned %s", c.expectedDesID, c.p.AgentPoolProfiles[0].DiskEncryptionSetID)
 			}
-			if helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled) != c.expectedUltraSSDEnabled {
-				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
+			if to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled) != c.expectedUltraSSDEnabled {
+				t.Fatalf("expected UltraSSDEnabled to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
 			}
-			if helpers.Bool(c.p.AgentPoolProfiles[0].EncryptionAtHost) != c.expectedEncryptionAtHost {
-				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedUltraSSDEnabled, helpers.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
+			if to.Bool(c.p.AgentPoolProfiles[0].EncryptionAtHost) != c.expectedEncryptionAtHost {
+				t.Fatalf("expected EncryptionAtHost to return %v but instead returned %v", c.expectedUltraSSDEnabled, to.Bool(c.p.AgentPoolProfiles[0].UltraSSDEnabled))
 			}
 		})
 	}
@@ -2640,7 +2641,7 @@ func TestIsPrivateCluster(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							Enabled: helpers.PointerToBool(true),
+							Enabled: to.BoolPtr(true),
 						},
 					},
 				},
@@ -2653,7 +2654,7 @@ func TestIsPrivateCluster(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							Enabled: helpers.PointerToBool(false),
+							Enabled: to.BoolPtr(false),
 						},
 					},
 				},
@@ -2728,7 +2729,7 @@ func TestIsHostsConfigAgentEnabled(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							EnableHostsConfigAgent: helpers.PointerToBool(true),
+							EnableHostsConfigAgent: to.BoolPtr(true),
 						},
 					},
 				},
@@ -2741,7 +2742,7 @@ func TestIsHostsConfigAgentEnabled(t *testing.T) {
 					OrchestratorType: Kubernetes,
 					KubernetesConfig: &KubernetesConfig{
 						PrivateCluster: &PrivateCluster{
-							EnableHostsConfigAgent: helpers.PointerToBool(false),
+							EnableHostsConfigAgent: to.BoolPtr(false),
 						},
 					},
 				},
@@ -2824,8 +2825,8 @@ func TestWindowsProfile(t *testing.T) {
 			},
 		},
 		WindowsImageSourceURL:     "testCustomImage",
-		IsCredentialAutoGenerated: helpers.PointerToBool(true),
-		EnableAHUB:                helpers.PointerToBool(true),
+		IsCredentialAutoGenerated: to.BoolPtr(true),
+		EnableAHUB:                to.BoolPtr(true),
 	}
 
 	if !(w.HasSecrets() && w.HasCustomImage()) {
@@ -2846,8 +2847,8 @@ func TestWindowsProfile(t *testing.T) {
 		WindowsDockerVersion:      "18.03.1-ee-3",
 		WindowsSku:                "Datacenter-Core-1809-with-Containers-smalldisk",
 		SSHEnabled:                &trueVar,
-		IsCredentialAutoGenerated: helpers.PointerToBool(false),
-		EnableAHUB:                helpers.PointerToBool(false),
+		IsCredentialAutoGenerated: to.BoolPtr(false),
+		EnableAHUB:                to.BoolPtr(false),
 		WindowsRuntimes: &WindowsRuntimes{
 			Default: "hyperv",
 			HypervRuntimes: []RuntimeHandlers{
@@ -3077,7 +3078,7 @@ func TestUserAssignedMSI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error deserailizing the example user msi api model: %s", err)
 	}
-	systemMSI := helpers.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	systemMSI := to.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	actualUserMSI := apiModel.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID
 	if !systemMSI || actualUserMSI != "" {
 		t.Fatalf("found user msi: %t and usermsi: %s", systemMSI, actualUserMSI)
@@ -3091,7 +3092,7 @@ func TestUserAssignedMSI(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error deserailizing the example user msi api model: %s", err)
 	}
-	systemMSI = helpers.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	systemMSI = to.Bool(apiModel.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	actualUserMSI = apiModel.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID
 	if !systemMSI && actualUserMSI != exampleUserMSI {
 		t.Fatalf("found user msi: %t and usermsi: %s", systemMSI, actualUserMSI)
@@ -3205,7 +3206,7 @@ func TestIsNVIDIADevicePluginEnabled(t *testing.T) {
 	p.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.NVIDIADevicePluginAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 		},
 	}
 
@@ -3216,7 +3217,7 @@ func TestIsNVIDIADevicePluginEnabled(t *testing.T) {
 	p.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{
 			Name:    common.NVIDIADevicePluginAddonName,
-			Enabled: helpers.PointerToBool(false),
+			Enabled: to.BoolPtr(false),
 		},
 	}
 	if p.IsNVIDIADevicePluginEnabled() {
@@ -3357,7 +3358,7 @@ func TestIsIPMasqAgentEnabled(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.IPMASQAgentAddonName,
-								Enabled: helpers.PointerToBool(false),
+								Enabled: to.BoolPtr(false),
 								Containers: []KubernetesContainerSpec{
 									{
 										Name: common.IPMASQAgentAddonName,
@@ -5441,7 +5442,7 @@ func TestIsFeatureEnabled(t *testing.T) {
 
 func TestKubernetesConfig_UserAssignedIDEnabled(t *testing.T) {
 	k := KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		UserAssignedID:     "fooID",
 	}
 	if !k.UserAssignedIDEnabled() {
@@ -5449,7 +5450,7 @@ func TestKubernetesConfig_UserAssignedIDEnabled(t *testing.T) {
 	}
 
 	k = KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(false),
+		UseManagedIdentity: to.BoolPtr(false),
 		UserAssignedID:     "fooID",
 	}
 
@@ -5460,7 +5461,7 @@ func TestKubernetesConfig_UserAssignedIDEnabled(t *testing.T) {
 
 func TestKubernetesConfig_ShouldCreateNewUserAssignedIdentity(t *testing.T) {
 	k := KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		UserAssignedID:     "fooID",
 	}
 	if !k.ShouldCreateNewUserAssignedIdentity() {
@@ -5468,7 +5469,7 @@ func TestKubernetesConfig_ShouldCreateNewUserAssignedIdentity(t *testing.T) {
 	}
 
 	k = KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		UserAssignedID:     exampleUserMSI,
 	}
 
@@ -5479,7 +5480,7 @@ func TestKubernetesConfig_ShouldCreateNewUserAssignedIdentity(t *testing.T) {
 
 func TestKubernetesConfig_SystemAssignedIDEnabled(t *testing.T) {
 	k := KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		UserAssignedID:     "",
 	}
 	if !k.SystemAssignedIDEnabled() {
@@ -5487,7 +5488,7 @@ func TestKubernetesConfig_SystemAssignedIDEnabled(t *testing.T) {
 	}
 
 	k = KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		UserAssignedID:     "foo",
 	}
 
@@ -5496,7 +5497,7 @@ func TestKubernetesConfig_SystemAssignedIDEnabled(t *testing.T) {
 	}
 
 	k = KubernetesConfig{
-		UseManagedIdentity: helpers.PointerToBool(false),
+		UseManagedIdentity: to.BoolPtr(false),
 		UserAssignedID:     "",
 	}
 
@@ -5956,13 +5957,13 @@ func TestKubernetesAddonIsEnabled(t *testing.T) {
 		},
 		{
 			a: &KubernetesAddon{
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 			expected: false,
 		},
 		{
 			a: &KubernetesAddon{
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			expected: true,
 		},
@@ -5986,13 +5987,13 @@ func TestKubernetesAddonIsDisabled(t *testing.T) {
 		},
 		{
 			a: &KubernetesAddon{
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 			expected: true,
 		},
 		{
 			a: &KubernetesAddon{
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			expected: false,
 		},
@@ -6032,7 +6033,7 @@ func TestKubernetesConfigIsAddonEnabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(false),
+						Enabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -6044,7 +6045,7 @@ func TestKubernetesConfigIsAddonEnabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6056,7 +6057,7 @@ func TestKubernetesConfigIsAddonEnabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "bar",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6099,7 +6100,7 @@ func TestKubernetesConfigIsAddonDisabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(false),
+						Enabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -6111,7 +6112,7 @@ func TestKubernetesConfigIsAddonDisabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6123,7 +6124,7 @@ func TestKubernetesConfigIsAddonDisabled(t *testing.T) {
 				Addons: []KubernetesAddon{
 					{
 						Name:    "bar",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6150,13 +6151,13 @@ func TestKubernetesComponentIsEnabled(t *testing.T) {
 		},
 		{
 			c: &KubernetesComponent{
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 			expected: false,
 		},
 		{
 			c: &KubernetesComponent{
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			expected: true,
 		},
@@ -6180,13 +6181,13 @@ func TestKubernetesComponentIsDisabled(t *testing.T) {
 		},
 		{
 			c: &KubernetesComponent{
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 			expected: true,
 		},
 		{
 			c: &KubernetesComponent{
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			expected: false,
 		},
@@ -6226,7 +6227,7 @@ func TestKubernetesConfigIsComponentEnabled(t *testing.T) {
 				Components: []KubernetesComponent{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(false),
+						Enabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -6238,7 +6239,7 @@ func TestKubernetesConfigIsComponentEnabled(t *testing.T) {
 				Components: []KubernetesComponent{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6250,7 +6251,7 @@ func TestKubernetesConfigIsComponentEnabled(t *testing.T) {
 				Components: []KubernetesComponent{
 					{
 						Name:    "bar",
-						Enabled: helpers.PointerToBool(true),
+						Enabled: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6295,7 +6296,7 @@ func TestKubernetesConfigComponentGetters(t *testing.T) {
 				Components: []KubernetesComponent{
 					{
 						Name:    "foo",
-						Enabled: helpers.PointerToBool(false),
+						Enabled: to.BoolPtr(false),
 					},
 				},
 			},
@@ -6724,7 +6725,7 @@ func TestPropertiesIsIPMasqAgentDisabled(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.CoreDNSAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -6740,7 +6741,7 @@ func TestPropertiesIsIPMasqAgentDisabled(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.IPMASQAgentAddonName,
-								Enabled: helpers.PointerToBool(false),
+								Enabled: to.BoolPtr(false),
 							},
 						},
 					},
@@ -6771,7 +6772,7 @@ func TestPropertiesIsIPMasqAgentDisabled(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.IPMASQAgentAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -6859,7 +6860,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(false),
+						UseCloudControllerManager: to.BoolPtr(false),
 					},
 				},
 			},
@@ -6872,7 +6873,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.16.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6885,7 +6886,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.13.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6898,7 +6899,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.13.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6911,7 +6912,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.15.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6924,7 +6925,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.16.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -6937,7 +6938,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -6955,7 +6956,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -6973,7 +6974,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.18.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{
@@ -6991,7 +6992,7 @@ func TestShouldEnableAzureCloudAddon(t *testing.T) {
 				OrchestratorProfile: &OrchestratorProfile{
 					OrchestratorVersion: "1.17.0",
 					KubernetesConfig: &KubernetesConfig{
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 				AgentPoolProfiles: []*AgentPoolProfile{

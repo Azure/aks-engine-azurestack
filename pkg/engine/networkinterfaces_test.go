@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/google/go-cmp/cmp"
 )
@@ -64,74 +64,74 @@ func TestCreateNIC(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 								{
-									ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+									ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 								},
 							},
 							LoadBalancerInboundNatRules: &[]network.InboundNatRule{
 								{
-									ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
+									ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
 								},
 							},
-							PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-							Primary:                   helpers.PointerToBool(true),
+							PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Static,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig2"),
+						Name: to.StringPtr("ipconfig2"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig3"),
+						Name: to.StringPtr("ipconfig3"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig4"),
+						Name: to.StringPtr("ipconfig4"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig5"),
+						Name: to.StringPtr("ipconfig5"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -150,7 +150,7 @@ func TestCreateNIC(t *testing.T) {
 	}
 
 	expected.NetworkSecurityGroup = &network.SecurityGroup{
-		ID: helpers.PointerToString("[variables('nsgID')]"),
+		ID: to.StringPtr("[variables('nsgID')]"),
 	}
 
 	nic = CreateMasterVMNetworkInterfaces(cs)
@@ -175,66 +175,66 @@ func TestCreateNIC(t *testing.T) {
 
 	expected.IPConfigurations = &[]network.InterfaceIPConfiguration{
 		{
-			Name: helpers.PointerToString("ipconfig1"),
+			Name: to.StringPtr("ipconfig1"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 					{
-						ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 				},
 				LoadBalancerInboundNatRules: &[]network.InboundNatRule{
 					{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
 					},
 				},
-				PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-				Primary:                   helpers.PointerToBool(true),
+				PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+				Primary:                   to.BoolPtr(true),
 				PrivateIPAllocationMethod: network.Static,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig2"),
+			Name: to.StringPtr("ipconfig2"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig3"),
+			Name: to.StringPtr("ipconfig3"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig4"),
+			Name: to.StringPtr("ipconfig4"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig5"),
+			Name: to.StringPtr("ipconfig5"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
@@ -248,7 +248,7 @@ func TestCreateNIC(t *testing.T) {
 
 	// Test Master NIC with Cosmos etcd
 
-	cs.Properties.MasterProfile.CosmosEtcd = helpers.PointerToBool(true)
+	cs.Properties.MasterProfile.CosmosEtcd = to.BoolPtr(true)
 	cs.Properties.MasterProfile.Count = 3
 
 	nic = CreateMasterVMNetworkInterfaces(cs)
@@ -332,64 +332,64 @@ func TestCreatePrivateClusterNetworkInterface(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-							Primary:                   helpers.PointerToBool(true),
+							PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Static,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig2"),
+						Name: to.StringPtr("ipconfig2"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig3"),
+						Name: to.StringPtr("ipconfig3"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig4"),
+						Name: to.StringPtr("ipconfig4"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfig5"),
+						Name: to.StringPtr("ipconfig5"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-							Primary:                   helpers.PointerToBool(false),
+							Primary:                   to.BoolPtr(false),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -412,64 +412,64 @@ func TestCreatePrivateClusterNetworkInterface(t *testing.T) {
 	}
 
 	expected.Interface.NetworkSecurityGroup = &network.SecurityGroup{
-		ID: helpers.PointerToString("[variables('nsgID')]"),
+		ID: to.StringPtr("[variables('nsgID')]"),
 	}
 
 	expected.IPConfigurations = &[]network.InterfaceIPConfiguration{
 		{
-			Name: helpers.PointerToString("ipconfig1"),
+			Name: to.StringPtr("ipconfig1"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 				},
 				LoadBalancerInboundNatRules: &[]network.InboundNatRule{},
-				PrivateIPAddress:            helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-				Primary:                     helpers.PointerToBool(true),
+				PrivateIPAddress:            to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+				Primary:                     to.BoolPtr(true),
 				PrivateIPAllocationMethod:   network.Static,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig2"),
+			Name: to.StringPtr("ipconfig2"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig3"),
+			Name: to.StringPtr("ipconfig3"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig4"),
+			Name: to.StringPtr("ipconfig4"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig5"),
+			Name: to.StringPtr("ipconfig5"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
@@ -490,22 +490,22 @@ func TestCreatePrivateClusterNetworkInterface(t *testing.T) {
 		},
 	}
 	actual = createPrivateClusterMasterVMNetworkInterface(cs)
-	expected.EnableIPForwarding = helpers.PointerToBool(true)
+	expected.EnableIPForwarding = to.BoolPtr(true)
 	expected.IPConfigurations = &[]network.InterfaceIPConfiguration{
 		{
-			Name: helpers.PointerToString("ipconfig1"),
+			Name: to.StringPtr("ipconfig1"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 				},
 				LoadBalancerInboundNatRules: &[]network.InboundNatRule{},
-				PrivateIPAddress:            helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-				Primary:                     helpers.PointerToBool(true),
+				PrivateIPAddress:            to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+				Primary:                     to.BoolPtr(true),
 				PrivateIPAllocationMethod:   network.Static,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		},
@@ -568,29 +568,29 @@ func TestCreateJumpboxNIC(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('jumpboxNetworkInterfaceName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxNetworkInterfaceName')]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
-							Primary:                   helpers.PointerToBool(true),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Dynamic,
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
 							},
 						},
 					},
 				},
 				NetworkSecurityGroup: &network.SecurityGroup{
-					ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
+					ID: to.StringPtr("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
 		},
 	}
 
@@ -656,23 +656,23 @@ func TestCreateAgentVMASNICWithSLB(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-			Name:     helpers.PointerToString("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Name:     to.StringPtr("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 								{
-									ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+									ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 								},
 							},
-							Primary:                   helpers.PointerToBool(true),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
+								ID: to.StringPtr(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
 							},
 						},
 					},
@@ -743,9 +743,9 @@ func TestCreateAgentVMASNIC(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-			Name:     helpers.PointerToString("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Name:     to.StringPtr("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &ipConfigurations,
 			},
@@ -768,7 +768,7 @@ func TestCreateAgentVMASNIC(t *testing.T) {
 	}
 
 	expected.NetworkSecurityGroup = &network.SecurityGroup{
-		ID: helpers.PointerToString("[variables('nsgID')]"),
+		ID: to.StringPtr("[variables('nsgID')]"),
 	}
 
 	diff = cmp.Diff(actual, expected)
@@ -784,73 +784,73 @@ func TestCreateAgentVMASNIC(t *testing.T) {
 
 	expected.IPConfigurations = &[]network.InterfaceIPConfiguration{
 		{
-			Name: helpers.PointerToString("ipconfig1"),
+			Name: to.StringPtr("ipconfig1"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 				},
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
 				},
-				Primary: helpers.PointerToBool(true),
+				Primary: to.BoolPtr(true),
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig2"),
+			Name: to.StringPtr("ipconfig2"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 				},
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
-				},
-			},
-		},
-		{
-			Name: helpers.PointerToString("ipconfig3"),
-			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
-					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
-					},
-				},
-				PrivateIPAllocationMethod: network.Dynamic,
-				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig4"),
+			Name: to.StringPtr("ipconfig3"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 				},
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfig5"),
+			Name: to.StringPtr("ipconfig4"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 				},
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
+				},
+			},
+		},
+		{
+			Name: to.StringPtr("ipconfig5"),
+			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
+				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
+					{
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+					},
+				},
+				PrivateIPAllocationMethod: network.Dynamic,
+				Subnet: &network.Subnet{
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
 				},
 			},
 		},
@@ -913,47 +913,47 @@ func TestCreateNICWithIPv6DualStackFeature(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 								{
-									ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+									ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 								},
 							},
 							LoadBalancerInboundNatRules: &[]network.InboundNatRule{
 								{
-									ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
+									ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
 								},
 							},
-							PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-							Primary:                   helpers.PointerToBool(true),
+							PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Static,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("ipconfigv6"),
+						Name: to.StringPtr("ipconfigv6"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							PrivateIPAddressVersion: "IPv6",
-							Primary:                 helpers.PointerToBool(false),
+							Primary:                 to.BoolPtr(false),
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
 						},
 					},
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+			Type: to.StringPtr("Microsoft.Network/networkInterfaces"),
 		},
 	}
-	expected.EnableIPForwarding = helpers.PointerToBool(true)
+	expected.EnableIPForwarding = to.BoolPtr(true)
 	diff := cmp.Diff(nic, expected)
 
 	if diff != "" {
@@ -1020,9 +1020,9 @@ func TestCreateAgentVMASNICWithIPv6DualStackFeature(t *testing.T) {
 			},
 		},
 		Interface: network.Interface{
-			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-			Name:     helpers.PointerToString("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Name:     to.StringPtr("[concat(variables('fooAgentVMNamePrefix'), 'nic-', copyIndex(variables('fooAgentOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				IPConfigurations: &ipConfigurations,
 			},
@@ -1030,35 +1030,35 @@ func TestCreateAgentVMASNICWithIPv6DualStackFeature(t *testing.T) {
 	}
 	expected.IPConfigurations = &[]network.InterfaceIPConfiguration{
 		{
-			Name: helpers.PointerToString("ipconfig1"),
+			Name: to.StringPtr("ipconfig1"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				LoadBalancerBackendAddressPools: &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
 					},
 				},
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('fooAgentVnetSubnetID')]"),
+					ID: to.StringPtr("[variables('fooAgentVnetSubnetID')]"),
 				},
-				Primary: helpers.PointerToBool(true),
+				Primary: to.BoolPtr(true),
 			},
 		},
 		{
-			Name: helpers.PointerToString("ipconfigv6"),
+			Name: to.StringPtr("ipconfigv6"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				PrivateIPAddressVersion: "IPv6",
-				Primary:                 helpers.PointerToBool(false),
+				Primary:                 to.BoolPtr(false),
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
+					ID: to.StringPtr(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
 				},
 			},
 		},
 	}
-	expected.EnableIPForwarding = helpers.PointerToBool(true)
+	expected.EnableIPForwarding = to.BoolPtr(true)
 
 	diff := cmp.Diff(actual, expected)
 	if diff != "" {

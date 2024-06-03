@@ -7,6 +7,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 )
 
@@ -207,7 +208,7 @@ func convertVLabsWindowsProfile(vlabs *vlabs.WindowsProfile, api *WindowsProfile
 	}
 	api.EnableAutomaticUpdates = vlabs.EnableAutomaticUpdates
 	if vlabs.EnableAHUB != nil && *vlabs.EnableAHUB {
-		api.EnableAHUB = helpers.PointerToBool(true)
+		api.EnableAHUB = to.BoolPtr(true)
 	}
 	api.AlwaysPullWindowsPauseImage = vlabs.AlwaysPullWindowsPauseImage
 	if vlabs.WindowsRuntimes != nil {

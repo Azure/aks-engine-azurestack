@@ -4,7 +4,7 @@
 package engine
 
 import (
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 )
 
@@ -15,15 +15,15 @@ func CreatePublicIPAddressForNodePools(name string) PublicIPAddressARM {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('" + name + "')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('" + name + "')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 }
@@ -35,7 +35,7 @@ func CreatePublicIPAddressForMaster(includeDNS bool) PublicIPAddressARM {
 
 	if includeDNS {
 		dnsSettings = &network.PublicIPAddressDNSSettings{
-			DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
+			DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
 		}
 	}
 
@@ -44,8 +44,8 @@ func CreatePublicIPAddressForMaster(includeDNS bool) PublicIPAddressARM {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('masterPublicIPAddressName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('masterPublicIPAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				DNSSettings:              dnsSettings,
 				PublicIPAllocationMethod: network.Static,
@@ -53,7 +53,7 @@ func CreatePublicIPAddressForMaster(includeDNS bool) PublicIPAddressARM {
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 }
@@ -64,15 +64,15 @@ func createAppGwPublicIPAddress() PublicIPAddressARM {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('appGwPublicIPAddressName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('appGwPublicIPAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "Standard",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 }
@@ -83,18 +83,18 @@ func createJumpboxPublicIPAddress() PublicIPAddressARM {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('jumpboxPublicIpAddressName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxPublicIpAddressName')]"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				DNSSettings: &network.PublicIPAddressDNSSettings{
-					DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
+					DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
 				},
 				PublicIPAllocationMethod: network.Dynamic,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: network.PublicIPAddressSkuNameBasic,
 			},
-			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 }
@@ -109,15 +109,15 @@ func CreateClusterPublicIPAddress() PublicIPAddressARM {
 			APIVersion: "[variables('apiVersionNetwork')]",
 		},
 		PublicIPAddress: network.PublicIPAddress{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("fee-ipv4"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("fee-ipv4"),
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.Static,
 			},
 			Sku: &network.PublicIPAddressSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
+			Type: to.StringPtr("Microsoft.Network/publicIPAddresses"),
 		},
 	}
 }

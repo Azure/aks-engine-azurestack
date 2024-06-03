@@ -12,7 +12,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/telemetry"
 	"github.com/google/go-cmp/cmp"
 
@@ -723,7 +723,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 						KubernetesConfig: &api.KubernetesConfig{
 							ContainerRuntime:        api.Docker,
 							KubernetesImageBaseType: common.KubernetesImageBaseTypeGCR,
-							UseManagedIdentity:      helpers.PointerToBool(true),
+							UseManagedIdentity:      to.BoolPtr(true),
 						},
 					},
 					AgentPoolProfiles: []*api.AgentPoolProfile{
@@ -800,7 +800,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 							Components: []api.KubernetesComponent{
 								{
 									Name:    common.ClusterInitComponentName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -950,7 +950,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 									Data:    "foo",
 								},
 							},
@@ -995,7 +995,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.DashboardAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},
@@ -1035,7 +1035,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 						KubernetesConfig: &api.KubernetesConfig{
 							ContainerRuntime:        api.Docker,
 							KubernetesImageBaseType: common.KubernetesImageBaseTypeGCR,
-							EnablePodSecurityPolicy: helpers.PointerToBool(true),
+							EnablePodSecurityPolicy: to.BoolPtr(true),
 							PodSecurityPolicyConfig: map[string]string{
 								"foo": "bar",
 							},
@@ -1116,7 +1116,7 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 							Addons: []api.KubernetesAddon{
 								{
 									Name:    common.PodSecurityPolicyAddonName,
-									Enabled: helpers.PointerToBool(true),
+									Enabled: to.BoolPtr(true),
 								},
 							},
 						},

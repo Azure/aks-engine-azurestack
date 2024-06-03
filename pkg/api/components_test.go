@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 )
 
@@ -55,7 +55,7 @@ func TestSetComponentsConfig(t *testing.T) {
 			expectedComponents: concatenateDefaultComponents([]KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -68,7 +68,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -81,7 +81,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -94,7 +94,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -131,7 +131,7 @@ func TestSetComponentsConfig(t *testing.T) {
 			expectedComponents: concatenateDefaultComponents([]KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -144,7 +144,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -157,7 +157,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -170,7 +170,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -207,7 +207,7 @@ func TestSetComponentsConfig(t *testing.T) {
 			expectedComponents: concatenateDefaultComponents([]KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -220,7 +220,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -233,7 +233,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -246,7 +246,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -283,7 +283,7 @@ func TestSetComponentsConfig(t *testing.T) {
 			expectedComponents: concatenateDefaultComponents([]KubernetesComponent{
 				{
 					Name:    common.APIServerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.APIServerComponentName,
@@ -296,7 +296,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.ControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.ControllerManagerComponentName,
@@ -309,7 +309,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.SchedulerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.SchedulerComponentName,
@@ -322,7 +322,7 @@ func TestSetComponentsConfig(t *testing.T) {
 				},
 				{
 					Name:    common.CloudControllerManagerComponentName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Containers: []KubernetesContainerSpec{
 						{
 							Name:  common.CloudControllerManagerComponentName,
@@ -355,8 +355,8 @@ func TestSetComponentsConfig(t *testing.T) {
 						t.Fatalf("got component %s that we weren't expecting", component.Name)
 					}
 					expectedComponent := test.expectedComponents[GetComponentsIndexByName(test.expectedComponents, componentName)]
-					if helpers.Bool(component.Enabled) != helpers.Bool(expectedComponent.Enabled) {
-						t.Fatalf("expected component %s to have Enabled value %t, instead got %t", expectedComponent.Name, helpers.Bool(expectedComponent.Enabled), helpers.Bool(component.Enabled))
+					if to.Bool(component.Enabled) != to.Bool(expectedComponent.Enabled) {
+						t.Fatalf("expected component %s to have Enabled value %t, instead got %t", expectedComponent.Name, to.Bool(expectedComponent.Enabled), to.Bool(component.Enabled))
 					}
 					if expectedComponent.Containers != nil {
 						if len(expectedComponent.Containers) != len(component.Containers) {
@@ -399,7 +399,7 @@ func TestSetComponentsConfig(t *testing.T) {
 					}
 				} else {
 					if i := GetComponentsIndexByName(test.expectedComponents, componentName); i > -1 {
-						if helpers.Bool(test.expectedComponents[i].Enabled) {
+						if to.Bool(test.expectedComponents[i].Enabled) {
 							t.Fatalf("expected component %s to be enabled, instead it was disabled", componentName)
 						}
 					}
@@ -413,7 +413,7 @@ func TestAppendComponentIfNotPresent(t *testing.T) {
 	existingComponents := []KubernetesComponent{
 		{
 			Name:    "i-exist",
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  "i-exist-container",
@@ -427,7 +427,7 @@ func TestAppendComponentIfNotPresent(t *testing.T) {
 	}
 	newComponent := KubernetesComponent{
 		Name:    "i-am-new",
-		Enabled: helpers.PointerToBool(true),
+		Enabled: to.BoolPtr(true),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  "new-container",
@@ -577,7 +577,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			name: "disabled",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:  common.ControllerManagerComponentName,
@@ -592,21 +592,21 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			isUpgrade:        false,
 			expected: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 		},
 		{
 			name: "data present",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Data:    "foo",
 			},
 			defaultComponent: controllerManagerComponent,
 			isUpgrade:        false,
 			expected: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Data:    "foo",
 			},
 		},
@@ -614,7 +614,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			name: "no containers or config",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			defaultComponent: controllerManagerComponent,
 			isUpgrade:        false,
@@ -624,7 +624,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			name: "no containers data",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name: common.ControllerManagerComponentName,
@@ -639,7 +639,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			name: "additional user config",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:           common.ControllerManagerComponentName,
@@ -658,7 +658,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			isUpgrade:        false,
 			expected: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:           common.ControllerManagerComponentName,
@@ -679,7 +679,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			name: "upgrade",
 			component: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:           common.ControllerManagerComponentName,
@@ -699,7 +699,7 @@ func TestAssignDefaultComponentVals(t *testing.T) {
 			isUpgrade:        true,
 			expected: KubernetesComponent{
 				Name:    common.ControllerManagerComponentName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []KubernetesContainerSpec{
 					{
 						Name:           common.ControllerManagerComponentName,
@@ -1009,7 +1009,7 @@ func getDefaultComponents(cs *ContainerService) []KubernetesComponent {
 	components := []KubernetesComponent{
 		{
 			Name:    common.SchedulerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.SchedulerComponentName,
@@ -1022,7 +1022,7 @@ func getDefaultComponents(cs *ContainerService) []KubernetesComponent {
 		},
 		{
 			Name:    common.ControllerManagerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.ControllerManagerComponentName,
@@ -1035,7 +1035,7 @@ func getDefaultComponents(cs *ContainerService) []KubernetesComponent {
 		},
 		{
 			Name:    common.APIServerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.APIServerComponentName,
@@ -1048,7 +1048,7 @@ func getDefaultComponents(cs *ContainerService) []KubernetesComponent {
 		},
 		{
 			Name:    common.AddonManagerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.AddonManagerComponentName,
@@ -1085,7 +1085,7 @@ func getUserConfiguredComponentMap() map[string]KubernetesComponent {
 	return map[string]KubernetesComponent{
 		"user-configured kube-scheduler component": {
 			Name:    common.SchedulerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.SchedulerComponentName,
@@ -1099,7 +1099,7 @@ func getUserConfiguredComponentMap() map[string]KubernetesComponent {
 		},
 		"user-configured controller-manager component": {
 			Name:    common.ControllerManagerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.ControllerManagerComponentName,
@@ -1113,7 +1113,7 @@ func getUserConfiguredComponentMap() map[string]KubernetesComponent {
 		},
 		"user-configured cloud-controller-manager component": {
 			Name:    common.CloudControllerManagerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.CloudControllerManagerComponentName,
@@ -1127,7 +1127,7 @@ func getUserConfiguredComponentMap() map[string]KubernetesComponent {
 		},
 		"user-configured kube-apiserver component": {
 			Name:    common.APIServerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.APIServerComponentName,
@@ -1141,7 +1141,7 @@ func getUserConfiguredComponentMap() map[string]KubernetesComponent {
 		},
 		"user-configured kube-addon-manager component": {
 			Name:    common.AddonManagerComponentName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Containers: []KubernetesContainerSpec{
 				{
 					Name:  common.AddonManagerComponentName,
@@ -1197,7 +1197,7 @@ func getContainerServicesMap() map[string]*ContainerService {
 					KubernetesConfig: &KubernetesConfig{
 						CustomHyperkubeImage:      customHyperkubeImage,
 						CustomCcmImage:            customCcmImage,
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -1240,7 +1240,7 @@ func getContainerServicesMap() map[string]*ContainerService {
 					KubernetesConfig: &KubernetesConfig{
 						CustomHyperkubeImage:      customHyperkubeImage,
 						CustomCcmImage:            customCcmImage,
-						UseCloudControllerManager: helpers.PointerToBool(true),
+						UseCloudControllerManager: to.BoolPtr(true),
 					},
 				},
 			},
@@ -1285,7 +1285,7 @@ func getContainerServicesMap() map[string]*ContainerService {
 						CustomKubeAPIServerImage:         customKubeAPIServerImage,
 						CustomKubeControllerManagerImage: customKubeControllerManagerImage,
 						CustomKubeSchedulerImage:         customKubeSchedulerImage,
-						UseCloudControllerManager:        helpers.PointerToBool(true),
+						UseCloudControllerManager:        to.BoolPtr(true),
 					},
 				},
 			},
@@ -1330,7 +1330,7 @@ func getContainerServicesMap() map[string]*ContainerService {
 						CustomKubeAPIServerImage:         customKubeAPIServerImage,
 						CustomKubeControllerManagerImage: customKubeControllerManagerImage,
 						CustomKubeSchedulerImage:         customKubeSchedulerImage,
-						UseCloudControllerManager:        helpers.PointerToBool(true),
+						UseCloudControllerManager:        to.BoolPtr(true),
 					},
 				},
 			},

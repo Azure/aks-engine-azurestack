@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/google/go-cmp/cmp"
 )
@@ -30,9 +30,9 @@ func TestCreateAvailabilitySet(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 		},
 	}
 
@@ -47,7 +47,7 @@ func TestCreateAvailabilitySet(t *testing.T) {
 	cs = &api.ContainerService{
 		Properties: &api.Properties{
 			MasterProfile: &api.MasterProfile{
-				PlatformUpdateDomainCount: helpers.PointerToInt(3),
+				PlatformUpdateDomainCount: to.IntPtr(3),
 			},
 		},
 	}
@@ -59,14 +59,14 @@ func TestCreateAvailabilitySet(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 			Sku: &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			},
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+				PlatformUpdateDomainCount: to.Int32Ptr(3),
 			},
 		},
 	}
@@ -93,9 +93,9 @@ func TestCreateAvailabilitySet(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:                      helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-			Location:                  helpers.PointerToString("[variables('location')]"),
-			Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:                      to.StringPtr("[variables('masterAvailabilitySet')]"),
+			Location:                  to.StringPtr("[variables('location')]"),
+			Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
 		},
 	}
@@ -124,15 +124,15 @@ func TestCreateAvailabilitySet(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 			Sku: &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			},
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformFaultDomainCount:  helpers.PointerToInt32(int32(count)),
-				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+				PlatformFaultDomainCount:  to.Int32Ptr(int32(count)),
+				PlatformUpdateDomainCount: to.Int32Ptr(3),
 			},
 		},
 	}
@@ -158,9 +158,9 @@ func TestCreateAgentAvailabilitySets(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:                      helpers.PointerToString("[variables('foobarAvailabilitySet')]"),
-			Location:                  helpers.PointerToString("[variables('location')]"),
-			Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:                      to.StringPtr("[variables('foobarAvailabilitySet')]"),
+			Location:                  to.StringPtr("[variables('location')]"),
+			Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
 		},
 	}
@@ -175,7 +175,7 @@ func TestCreateAgentAvailabilitySets(t *testing.T) {
 	profile = &api.AgentPoolProfile{
 		Name:                      "foobar",
 		StorageProfile:            api.ManagedDisks,
-		PlatformUpdateDomainCount: helpers.PointerToInt(3),
+		PlatformUpdateDomainCount: to.IntPtr(3),
 	}
 
 	avSet = createAgentAvailabilitySets(profile)
@@ -185,14 +185,14 @@ func TestCreateAgentAvailabilitySets(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     helpers.PointerToString("[variables('foobarAvailabilitySet')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:     to.StringPtr("[variables('foobarAvailabilitySet')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+				PlatformUpdateDomainCount: to.Int32Ptr(3),
 			},
 			Sku: &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			},
 		},
 	}
@@ -219,15 +219,15 @@ func TestCreateAgentAvailabilitySets(t *testing.T) {
 			APIVersion: "[variables('apiVersionCompute')]",
 		},
 		AvailabilitySet: compute.AvailabilitySet{
-			Name:     helpers.PointerToString("[variables('foobarAvailabilitySet')]"),
-			Location: helpers.PointerToString("[variables('location')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+			Name:     to.StringPtr("[variables('foobarAvailabilitySet')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformFaultDomainCount:  helpers.PointerToInt32(int32(count)),
-				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+				PlatformFaultDomainCount:  to.Int32Ptr(int32(count)),
+				PlatformUpdateDomainCount: to.Int32Ptr(3),
 			},
 			Sku: &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			},
 		},
 	}

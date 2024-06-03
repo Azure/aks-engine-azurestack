@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -28,7 +28,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultTillerAddonsConfig := KubernetesAddon{
 		Name:    common.TillerAddonName,
-		Enabled: helpers.PointerToBool(DefaultTillerAddonEnabled),
+		Enabled: to.BoolPtr(DefaultTillerAddonEnabled),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.TillerAddonName,
@@ -46,7 +46,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultClusterAutoscalerAddonsConfig := KubernetesAddon{
 		Name:    common.ClusterAutoscalerAddonName,
-		Enabled: helpers.PointerToBool(DefaultClusterAutoscalerAddonEnabled && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(DefaultClusterAutoscalerAddonEnabled && !cs.Properties.IsAzureStackCloud()),
 		Mode:    AddonModeEnsureExists,
 		Config: map[string]string{
 			"scan-interval":                         "1m",
@@ -99,7 +99,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultSMBFlexVolumeAddonsConfig := KubernetesAddon{
 		Name:    common.SMBFlexVolumeAddonName,
-		Enabled: helpers.PointerToBool(DefaultSMBFlexVolumeAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.8.0") && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(DefaultSMBFlexVolumeAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.8.0") && !cs.Properties.IsAzureStackCloud()),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.SMBFlexVolumeAddonName,
@@ -114,7 +114,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultDashboardAddonsConfig := KubernetesAddon{
 		Name:    common.DashboardAddonName,
-		Enabled: helpers.PointerToBool(DefaultDashboardAddonEnabled),
+		Enabled: to.BoolPtr(DefaultDashboardAddonEnabled),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.DashboardAddonName,
@@ -137,7 +137,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultMetricsServerAddonsConfig := KubernetesAddon{
 		Name:    common.MetricsServerAddonName,
-		Enabled: helpers.PointerToBool(DefaultMetricsServerAddonEnabled),
+		Enabled: to.BoolPtr(DefaultMetricsServerAddonEnabled),
 		Mode:    AddonModeReconcile,
 		Containers: []KubernetesContainerSpec{
 			{
@@ -153,7 +153,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultNVIDIADevicePluginAddonsConfig := KubernetesAddon{
 		Name:    common.NVIDIADevicePluginAddonName,
-		Enabled: helpers.PointerToBool(cs.Properties.IsNvidiaDevicePluginCapable() && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(cs.Properties.IsNvidiaDevicePluginCapable() && !cs.Properties.IsAzureStackCloud()),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name: common.NVIDIADevicePluginAddonName,
@@ -169,7 +169,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultIPMasqAgentAddonsConfig := KubernetesAddon{
 		Name: common.IPMASQAgentAddonName,
-		Enabled: helpers.PointerToBool(DefaultIPMasqAgentAddonEnabled &&
+		Enabled: to.BoolPtr(DefaultIPMasqAgentAddonEnabled &&
 			o.KubernetesConfig.NetworkPlugin != NetworkPluginCilium &&
 			o.KubernetesConfig.NetworkPlugin != NetworkPluginAntrea),
 		Containers: []KubernetesContainerSpec{
@@ -193,7 +193,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultAzureNetworkPolicyAddonsConfig := KubernetesAddon{
 		Name:    common.AzureNetworkPolicyAddonName,
-		Enabled: helpers.PointerToBool(o.KubernetesConfig.NetworkPlugin == NetworkPluginAzure && o.KubernetesConfig.NetworkPolicy == NetworkPolicyAzure),
+		Enabled: to.BoolPtr(o.KubernetesConfig.NetworkPlugin == NetworkPluginAzure && o.KubernetesConfig.NetworkPolicy == NetworkPolicyAzure),
 		Mode:    AddonModeReconcile,
 		Containers: []KubernetesContainerSpec{
 			{
@@ -213,7 +213,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultCloudNodeManagerAddonsConfig := KubernetesAddon{
 		Name:    common.CloudNodeManagerAddonName,
-		Enabled: helpers.PointerToBool(cs.Properties.ShouldEnableAzureCloudAddon(common.CloudNodeManagerAddonName)),
+		Enabled: to.BoolPtr(cs.Properties.ShouldEnableAzureCloudAddon(common.CloudNodeManagerAddonName)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.CloudNodeManagerAddonName,
@@ -224,7 +224,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultsCalicoDaemonSetAddonsConfig := KubernetesAddon{
 		Name:    common.CalicoAddonName,
-		Enabled: helpers.PointerToBool(o.KubernetesConfig.NetworkPolicy == NetworkPolicyCalico),
+		Enabled: to.BoolPtr(o.KubernetesConfig.NetworkPolicy == NetworkPolicyCalico),
 		Config: map[string]string{
 			"logSeverityScreen":     "info",
 			"usageReportingEnabled": "true",
@@ -255,7 +255,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultsCiliumAddonsConfig := KubernetesAddon{
 		Name:    common.CiliumAddonName,
-		Enabled: helpers.PointerToBool(o.KubernetesConfig.NetworkPolicy == NetworkPolicyCilium),
+		Enabled: to.BoolPtr(o.KubernetesConfig.NetworkPolicy == NetworkPolicyCilium),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.CiliumAgentContainerName,
@@ -278,7 +278,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultsAntreaDaemonSetAddonsConfig := KubernetesAddon{
 		Name:    common.AntreaAddonName,
-		Enabled: helpers.PointerToBool(o.KubernetesConfig.NetworkPolicy == NetworkPolicyAntrea),
+		Enabled: to.BoolPtr(o.KubernetesConfig.NetworkPolicy == NetworkPolicyAntrea),
 		Config: map[string]string{
 			"serviceCidr":      o.KubernetesConfig.ServiceCIDR,
 			"trafficEncapMode": common.AntreaDefaultTrafficEncapMode,
@@ -316,7 +316,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultsAADPodIdentityAddonsConfig := KubernetesAddon{
 		Name:    common.AADPodIdentityAddonName,
-		Enabled: helpers.PointerToBool(DefaultAADPodIdentityAddonEnabled && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(DefaultAADPodIdentityAddonEnabled && !cs.Properties.IsAzureStackCloud()),
 		Config: map[string]string{
 			"probePort": "8085",
 		},
@@ -342,7 +342,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultsAzurePolicyAddonsConfig := KubernetesAddon{
 		Name:    common.AzurePolicyAddonName,
-		Enabled: helpers.PointerToBool(DefaultAzurePolicyAddonEnabled && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(DefaultAzurePolicyAddonEnabled && !cs.Properties.IsAzureStackCloud()),
 		Config: map[string]string{
 			"auditInterval":             "60",
 			"constraintViolationsLimit": "100",
@@ -369,7 +369,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultNodeProblemDetectorConfig := KubernetesAddon{
 		Name:    common.NodeProblemDetectorAddonName,
-		Enabled: helpers.PointerToBool(DefaultNodeProblemDetectorAddonEnabled),
+		Enabled: to.BoolPtr(DefaultNodeProblemDetectorAddonEnabled),
 		Config: map[string]string{
 			"customPluginMonitor": "/config/kernel-monitor-counter.json,/config/systemd-monitor-counter.json",
 			"systemLogMonitor":    "/config/kernel-monitor.json,/config/docker-monitor.json,/config/systemd-monitor.json",
@@ -390,7 +390,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultAppGwAddonsConfig := KubernetesAddon{
 		Name:    common.AppGwIngressAddonName,
-		Enabled: helpers.PointerToBool(DefaultAppGwIngressAddonEnabled),
+		Enabled: to.BoolPtr(DefaultAppGwIngressAddonEnabled),
 		Config: map[string]string{
 			"appgw-subnet":     "",
 			"appgw-sku":        "WAF_v2",
@@ -400,7 +400,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultAzureDiskCSIDriverAddonsConfig := KubernetesAddon{
 		Name:    common.AzureDiskCSIDriverAddonName,
-		Enabled: helpers.PointerToBool(DefaultAzureDiskCSIDriverAddonEnabled && cs.Properties.ShouldEnableAzureCloudAddon(common.AzureDiskCSIDriverAddonName)),
+		Enabled: to.BoolPtr(DefaultAzureDiskCSIDriverAddonEnabled && cs.Properties.ShouldEnableAzureCloudAddon(common.AzureDiskCSIDriverAddonName)),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.CSIProvisionerContainerName,
@@ -487,7 +487,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultAzureFileCSIDriverAddonsConfig := KubernetesAddon{
 		Name:    common.AzureFileCSIDriverAddonName,
-		Enabled: helpers.PointerToBool(DefaultAzureFileCSIDriverAddonEnabled && cs.Properties.ShouldEnableAzureCloudAddon(common.AzureFileCSIDriverAddonName) && !cs.Properties.IsAzureStackCloud()),
+		Enabled: to.BoolPtr(DefaultAzureFileCSIDriverAddonEnabled && cs.Properties.ShouldEnableAzureCloudAddon(common.AzureFileCSIDriverAddonName) && !cs.Properties.IsAzureStackCloud()),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.CSIProvisionerContainerName,
@@ -566,7 +566,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultKubeDNSAddonsConfig := KubernetesAddon{
 		Name:    common.KubeDNSAddonName,
-		Enabled: helpers.PointerToBool(DefaultKubeDNSAddonEnabled),
+		Enabled: to.BoolPtr(DefaultKubeDNSAddonEnabled),
 		Config: map[string]string{
 			"domain":    o.KubernetesConfig.KubeletConfig["--cluster-domain"],
 			"clusterIP": o.KubernetesConfig.DNSServiceIP,
@@ -589,7 +589,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultCorednsAddonsConfig := KubernetesAddon{
 		Name:    common.CoreDNSAddonName,
-		Enabled: helpers.PointerToBool(DefaultCoreDNSAddonEnabled),
+		Enabled: to.BoolPtr(DefaultCoreDNSAddonEnabled),
 		Config: map[string]string{
 			"domain":            o.KubernetesConfig.KubeletConfig["--cluster-domain"],
 			"clusterIP":         o.KubernetesConfig.DNSServiceIP,
@@ -620,13 +620,13 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	if getAddonsIndexByName(o.KubernetesConfig.Addons, common.KubeDNSAddonName) != -1 || getAddonsIndexByName(o.KubernetesConfig.Addons, common.CoreDNSAddonName) != -1 {
 		// Ensure we don't we don't prepare an addons spec w/ both kube-dns and coredns enabled
 		if o.KubernetesConfig.IsAddonEnabled(common.KubeDNSAddonName) {
-			defaultCorednsAddonsConfig.Enabled = helpers.PointerToBool(false)
+			defaultCorednsAddonsConfig.Enabled = to.BoolPtr(false)
 		}
 	}
 
 	defaultKubeProxyAddonsConfig := KubernetesAddon{
 		Name:    common.KubeProxyAddonName,
-		Enabled: helpers.PointerToBool(DefaultKubeProxyAddonEnabled),
+		Enabled: to.BoolPtr(DefaultKubeProxyAddonEnabled),
 		Config: map[string]string{
 			"cluster-cidr": o.KubernetesConfig.ClusterSubnet,
 			"proxy-mode":   string(o.KubernetesConfig.ProxyMode),
@@ -651,22 +651,22 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	pspAddonEnabled := !common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion)
 	defaultPodSecurityPolicyAddonsConfig := KubernetesAddon{
 		Name:    common.PodSecurityPolicyAddonName,
-		Enabled: helpers.PointerToBool(pspAddonEnabled),
+		Enabled: to.BoolPtr(pspAddonEnabled),
 	}
 
 	defaultAuditPolicyAddonsConfig := KubernetesAddon{
 		Name:    common.AuditPolicyAddonName,
-		Enabled: helpers.PointerToBool(true),
+		Enabled: to.BoolPtr(true),
 	}
 
 	defaultAzureCloudProviderAddonsConfig := KubernetesAddon{
 		Name:    common.AzureCloudProviderAddonName,
-		Enabled: helpers.PointerToBool(true),
+		Enabled: to.BoolPtr(true),
 	}
 
 	defaultAADDefaultAdminGroupAddonsConfig := KubernetesAddon{
 		Name:    common.AADAdminGroupAddonName,
-		Enabled: helpers.PointerToBool(cs.Properties.HasAADAdminGroupID()),
+		Enabled: to.BoolPtr(cs.Properties.HasAADAdminGroupID()),
 		Config: map[string]string{
 			"adminGroupID": cs.Properties.GetAADAdminGroupID(),
 		},
@@ -674,7 +674,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultFlannelAddonsConfig := KubernetesAddon{
 		Name:    common.FlannelAddonName,
-		Enabled: helpers.PointerToBool(false),
+		Enabled: to.BoolPtr(false),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.KubeFlannelContainerName,
@@ -689,7 +689,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultScheduledMaintenanceAddonsConfig := KubernetesAddon{
 		Name:    common.ScheduledMaintenanceAddonName,
-		Enabled: helpers.PointerToBool(false),
+		Enabled: to.BoolPtr(false),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.KubeRBACProxyContainerName,
@@ -709,7 +709,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 			"enableSecretRotation": "false",
 			"rotationPollInterval": "2m",
 		},
-		Enabled: helpers.PointerToBool(DefaultSecretStoreCSIDriverAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.16.0")),
+		Enabled: to.BoolPtr(DefaultSecretStoreCSIDriverAddonEnabled && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.16.0")),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:           common.CSILivenessProbeContainerName,
@@ -748,7 +748,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	defaultAzureArcOnboardingAddonsConfig := KubernetesAddon{
 		Name:    common.AzureArcOnboardingAddonName,
-		Enabled: helpers.PointerToBool(DefaultAzureArcOnboardingAddonEnabled),
+		Enabled: to.BoolPtr(DefaultAzureArcOnboardingAddonEnabled),
 		Containers: []KubernetesContainerSpec{
 			{
 				Name:  common.AzureArcOnboardingAddonName,
@@ -759,7 +759,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	// Allow folks to simply enable kube-dns at cluster creation time without also requiring that coredns be explicitly disabled
 	if !isUpgrade && o.KubernetesConfig.IsAddonEnabled(common.KubeDNSAddonName) {
-		defaultCorednsAddonsConfig.Enabled = helpers.PointerToBool(false)
+		defaultCorednsAddonsConfig.Enabled = to.BoolPtr(false)
 	}
 
 	defaultAddons := []KubernetesAddon{
@@ -814,7 +814,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 		}
 		for name, config := range componentry {
 			if i := getAddonsIndexByName(o.KubernetesConfig.Addons, name); i > -1 {
-				if !helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+				if !to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 					o.KubernetesConfig.Addons[i] = config
 				}
 			}
@@ -824,7 +824,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Ensure cloud-node-manager is enabled on appropriate upgrades for Azure Stack cloud
 	if isUpgrade &&
 		cs.Properties.IsAzureStackCloud() &&
-		helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
+		to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 		// Force enabling cloud-node-manager addon
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.CloudNodeManagerAddonName); i > -1 {
 			o.KubernetesConfig.Addons[i] = defaultCloudNodeManagerAddonsConfig
@@ -834,7 +834,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Back-compat for older addon specs of cluster-autoscaler
 	if isUpgrade {
 		i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.ClusterAutoscalerAddonName)
-		if i > -1 && helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+		if i > -1 && to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 			if o.KubernetesConfig.Addons[i].Pools == nil {
 				log.Warnf("This cluster upgrade operation will enable the per-pool cluster-autoscaler addon.\n")
 				var pools []AddonNodePoolsConfig
@@ -874,10 +874,10 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	if isUpgrade && common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.12.0") {
 		// If we don't have coredns in our addons array at all, this means we're in a legacy scenario and we want to migrate from kube-dns to coredns
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.CoreDNSAddonName); i == -1 {
-			o.KubernetesConfig.Addons[i].Enabled = helpers.PointerToBool(true)
+			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(true)
 			// Ensure we don't we don't prepare an addons spec w/ both kube-dns and coredns enabled
 			if j := getAddonsIndexByName(o.KubernetesConfig.Addons, common.KubeDNSAddonName); j > -1 {
-				o.KubernetesConfig.Addons[j].Enabled = helpers.PointerToBool(false)
+				o.KubernetesConfig.Addons[j].Enabled = to.BoolPtr(false)
 			}
 		}
 	}
@@ -886,7 +886,7 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	if isUpgrade {
 		// Force disabling of the deprecated Azure CNI networkmonitor addon
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.AzureCNINetworkMonitorAddonName); i > -1 {
-			o.KubernetesConfig.Addons[i].Enabled = helpers.PointerToBool(false)
+			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(false)
 		}
 	}
 
@@ -914,10 +914,10 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Specific back-compat business logic for calico addon
 	// Ensure addon is set to Enabled w/ proper containers config no matter what if NetworkPolicy == calico
 	i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.CalicoAddonName)
-	if isUpgrade && o.KubernetesConfig.NetworkPolicy == NetworkPolicyCalico && i > -1 && o.KubernetesConfig.Addons[i].Enabled != helpers.PointerToBool(true) {
+	if isUpgrade && o.KubernetesConfig.NetworkPolicy == NetworkPolicyCalico && i > -1 && o.KubernetesConfig.Addons[i].Enabled != to.BoolPtr(true) {
 		j := getAddonsIndexByName(defaultAddons, common.CalicoAddonName)
 		// Ensure calico is statically set to enabled
-		o.KubernetesConfig.Addons[i].Enabled = helpers.PointerToBool(true)
+		o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(true)
 		// Assume addon configuration was pruned due to an inherited enabled=false, so re-apply default values
 		o.KubernetesConfig.Addons[i] = assignDefaultAddonVals(o.KubernetesConfig.Addons[i], defaultAddons[j], isUpgrade)
 	}
@@ -943,12 +943,12 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 
 	// Specific back-compat business logic for deprecated "kube-proxy-daemonset" addon
 	if i := getAddonsIndexByName(o.KubernetesConfig.Addons, "kube-proxy-daemonset"); i > -1 {
-		if helpers.Bool(o.KubernetesConfig.Addons[i].Enabled) {
+		if to.Bool(o.KubernetesConfig.Addons[i].Enabled) {
 			if j := getAddonsIndexByName(o.KubernetesConfig.Addons, common.KubeProxyAddonName); j > -1 {
 				// Copy data from deprecated addon spec to the current "kube-proxy" addon
 				o.KubernetesConfig.Addons[j] = KubernetesAddon{
 					Name:    common.KubeProxyAddonName,
-					Enabled: helpers.PointerToBool(true),
+					Enabled: to.BoolPtr(true),
 					Data:    o.KubernetesConfig.Addons[i].Data,
 				}
 			}
@@ -960,11 +960,11 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 	// Enable pod-security-policy addon during upgrade scenarios, unless explicitly disabled or v1.25+
 	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.PodSecurityPolicyAddonName); i > -1 {
-			o.KubernetesConfig.Addons[i].Enabled = helpers.PointerToBool(false)
+			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(false)
 		}
 	} else if isUpgrade && !o.KubernetesConfig.IsAddonDisabled(common.PodSecurityPolicyAddonName) {
 		if i := getAddonsIndexByName(o.KubernetesConfig.Addons, common.PodSecurityPolicyAddonName); i > -1 {
-			o.KubernetesConfig.Addons[i].Enabled = helpers.PointerToBool(true)
+			o.KubernetesConfig.Addons[i].Enabled = to.BoolPtr(true)
 		}
 	}
 }
@@ -991,7 +991,7 @@ func assignDefaultAddonVals(addon, defaults KubernetesAddon, isUpgrade bool) Kub
 	if addon.Enabled == nil {
 		addon.Enabled = defaults.Enabled
 	}
-	if !helpers.Bool(addon.Enabled) {
+	if !to.Bool(addon.Enabled) {
 		return KubernetesAddon{
 			Name:    addon.Name,
 			Enabled: addon.Enabled,

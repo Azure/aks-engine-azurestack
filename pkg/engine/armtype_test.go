@@ -9,7 +9,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	. "github.com/onsi/gomega"
 )
@@ -26,7 +26,7 @@ func TestMarshalJSON(t *testing.T) {
 				DNSPrefix:                 "myprefix1",
 				VMSize:                    "Standard_DS2_v2",
 				AvailabilityProfile:       api.VirtualMachineScaleSets,
-				PlatformUpdateDomainCount: helpers.PointerToInt(3),
+				PlatformUpdateDomainCount: to.IntPtr(3),
 			},
 			OrchestratorProfile: &api.OrchestratorProfile{
 				OrchestratorType:    api.Kubernetes,
@@ -65,17 +65,17 @@ func TestMarshalJSONAvailabilitySetARM(t *testing.T) {
 					APIVersion: "[variables('apiVersionCompute')]",
 				},
 				AvailabilitySet: compute.AvailabilitySet{
-					Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-					Location: helpers.PointerToString("[variables('location')]"),
-					Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+					Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+					Location: to.StringPtr("[variables('location')]"),
+					Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 					Sku: &compute.Sku{
-						Name: helpers.PointerToString("Aligned"),
+						Name: to.StringPtr("Aligned"),
 					},
 					AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-						PlatformFaultDomainCount:  helpers.PointerToInt32(3),
-						PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+						PlatformFaultDomainCount:  to.Int32Ptr(3),
+						PlatformUpdateDomainCount: to.Int32Ptr(3),
 						ProximityPlacementGroup: &compute.SubResource{
-							ID: helpers.PointerToString("ProximityPlacementGroupResourceID"),
+							ID: to.StringPtr("ProximityPlacementGroupResourceID"),
 						},
 					},
 				},
@@ -103,16 +103,16 @@ func TestMarshalJSONAvailabilitySetARM(t *testing.T) {
 					APIVersion: "[variables('apiVersionCompute')]",
 				},
 				AvailabilitySet: compute.AvailabilitySet{
-					Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-					Location: helpers.PointerToString("[variables('location')]"),
-					Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+					Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+					Location: to.StringPtr("[variables('location')]"),
+					Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 					Sku: &compute.Sku{
-						Name: helpers.PointerToString("Aligned"),
+						Name: to.StringPtr("Aligned"),
 					},
 					AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-						PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+						PlatformUpdateDomainCount: to.Int32Ptr(3),
 						ProximityPlacementGroup: &compute.SubResource{
-							ID: helpers.PointerToString("ProximityPlacementGroupResourceID"),
+							ID: to.StringPtr("ProximityPlacementGroupResourceID"),
 						},
 					},
 				},
@@ -140,11 +140,11 @@ func TestMarshalJSONAvailabilitySetARM(t *testing.T) {
 					APIVersion: "[variables('apiVersionCompute')]",
 				},
 				AvailabilitySet: compute.AvailabilitySet{
-					Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-					Location: helpers.PointerToString("[variables('location')]"),
-					Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+					Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+					Location: to.StringPtr("[variables('location')]"),
+					Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 					Sku: &compute.Sku{
-						Name: helpers.PointerToString("Aligned"),
+						Name: to.StringPtr("Aligned"),
 					},
 					AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
 				},

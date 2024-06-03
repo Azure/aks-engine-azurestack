@@ -15,6 +15,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/versions"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/blang/semver"
@@ -236,7 +237,7 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 				}
 			}
 
-			if helpers.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) {
+			if to.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) {
 				if o.KubernetesConfig.EtcdEncryptionKey != "" {
 					_, err = base64.StdEncoding.DecodeString(o.KubernetesConfig.EtcdEncryptionKey)
 					if err != nil {
@@ -245,13 +246,13 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 				}
 			}
 
-			if helpers.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
-				if helpers.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && a.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
+			if to.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
+				if to.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && a.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
 					log.Warnf("Clusters with enableEncryptionWithExternalKms=true and system-assigned identity are not upgradable! You will not be able to upgrade your cluster using `aks-engine-azurestack upgrade`")
 				}
 			}
 
-			if helpers.Bool(o.KubernetesConfig.EnablePodSecurityPolicy) {
+			if to.Bool(o.KubernetesConfig.EnablePodSecurityPolicy) {
 				log.Warnf("EnablePodSecurityPolicy is deprecated in favor of the addon pod-security-policy.")
 				if !o.KubernetesConfig.IsRBACEnabled() {
 					return errors.Errorf("enablePodSecurityPolicy requires the enableRbac feature as a prerequisite")
@@ -268,7 +269,7 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 			}
 
 			if o.KubernetesConfig.LoadBalancerSku == StandardLoadBalancerSku {
-				if !helpers.Bool(a.OrchestratorProfile.KubernetesConfig.ExcludeMasterFromStandardLB) {
+				if !to.Bool(a.OrchestratorProfile.KubernetesConfig.ExcludeMasterFromStandardLB) {
 					return errors.Errorf("standard loadBalancerSku should exclude master nodes. Please set KubernetesConfig \"ExcludeMasterFromStandardLB\" to \"true\"")
 				}
 			}
@@ -288,8 +289,8 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 			}
 
 			if o.KubernetesConfig.LoadBalancerOutboundIPs != nil {
-				if helpers.Int(o.KubernetesConfig.LoadBalancerOutboundIPs) > common.MaxLoadBalancerOutboundIPs {
-					return errors.Errorf("kubernetesConfig.loadBalancerOutboundIPs was set to %d, the maximum allowed is %d", helpers.Int(o.KubernetesConfig.LoadBalancerOutboundIPs), common.MaxLoadBalancerOutboundIPs)
+				if to.Int(o.KubernetesConfig.LoadBalancerOutboundIPs) > common.MaxLoadBalancerOutboundIPs {
+					return errors.Errorf("kubernetesConfig.loadBalancerOutboundIPs was set to %d, the maximum allowed is %d", to.Int(o.KubernetesConfig.LoadBalancerOutboundIPs), common.MaxLoadBalancerOutboundIPs)
 				}
 			}
 
@@ -299,7 +300,7 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 			}
 
 			if a.IsAzureStackCloud() {
-				if common.IsKubernetesVersionGe(a.OrchestratorProfile.OrchestratorVersion, "1.21.0") && !helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+				if common.IsKubernetesVersionGe(a.OrchestratorProfile.OrchestratorVersion, "1.21.0") && !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 					return errors.New("useCloudControllerManager should be set to true for Kubernetes v1.21+ clusters on Azure Stack Hub")
 				}
 
@@ -307,7 +308,7 @@ func (a *Properties) ValidateOrchestratorProfile(isUpdate bool) error {
 					return errors.Errorf("Docker runtime is no longer supported for v1.24+ clusters, use %s containerRuntime value instead", Containerd)
 				}
 
-				if helpers.Bool(o.KubernetesConfig.UseInstanceMetadata) {
+				if to.Bool(o.KubernetesConfig.UseInstanceMetadata) {
 					return errors.New("useInstanceMetadata shouldn't be set to true as feature not yet supported on Azure Stack")
 				}
 
@@ -386,7 +387,7 @@ func (a *Properties) validateMasterProfile(isUpdate bool) error {
 			return errors.New("VirtualMachineScaleSets for master profile must be used together with virtualMachineScaleSets for agent profiles. Set \"availabilityProfile\" to \"VirtualMachineScaleSets\" for agent profiles")
 		}
 
-		if a.OrchestratorProfile.KubernetesConfig != nil && helpers.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && a.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
+		if a.OrchestratorProfile.KubernetesConfig != nil && to.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && a.OrchestratorProfile.KubernetesConfig.UserAssignedID == "" {
 			return errors.New("virtualMachineScaleSets for master profile can be used only with user assigned MSI ! Please specify \"userAssignedID\" in \"kubernetesConfig\"")
 		}
 	}
@@ -413,7 +414,7 @@ func (a *Properties) validateMasterProfile(isUpdate bool) error {
 		}
 	}
 
-	if helpers.Bool(m.AuditDEnabled) {
+	if to.Bool(m.AuditDEnabled) {
 		if m.Distro != "" && !m.IsUbuntu() {
 			return errors.Errorf("auditd was enabled for master vms, but an Ubuntu-based distro was not selected")
 		}
@@ -469,7 +470,7 @@ func (a *Properties) validateAgentPoolProfiles(isUpdate bool) error {
 			return e
 		}
 
-		if helpers.Bool(agentPoolProfile.AcceleratedNetworkingEnabled) || helpers.Bool(agentPoolProfile.AcceleratedNetworkingEnabledWindows) {
+		if to.Bool(agentPoolProfile.AcceleratedNetworkingEnabled) || to.Bool(agentPoolProfile.AcceleratedNetworkingEnabledWindows) {
 			if a.IsAzureStackCloud() {
 				return errors.Errorf("AcceleratedNetworkingEnabled or AcceleratedNetworkingEnabledWindows shouldn't be set to true as feature is not yet supported on Azure Stack")
 			} else if e := validatePoolAcceleratedNetworking(agentPoolProfile.VMSize); e != nil {
@@ -477,13 +478,13 @@ func (a *Properties) validateAgentPoolProfiles(isUpdate bool) error {
 			}
 		}
 
-		if helpers.Bool(agentPoolProfile.VMSSOverProvisioningEnabled) {
+		if to.Bool(agentPoolProfile.VMSSOverProvisioningEnabled) {
 			if agentPoolProfile.AvailabilityProfile == AvailabilitySet {
 				return errors.Errorf("You have specified VMSS Overprovisioning in agent pool %s, but you did not specify VMSS", agentPoolProfile.Name)
 			}
 		}
 
-		if helpers.Bool(agentPoolProfile.AuditDEnabled) {
+		if to.Bool(agentPoolProfile.AuditDEnabled) {
 			if agentPoolProfile.Distro != "" && !agentPoolProfile.IsUbuntu() {
 				return errors.Errorf("You have enabled auditd in agent pool %s, but you did not specify an Ubuntu-based distro", agentPoolProfile.Name)
 			}
@@ -493,7 +494,7 @@ func (a *Properties) validateAgentPoolProfiles(isUpdate bool) error {
 			}
 		}
 
-		if helpers.Bool(agentPoolProfile.EnableVMSSNodePublicIP) {
+		if to.Bool(agentPoolProfile.EnableVMSSNodePublicIP) {
 			if agentPoolProfile.AvailabilityProfile == AvailabilitySet {
 				return errors.Errorf("You have enabled VMSS node public IP in agent pool %s, but you did not specify VMSS", agentPoolProfile.Name)
 			}
@@ -699,7 +700,7 @@ func (a *Properties) validateAddons(isUpdate bool) error {
 			}
 
 			// Validation for addons if they are enabled
-			if helpers.Bool(addon.Enabled) {
+			if to.Bool(addon.Enabled) {
 				switch addon.Name {
 				case "cluster-autoscaler":
 					if isAvailabilitySets {
@@ -738,7 +739,7 @@ func (a *Properties) validateAddons(isUpdate bool) error {
 					}
 				case "appgw-ingress":
 					if (a.ServicePrincipalProfile == nil || len(a.ServicePrincipalProfile.ObjectID) == 0) &&
-						!helpers.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+						!to.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 						return errors.New("appgw-ingress add-ons requires 'objectID' to be specified or UseManagedIdentity to be true")
 					}
 
@@ -750,7 +751,7 @@ func (a *Properties) validateAddons(isUpdate bool) error {
 						return errors.New("appgw-ingress add-ons requires 'appgw-subnet' in the Config. It is used to provision the subnet for Application Gateway in the vnet")
 					}
 				case "cloud-node-manager":
-					if !helpers.Bool(a.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
+					if !to.Bool(a.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 						return errors.Errorf("%s add-on requires useCloudControllerManager to be true", addon.Name)
 					}
 					if !a.ShouldEnableAzureCloudAddon(addon.Name) {
@@ -924,7 +925,7 @@ func (a *Properties) validateVNET() error {
 
 func (a *Properties) validateServicePrincipalProfile() error {
 	useManagedIdentityDisabled := a.OrchestratorProfile.KubernetesConfig != nil &&
-		a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity != nil && !helpers.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+		a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity != nil && !to.Bool(a.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 
 	if useManagedIdentityDisabled {
 		if a.ServicePrincipalProfile == nil {
@@ -938,7 +939,7 @@ func (a *Properties) validateServicePrincipalProfile() error {
 			return errors.Errorf("either the service principal client secret or keyvault secret reference must be specified")
 		}
 
-		if a.OrchestratorProfile.KubernetesConfig != nil && helpers.Bool(a.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) && len(a.ServicePrincipalProfile.ObjectID) == 0 {
+		if a.OrchestratorProfile.KubernetesConfig != nil && to.Bool(a.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) && len(a.ServicePrincipalProfile.ObjectID) == 0 {
 			return errors.Errorf("the service principal object ID must be specified when enableEncryptionWithExternalKms is true")
 		}
 
@@ -1485,7 +1486,7 @@ func (k *KubernetesConfig) Validate(k8sVersion string, hasWindows, ipv6DualStack
 		return e
 	}
 
-	if helpers.Bool(k.UseCloudControllerManager) || k.CustomCcmImage != "" {
+	if to.Bool(k.UseCloudControllerManager) || k.CustomCcmImage != "" {
 		sv, err := semver.Make(k8sVersion)
 		if err != nil {
 			return errors.Errorf("could not validate version %s", k8sVersion)
@@ -1515,7 +1516,7 @@ func (k *KubernetesConfig) Validate(k8sVersion string, hasWindows, ipv6DualStack
 		return e
 	}
 
-	if helpers.Bool(k.EnableMultipleStandardLoadBalancers) && !common.IsKubernetesVersionGe(k8sVersion, "1.20.0-beta.1") {
+	if to.Bool(k.EnableMultipleStandardLoadBalancers) && !common.IsKubernetesVersionGe(k8sVersion, "1.20.0-beta.1") {
 		return errors.Errorf("OrchestratorProfile.KubernetesConfig.EnableMultipleStandardLoadBalancers is available since kubernetes version v1.20.0-beta.1, current version is %s", k8sVersion)
 	}
 	if k.Tags != "" && !common.IsKubernetesVersionGe(k8sVersion, "1.20.0-beta.1") {

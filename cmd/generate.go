@@ -12,6 +12,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/engine"
 	"github.com/Azure/aks-engine-azurestack/pkg/engine/transform"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
 	"github.com/google/uuid"
 	"github.com/leonelquinteros/gotext"
@@ -210,7 +211,7 @@ func (gc *generateCmd) loadAPIModel() error {
 func (gc *generateCmd) autofillApimodel() error {
 	// set the client id and client secret by command flags
 	k8sConfig := gc.containerService.Properties.OrchestratorProfile.KubernetesConfig
-	useManagedIdentity := k8sConfig != nil && helpers.Bool(k8sConfig.UseManagedIdentity)
+	useManagedIdentity := k8sConfig != nil && to.Bool(k8sConfig.UseManagedIdentity)
 	if !useManagedIdentity {
 		if (gc.containerService.Properties.ServicePrincipalProfile == nil || ((gc.containerService.Properties.ServicePrincipalProfile.ClientID == "" || gc.containerService.Properties.ServicePrincipalProfile.ClientID == "00000000-0000-0000-0000-000000000000") && gc.containerService.Properties.ServicePrincipalProfile.Secret == "")) && gc.ClientID.String() != "" && gc.ClientSecret != "" {
 			gc.containerService.Properties.ServicePrincipalProfile = &api.ServicePrincipalProfile{

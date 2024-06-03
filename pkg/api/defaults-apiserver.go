@@ -9,6 +9,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func (cs *ContainerService) setAPIServerConfig() {
@@ -45,12 +46,12 @@ func (cs *ContainerService) setAPIServerConfig() {
 	}
 
 	// Data Encryption at REST configuration conditions
-	if helpers.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) || helpers.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
+	if to.Bool(o.KubernetesConfig.EnableDataEncryptionAtRest) || to.Bool(o.KubernetesConfig.EnableEncryptionWithExternalKms) {
 		staticAPIServerConfig["--encryption-provider-config"] = "/etc/kubernetes/encryption-config.yaml"
 	}
 
 	// Enable cloudprovider if we're not using cloud controller manager
-	if !helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 		staticAPIServerConfig["--cloud-provider"] = "azure"
 		staticAPIServerConfig["--cloud-config"] = "/etc/kubernetes/azure.json"
 	}
@@ -96,7 +97,7 @@ func (cs *ContainerService) setAPIServerConfig() {
 	defaultAPIServerConfig["--audit-policy-file"] = "/etc/kubernetes/addons/audit-policy.yaml"
 
 	// RBAC configuration
-	if helpers.Bool(o.KubernetesConfig.EnableRbac) {
+	if to.Bool(o.KubernetesConfig.EnableRbac) {
 		defaultAPIServerConfig["--authorization-mode"] = "Node,RBAC"
 	}
 
@@ -143,7 +144,7 @@ func (cs *ContainerService) setAPIServerConfig() {
 	}
 
 	// Remove flags for secure communication to kubelet, if configured
-	if !helpers.Bool(o.KubernetesConfig.EnableSecureKubelet) {
+	if !to.Bool(o.KubernetesConfig.EnableSecureKubelet) {
 		for _, key := range []string{"--kubelet-client-certificate", "--kubelet-client-key"} {
 			delete(o.KubernetesConfig.APIServerConfig, key)
 		}

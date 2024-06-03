@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/azure"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
@@ -433,7 +433,7 @@ func (cli *CLIProvisioner) FetchProvisioningMetrics(path string, cfg *config.Con
 // IsPrivate will return true if the cluster has no public IPs
 func (cli *CLIProvisioner) IsPrivate() bool {
 	return cli.Engine.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster != nil &&
-		helpers.Bool(cli.Engine.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster.Enabled)
+		to.Bool(cli.Engine.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster.Enabled)
 }
 
 // FetchActivityLog gets the activity log for the all resource groups used in the provisioner.
@@ -456,7 +456,7 @@ func (cli *CLIProvisioner) FetchActivityLog(acct *azure.Account, logPath string)
 // https://docs.microsoft.com/en-us/azure/azure-arc/kubernetes/overview#supported-regions
 func (cli *CLIProvisioner) EnsureArcResourceGroup() error {
 	for _, addon := range cli.Engine.ClusterDefinition.Properties.OrchestratorProfile.KubernetesConfig.Addons {
-		if addon.Name == common.AzureArcOnboardingAddonName && helpers.Bool(addon.Enabled) &&
+		if addon.Name == common.AzureArcOnboardingAddonName && to.Bool(addon.Enabled) &&
 			addon.Config["resourceGroup"] != "" &&
 			addon.Config["location"] != "" {
 			if err := cli.Account.CreateGroupWithRetry(addon.Config["resourceGroup"], addon.Config["location"], 30*time.Second, cli.Config.Timeout); err != nil {

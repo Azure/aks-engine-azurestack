@@ -10,7 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/equality"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )
@@ -573,7 +573,7 @@ func TestConvertVLabsContainerService(t *testing.T) {
 		Addons: []vlabs.KubernetesAddon{
 			{
 				Name:    "sampleAddon",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "sampleK8sContainer",
@@ -600,8 +600,8 @@ func TestConvertVLabsContainerService(t *testing.T) {
 			"sampleSchedulerKey": "sampleSchedulerVal",
 		},
 		PrivateCluster: &vlabs.PrivateCluster{
-			Enabled:                helpers.PointerToBool(true),
-			EnableHostsConfigAgent: helpers.PointerToBool(true),
+			Enabled:                to.BoolPtr(true),
+			EnableHostsConfigAgent: to.BoolPtr(true),
 			JumpboxProfile: &vlabs.PrivateJumpboxProfile{
 				Name:           "sampleJumpboxProfile",
 				VMSize:         "Standard_DS1_v2",
@@ -804,7 +804,7 @@ func TestConvertVLabsWindowsProfile(t *testing.T) {
 				WindowsOffer:           "WindowsServer",
 				WindowsSku:             "2019-Datacenter-Core-smalldisk",
 				WindowsDockerVersion:   "18.09",
-				EnableAHUB:             helpers.PointerToBool(true),
+				EnableAHUB:             to.BoolPtr(true),
 				WindowsRuntimes: &vlabs.WindowsRuntimes{
 					Default: "process",
 					HypervRuntimes: []vlabs.RuntimeHandlers{
@@ -823,7 +823,7 @@ func TestConvertVLabsWindowsProfile(t *testing.T) {
 				WindowsSku:             "2019-Datacenter-Core-smalldisk",
 				WindowsDockerVersion:   "18.09",
 				Secrets:                []KeyVaultSecrets{},
-				EnableAHUB:             helpers.PointerToBool(true),
+				EnableAHUB:             to.BoolPtr(true),
 				WindowsRuntimes: &WindowsRuntimes{
 					Default: "process",
 					HypervRuntimes: []RuntimeHandlers{
@@ -1045,11 +1045,11 @@ func TestConvertVlabsPlatformUpdateDomain(t *testing.T) {
 				OrchestratorType: vlabs.Kubernetes,
 			},
 			MasterProfile: &vlabs.MasterProfile{
-				PlatformUpdateDomainCount: helpers.PointerToInt(3),
+				PlatformUpdateDomainCount: to.IntPtr(3),
 			},
 			AgentPoolProfiles: []*vlabs.AgentPoolProfile{
 				{
-					PlatformUpdateDomainCount: helpers.PointerToInt(3),
+					PlatformUpdateDomainCount: to.IntPtr(3),
 				},
 			},
 		},
@@ -1072,7 +1072,7 @@ func TestConvertComponentsToAPI(t *testing.T) {
 		Components: []vlabs.KubernetesComponent{
 			{
 				Name:    "component-0",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "component-0-container-0",
@@ -1099,7 +1099,7 @@ func TestConvertComponentsToAPI(t *testing.T) {
 			},
 			{
 				Name:    "component-1",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 				Containers: []vlabs.KubernetesContainerSpec{
 					{
 						Name:           "component-1-container-0",
@@ -1132,8 +1132,8 @@ func TestConvertComponentsToAPI(t *testing.T) {
 		if k.Components[i].Name != component.Name {
 			t.Errorf("unexpected Component.Name property %s after convertComponentsToVlabs conversion, expected %s", k.Components[i].Name, component.Name)
 		}
-		if helpers.Bool(k.Components[i].Enabled) != helpers.Bool(component.Enabled) {
-			t.Errorf("unexpected Component.Enabled property %t after convertComponentsToVlabs conversion, expected %t", helpers.Bool(k.Components[i].Enabled), helpers.Bool(component.Enabled))
+		if to.Bool(k.Components[i].Enabled) != to.Bool(component.Enabled) {
+			t.Errorf("unexpected Component.Enabled property %t after convertComponentsToVlabs conversion, expected %t", to.Bool(k.Components[i].Enabled), to.Bool(component.Enabled))
 		}
 		if k.Components[i].Data != component.Data {
 			t.Errorf("unexpected Component.Data property %s after convertComponentsToVlabs conversion, expected %s", k.Components[i].Data, component.Data)
@@ -1186,53 +1186,53 @@ func TestConvertVLabsLinuxProfile(t *testing.T) {
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+				EnableUnattendedUpgrades:         to.BoolPtr(true),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+				EnableUnattendedUpgrades:         to.BoolPtr(true),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+				EnableUnattendedUpgrades:         to.BoolPtr(false),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+				EnableUnattendedUpgrades:         to.BoolPtr(false),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+				EnableUnattendedUpgrades:         to.BoolPtr(false),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(true),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(false),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(true),
+				EnableUnattendedUpgrades:         to.BoolPtr(false),
 			},
 		},
 		{
 			name: "unattended upgrades on bootstrap",
 			w: vlabs.LinuxProfile{
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+				EnableUnattendedUpgrades:         to.BoolPtr(true),
 			},
 			expected: LinuxProfile{
 				Secrets:                          []KeyVaultSecrets{},
 				SSH:                              ssh,
-				RunUnattendedUpgradesOnBootstrap: helpers.PointerToBool(false),
-				EnableUnattendedUpgrades:         helpers.PointerToBool(true),
+				RunUnattendedUpgradesOnBootstrap: to.BoolPtr(false),
+				EnableUnattendedUpgrades:         to.BoolPtr(true),
 			},
 		},
 	}

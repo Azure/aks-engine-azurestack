@@ -9,7 +9,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 func TestCreateKeyVault(t *testing.T) {
@@ -53,7 +53,7 @@ func TestCreateKeyVault(t *testing.T) {
 	}
 
 	//Test with UseManagedIdentityEnabled
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 
 	actual = CreateKeyVaultVMAS(cs)
 
@@ -88,7 +88,7 @@ func TestCreateKeyVault(t *testing.T) {
 	}
 
 	//Test with UserAssignedID
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = "fooID"
 
 	actual = CreateKeyVaultVMAS(cs)
@@ -165,7 +165,7 @@ func TestCreateKeyVaultVMSS(t *testing.T) {
 	}
 
 	//Test with UseManagedIdentityEnabled
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 
 	actual = CreateKeyVaultVMSS(cs)
 
@@ -200,7 +200,7 @@ func TestCreateKeyVaultVMSS(t *testing.T) {
 	}
 
 	//Test with UserAssignedID
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedID = "fooID"
 
 	actual = CreateKeyVaultVMSS(cs)

@@ -8,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/blang/semver"
 )
@@ -27,38 +27,38 @@ func CreateClusterLoadBalancerForIPv6() LoadBalancerARM {
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[parameters('masterEndpointDNSNamePrefix')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[parameters('masterEndpointDNSNamePrefix')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
 						// cluster name used as backend addr pool name for ipv4 to ensure backward compat
-						Name: helpers.PointerToString("[parameters('masterEndpointDNSNamePrefix')]"),
+						Name: to.StringPtr("[parameters('masterEndpointDNSNamePrefix')]"),
 					},
 				},
 				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 					{
-						Name: helpers.PointerToString("LBFE-v4"),
+						Name: to.StringPtr("LBFE-v4"),
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses', 'fee-ipv4')]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses', 'fee-ipv4')]"),
 							},
 						},
 					},
 				},
 				LoadBalancingRules: &[]network.LoadBalancingRule{
 					{
-						Name: helpers.PointerToString("LBRuleIPv4"),
+						Name: to.StringPtr("LBRuleIPv4"),
 						LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 							FrontendIPConfiguration: &network.SubResource{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('masterEndpointDNSNamePrefix'), 'LBFE-v4')]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/loadBalancers/frontendIpConfigurations', parameters('masterEndpointDNSNamePrefix'), 'LBFE-v4')]"),
 							},
 							BackendAddressPool: &network.SubResource{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('masterEndpointDNSNamePrefix'), parameters('masterEndpointDNSNamePrefix'))]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/loadBalancers/backendAddressPools', parameters('masterEndpointDNSNamePrefix'), parameters('masterEndpointDNSNamePrefix'))]"),
 							},
 							Protocol:     network.TransportProtocolTCP,
-							FrontendPort: helpers.PointerToInt32(9090),
-							BackendPort:  helpers.PointerToInt32(9090),
+							FrontendPort: to.Int32Ptr(9090),
+							BackendPort:  to.Int32Ptr(9090),
 						},
 					},
 				},
@@ -66,7 +66,7 @@ func CreateClusterLoadBalancerForIPv6() LoadBalancerARM {
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
+			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
 		},
 	}
 	return loadbalancer
@@ -83,20 +83,20 @@ func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('masterLbName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('masterLbName')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: helpers.PointerToString("[variables('masterLbBackendPoolName')]"),
+						Name: to.StringPtr("[variables('masterLbBackendPoolName')]"),
 					},
 				},
 				FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 					{
-						Name: helpers.PointerToString("[variables('masterLbIPConfigName')]"),
+						Name: to.StringPtr("[variables('masterLbIPConfigName')]"),
 						FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses',variables('masterPublicIPAddressName'))]"),
 							},
 						},
 					},
@@ -105,41 +105,41 @@ func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
+			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
 		},
 	}
 
 	if !prop.OrchestratorProfile.IsPrivateCluster() {
 		loadBalancingRules := &[]network.LoadBalancingRule{
 			{
-				Name: helpers.PointerToString("LBRuleHTTPS"),
+				Name: to.StringPtr("LBRuleHTTPS"),
 				LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 					FrontendIPConfiguration: &network.SubResource{
-						ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
+						ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
 					},
 					BackendAddressPool: &network.SubResource{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 					Protocol:             network.TransportProtocolTCP,
-					FrontendPort:         helpers.PointerToInt32(443),
-					BackendPort:          helpers.PointerToInt32(443),
-					EnableFloatingIP:     helpers.PointerToBool(false),
-					IdleTimeoutInMinutes: helpers.PointerToInt32(5),
+					FrontendPort:         to.Int32Ptr(443),
+					BackendPort:          to.Int32Ptr(443),
+					EnableFloatingIP:     to.BoolPtr(false),
+					IdleTimeoutInMinutes: to.Int32Ptr(5),
 					LoadDistribution:     network.LoadDistributionDefault,
 					Probe: &network.SubResource{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 					},
 				},
 			},
 		}
 		probes := &[]network.Probe{
 			{
-				Name: helpers.PointerToString("tcpHTTPSProbe"),
+				Name: to.StringPtr("tcpHTTPSProbe"),
 				ProbePropertiesFormat: &network.ProbePropertiesFormat{
 					Protocol:          network.ProbeProtocolTCP,
-					Port:              helpers.PointerToInt32(443),
-					IntervalInSeconds: helpers.PointerToInt32(5),
-					NumberOfProbes:    helpers.PointerToInt32(2),
+					Port:              to.Int32Ptr(443),
+					IntervalInSeconds: to.Int32Ptr(5),
+					NumberOfProbes:    to.Int32Ptr(2),
 				},
 			},
 		}
@@ -147,22 +147,22 @@ func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 		loadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.Probes = probes
 		if prop.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.StandardLoadBalancerSku {
 			udpRule := network.LoadBalancingRule{
-				Name: helpers.PointerToString("LBRuleUDP"),
+				Name: to.StringPtr("LBRuleUDP"),
 				LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 					FrontendIPConfiguration: &network.SubResource{
-						ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
+						ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
 					},
 					BackendAddressPool: &network.SubResource{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 					},
 					Protocol:             network.TransportProtocolUDP,
-					FrontendPort:         helpers.PointerToInt32(1123),
-					BackendPort:          helpers.PointerToInt32(1123),
-					EnableFloatingIP:     helpers.PointerToBool(false),
-					IdleTimeoutInMinutes: helpers.PointerToInt32(5),
+					FrontendPort:         to.Int32Ptr(1123),
+					BackendPort:          to.Int32Ptr(1123),
+					EnableFloatingIP:     to.BoolPtr(false),
+					IdleTimeoutInMinutes: to.Int32Ptr(5),
 					LoadDistribution:     network.LoadDistributionDefault,
 					Probe: &network.SubResource{
-						ID: helpers.PointerToString("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
+						ID: to.StringPtr("[concat(variables('masterLbID'),'/probes/tcpHTTPSProbe')]"),
 					},
 				},
 			}
@@ -178,14 +178,14 @@ func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 		}
 		for i := 0; i < prop.MasterProfile.Count; i++ {
 			inboundNATRule := network.InboundNatRule{
-				Name: helpers.PointerToString(fmt.Sprintf("[concat('SSH-', variables('masterVMNamePrefix'), %d)]", i)),
+				Name: to.StringPtr(fmt.Sprintf("[concat('SSH-', variables('masterVMNamePrefix'), %d)]", i)),
 				InboundNatRulePropertiesFormat: &network.InboundNatRulePropertiesFormat{
-					BackendPort:      helpers.PointerToInt32(22),
-					EnableFloatingIP: helpers.PointerToBool(false),
+					BackendPort:      to.Int32Ptr(22),
+					EnableFloatingIP: to.BoolPtr(false),
 					FrontendIPConfiguration: &network.SubResource{
-						ID: helpers.PointerToString("[variables('masterLbIPConfigID')]"),
+						ID: to.StringPtr("[variables('masterLbIPConfigID')]"),
 					},
-					FrontendPort: helpers.PointerToInt32(sshNATPorts[i]),
+					FrontendPort: to.Int32Ptr(sshNATPorts[i]),
 					Protocol:     network.TransportProtocolTCP,
 				},
 			}
@@ -195,8 +195,8 @@ func CreateMasterLoadBalancer(prop *api.Properties) LoadBalancerARM {
 	} else {
 		outboundRules := createOutboundRules(prop)
 		outboundRule := (*outboundRules)[0]
-		outboundRule.OutboundRulePropertiesFormat.BackendAddressPool.ID = helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]")
-		(*outboundRule.OutboundRulePropertiesFormat.FrontendIPConfigurations)[0].ID = helpers.PointerToString("[variables('masterLbIPConfigID')]")
+		outboundRule.OutboundRulePropertiesFormat.BackendAddressPool.ID = to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]")
+		(*outboundRule.OutboundRulePropertiesFormat.FrontendIPConfigurations)[0].ID = to.StringPtr("[variables('masterLbIPConfigID')]")
 		loadBalancer.LoadBalancer.LoadBalancerPropertiesFormat.OutboundRules = outboundRules
 	}
 
@@ -214,33 +214,33 @@ func createOutboundRules(prop *api.Properties) *[]network.OutboundRule {
 		(currentVersion.Major == min15Version.Major && currentVersion.Minor == min15Version.Minor && currentVersion.LT(min15Version)) {
 		return &[]network.OutboundRule{
 			{
-				Name: helpers.PointerToString("LBOutboundRule"),
+				Name: to.StringPtr("LBOutboundRule"),
 				OutboundRulePropertiesFormat: &network.OutboundRulePropertiesFormat{
 					FrontendIPConfigurations: &[]network.SubResource{
 						{
-							ID: helpers.PointerToString("[variables('agentLbIPConfigID')]"),
+							ID: to.StringPtr("[variables('agentLbIPConfigID')]"),
 						},
 					},
 					BackendAddressPool: &network.SubResource{
-						ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 					},
 					Protocol:               network.Protocol1All,
-					IdleTimeoutInMinutes:   helpers.PointerToInt32(prop.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
-					AllocatedOutboundPorts: helpers.PointerToInt32(0),
+					IdleTimeoutInMinutes:   to.Int32Ptr(prop.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
+					AllocatedOutboundPorts: to.Int32Ptr(0),
 				},
 			},
 		}
 	}
 	outboundRule := network.OutboundRule{
-		Name: helpers.PointerToString("LBOutboundRule"),
+		Name: to.StringPtr("LBOutboundRule"),
 		OutboundRulePropertiesFormat: &network.OutboundRulePropertiesFormat{
 			BackendAddressPool: &network.SubResource{
-				ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+				ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 			},
 			Protocol:               network.Protocol1All,
-			IdleTimeoutInMinutes:   helpers.PointerToInt32(prop.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
-			EnableTCPReset:         helpers.PointerToBool(true),
-			AllocatedOutboundPorts: helpers.PointerToInt32(0),
+			IdleTimeoutInMinutes:   to.Int32Ptr(prop.OrchestratorProfile.KubernetesConfig.OutboundRuleIdleTimeoutInMinutes),
+			EnableTCPReset:         to.BoolPtr(true),
+			AllocatedOutboundPorts: to.Int32Ptr(0),
 		},
 	}
 	numIps := 1
@@ -255,7 +255,7 @@ func createOutboundRules(prop *api.Properties) *[]network.OutboundRule {
 			name += strconv.Itoa(i)
 		}
 		*frontendIPConfigurations = append(*frontendIPConfigurations, network.SubResource{
-			ID: helpers.PointerToString(fmt.Sprintf("[variables('%s')]", name)),
+			ID: to.StringPtr(fmt.Sprintf("[variables('%s')]", name)),
 		})
 	}
 	outboundRule.OutboundRulePropertiesFormat.FrontendIPConfigurations = frontendIPConfigurations
@@ -272,12 +272,12 @@ func CreateStandardLoadBalancerForNodePools(prop *api.Properties, isVMSS bool) L
 			},
 		},
 		LoadBalancer: network.LoadBalancer{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('agentLbName')]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('agentLbName')]"),
 			LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 				BackendAddressPools: &[]network.BackendAddressPool{
 					{
-						Name: helpers.PointerToString("[variables('agentLbBackendPoolName')]"),
+						Name: to.StringPtr("[variables('agentLbBackendPoolName')]"),
 					},
 				},
 				OutboundRules: createOutboundRules(prop),
@@ -285,7 +285,7 @@ func CreateStandardLoadBalancerForNodePools(prop *api.Properties, isVMSS bool) L
 			Sku: &network.LoadBalancerSku{
 				Name: "[variables('loadBalancerSku')]",
 			},
-			Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
+			Type: to.StringPtr("Microsoft.Network/loadBalancers"),
 		},
 	}
 
@@ -304,10 +304,10 @@ func CreateStandardLoadBalancerForNodePools(prop *api.Properties, isVMSS bool) L
 			agentLbIPConfigName += strconv.Itoa(i)
 		}
 		*frontendIPConfigurations = append(*frontendIPConfigurations, network.FrontendIPConfiguration{
-			Name: helpers.PointerToString(fmt.Sprintf("[variables('%s')]", agentLbIPConfigName)),
+			Name: to.StringPtr(fmt.Sprintf("[variables('%s')]", agentLbIPConfigName)),
 			FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
 				PublicIPAddress: &network.PublicIPAddress{
-					ID: helpers.PointerToString(fmt.Sprintf("[resourceId('Microsoft.Network/publicIpAddresses',variables('%s'))]", agentPublicIPAddressName)),
+					ID: to.StringPtr(fmt.Sprintf("[resourceId('Microsoft.Network/publicIpAddresses',variables('%s'))]", agentPublicIPAddressName)),
 				},
 			},
 		})
@@ -334,54 +334,54 @@ func CreateMasterInternalLoadBalancer(cs *api.ContainerService) LoadBalancerARM 
 	}
 
 	loadBalancer := network.LoadBalancer{
-		Location: helpers.PointerToString("[variables('location')]"),
-		Name:     helpers.PointerToString("[variables('masterInternalLbName')]"),
+		Location: to.StringPtr("[variables('location')]"),
+		Name:     to.StringPtr("[variables('masterInternalLbName')]"),
 		LoadBalancerPropertiesFormat: &network.LoadBalancerPropertiesFormat{
 			BackendAddressPools: &[]network.BackendAddressPool{
 				{
-					Name: helpers.PointerToString("[variables('masterLbBackendPoolName')]"),
+					Name: to.StringPtr("[variables('masterLbBackendPoolName')]"),
 				},
 			},
 			FrontendIPConfigurations: &[]network.FrontendIPConfiguration{
 				{
-					Name: helpers.PointerToString("[variables('masterInternalLbIPConfigName')]"),
+					Name: to.StringPtr("[variables('masterInternalLbIPConfigName')]"),
 					FrontendIPConfigurationPropertiesFormat: &network.FrontendIPConfigurationPropertiesFormat{
-						PrivateIPAddress:          helpers.PointerToString("[variables('kubernetesAPIServerIP')]"),
+						PrivateIPAddress:          to.StringPtr("[variables('kubernetesAPIServerIP')]"),
 						PrivateIPAllocationMethod: network.Static,
 						Subnet: &network.Subnet{
-							ID: helpers.PointerToString(subnet),
+							ID: to.StringPtr(subnet),
 						},
 					},
 				},
 			},
 			LoadBalancingRules: &[]network.LoadBalancingRule{
 				{
-					Name: helpers.PointerToString("InternalLBRuleHTTPS"),
+					Name: to.StringPtr("InternalLBRuleHTTPS"),
 					LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 						BackendAddressPool: &network.SubResource{
-							ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+							ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 						},
-						BackendPort:      helpers.PointerToInt32(4443),
-						EnableFloatingIP: helpers.PointerToBool(false),
+						BackendPort:      to.Int32Ptr(4443),
+						EnableFloatingIP: to.BoolPtr(false),
 						FrontendIPConfiguration: &network.SubResource{
-							ID: helpers.PointerToString("[variables('masterInternalLbIPConfigID')]"),
+							ID: to.StringPtr("[variables('masterInternalLbIPConfigID')]"),
 						},
-						FrontendPort:         helpers.PointerToInt32(443),
-						IdleTimeoutInMinutes: helpers.PointerToInt32(5),
+						FrontendPort:         to.Int32Ptr(443),
+						IdleTimeoutInMinutes: to.Int32Ptr(5),
 						Protocol:             network.TransportProtocolTCP,
 						Probe: &network.SubResource{
-							ID: helpers.PointerToString("[concat(variables('masterInternalLbID'),'/probes/tcpHTTPSProbe')]"),
+							ID: to.StringPtr("[concat(variables('masterInternalLbID'),'/probes/tcpHTTPSProbe')]"),
 						},
 					},
 				},
 			},
 			Probes: &[]network.Probe{
 				{
-					Name: helpers.PointerToString("tcpHTTPSProbe"),
+					Name: to.StringPtr("tcpHTTPSProbe"),
 					ProbePropertiesFormat: &network.ProbePropertiesFormat{
-						IntervalInSeconds: helpers.PointerToInt32(5),
-						NumberOfProbes:    helpers.PointerToInt32(2),
-						Port:              helpers.PointerToInt32(4443),
+						IntervalInSeconds: to.Int32Ptr(5),
+						NumberOfProbes:    to.Int32Ptr(2),
+						Port:              to.Int32Ptr(4443),
 						Protocol:          network.ProbeProtocolTCP,
 					},
 				},
@@ -390,26 +390,26 @@ func CreateMasterInternalLoadBalancer(cs *api.ContainerService) LoadBalancerARM 
 		Sku: &network.LoadBalancerSku{
 			Name: network.LoadBalancerSkuName("[variables('loadBalancerSku')]"),
 		},
-		Type: helpers.PointerToString("Microsoft.Network/loadBalancers"),
+		Type: to.StringPtr("Microsoft.Network/loadBalancers"),
 	}
 
 	if cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.StandardLoadBalancerSku {
 		udpRule := network.LoadBalancingRule{
-			Name: helpers.PointerToString("LBRuleUDP"),
+			Name: to.StringPtr("LBRuleUDP"),
 			LoadBalancingRulePropertiesFormat: &network.LoadBalancingRulePropertiesFormat{
 				BackendAddressPool: &network.SubResource{
-					ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+					ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 				},
-				BackendPort:      helpers.PointerToInt32(1123),
-				EnableFloatingIP: helpers.PointerToBool(false),
+				BackendPort:      to.Int32Ptr(1123),
+				EnableFloatingIP: to.BoolPtr(false),
 				FrontendIPConfiguration: &network.SubResource{
-					ID: helpers.PointerToString("[variables('masterInternalLbIPConfigID')]"),
+					ID: to.StringPtr("[variables('masterInternalLbIPConfigID')]"),
 				},
-				FrontendPort:         helpers.PointerToInt32(1123),
-				IdleTimeoutInMinutes: helpers.PointerToInt32(5),
+				FrontendPort:         to.Int32Ptr(1123),
+				IdleTimeoutInMinutes: to.Int32Ptr(5),
 				Protocol:             network.TransportProtocolUDP,
 				Probe: &network.SubResource{
-					ID: helpers.PointerToString("[concat(variables('masterInternalLbID'),'/probes/tcpHTTPSProbe')]"),
+					ID: to.StringPtr("[concat(variables('masterInternalLbID'),'/probes/tcpHTTPSProbe')]"),
 				},
 			},
 		}

@@ -5,7 +5,7 @@ package engine
 
 import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/services/preview/authorization/mgmt/2018-09-01-preview/authorization"
 )
 
@@ -26,13 +26,13 @@ func createMSIRoleAssignment(identityRoleDefinition IdentityRoleDefinition) Role
 			APIVersion: "[variables('apiVersionAuthorizationUser')]",
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
-			Name: helpers.PointerToString("[guid(concat(variables('userAssignedID'), 'roleAssignment', resourceGroup().id))]"),
+			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
+			Name: to.StringPtr("[guid(concat(variables('userAssignedID'), 'roleAssignment', resourceGroup().id))]"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString(string(identityRoleDefinition)),
-				PrincipalID:      helpers.PointerToString("[reference(variables('userAssignedIDReference'), variables('apiVersionManagedIdentity')).principalId]"),
+				RoleDefinitionID: to.StringPtr(string(identityRoleDefinition)),
+				PrincipalID:      to.StringPtr("[reference(variables('userAssignedIDReference'), variables('apiVersionManagedIdentity')).principalId]"),
 				PrincipalType:    authorization.ServicePrincipal,
-				Scope:            helpers.PointerToString("[resourceGroup().id]"),
+				Scope:            to.StringPtr("[resourceGroup().id]"),
 			},
 		},
 	}
@@ -44,7 +44,7 @@ func createKubernetesSpAppGIdentityOperatorAccessRoleAssignment(prop *api.Proper
 	// determine objectId of the cluster identity used by the kubernetes cluster
 	if prop.OrchestratorProfile != nil &&
 		prop.OrchestratorProfile.KubernetesConfig != nil &&
-		helpers.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
+		to.Bool(prop.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) {
 		kubernetesSpObjectID = "[reference(concat('Microsoft.ManagedIdentity/userAssignedIdentities/', variables('userAssignedID'))).principalId]"
 	} else if prop.ServicePrincipalProfile.ObjectID != "" {
 		kubernetesSpObjectID = prop.ServicePrincipalProfile.ObjectID
@@ -59,13 +59,13 @@ func createKubernetesSpAppGIdentityOperatorAccessRoleAssignment(prop *api.Proper
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Type: helpers.PointerToString("Microsoft.ManagedIdentity/userAssignedIdentities/providers/roleAssignments"),
-			Name: helpers.PointerToString("[concat(variables('appGwICIdentityName'), '/Microsoft.Authorization/', guid(resourceGroup().id, 'aksidentityaccess'))]"),
+			Type: to.StringPtr("Microsoft.ManagedIdentity/userAssignedIdentities/providers/roleAssignments"),
+			Name: to.StringPtr("[concat(variables('appGwICIdentityName'), '/Microsoft.Authorization/', guid(resourceGroup().id, 'aksidentityaccess'))]"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString(string(IdentityManagedIdentityOperatorRole)),
-				PrincipalID:      helpers.PointerToString(kubernetesSpObjectID),
+				RoleDefinitionID: to.StringPtr(string(IdentityManagedIdentityOperatorRole)),
+				PrincipalID:      to.StringPtr(kubernetesSpObjectID),
 				PrincipalType:    authorization.ServicePrincipal,
-				Scope:            helpers.PointerToString("[variables('appGwICIdentityId')]"),
+				Scope:            to.StringPtr("[variables('appGwICIdentityId')]"),
 			},
 		},
 	}
@@ -82,12 +82,12 @@ func createAppGwIdentityResourceGroupReadSysRoleAssignment() RoleAssignmentARM {
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Type: helpers.PointerToString("Microsoft.Authorization/roleAssignments"),
-			Name: helpers.PointerToString("[guid(resourceGroup().id, 'identityrgaccess')]"),
+			Type: to.StringPtr("Microsoft.Authorization/roleAssignments"),
+			Name: to.StringPtr("[guid(resourceGroup().id, 'identityrgaccess')]"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString(string(IdentityReaderRole)),
-				PrincipalID:      helpers.PointerToString("[reference(variables('appGwICIdentityId'), variables('apiVersionManagedIdentity')).principalId]"),
-				Scope:            helpers.PointerToString("[resourceGroup().id]"),
+				RoleDefinitionID: to.StringPtr(string(IdentityReaderRole)),
+				PrincipalID:      to.StringPtr("[reference(variables('appGwICIdentityId'), variables('apiVersionManagedIdentity')).principalId]"),
+				Scope:            to.StringPtr("[resourceGroup().id]"),
 			},
 		},
 	}
@@ -104,12 +104,12 @@ func createAppGwIdentityApplicationGatewayWriteSysRoleAssignment() RoleAssignmen
 			},
 		},
 		RoleAssignment: authorization.RoleAssignment{
-			Type: helpers.PointerToString("Microsoft.Network/applicationgateways/providers/roleAssignments"),
-			Name: helpers.PointerToString("[concat(variables('appGwName'), '/Microsoft.Authorization/', guid(resourceGroup().id, 'identityappgwaccess'))]"),
+			Type: to.StringPtr("Microsoft.Network/applicationgateways/providers/roleAssignments"),
+			Name: to.StringPtr("[concat(variables('appGwName'), '/Microsoft.Authorization/', guid(resourceGroup().id, 'identityappgwaccess'))]"),
 			RoleAssignmentPropertiesWithScope: &authorization.RoleAssignmentPropertiesWithScope{
-				RoleDefinitionID: helpers.PointerToString(string(IdentityContributorRole)),
-				PrincipalID:      helpers.PointerToString("[reference(variables('appGwICIdentityId'), variables('apiVersionManagedIdentity')).principalId]"),
-				Scope:            helpers.PointerToString("[variables('appGwId')]"),
+				RoleDefinitionID: to.StringPtr(string(IdentityContributorRole)),
+				PrincipalID:      to.StringPtr("[reference(variables('appGwICIdentityId'), variables('apiVersionManagedIdentity')).principalId]"),
+				Scope:            to.StringPtr("[variables('appGwId')]"),
 			},
 		},
 	}

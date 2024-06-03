@@ -293,7 +293,7 @@ func teardown() {
 		}
 		// Delete once we reuse the cluster group for the connectedCluster resource
 		for _, addon := range eng.ClusterDefinition.Properties.OrchestratorProfile.KubernetesConfig.Addons {
-			if addon.Name == common.AzureArcOnboardingAddonName && helpers.Bool(addon.Enabled) &&
+			if addon.Name == common.AzureArcOnboardingAddonName && to.Bool(addon.Enabled) &&
 				addon.Config["resourceGroup"] != "" &&
 				addon.Config["location"] != "" {
 				log.Printf("Deleting Arc Group: %s\n", fmt.Sprintf("%s-arc", cfg.Name))

@@ -28,7 +28,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/config"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/engine"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/daemonset"
@@ -665,14 +665,14 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				var auditDNodePrefixes []string
 				var nonRegularPriVMSSPrefixes []string
 				if eng.ExpandedDefinition.Properties.MasterProfile != nil {
-					if helpers.Bool(eng.ExpandedDefinition.Properties.MasterProfile.AuditDEnabled) {
+					if to.Bool(eng.ExpandedDefinition.Properties.MasterProfile.AuditDEnabled) {
 						auditDNodePrefixes = append(auditDNodePrefixes, fmt.Sprintf("%s-", common.LegacyControlPlaneVMPrefix))
 					}
 				}
 				for _, profile := range eng.ExpandedDefinition.Properties.AgentPoolProfiles {
 					if profile.IsLowPriorityScaleSet() || profile.IsSpotScaleSet() {
 						nonRegularPriVMSSPrefixes = append(nonRegularPriVMSSPrefixes, "k8s-"+profile.Name)
-					} else if helpers.Bool(profile.AuditDEnabled) {
+					} else if to.Bool(profile.AuditDEnabled) {
 						auditDNodePrefixes = append(auditDNodePrefixes, profile.Name)
 					}
 				}
@@ -735,10 +735,10 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.ControllerManagerComponentName, masterPrefix, i))
 				coreComponents = append(coreComponents, fmt.Sprintf("%s-%s%d", common.SchedulerComponentName, masterPrefix, i))
 			}
-			if helpers.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
+			if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) {
 				coreComponents = append(coreComponents, common.CloudControllerManagerComponentName)
 			}
-			if helpers.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) {
+			if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms) {
 				coreComponents = append(coreComponents, common.AzureKMSProviderComponentName)
 			}
 			for _, componentName := range coreComponents {
@@ -1373,7 +1373,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 
 			azureDiskStorageClasses := []string{"default"}
 			// Managed disk is used by default when useCloudControllerManager is enabled
-			if helpers.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) || util.IsUsingManagedDisks(eng.ExpandedDefinition.Properties.AgentPoolProfiles) {
+			if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager) || util.IsUsingManagedDisks(eng.ExpandedDefinition.Properties.AgentPoolProfiles) {
 				azureDiskStorageClasses = append(azureDiskStorageClasses, "managed-premium", "managed-standard")
 			} else {
 				azureDiskStorageClasses = append(azureDiskStorageClasses, "unmanaged-premium", "unmanaged-standard")
@@ -2379,8 +2379,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			})*/
 		It("should be able to attach azure file", func() {
 			if eng.HasWindowsAgents() && !eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.NeedsContainerd() {
-				useCloudControllerManager := helpers.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
-				if helpers.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && useCloudControllerManager {
+				useCloudControllerManager := to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager)
+				if to.Bool(eng.ExpandedDefinition.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity) && useCloudControllerManager {
 					Skip("cloud-controller-manager storageclass doesn't work w/ MSI")
 				}
 				orchestratorVersion := eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion

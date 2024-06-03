@@ -11,6 +11,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	compute "github.com/Azure/azure-sdk-for-go/profile/p20200901/resourcemanager/compute/armcompute"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/blang/semver"
@@ -111,8 +112,8 @@ func Test_OrchestratorProfile_Validate(t *testing.T) {
 					OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, false),
 					KubernetesConfig: &KubernetesConfig{
 						LoadBalancerSku:             BasicLoadBalancerSku,
-						ExcludeMasterFromStandardLB: helpers.PointerToBool(true),
-						LoadBalancerOutboundIPs:     helpers.PointerToInt(3),
+						ExcludeMasterFromStandardLB: to.BoolPtr(true),
+						LoadBalancerOutboundIPs:     to.IntPtr(3),
 					},
 				},
 			},
@@ -124,7 +125,7 @@ func Test_OrchestratorProfile_Validate(t *testing.T) {
 					OrchestratorType:    "Kubernetes",
 					OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, false),
 					KubernetesConfig: &KubernetesConfig{
-						LoadBalancerOutboundIPs: helpers.PointerToInt(17),
+						LoadBalancerOutboundIPs: to.IntPtr(17),
 					},
 				},
 			},
@@ -192,7 +193,7 @@ func Test_OrchestratorProfile_Validate(t *testing.T) {
 					OrchestratorType: "Kubernetes",
 					KubernetesConfig: &KubernetesConfig{
 						LoadBalancerSku:                  StandardLoadBalancerSku,
-						ExcludeMasterFromStandardLB:      helpers.PointerToBool(true),
+						ExcludeMasterFromStandardLB:      to.BoolPtr(true),
 						OutboundRuleIdleTimeoutInMinutes: 3,
 					},
 				},
@@ -300,8 +301,8 @@ func ExampleProperties_validateOrchestratorProfile() {
 
 	cs = getK8sDefaultContainerService(true)
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		EnableEncryptionWithExternalKms: helpers.PointerToBool(true),
-		UseManagedIdentity:              helpers.PointerToBool(true),
+		EnableEncryptionWithExternalKms: to.BoolPtr(true),
+		UseManagedIdentity:              to.BoolPtr(true),
 	}
 	if err := cs.Properties.ValidateOrchestratorProfile(false); err != nil {
 		log.Error(err)
@@ -324,12 +325,12 @@ func Test_KubernetesConfig_Validate(t *testing.T) {
 			ClusterSubnet:                "10.120.0.0/16",
 			DockerBridgeSubnet:           "10.120.1.0/16",
 			MaxPods:                      42,
-			CloudProviderBackoff:         helpers.PointerToBool(ValidKubernetesCloudProviderBackoff),
+			CloudProviderBackoff:         to.BoolPtr(ValidKubernetesCloudProviderBackoff),
 			CloudProviderBackoffRetries:  ValidKubernetesCloudProviderBackoffRetries,
 			CloudProviderBackoffJitter:   ValidKubernetesCloudProviderBackoffJitter,
 			CloudProviderBackoffDuration: ValidKubernetesCloudProviderBackoffDuration,
 			CloudProviderBackoffExponent: ValidKubernetesCloudProviderBackoffExponent,
-			CloudProviderRateLimit:       helpers.PointerToBool(ValidKubernetesCloudProviderRateLimit),
+			CloudProviderRateLimit:       to.BoolPtr(ValidKubernetesCloudProviderRateLimit),
 			CloudProviderRateLimitQPS:    ValidKubernetesCloudProviderRateLimitQPS,
 			CloudProviderRateLimitBucket: ValidKubernetesCloudProviderRateLimitBucket,
 			KubeletConfig: map[string]string{
@@ -543,8 +544,8 @@ func Test_KubernetesConfig_Validate(t *testing.T) {
 	// Tests that apply to 1.6 and later releases
 	for _, k8sVersion := range common.GetAllSupportedKubernetesVersions(false, false, false) {
 		c := KubernetesConfig{
-			CloudProviderBackoff:   helpers.PointerToBool(true),
-			CloudProviderRateLimit: helpers.PointerToBool(true),
+			CloudProviderBackoff:   to.BoolPtr(true),
+			CloudProviderRateLimit: to.BoolPtr(true),
 		}
 		if err := c.Validate(k8sVersion, false, false, false, false); err != nil {
 			t.Error("should not error when basic backoff and rate limiting are set to true with no options")
@@ -554,7 +555,7 @@ func Test_KubernetesConfig_Validate(t *testing.T) {
 	// Tests that apply to 1.8 and later releases
 	for _, k8sVersion := range common.GetVersionsGt(common.GetAllSupportedKubernetesVersions(true, false, false), "1.8.0", true, true) {
 		c := KubernetesConfig{
-			UseCloudControllerManager: helpers.PointerToBool(true),
+			UseCloudControllerManager: to.BoolPtr(true),
 		}
 		if err := c.Validate(k8sVersion, false, false, false, false); err != nil {
 			t.Error("should not error because UseCloudControllerManager is available since v1.8")
@@ -704,7 +705,7 @@ func Test_KubernetesConfig_Validate(t *testing.T) {
 	// Tests that apply to 1.20 and later releases
 	for _, k8sVersion := range common.GetVersionsLt(common.GetAllSupportedKubernetesVersions(false, false, false), "1.20.0", false, false) {
 		c := KubernetesConfig{
-			EnableMultipleStandardLoadBalancers: helpers.PointerToBool(true),
+			EnableMultipleStandardLoadBalancers: to.BoolPtr(true),
 		}
 		if err := c.Validate(k8sVersion, false, false, false, false); err == nil {
 			t.Errorf("should error when enable multiple standard load balancer before v1.20.0")
@@ -972,7 +973,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{Name: common.ReschedulerAddonName,
-			Enabled: helpers.PointerToBool(true)},
+			Enabled: to.BoolPtr(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err == nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -981,7 +982,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{Name: common.ContainerMonitoringAddonName,
-			Enabled: helpers.PointerToBool(true)},
+			Enabled: to.BoolPtr(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err == nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -990,7 +991,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{Name: common.DashboardAddonName,
-			Enabled: helpers.PointerToBool(true)},
+			Enabled: to.BoolPtr(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err != nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -999,7 +1000,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
 		{Name: common.AzureCNINetworkMonitorAddonName,
-			Enabled: helpers.PointerToBool(true)},
+			Enabled: to.BoolPtr(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err != nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -1008,7 +1009,7 @@ func ExampleProperties_validateAddons() {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = common.PodSecurityPolicyRemovedVersion
 	cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []KubernetesAddon{
-		{Name: common.PodSecurityPolicyAddonName, Enabled: helpers.PointerToBool(true)},
+		{Name: common.PodSecurityPolicyAddonName, Enabled: to.BoolPtr(true)},
 	}
 	if err := cs.Properties.validateAddons(true); err != nil {
 		fmt.Printf("error in validateAddons: %s", err)
@@ -1574,7 +1575,7 @@ func Test_ServicePrincipalProfile_ValidateSecretOrKeyvaultSecretRef(t *testing.T
 		t.Parallel()
 		cs := getK8sDefaultContainerService(false)
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(false),
+			UseManagedIdentity: to.BoolPtr(false),
 		}
 
 		if err := cs.Validate(false); err != nil {
@@ -1592,7 +1593,7 @@ func Test_ServicePrincipalProfile_ValidateSecretOrKeyvaultSecretRef(t *testing.T
 			SecretVersion: "version",
 		}
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(false),
+			UseManagedIdentity: to.BoolPtr(false),
 		}
 		if err := cs.Validate(false); err != nil {
 			t.Errorf("should not error %v", err)
@@ -1608,7 +1609,7 @@ func Test_ServicePrincipalProfile_ValidateSecretOrKeyvaultSecretRef(t *testing.T
 			SecretName: "secret-name",
 		}
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(false),
+			UseManagedIdentity: to.BoolPtr(false),
 		}
 
 		if err := cs.Validate(false); err != nil {
@@ -1625,7 +1626,7 @@ func Test_ServicePrincipalProfile_ValidateSecretOrKeyvaultSecretRef(t *testing.T
 			SecretName: "secret-name",
 		}
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(false),
+			UseManagedIdentity: to.BoolPtr(false),
 		}
 
 		if err := cs.Validate(false); err == nil {
@@ -1642,7 +1643,7 @@ func Test_ServicePrincipalProfile_ValidateSecretOrKeyvaultSecretRef(t *testing.T
 			SecretName: "secret-name",
 		}
 		cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(false),
+			UseManagedIdentity: to.BoolPtr(false),
 		}
 
 		if err := cs.Validate(false); err == nil || err.Error() != "service principal client keyvault secret reference is of incorrect format" {
@@ -1929,7 +1930,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "aad",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -1945,7 +1946,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "aad",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -1962,7 +1963,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "aad",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -1981,7 +1982,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -1998,7 +1999,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2015,7 +2016,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2032,7 +2033,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2050,7 +2051,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2068,7 +2069,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    "cilium",
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2084,7 +2085,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AntreaAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2101,7 +2102,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AntreaAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2118,7 +2119,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AntreaAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2135,7 +2136,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AntreaAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2153,7 +2154,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AntreaAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2170,7 +2171,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2187,7 +2188,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2204,7 +2205,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2222,7 +2223,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2241,7 +2242,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2260,7 +2261,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2279,7 +2280,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2298,7 +2299,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.FlannelAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2317,7 +2318,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.AzureCloudProviderAddonName,
-								Enabled: helpers.PointerToBool(false),
+								Enabled: to.BoolPtr(false),
 							},
 						},
 					},
@@ -2333,7 +2334,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.SecretsStoreCSIDriverAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2349,7 +2350,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.ReschedulerAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2365,7 +2366,7 @@ func TestValidateAddons(t *testing.T) {
 						Addons: []KubernetesAddon{
 							{
 								Name:    common.ContainerMonitoringAddonName,
-								Enabled: helpers.PointerToBool(true),
+								Enabled: to.BoolPtr(true),
 							},
 						},
 					},
@@ -2398,7 +2399,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2417,7 +2418,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "azure-policy",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2435,7 +2436,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		)
 	}
 
-	p.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(true)
+	p.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(true)
 	if err := p.validateAddons(false); err != nil {
 		t.Errorf(
 			"should not error on azure-policy with managed identity",
@@ -2446,7 +2447,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Config: map[string]string{
@@ -2473,7 +2474,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Config: map[string]string{
@@ -2501,7 +2502,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Name: "foo",
@@ -2529,7 +2530,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Name: "foo",
@@ -2557,7 +2558,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Name: "foo",
@@ -2585,7 +2586,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cluster-autoscaler",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Pools: []AddonNodePoolsConfig{
 					{
 						Name: "foo",
@@ -2676,11 +2677,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 	// Basic test with UseManagedIdentity
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
 		NetworkPlugin:      "azure",
-		UseManagedIdentity: helpers.PointerToBool(true),
+		UseManagedIdentity: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "appgw-ingress",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Config: map[string]string{
 					"appgw-subnet": "10.0.0.0/16",
 				},
@@ -2704,7 +2705,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "appgw-ingress",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Config: map[string]string{
 					"appgw-subnet": "10.0.0.0/16",
 				},
@@ -2726,7 +2727,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "appgw-ingress",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Config: map[string]string{
 					"appgw-subnet": "10.0.0.0/16",
 				},
@@ -2747,7 +2748,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "appgw-ingress",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Config: map[string]string{
 					"appgw-subnet": "10.0.0.0/16",
 				},
@@ -2767,7 +2768,7 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    "appgw-ingress",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 				Config:  map[string]string{},
 			},
 		},
@@ -2781,11 +2782,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.13.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(false),
+		UseCloudControllerManager: to.BoolPtr(false),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "azuredisk-csi-driver",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2798,11 +2799,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.13.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "azuredisk-csi-driver",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2815,11 +2816,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.13.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(false),
+		UseCloudControllerManager: to.BoolPtr(false),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "azurefile-csi-driver",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2832,11 +2833,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.13.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "azurefile-csi-driver",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2850,11 +2851,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 	// Basic tests for cloud-node-manager
 	p.OrchestratorProfile.OrchestratorVersion = "1.15.4"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2867,11 +2868,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.16.1"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(false),
+		UseCloudControllerManager: to.BoolPtr(false),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2884,11 +2885,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.17.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 		},
 	}
@@ -2901,11 +2902,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.17.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2918,11 +2919,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.17.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -2940,11 +2941,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 
 	p.OrchestratorProfile.OrchestratorVersion = "1.18.0"
 	p.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
-		UseCloudControllerManager: helpers.PointerToBool(true),
+		UseCloudControllerManager: to.BoolPtr(true),
 		Addons: []KubernetesAddon{
 			{
 				Name:    "cloud-node-manager",
-				Enabled: helpers.PointerToBool(false),
+				Enabled: to.BoolPtr(false),
 			},
 		},
 	}
@@ -2964,11 +2965,11 @@ func Test_Properties_ValidateAddons(t *testing.T) {
 		Addons: []KubernetesAddon{
 			{
 				Name:    common.KubeDNSAddonName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 			{
 				Name:    common.CoreDNSAddonName,
-				Enabled: helpers.PointerToBool(true),
+				Enabled: to.BoolPtr(true),
 			},
 		},
 	}
@@ -3187,7 +3188,7 @@ func TestProperties_ValidateManagedIdentity(t *testing.T) {
 				OrchestratorVersion: test.orchestratorVersion,
 				OrchestratorType:    Kubernetes,
 				KubernetesConfig: &KubernetesConfig{
-					UseManagedIdentity: helpers.PointerToBool(test.useManagedIdentity),
+					UseManagedIdentity: to.BoolPtr(test.useManagedIdentity),
 					UserAssignedID:     test.userAssignedID,
 				},
 			}
@@ -3322,7 +3323,7 @@ func TestMasterProfileValidate(t *testing.T) {
 				OrchestratorType:    test.orchestratorType,
 				OrchestratorVersion: test.orchestratorVersion,
 				KubernetesConfig: &KubernetesConfig{
-					UseInstanceMetadata: helpers.PointerToBool(test.useInstanceMetadata),
+					UseInstanceMetadata: to.BoolPtr(test.useInstanceMetadata),
 				},
 			}
 			cs.Properties.AgentPoolProfiles = test.agentPoolProfiles
@@ -3469,7 +3470,7 @@ func TestProperties_ValidateZones(t *testing.T) {
 			cs.Properties.OrchestratorProfile.OrchestratorVersion = test.orchestratorVersion
 			cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
 				LoadBalancerSku:             test.loadBalancerSku,
-				ExcludeMasterFromStandardLB: helpers.PointerToBool(test.excludeMasterFromStandardLB),
+				ExcludeMasterFromStandardLB: to.BoolPtr(test.excludeMasterFromStandardLB),
 			}
 
 			err := cs.Validate(false)
@@ -3661,7 +3662,7 @@ func TestProperties_ValidateLoadBalancer(t *testing.T) {
 					VMSize:                 "Standard_DS2_v2",
 					Count:                  4,
 					AvailabilityProfile:    VirtualMachineScaleSets,
-					EnableVMSSNodePublicIP: helpers.PointerToBool(true),
+					EnableVMSSNodePublicIP: to.BoolPtr(true),
 				},
 			},
 		},
@@ -3748,7 +3749,7 @@ func TestProperties_ValidateLoadBalancer(t *testing.T) {
 			cs.Properties.OrchestratorProfile.OrchestratorVersion = test.orchestratorVersion
 			cs.Properties.OrchestratorProfile.KubernetesConfig = &KubernetesConfig{
 				LoadBalancerSku:             test.loadBalancerSku,
-				ExcludeMasterFromStandardLB: helpers.PointerToBool(test.excludeMasterFromStandardLB),
+				ExcludeMasterFromStandardLB: to.BoolPtr(test.excludeMasterFromStandardLB),
 			}
 
 			err := cs.Validate(false)
@@ -3782,7 +3783,7 @@ func TestProperties_ValidateSinglePlacementGroup(t *testing.T) {
 				DNSPrefix:            "foo",
 				VMSize:               "Standard_DS2_v2",
 				AvailabilityProfile:  AvailabilitySet,
-				SinglePlacementGroup: helpers.PointerToBool(false),
+				SinglePlacementGroup: to.BoolPtr(false),
 			},
 			expectedMsg: "singlePlacementGroup is only supported with VirtualMachineScaleSets",
 		},
@@ -3800,7 +3801,7 @@ func TestProperties_ValidateSinglePlacementGroup(t *testing.T) {
 					VMSize:               "Standard_DS2_v2",
 					Count:                4,
 					AvailabilityProfile:  AvailabilitySet,
-					SinglePlacementGroup: helpers.PointerToBool(false),
+					SinglePlacementGroup: to.BoolPtr(false),
 				},
 			},
 			expectedMsg: `VirtualMachineScaleSets for master profile must be used together with virtualMachineScaleSets for agent profiles. Set "availabilityProfile" to "VirtualMachineScaleSets" for agent profiles`,
@@ -3812,7 +3813,7 @@ func TestProperties_ValidateSinglePlacementGroup(t *testing.T) {
 				DNSPrefix:            "foo",
 				VMSize:               "Standard_DS2_v2",
 				AvailabilityProfile:  VirtualMachineScaleSets,
-				SinglePlacementGroup: helpers.PointerToBool(false),
+				SinglePlacementGroup: to.BoolPtr(false),
 				StorageProfile:       StorageAccount,
 			},
 			agentPoolProfiles: []*AgentPoolProfile{
@@ -4327,7 +4328,7 @@ func TestAgentPoolProfile_ValidateAvailabilityProfile(t *testing.T) {
 		t.Parallel()
 		cs := getK8sDefaultContainerService(false)
 		agentPoolProfiles := cs.Properties.AgentPoolProfiles
-		agentPoolProfiles[0].SinglePlacementGroup = helpers.PointerToBool(true)
+		agentPoolProfiles[0].SinglePlacementGroup = to.BoolPtr(true)
 		expectedMsg := "singlePlacementGroup is only supported with VirtualMachineScaleSets"
 		if err := cs.Properties.validateAgentPoolProfiles(true); err.Error() != expectedMsg {
 			t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
@@ -4338,7 +4339,7 @@ func TestAgentPoolProfile_ValidateAvailabilityProfile(t *testing.T) {
 		t.Parallel()
 		cs := getK8sDefaultContainerService(false)
 		agentPoolProfiles := cs.Properties.AgentPoolProfiles
-		agentPoolProfiles[0].SinglePlacementGroup = helpers.PointerToBool(false)
+		agentPoolProfiles[0].SinglePlacementGroup = to.BoolPtr(false)
 		expectedMsg := "singlePlacementGroup is only supported with VirtualMachineScaleSets"
 		if err := cs.Properties.validateAgentPoolProfiles(true); err.Error() != expectedMsg {
 			t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
@@ -4364,7 +4365,7 @@ func TestAgentPoolProfile_ValidateVirtualMachineScaleSet(t *testing.T) {
 		cs := getK8sDefaultContainerService(false)
 		agentPoolProfiles := cs.Properties.AgentPoolProfiles
 		agentPoolProfiles[0].AvailabilityProfile = AvailabilitySet
-		agentPoolProfiles[0].VMSSOverProvisioningEnabled = helpers.PointerToBool(true)
+		agentPoolProfiles[0].VMSSOverProvisioningEnabled = to.BoolPtr(true)
 		expectedMsg := fmt.Sprintf("You have specified VMSS Overprovisioning in agent pool %s, but you did not specify VMSS", agentPoolProfiles[0].Name)
 		if err := cs.Properties.validateAgentPoolProfiles(false); err.Error() != expectedMsg {
 			t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
@@ -4376,7 +4377,7 @@ func TestAgentPoolProfile_ValidateVirtualMachineScaleSet(t *testing.T) {
 		cs := getK8sDefaultContainerService(false)
 		agentPoolProfiles := cs.Properties.AgentPoolProfiles
 		agentPoolProfiles[0].AvailabilityProfile = AvailabilitySet
-		agentPoolProfiles[0].EnableVMSSNodePublicIP = helpers.PointerToBool(true)
+		agentPoolProfiles[0].EnableVMSSNodePublicIP = to.BoolPtr(true)
 		expectedMsg := fmt.Sprintf("You have enabled VMSS node public IP in agent pool %s, but you did not specify VMSS", agentPoolProfiles[0].Name)
 		if err := cs.Properties.validateAgentPoolProfiles(false); err.Error() != expectedMsg {
 			t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
@@ -4391,7 +4392,7 @@ func TestAgentPoolProfile_ValidateVirtualMachineScaleSet(t *testing.T) {
 		}
 		agentPoolProfiles := cs.Properties.AgentPoolProfiles
 		agentPoolProfiles[0].AvailabilityProfile = VirtualMachineScaleSets
-		agentPoolProfiles[0].EnableVMSSNodePublicIP = helpers.PointerToBool(true)
+		agentPoolProfiles[0].EnableVMSSNodePublicIP = to.BoolPtr(true)
 		expectedMsg := fmt.Sprintf("You have enabled VMSS node public IP in agent pool %s, but you did not specify Basic Load Balancer SKU", agentPoolProfiles[0].Name)
 		if err := cs.Properties.validateAgentPoolProfiles(false); err.Error() != expectedMsg {
 			t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
@@ -4472,7 +4473,7 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 			cs := getK8sDefaultContainerService(false)
 			agentPoolProfiles := cs.Properties.AgentPoolProfiles
 			agentPoolProfiles[0].Distro = distro
-			agentPoolProfiles[0].AuditDEnabled = helpers.PointerToBool(true)
+			agentPoolProfiles[0].AuditDEnabled = to.BoolPtr(true)
 			switch distro {
 			case Flatcar:
 				expectedMsg := fmt.Sprintf("You have enabled auditd in agent pool %s, but you did not specify an Ubuntu-based distro", agentPoolProfiles[0].Name)
@@ -4493,7 +4494,7 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 			cs := getK8sDefaultContainerService(false)
 			agentPoolProfiles := cs.Properties.AgentPoolProfiles
 			agentPoolProfiles[0].Distro = distro
-			agentPoolProfiles[0].AuditDEnabled = helpers.PointerToBool(false)
+			agentPoolProfiles[0].AuditDEnabled = to.BoolPtr(false)
 			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
 			switch distro {
 			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
@@ -4513,7 +4514,7 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 			cs := getK8sDefaultContainerService(false)
 			masterProfile := cs.Properties.MasterProfile
 			masterProfile.Distro = distro
-			masterProfile.AuditDEnabled = helpers.PointerToBool(true)
+			masterProfile.AuditDEnabled = to.BoolPtr(true)
 			switch distro {
 			case Flatcar:
 				expectedMsg := "auditd was enabled for master vms, but an Ubuntu-based distro was not selected"
@@ -4534,7 +4535,7 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 			cs := getK8sDefaultContainerService(false)
 			masterProfile := cs.Properties.MasterProfile
 			masterProfile.Distro = distro
-			masterProfile.AuditDEnabled = helpers.PointerToBool(false)
+			masterProfile.AuditDEnabled = to.BoolPtr(false)
 			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
 			switch distro {
 			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
@@ -4788,7 +4789,7 @@ func TestValidateLocation(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
-							UseCloudControllerManager: helpers.PointerToBool(falseVal),
+							UseCloudControllerManager: to.BoolPtr(falseVal),
 						},
 					},
 				},
@@ -4809,8 +4810,8 @@ func TestValidateLocation(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
-							UseCloudControllerManager: helpers.PointerToBool(trueVal),
-							UseInstanceMetadata:       helpers.PointerToBool(trueVal),
+							UseCloudControllerManager: to.BoolPtr(trueVal),
+							UseInstanceMetadata:       to.BoolPtr(trueVal),
 						},
 					},
 				},
@@ -4831,7 +4832,7 @@ func TestValidateLocation(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
-							UseCloudControllerManager: helpers.PointerToBool(trueVal),
+							UseCloudControllerManager: to.BoolPtr(trueVal),
 							ContainerRuntime:          "docker",
 						},
 					},
@@ -4853,7 +4854,7 @@ func TestValidateLocation(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
-							UseCloudControllerManager: helpers.PointerToBool(trueVal),
+							UseCloudControllerManager: to.BoolPtr(trueVal),
 							EtcdDiskSizeGB:            "1024",
 						},
 					},
@@ -4875,7 +4876,7 @@ func TestValidateLocation(t *testing.T) {
 						OrchestratorType:    Kubernetes,
 						OrchestratorVersion: common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, true),
 						KubernetesConfig: &KubernetesConfig{
-							UseCloudControllerManager: helpers.PointerToBool(trueVal),
+							UseCloudControllerManager: to.BoolPtr(trueVal),
 							EtcdDiskSizeGB:            "1024GB",
 						},
 					},
@@ -4902,7 +4903,7 @@ func TestValidateLocation(t *testing.T) {
 							Name:                         "testpool",
 							Count:                        1,
 							VMSize:                       "Standard_D2_v2",
-							AcceleratedNetworkingEnabled: helpers.PointerToBool(trueVal),
+							AcceleratedNetworkingEnabled: to.BoolPtr(trueVal),
 						},
 					},
 				},
@@ -4928,7 +4929,7 @@ func TestValidateLocation(t *testing.T) {
 							Name:                                "testpool",
 							Count:                               1,
 							VMSize:                              "Standard_D2_v2",
-							AcceleratedNetworkingEnabledWindows: helpers.PointerToBool(trueVal),
+							AcceleratedNetworkingEnabledWindows: to.BoolPtr(trueVal),
 						},
 					},
 				},
@@ -4994,7 +4995,7 @@ func TestValidateAcceleratedNetworkingEnabledWindows(t *testing.T) {
 							Name:                                "testpool",
 							Count:                               1,
 							VMSize:                              "Standard_D2_v2",
-							AcceleratedNetworkingEnabledWindows: helpers.PointerToBool(true),
+							AcceleratedNetworkingEnabledWindows: to.BoolPtr(true),
 						},
 					},
 					LinuxProfile: &LinuxProfile{

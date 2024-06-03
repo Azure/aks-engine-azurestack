@@ -14,6 +14,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 )
 
 var testK8sVersion = common.GetSupportedKubernetesVersion("1.12", false, false)
@@ -211,7 +212,7 @@ func TestK8sVars(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []api.KubernetesAddon{
 		{
 			Name:    common.AADPodIdentityAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 		},
 	}
 	varMap, err = GetKubernetesVariables(cs)
@@ -247,7 +248,7 @@ func TestK8sVars(t *testing.T) {
 	// Test with ubuntu 16.04 distro and UseManagedIdentity disabled
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []api.KubernetesAddon{}
 	cs.Properties.AgentPoolProfiles[0].Distro = api.Ubuntu
-	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = helpers.PointerToBool(false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity = to.BoolPtr(false)
 	varMap, err = GetKubernetesVariables(cs)
 	if err != nil {
 		t.Fatal(err)
@@ -665,7 +666,7 @@ func TestK8sVars(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.Addons = []api.KubernetesAddon{
 		{
 			Name:    common.AppGwIngressAddonName,
-			Enabled: helpers.PointerToBool(true),
+			Enabled: to.BoolPtr(true),
 			Config: map[string]string{
 				"appgw-sku": "WAF_v2",
 			},
@@ -780,7 +781,7 @@ func TestK8sVarsMastersOnly(t *testing.T) {
 				OrchestratorType: api.Kubernetes,
 				KubernetesConfig: &api.KubernetesConfig{
 					LoadBalancerSku:             api.StandardLoadBalancerSku,
-					ExcludeMasterFromStandardLB: helpers.PointerToBool(true),
+					ExcludeMasterFromStandardLB: to.BoolPtr(true),
 					NetworkPlugin:               "azure",
 				},
 			},
@@ -931,7 +932,7 @@ func TestK8sVarsMastersOnly(t *testing.T) {
 	}
 
 	// enable external kms encryption
-	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms = helpers.PointerToBool(true)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.EnableEncryptionWithExternalKms = to.BoolPtr(true)
 	expectedMap["clusterKeyVaultName"] = string("[take(concat('kv', tolower(uniqueString(concat(variables('masterFqdnPrefix'),variables('location'),parameters('nameSuffix'))))), 22)]")
 	expectedMap["cloudInitFiles"] = map[string]interface{}{
 		"provisionScript":                 getBase64EncodedGzippedCustomScript(kubernetesCSEMainScript, cs),

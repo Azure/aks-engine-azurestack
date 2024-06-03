@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/storage/mgmt/storage"
@@ -23,7 +23,7 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 		t.Error(err)
 	}
 	cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateCluster = &api.PrivateCluster{
-		Enabled: helpers.PointerToBool(true),
+		Enabled: to.BoolPtr(true),
 		JumpboxProfile: &api.PrivateJumpboxProfile{
 			Name:           "fooJumpbox",
 			VMSize:         "Standard_D2_v2",
@@ -33,7 +33,7 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 			StorageProfile: api.StorageAccount,
 		},
 	}
-	cs.Properties.MasterProfile.PlatformUpdateDomainCount = helpers.PointerToInt(3)
+	cs.Properties.MasterProfile.PlatformUpdateDomainCount = to.IntPtr(3)
 
 	actualResources := createKubernetesMasterResourcesVMAS(&cs)
 
@@ -56,39 +56,39 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 					{
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							PrivateIPAllocationMethod: network.IPAllocationMethod("Static"),
-							PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+							PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
-							Primary: helpers.PointerToBool(true),
+							Primary: to.BoolPtr(true),
 						},
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 					},
 					{
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
-							Primary: helpers.PointerToBool(false),
+							Primary: to.BoolPtr(false),
 						},
-						Name: helpers.PointerToString("ipconfig2"),
+						Name: to.StringPtr("ipconfig2"),
 					},
 					{
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							PrivateIPAllocationMethod: network.Dynamic,
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
-							Primary: helpers.PointerToBool(false),
+							Primary: to.BoolPtr(false),
 						},
-						Name: helpers.PointerToString("ipconfig3"),
+						Name: to.StringPtr("ipconfig3"),
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
-			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -104,27 +104,27 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 		Interface: network.Interface{
 			InterfacePropertiesFormat: &network.InterfacePropertiesFormat{
 				NetworkSecurityGroup: &network.SecurityGroup{
-					ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
+					ID: to.StringPtr("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
 				},
 				IPConfigurations: &[]network.InterfaceIPConfiguration{
 					{
-						Name: helpers.PointerToString("ipconfig1"),
+						Name: to.StringPtr("ipconfig1"),
 						InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 							Subnet: &network.Subnet{
-								ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+								ID: to.StringPtr("[variables('vnetSubnetID')]"),
 							},
-							Primary:                   helpers.PointerToBool(true),
+							Primary:                   to.BoolPtr(true),
 							PrivateIPAllocationMethod: network.Dynamic,
 							PublicIPAddress: &network.PublicIPAddress{
-								ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
+								ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
 							},
 						},
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[variables('jumpboxNetworkInterfaceName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxNetworkInterfaceName')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -149,10 +149,10 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: helpers.PointerToString("[parameters('osImagePublisher')]"),
-						Offer:     helpers.PointerToString("[parameters('osImageOffer')]"),
-						Sku:       helpers.PointerToString("[parameters('osImageSku')]"),
-						Version:   helpers.PointerToString("[parameters('osImageVersion')]"),
+						Publisher: to.StringPtr("[parameters('osImagePublisher')]"),
+						Offer:     to.StringPtr("[parameters('osImageOffer')]"),
+						Sku:       to.StringPtr("[parameters('osImageSku')]"),
+						Version:   to.StringPtr("[parameters('osImageVersion')]"),
 					},
 					OsDisk: &compute.OSDisk{
 						Caching:      compute.CachingTypes("ReadWrite"),
@@ -160,23 +160,23 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 					},
 					DataDisks: &[]compute.DataDisk{
 						{
-							Lun:          helpers.PointerToInt32(0),
-							Name:         helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
+							Lun:          to.Int32Ptr(0),
+							Name:         to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'-etcddisk')]"),
 							CreateOption: compute.DiskCreateOptionTypes("Empty"),
-							DiskSizeGB:   helpers.PointerToInt32(256),
+							DiskSizeGB:   to.Int32Ptr(256),
 						},
 					},
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-					AdminUsername: helpers.PointerToString("[parameters('linuxAdminUsername')]"),
+					ComputerName:  to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+					AdminUsername: to.StringPtr("[parameters('linuxAdminUsername')]"),
 					CustomData:    &expectedCustomDataStr,
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: helpers.PointerToBool(true),
+						DisablePasswordAuthentication: to.BoolPtr(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
-								{Path: helpers.PointerToString("[variables('sshKeyPath')]"),
-									KeyData: helpers.PointerToString("[parameters('sshRSAPublicKey')]"),
+								{Path: to.StringPtr("[variables('sshKeyPath')]"),
+									KeyData: to.StringPtr("[parameters('sshRSAPublicKey')]"),
 								},
 							},
 						},
@@ -185,23 +185,23 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
+							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces',concat(variables('masterVMNamePrefix'),'nic-', copyIndex(variables('masterOffset'))))]"),
 						},
 					},
 				},
 				AvailabilitySet: &compute.SubResource{
-					ID: helpers.PointerToString("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
+					ID: to.StringPtr("[resourceId('Microsoft.Compute/availabilitySets',variables('masterAvailabilitySet'))]"),
 				},
 			},
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
+			Location: to.StringPtr("[variables('location')]"),
 			Tags: map[string]*string{
-				"aksEngineVersion":   helpers.PointerToString("[parameters('aksEngineVersion')]"),
-				"creationSource":     helpers.PointerToString("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
-				"orchestrator":       helpers.PointerToString("[variables('orchestratorNameVersionTag')]"),
-				"poolName":           helpers.PointerToString("master"),
-				"resourceNameSuffix": helpers.PointerToString("[parameters('nameSuffix')]"),
+				"aksEngineVersion":   to.StringPtr("[parameters('aksEngineVersion')]"),
+				"creationSource":     to.StringPtr("[concat(parameters('generatorCode'), '-', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"),
+				"orchestrator":       to.StringPtr("[variables('orchestratorNameVersionTag')]"),
+				"poolName":           to.StringPtr("master"),
+				"resourceNameSuffix": to.StringPtr("[parameters('nameSuffix')]"),
 			},
 		},
 	}
@@ -218,18 +218,18 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
-				Type:                    helpers.PointerToString("CustomScript"),
-				TypeHandlerVersion:      helpers.PointerToString("2.0"),
-				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
+				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
+				Type:                    to.StringPtr("CustomScript"),
+				TypeHandlerVersion:      to.StringPtr("2.0"),
+				AutoUpgradeMinorVersion: to.BoolPtr(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=true /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 				},
 			},
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
+			Type:     to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
+			Location: to.StringPtr("[variables('location')]"),
 			Tags:     map[string]*string{},
 		},
 	}
@@ -250,30 +250,30 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 				},
 				StorageProfile: &compute.StorageProfile{
 					ImageReference: &compute.ImageReference{
-						Publisher: helpers.PointerToString("Canonical"),
-						Offer:     helpers.PointerToString("UbuntuServer"),
-						Sku:       helpers.PointerToString("16.04-LTS"),
-						Version:   helpers.PointerToString("latest"),
+						Publisher: to.StringPtr("Canonical"),
+						Offer:     to.StringPtr("UbuntuServer"),
+						Sku:       to.StringPtr("16.04-LTS"),
+						Version:   to.StringPtr("latest"),
 					}, OsDisk: &compute.OSDisk{
-						Name: helpers.PointerToString("[variables('jumpboxOSDiskName')]"),
+						Name: to.StringPtr("[variables('jumpboxOSDiskName')]"),
 						Vhd: &compute.VirtualHardDisk{
-							URI: helpers.PointerToString("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('jumpboxStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',parameters('jumpboxVMName'),'jumpboxdisk.vhd')]"),
+							URI: to.StringPtr("[concat(reference(concat('Microsoft.Storage/storageAccounts/',variables('jumpboxStorageAccountName')),variables('apiVersionStorage')).primaryEndpoints.blob,'vhds/',parameters('jumpboxVMName'),'jumpboxdisk.vhd')]"),
 						},
 						CreateOption: compute.DiskCreateOptionTypes("FromImage"),
 					},
 					DataDisks: &[]compute.DataDisk{},
 				},
 				OsProfile: &compute.OSProfile{
-					ComputerName:  helpers.PointerToString("[parameters('jumpboxVMName')]"),
-					AdminUsername: helpers.PointerToString("[parameters('jumpboxUsername')]"),
+					ComputerName:  to.StringPtr("[parameters('jumpboxVMName')]"),
+					AdminUsername: to.StringPtr("[parameters('jumpboxUsername')]"),
 					CustomData:    &expectedJumpboxCustomData,
 					LinuxConfiguration: &compute.LinuxConfiguration{
-						DisablePasswordAuthentication: helpers.PointerToBool(true),
+						DisablePasswordAuthentication: to.BoolPtr(true),
 						SSH: &compute.SSHConfiguration{
 							PublicKeys: &[]compute.SSHPublicKey{
 								{
-									Path:    helpers.PointerToString("[concat('/home/', parameters('jumpboxUsername'), '/.ssh/authorized_keys')]"),
-									KeyData: helpers.PointerToString("[parameters('jumpboxPublicKey')]"),
+									Path:    to.StringPtr("[concat('/home/', parameters('jumpboxUsername'), '/.ssh/authorized_keys')]"),
+									KeyData: to.StringPtr("[parameters('jumpboxPublicKey')]"),
 								},
 							},
 						},
@@ -282,14 +282,14 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 				NetworkProfile: &compute.NetworkProfile{
 					NetworkInterfaces: &[]compute.NetworkInterfaceReference{
 						{
-							ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNetworkInterfaceName'))]"),
+							ID: to.StringPtr("[resourceId('Microsoft.Network/networkInterfaces', variables('jumpboxNetworkInterfaceName'))]"),
 						},
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[parameters('jumpboxVMName')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/virtualMachines"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[parameters('jumpboxVMName')]"),
+			Type:     to.StringPtr("Microsoft.Compute/virtualMachines"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -304,12 +304,12 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 			PublicIPAddressPropertiesFormat: &network.PublicIPAddressPropertiesFormat{
 				PublicIPAllocationMethod: network.IPAllocationMethod("Dynamic"),
 				DNSSettings: &network.PublicIPAddressDNSSettings{
-					DomainNameLabel: helpers.PointerToString("[variables('masterFqdnPrefix')]"),
+					DomainNameLabel: to.StringPtr("[variables('masterFqdnPrefix')]"),
 				},
 			},
-			Name:     helpers.PointerToString("[variables('jumpboxPublicIpAddressName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/publicIPAddresses"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxPublicIpAddressName')]"),
+			Type:     to.StringPtr("Microsoft.Network/publicIPAddresses"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -321,9 +321,9 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 			Sku: &storage.Sku{
 				Name: storage.SkuName("[variables('vmSizesMap')[parameters('jumpboxVMSize')].storageAccountType]"),
 			},
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('jumpboxStorageAccountName')]"),
-			Type:     helpers.PointerToString("Microsoft.Storage/storageAccounts"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxStorageAccountName')]"),
+			Type:     to.StringPtr("Microsoft.Storage/storageAccounts"),
 		},
 	}
 
@@ -333,14 +333,14 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 		},
 		AvailabilitySet: compute.AvailabilitySet{
 			AvailabilitySetProperties: &compute.AvailabilitySetProperties{
-				PlatformUpdateDomainCount: helpers.PointerToInt32(3),
+				PlatformUpdateDomainCount: to.Int32Ptr(3),
 			},
 			Sku: &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			},
-			Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-			Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+			Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -354,21 +354,21 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 					{
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Protocol:                 network.SecurityRuleProtocol("Tcp"),
-							SourcePortRange:          helpers.PointerToString("*"),
-							DestinationPortRange:     helpers.PointerToString("22"),
-							SourceAddressPrefix:      helpers.PointerToString("*"),
-							DestinationAddressPrefix: helpers.PointerToString("*"),
+							SourcePortRange:          to.StringPtr("*"),
+							DestinationPortRange:     to.StringPtr("22"),
+							SourceAddressPrefix:      to.StringPtr("*"),
+							DestinationAddressPrefix: to.StringPtr("*"),
 							Access:                   network.SecurityRuleAccess("Allow"),
-							Priority:                 helpers.PointerToInt32(1000),
+							Priority:                 to.Int32Ptr(1000),
 							Direction:                network.SecurityRuleDirection("Inbound"),
 						},
-						Name: helpers.PointerToString("default-allow-ssh"),
+						Name: to.StringPtr("default-allow-ssh"),
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[variables('jumpboxNetworkSecurityGroupName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('jumpboxNetworkSecurityGroupName')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -380,38 +380,38 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 			SecurityGroupPropertiesFormat: &network.SecurityGroupPropertiesFormat{
 				SecurityRules: &[]network.SecurityRule{
 					{
-						Name: helpers.PointerToString("allow_ssh"),
+						Name: to.StringPtr("allow_ssh"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              helpers.PointerToString("Allow SSH traffic to master"),
-							DestinationAddressPrefix: helpers.PointerToString("*"),
-							DestinationPortRange:     helpers.PointerToString("22-22"),
+							Description:              to.StringPtr("Allow SSH traffic to master"),
+							DestinationAddressPrefix: to.StringPtr("*"),
+							DestinationPortRange:     to.StringPtr("22-22"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 helpers.PointerToInt32(101),
+							Priority:                 to.Int32Ptr(101),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      helpers.PointerToString("*"),
-							SourcePortRange:          helpers.PointerToString("*"),
+							SourceAddressPrefix:      to.StringPtr("*"),
+							SourcePortRange:          to.StringPtr("*"),
 						},
 					},
 					{
-						Name: helpers.PointerToString("allow_kube_tls"),
+						Name: to.StringPtr("allow_kube_tls"),
 						SecurityRulePropertiesFormat: &network.SecurityRulePropertiesFormat{
 							Access:                   network.SecurityRuleAccessAllow,
-							Description:              helpers.PointerToString("Allow kube-apiserver (tls) traffic to master"),
-							DestinationAddressPrefix: helpers.PointerToString("*"),
-							DestinationPortRange:     helpers.PointerToString("443-443"),
+							Description:              to.StringPtr("Allow kube-apiserver (tls) traffic to master"),
+							DestinationAddressPrefix: to.StringPtr("*"),
+							DestinationPortRange:     to.StringPtr("443-443"),
 							Direction:                network.SecurityRuleDirectionInbound,
-							Priority:                 helpers.PointerToInt32(100),
+							Priority:                 to.Int32Ptr(100),
 							Protocol:                 network.SecurityRuleProtocolTCP,
-							SourceAddressPrefix:      helpers.PointerToString("VirtualNetwork"),
-							SourcePortRange:          helpers.PointerToString("*"),
+							SourceAddressPrefix:      to.StringPtr("VirtualNetwork"),
+							SourcePortRange:          to.StringPtr("*"),
 						},
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[variables('nsgName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/networkSecurityGroups"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('nsgName')]"),
+			Type:     to.StringPtr("Microsoft.Network/networkSecurityGroups"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 
@@ -429,18 +429,18 @@ func TestCreateKubernetesMasterResourcesPrivateCluster(t *testing.T) {
 				Subnets: &[]network.Subnet{
 					{
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 						},
-						Name: helpers.PointerToString("[variables('subnetName')]"),
+						Name: to.StringPtr("[variables('subnetName')]"),
 					},
 				},
 			},
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
-			Location: helpers.PointerToString("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
 		},
 	}
 

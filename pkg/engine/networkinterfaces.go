@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 )
 
@@ -31,7 +31,7 @@ func CreateMasterVMNetworkInterfaces(cs *api.ContainerService) NetworkInterfaceA
 	lbBackendAddressPools := []network.BackendAddressPool{}
 	dependencies = append(dependencies, "[variables('masterLbName')]")
 	publicLbPool := network.BackendAddressPool{
-		ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+		ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 	}
 	lbBackendAddressPools = append(lbBackendAddressPools, publicLbPool)
 
@@ -46,27 +46,27 @@ func CreateMasterVMNetworkInterfaces(cs *api.ContainerService) NetworkInterfaceA
 
 	if cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.HasMultipleNodes() {
 		internalLbPool := network.BackendAddressPool{
-			ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+			ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 		}
 		lbBackendAddressPools = append(lbBackendAddressPools, internalLbPool)
 	}
 
 	loadBalancerIPConfig := network.InterfaceIPConfiguration{
-		Name: helpers.PointerToString("ipconfig1"),
+		Name: to.StringPtr("ipconfig1"),
 		InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 			LoadBalancerBackendAddressPools: &lbBackendAddressPools,
-			PrivateIPAddress:                helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-			Primary:                         helpers.PointerToBool(true),
+			PrivateIPAddress:                to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+			Primary:                         to.BoolPtr(true),
 			PrivateIPAllocationMethod:       network.Static,
 			Subnet: &network.Subnet{
-				ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+				ID: to.StringPtr("[variables('vnetSubnetID')]"),
 			},
 		},
 	}
 
 	publicNatRules := []network.InboundNatRule{
 		{
-			ID: helpers.PointerToString("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
+			ID: to.StringPtr("[concat(variables('masterLbID'),'/inboundNatRules/SSH-',variables('masterVMNamePrefix'),copyIndex(variables('masterOffset')))]"),
 		},
 	}
 	loadBalancerIPConfig.LoadBalancerInboundNatRules = &publicNatRules
@@ -82,23 +82,23 @@ func CreateMasterVMNetworkInterfaces(cs *api.ContainerService) NetworkInterfaceA
 	if isAzureCNI {
 		ipConfigurations = append(ipConfigurations, getSecondaryNICIPConfigs(cs.Properties.MasterProfile.IPAddressCount)...)
 		if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") {
-			nicProperties.EnableIPForwarding = helpers.PointerToBool(true)
+			nicProperties.EnableIPForwarding = to.BoolPtr(true)
 		}
 	} else {
 		if !cs.Properties.IsAzureStackCloud() {
-			nicProperties.EnableIPForwarding = helpers.PointerToBool(true)
+			nicProperties.EnableIPForwarding = to.BoolPtr(true)
 		}
 	}
 
 	// add ipv6 nic config for dual stack
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") || cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6Only") {
 		ipv6Config := network.InterfaceIPConfiguration{
-			Name: helpers.PointerToString("ipconfigv6"),
+			Name: to.StringPtr("ipconfigv6"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				PrivateIPAddressVersion: "IPv6",
-				Primary:                 helpers.PointerToBool(false),
+				Primary:                 to.BoolPtr(false),
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		}
@@ -117,15 +117,15 @@ func CreateMasterVMNetworkInterfaces(cs *api.ContainerService) NetworkInterfaceA
 
 	if cs.Properties.MasterProfile != nil && cs.Properties.MasterProfile.IsCustomVNET() {
 		nicProperties.NetworkSecurityGroup = &network.SecurityGroup{
-			ID: helpers.PointerToString("[variables('nsgID')]"),
+			ID: to.StringPtr("[variables('nsgID')]"),
 		}
 	}
 
 	networkInterface := network.Interface{
-		Location:                  helpers.PointerToString("[variables('location')]"),
-		Name:                      helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+		Location:                  to.StringPtr("[variables('location')]"),
+		Name:                      to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 		InterfacePropertiesFormat: &nicProperties,
-		Type:                      helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+		Type:                      to.StringPtr("Microsoft.Network/networkInterfaces"),
 	}
 
 	return NetworkInterfaceARM{
@@ -144,13 +144,13 @@ func createPrivateClusterMasterVMNetworkInterface(cs *api.ContainerService) Netw
 	}
 
 	loadBalancerIPConfig := network.InterfaceIPConfiguration{
-		Name: helpers.PointerToString("ipconfig1"),
+		Name: to.StringPtr("ipconfig1"),
 		InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-			PrivateIPAddress:          helpers.PointerToString("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
-			Primary:                   helpers.PointerToBool(true),
+			PrivateIPAddress:          to.StringPtr("[variables('masterPrivateIpAddrs')[copyIndex(variables('masterOffset'))]]"),
+			Primary:                   to.BoolPtr(true),
 			PrivateIPAllocationMethod: network.Static,
 			Subnet: &network.Subnet{
-				ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+				ID: to.StringPtr("[variables('vnetSubnetID')]"),
 			},
 		},
 	}
@@ -159,13 +159,13 @@ func createPrivateClusterMasterVMNetworkInterface(cs *api.ContainerService) Netw
 		dependencies = append(dependencies, "[variables('masterInternalLbName')]")
 		var lbBackendAddressPools []network.BackendAddressPool
 		internalLbPool := network.BackendAddressPool{
-			ID: helpers.PointerToString("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+			ID: to.StringPtr("[concat(variables('masterInternalLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 		}
 		lbBackendAddressPools = append(lbBackendAddressPools, internalLbPool)
 		if cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.StandardLoadBalancerSku {
 			dependencies = append(dependencies, "[variables('masterLbName')]")
 			publicLbPool := network.BackendAddressPool{
-				ID: helpers.PointerToString("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
+				ID: to.StringPtr("[concat(variables('masterLbID'), '/backendAddressPools/', variables('masterLbBackendPoolName'))]"),
 			}
 			lbBackendAddressPools = append(lbBackendAddressPools, publicLbPool)
 		}
@@ -179,12 +179,12 @@ func createPrivateClusterMasterVMNetworkInterface(cs *api.ContainerService) Netw
 	if isAzureCNI {
 		for i := 2; i <= cs.Properties.MasterProfile.IPAddressCount; i++ {
 			ipConfig := network.InterfaceIPConfiguration{
-				Name: helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
+				Name: to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
 				InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-					Primary:                   helpers.PointerToBool(false),
+					Primary:                   to.BoolPtr(false),
 					PrivateIPAllocationMethod: network.Dynamic,
 					Subnet: &network.Subnet{
-						ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+						ID: to.StringPtr("[variables('vnetSubnetID')]"),
 					},
 				},
 			}
@@ -197,13 +197,13 @@ func createPrivateClusterMasterVMNetworkInterface(cs *api.ContainerService) Netw
 	}
 
 	if !isAzureCNI && !cs.Properties.IsAzureStackCloud() {
-		nicProperties.EnableIPForwarding = helpers.PointerToBool(true)
+		nicProperties.EnableIPForwarding = to.BoolPtr(true)
 	}
 
 	// Enable IPForwarding on NetworkInterface for azurecni dualstack
 	if isAzureCNI {
 		if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") {
-			nicProperties.EnableIPForwarding = helpers.PointerToBool(true)
+			nicProperties.EnableIPForwarding = to.BoolPtr(true)
 		}
 	}
 
@@ -218,15 +218,15 @@ func createPrivateClusterMasterVMNetworkInterface(cs *api.ContainerService) Netw
 
 	if cs.Properties.MasterProfile.IsCustomVNET() {
 		nicProperties.NetworkSecurityGroup = &network.SecurityGroup{
-			ID: helpers.PointerToString("[variables('nsgID')]"),
+			ID: to.StringPtr("[variables('nsgID')]"),
 		}
 	}
 
 	networkInterface := network.Interface{
-		Location:                  helpers.PointerToString("[variables('location')]"),
-		Name:                      helpers.PointerToString("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
+		Location:                  to.StringPtr("[variables('location')]"),
+		Name:                      to.StringPtr("[concat(variables('masterVMNamePrefix'), 'nic-', copyIndex(variables('masterOffset')))]"),
 		InterfacePropertiesFormat: &nicProperties,
-		Type:                      helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+		Type:                      to.StringPtr("Microsoft.Network/networkInterfaces"),
 	}
 
 	armResource := ARMResource{
@@ -262,29 +262,29 @@ func createJumpboxNetworkInterface(cs *api.ContainerService) NetworkInterfaceARM
 	nicProperties := network.InterfacePropertiesFormat{
 		IPConfigurations: &[]network.InterfaceIPConfiguration{
 			{
-				Name: helpers.PointerToString("ipconfig1"),
+				Name: to.StringPtr("ipconfig1"),
 				InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 					Subnet: &network.Subnet{
-						ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+						ID: to.StringPtr("[variables('vnetSubnetID')]"),
 					},
-					Primary:                   helpers.PointerToBool(true),
+					Primary:                   to.BoolPtr(true),
 					PrivateIPAllocationMethod: network.Dynamic,
 					PublicIPAddress: &network.PublicIPAddress{
-						ID: helpers.PointerToString("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
+						ID: to.StringPtr("[resourceId('Microsoft.Network/publicIpAddresses', variables('jumpboxPublicIpAddressName'))]"),
 					},
 				},
 			},
 		},
 		NetworkSecurityGroup: &network.SecurityGroup{
-			ID: helpers.PointerToString("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
+			ID: to.StringPtr("[resourceId('Microsoft.Network/networkSecurityGroups', variables('jumpboxNetworkSecurityGroupName'))]"),
 		},
 	}
 
 	networkInterface := network.Interface{
-		Location:                  helpers.PointerToString("[variables('location')]"),
-		Name:                      helpers.PointerToString("[variables('jumpboxNetworkInterfaceName')]"),
+		Location:                  to.StringPtr("[variables('location')]"),
+		Name:                      to.StringPtr("[variables('jumpboxNetworkInterfaceName')]"),
 		InterfacePropertiesFormat: &nicProperties,
-		Type:                      helpers.PointerToString("Microsoft.Network/networkInterfaces"),
+		Type:                      to.StringPtr("Microsoft.Network/networkInterfaces"),
 	}
 
 	return NetworkInterfaceARM{
@@ -321,16 +321,16 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 	armResource.DependsOn = dependencies
 
 	networkInterface := network.Interface{
-		Type:     helpers.PointerToString("Microsoft.Network/networkInterfaces"),
-		Name:     helpers.PointerToString("[concat(variables('" + profile.Name + "VMNamePrefix'), 'nic-', copyIndex(variables('" + profile.Name + "Offset')))]"),
-		Location: helpers.PointerToString("[variables('location')]"),
+		Type:     to.StringPtr("Microsoft.Network/networkInterfaces"),
+		Name:     to.StringPtr("[concat(variables('" + profile.Name + "VMNamePrefix'), 'nic-', copyIndex(variables('" + profile.Name + "Offset')))]"),
+		Location: to.StringPtr("[variables('location')]"),
 	}
 
 	networkInterface.InterfacePropertiesFormat = &network.InterfacePropertiesFormat{}
 
 	if isCustomVNet {
 		networkInterface.NetworkSecurityGroup = &network.SecurityGroup{
-			ID: helpers.PointerToString("[variables('nsgID')]"),
+			ID: to.StringPtr("[variables('nsgID')]"),
 		}
 	}
 
@@ -343,24 +343,24 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 	var ipConfigurations []network.InterfaceIPConfiguration
 	for i := 1; i <= profile.IPAddressCount; i++ {
 		ipConfig := network.InterfaceIPConfiguration{
-			Name:                                     helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
+			Name:                                     to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{},
 		}
 		if i == 1 {
-			ipConfig.Primary = helpers.PointerToBool(true)
+			ipConfig.Primary = to.BoolPtr(true)
 			backendPools := make([]network.BackendAddressPool, 0)
 			if profile.LoadBalancerBackendAddressPoolIDs != nil {
 				for _, lbBackendPoolID := range profile.LoadBalancerBackendAddressPoolIDs {
 					backendPools = append(backendPools,
 						network.BackendAddressPool{
-							ID: helpers.PointerToString(lbBackendPoolID),
+							ID: to.StringPtr(lbBackendPoolID),
 						},
 					)
 				}
 			} else {
 				if cs.Properties.OrchestratorProfile.KubernetesConfig.LoadBalancerSku == api.StandardLoadBalancerSku {
 					agentLbBackendAddressPools := network.BackendAddressPool{
-						ID: helpers.PointerToString("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
+						ID: to.StringPtr("[concat(variables('agentLbID'), '/backendAddressPools/', variables('agentLbBackendPoolName'))]"),
 					}
 					backendPools = append(backendPools, agentLbBackendAddressPools)
 				}
@@ -369,13 +369,13 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 		}
 		ipConfig.PrivateIPAllocationMethod = network.Dynamic
 		ipConfig.Subnet = &network.Subnet{
-			ID: helpers.PointerToString(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
+			ID: to.StringPtr(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
 		}
 		if !isWindows {
 			if profile.Role == "Infra" {
 				ipConfig.LoadBalancerBackendAddressPools = &[]network.BackendAddressPool{
 					{
-						ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
+						ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers', variables('routerLBName')), '/backendAddressPools/backend')]"),
 					},
 				}
 			}
@@ -388,7 +388,7 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 					backendPools = *ipConfig.LoadBalancerBackendAddressPools
 				}
 				backendPools = append(backendPools, network.BackendAddressPool{
-					ID: helpers.PointerToString("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
+					ID: to.StringPtr("[concat(resourceId('Microsoft.Network/loadBalancers',parameters('masterEndpointDNSNamePrefix')), '/backendAddressPools/', parameters('masterEndpointDNSNamePrefix'))]"),
 				})
 				ipConfig.LoadBalancerBackendAddressPools = &backendPools
 			}
@@ -399,12 +399,12 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 	// add ipv6 nic config for dual stack
 	if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") || cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6Only") {
 		ipv6Config := network.InterfaceIPConfiguration{
-			Name: helpers.PointerToString("ipconfigv6"),
+			Name: to.StringPtr("ipconfigv6"),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
 				PrivateIPAddressVersion: "IPv6",
-				Primary:                 helpers.PointerToBool(false),
+				Primary:                 to.BoolPtr(false),
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
+					ID: to.StringPtr(fmt.Sprintf("[variables('%sVnetSubnetID')]", profile.Name)),
 				},
 			},
 		}
@@ -414,13 +414,13 @@ func createAgentVMASNetworkInterface(cs *api.ContainerService, profile *api.Agen
 	networkInterface.IPConfigurations = &ipConfigurations
 
 	if !isAzureCNI && !cs.Properties.IsAzureStackCloud() {
-		networkInterface.EnableIPForwarding = helpers.PointerToBool(true)
+		networkInterface.EnableIPForwarding = to.BoolPtr(true)
 	}
 
 	// Enable IPForwarding on NetworkInterface for azurecni dualstack
 	if isAzureCNI {
 		if cs.Properties.FeatureFlags.IsFeatureEnabled("EnableIPv6DualStack") {
-			networkInterface.EnableIPForwarding = helpers.PointerToBool(true)
+			networkInterface.EnableIPForwarding = to.BoolPtr(true)
 		}
 	}
 
@@ -434,12 +434,12 @@ func getSecondaryNICIPConfigs(n int) []network.InterfaceIPConfiguration {
 	var ipConfigurations []network.InterfaceIPConfiguration
 	for i := 2; i <= n; i++ {
 		ipConfig := network.InterfaceIPConfiguration{
-			Name: helpers.PointerToString(fmt.Sprintf("ipconfig%d", i)),
+			Name: to.StringPtr(fmt.Sprintf("ipconfig%d", i)),
 			InterfaceIPConfigurationPropertiesFormat: &network.InterfaceIPConfigurationPropertiesFormat{
-				Primary:                   helpers.PointerToBool(false),
+				Primary:                   to.BoolPtr(false),
 				PrivateIPAllocationMethod: network.Dynamic,
 				Subnet: &network.Subnet{
-					ID: helpers.PointerToString("[variables('vnetSubnetID')]"),
+					ID: to.StringPtr("[variables('vnetSubnetID')]"),
 				},
 			},
 		}

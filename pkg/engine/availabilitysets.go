@@ -7,7 +7,7 @@ import (
 	"fmt"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 )
 
@@ -18,9 +18,9 @@ func CreateAvailabilitySet(cs *api.ContainerService, isManagedDisks bool) Availa
 	}
 
 	avSet := compute.AvailabilitySet{
-		Name:     helpers.PointerToString("[variables('masterAvailabilitySet')]"),
-		Location: helpers.PointerToString("[variables('location')]"),
-		Type:     helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+		Name:     to.StringPtr("[variables('masterAvailabilitySet')]"),
+		Location: to.StringPtr("[variables('location')]"),
+		Type:     to.StringPtr("Microsoft.Compute/availabilitySets"),
 	}
 
 	if !cs.Properties.MasterProfile.HasAvailabilityZones() {
@@ -28,19 +28,19 @@ func CreateAvailabilitySet(cs *api.ContainerService, isManagedDisks bool) Availa
 			avSet.AvailabilitySetProperties = &compute.AvailabilitySetProperties{}
 			if cs.Properties.MasterProfile.PlatformFaultDomainCount != nil {
 				p := int32(*cs.Properties.MasterProfile.PlatformFaultDomainCount)
-				avSet.PlatformFaultDomainCount = helpers.PointerToInt32(p)
+				avSet.PlatformFaultDomainCount = to.Int32Ptr(p)
 			}
 			if cs.Properties.MasterProfile.PlatformUpdateDomainCount != nil {
 				p := int32(*cs.Properties.MasterProfile.PlatformUpdateDomainCount)
-				avSet.PlatformUpdateDomainCount = helpers.PointerToInt32(p)
+				avSet.PlatformUpdateDomainCount = to.Int32Ptr(p)
 			}
 			if cs.Properties.MasterProfile.ProximityPlacementGroupID != "" {
 				avSet.ProximityPlacementGroup = &compute.SubResource{
-					ID: helpers.PointerToString(cs.Properties.MasterProfile.ProximityPlacementGroupID),
+					ID: to.StringPtr(cs.Properties.MasterProfile.ProximityPlacementGroupID),
 				}
 			}
 			avSet.Sku = &compute.Sku{
-				Name: helpers.PointerToString("Aligned"),
+				Name: to.StringPtr("Aligned"),
 			}
 		} else if cs.Properties.MasterProfile.IsStorageAccount() {
 			avSet.AvailabilitySetProperties = &compute.AvailabilitySetProperties{}
@@ -60,29 +60,29 @@ func createAgentAvailabilitySets(profile *api.AgentPoolProfile) AvailabilitySetA
 	}
 
 	avSet := compute.AvailabilitySet{
-		Name:                      helpers.PointerToString(fmt.Sprintf("[variables('%sAvailabilitySet')]", profile.Name)),
-		Location:                  helpers.PointerToString("[variables('location')]"),
-		Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+		Name:                      to.StringPtr(fmt.Sprintf("[variables('%sAvailabilitySet')]", profile.Name)),
+		Location:                  to.StringPtr("[variables('location')]"),
+		Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
 		AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
 	}
 
 	if profile.IsManagedDisks() {
 		if profile.PlatformFaultDomainCount != nil {
 			p := int32(*profile.PlatformFaultDomainCount)
-			avSet.PlatformFaultDomainCount = helpers.PointerToInt32(p)
+			avSet.PlatformFaultDomainCount = to.Int32Ptr(p)
 		}
 		if profile.PlatformUpdateDomainCount != nil {
 			p := int32(*profile.PlatformUpdateDomainCount)
-			avSet.PlatformUpdateDomainCount = helpers.PointerToInt32(p)
+			avSet.PlatformUpdateDomainCount = to.Int32Ptr(p)
 		}
 		if profile.ProximityPlacementGroupID != "" {
 			avSet.ProximityPlacementGroup = &compute.SubResource{
-				ID: helpers.PointerToString(profile.ProximityPlacementGroupID),
+				ID: to.StringPtr(profile.ProximityPlacementGroupID),
 			}
 		}
 
 		avSet.Sku = &compute.Sku{
-			Name: helpers.PointerToString("Aligned"),
+			Name: to.StringPtr("Aligned"),
 		}
 	}
 

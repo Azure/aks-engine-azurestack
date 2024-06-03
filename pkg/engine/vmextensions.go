@@ -10,7 +10,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 )
 
@@ -29,20 +29,20 @@ func CreateCustomScriptExtension(cs *api.ContainerService) VirtualMachineExtensi
 	}
 
 	vmExtension := compute.VirtualMachineExtension{
-		Location: helpers.PointerToString(location),
-		Name:     helpers.PointerToString(name),
+		Location: to.StringPtr(location),
+		Name:     to.StringPtr(name),
 		VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-			Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
-			Type:                    helpers.PointerToString("CustomScript"),
-			TypeHandlerVersion:      helpers.PointerToString("2.0"),
-			AutoUpgradeMinorVersion: helpers.PointerToBool(true),
+			Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
+			Type:                    to.StringPtr("CustomScript"),
+			TypeHandlerVersion:      to.StringPtr("2.0"),
+			AutoUpgradeMinorVersion: to.BoolPtr(true),
 			Settings:                &map[string]interface{}{},
 			ProtectedSettings: &map[string]interface{}{
 				//note that any change to this property will trigger a CSE rerun on upgrade as well as reimage.
 				"commandToExecute": fmt.Sprintf("[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq \"EOF\" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),%s,variables('provisionScriptParametersMaster'), ' IS_VHD=%s /usr/bin/nohup /bin/bash -c \"/bin/bash /opt/azure/containers/provision.sh >> %s 2>&1\"')]", generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled), isVHD, linuxCSELogPath),
 			},
 		},
-		Type: helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+		Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
 		Tags: map[string]*string{},
 	}
 	return VirtualMachineExtensionARM{
@@ -76,31 +76,31 @@ func createAgentVMASCustomScriptExtension(cs *api.ContainerService, profile *api
 
 	nVidiaEnabled := strconv.FormatBool(common.IsNvidiaEnabledSKU(profile.VMSize))
 	sgxEnabled := strconv.FormatBool(common.IsSgxEnabledSKU(profile.VMSize))
-	auditDEnabled := strconv.FormatBool(helpers.Bool(profile.AuditDEnabled))
+	auditDEnabled := strconv.FormatBool(to.Bool(profile.AuditDEnabled))
 	isVHD := strconv.FormatBool(profile.IsVHDDistro())
 
 	vmExtension := compute.VirtualMachineExtension{
-		Location: helpers.PointerToString(location),
-		Name:     helpers.PointerToString(name),
+		Location: to.StringPtr(location),
+		Name:     to.StringPtr(name),
 		VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-			AutoUpgradeMinorVersion: helpers.PointerToBool(true),
+			AutoUpgradeMinorVersion: to.BoolPtr(true),
 			Settings:                &map[string]interface{}{},
 		},
-		Type: helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+		Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
 	}
 
 	if profile.IsWindows() {
-		vmExtension.Publisher = helpers.PointerToString("Microsoft.Compute")
-		vmExtension.VirtualMachineExtensionProperties.Type = helpers.PointerToString("CustomScriptExtension")
-		vmExtension.TypeHandlerVersion = helpers.PointerToString("1.8")
+		vmExtension.Publisher = to.StringPtr("Microsoft.Compute")
+		vmExtension.VirtualMachineExtensionProperties.Type = to.StringPtr("CustomScriptExtension")
+		vmExtension.TypeHandlerVersion = to.StringPtr("1.8")
 		commandExec := fmt.Sprintf("[concat('echo %s && powershell.exe -ExecutionPolicy Unrestricted -command \"', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp'),%s' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '\" > %s 2>&1 ; exit $LASTEXITCODE')]", "%DATE%,%TIME%,%COMPUTERNAME%", generateUserAssignedIdentityClientIDParameterForWindows(userAssignedIDEnabled), "%SYSTEMDRIVE%\\AzureData\\CustomDataSetupScript.log")
 		vmExtension.ProtectedSettings = &map[string]interface{}{
 			"commandToExecute": commandExec,
 		}
 	} else {
-		vmExtension.Publisher = helpers.PointerToString("Microsoft.Azure.Extensions")
-		vmExtension.VirtualMachineExtensionProperties.Type = helpers.PointerToString("CustomScript")
-		vmExtension.TypeHandlerVersion = helpers.PointerToString("2.0")
+		vmExtension.Publisher = to.StringPtr("Microsoft.Azure.Extensions")
+		vmExtension.VirtualMachineExtensionProperties.Type = to.StringPtr("CustomScript")
+		vmExtension.TypeHandlerVersion = to.StringPtr("2.0")
 		commandExec := fmt.Sprintf("[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq \"EOF\" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),%s,' IS_VHD=%s GPU_NODE=%s SGX_NODE=%s AUDITD_ENABLED=%s /usr/bin/nohup /bin/bash -c \"/bin/bash /opt/azure/containers/provision.sh >> %s 2>&1%s\"')]", generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled), isVHD, nVidiaEnabled, sgxEnabled, auditDEnabled, linuxCSELogPath, runInBackground)
 		vmExtension.ProtectedSettings = &map[string]interface{}{
 			"commandToExecute": commandExec,

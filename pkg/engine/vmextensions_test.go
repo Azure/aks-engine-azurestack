@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/resources/mgmt/resources"
 	"github.com/google/go-cmp/cmp"
@@ -39,19 +39,19 @@ func TestCreateCustomScriptExtension(t *testing.T) {
 			DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')))]"},
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')),'/cse', '-master-', copyIndex(variables('masterOffset')))]"),
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
-				Type:                    helpers.PointerToString("CustomScript"),
-				TypeHandlerVersion:      helpers.PointerToString("2.0"),
-				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
+				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
+				Type:                    to.StringPtr("CustomScript"),
+				TypeHandlerVersion:      to.StringPtr("2.0"),
+				AutoUpgradeMinorVersion: to.BoolPtr(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,variables('provisionScriptParametersMaster'), ' IS_VHD=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
 			Tags: map[string]*string{},
 		},
 	}
@@ -95,19 +95,19 @@ func TestCreateAgentVMASCustomScriptExtension(t *testing.T) {
 			DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('sampleVMNamePrefix'), copyIndex(variables('sampleOffset')))]"},
 		},
 		VirtualMachineExtension: compute.VirtualMachineExtension{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[concat(variables('sampleVMNamePrefix'), copyIndex(variables('sampleOffset')),'/cse', '-agent-', copyIndex(variables('sampleOffset')))]"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[concat(variables('sampleVMNamePrefix'), copyIndex(variables('sampleOffset')),'/cse', '-agent-', copyIndex(variables('sampleOffset')))]"),
 			VirtualMachineExtensionProperties: &compute.VirtualMachineExtensionProperties{
-				Publisher:               helpers.PointerToString("Microsoft.Azure.Extensions"),
-				Type:                    helpers.PointerToString("CustomScript"),
-				TypeHandlerVersion:      helpers.PointerToString("2.0"),
-				AutoUpgradeMinorVersion: helpers.PointerToBool(true),
+				Publisher:               to.StringPtr("Microsoft.Azure.Extensions"),
+				Type:                    to.StringPtr("CustomScript"),
+				TypeHandlerVersion:      to.StringPtr("2.0"),
+				AutoUpgradeMinorVersion: to.BoolPtr(true),
 				Settings:                &map[string]interface{}{},
 				ProtectedSettings: &map[string]interface{}{
 					"commandToExecute": `[concat('echo $(date),$(hostname); for i in $(seq 1 1200); do grep -Fq "EOF" /opt/azure/containers/provision.sh && break; if [ $i -eq 1200 ]; then exit 100; else sleep 1; fi; done; ', variables('provisionScriptParametersCommon'),` + generateUserAssignedIdentityClientIDParameter(userAssignedIDEnabled) + `,' IS_VHD=true GPU_NODE=false SGX_NODE=false AUDITD_ENABLED=false /usr/bin/nohup /bin/bash -c "/bin/bash /opt/azure/containers/provision.sh >> ` + linuxCSELogPath + ` 2>&1"')]`,
 				},
 			},
-			Type: helpers.PointerToString("Microsoft.Compute/virtualMachines/extensions"),
+			Type: to.StringPtr("Microsoft.Compute/virtualMachines/extensions"),
 			Tags: nil,
 		},
 	}
@@ -170,9 +170,9 @@ func TestCreateAgentVMASCustomScriptExtension(t *testing.T) {
 
 	cse = createAgentVMASCustomScriptExtension(cs, profile)
 
-	expectedCSE.Publisher = helpers.PointerToString("Microsoft.Compute")
-	expectedCSE.VirtualMachineExtensionProperties.Type = helpers.PointerToString("CustomScriptExtension")
-	expectedCSE.TypeHandlerVersion = helpers.PointerToString("1.8")
+	expectedCSE.Publisher = to.StringPtr("Microsoft.Compute")
+	expectedCSE.VirtualMachineExtensionProperties.Type = to.StringPtr("CustomScriptExtension")
+	expectedCSE.TypeHandlerVersion = to.StringPtr("1.8")
 	expectedCSE.ProtectedSettings = &map[string]interface{}{
 		"commandToExecute": "[concat('echo %DATE%,%TIME%,%COMPUTERNAME% && powershell.exe -ExecutionPolicy Unrestricted -command \"', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp')," + generateUserAssignedIdentityClientIDParameterForWindows(userAssignedIDEnabled) + "' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '\" > %SYSTEMDRIVE%\\AzureData\\CustomDataSetupScript.log 2>&1 ; exit $LASTEXITCODE')]",
 	}
@@ -186,7 +186,7 @@ func TestCreateAgentVMASCustomScriptExtension(t *testing.T) {
 	// Test with Windows agent profile and managed Identity
 	cs.Properties.OrchestratorProfile = &api.OrchestratorProfile{
 		KubernetesConfig: &api.KubernetesConfig{
-			UseManagedIdentity: helpers.PointerToBool(true),
+			UseManagedIdentity: to.BoolPtr(true),
 			UserAssignedID:     "fooAssignedID",
 		},
 	}
@@ -199,9 +199,9 @@ func TestCreateAgentVMASCustomScriptExtension(t *testing.T) {
 
 	cse = createAgentVMASCustomScriptExtension(cs, profile)
 
-	expectedCSE.Publisher = helpers.PointerToString("Microsoft.Compute")
-	expectedCSE.VirtualMachineExtensionProperties.Type = helpers.PointerToString("CustomScriptExtension")
-	expectedCSE.TypeHandlerVersion = helpers.PointerToString("1.8")
+	expectedCSE.Publisher = to.StringPtr("Microsoft.Compute")
+	expectedCSE.VirtualMachineExtensionProperties.Type = to.StringPtr("CustomScriptExtension")
+	expectedCSE.TypeHandlerVersion = to.StringPtr("1.8")
 	expectedCSE.ProtectedSettings = &map[string]interface{}{
 		"commandToExecute": "[concat('echo %DATE%,%TIME%,%COMPUTERNAME% && powershell.exe -ExecutionPolicy Unrestricted -command \"', '$arguments = ', variables('singleQuote'),'-MasterIP ',variables('kubernetesAPIServerIP'),' -KubeDnsServiceIp ',parameters('kubeDnsServiceIp')," + generateUserAssignedIdentityClientIDParameterForWindows(userAssignedIDEnabled) + "' -MasterFQDNPrefix ',variables('masterFqdnPrefix'),' -Location ',variables('location'),' -TargetEnvironment ',parameters('targetEnvironment'),' -AgentKey ',parameters('clientPrivateKey'),' -AADClientId ',variables('servicePrincipalClientId'),' -AADClientSecret ',variables('singleQuote'),variables('singleQuote'),base64(variables('servicePrincipalClientSecret')),variables('singleQuote'),variables('singleQuote'),' -NetworkAPIVersion ',variables('apiVersionNetwork'),' ',variables('singleQuote'), ' ; ', variables('windowsCustomScriptSuffix'), '\" > %SYSTEMDRIVE%\\AzureData\\CustomDataSetupScript.log 2>&1 ; exit $LASTEXITCODE')]",
 	}
@@ -270,11 +270,11 @@ func TestCreateCustomExtensions(t *testing.T) {
 				DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('windowspool1VMNamePrefix'), copyIndex(variables('windowspool1Offset')), '/extensions/cse-agent-', copyIndex(variables('windowspool1Offset')))]"},
 			},
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat(variables('windowspool1VMNamePrefix'), copyIndex(variables('windowspool1Offset')), 'winrm')]"),
+				Name: to.StringPtr("[concat(variables('windowspool1VMNamePrefix'), copyIndex(variables('windowspool1Offset')), 'winrm')]"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					TemplateLink: &resources.TemplateLink{
-						URI:            helpers.PointerToString("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/winrm/v1/template.json"),
-						ContentVersion: helpers.PointerToString("1.0.0.0"),
+						URI:            to.StringPtr("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/winrm/v1/template.json"),
+						ContentVersion: to.StringPtr("1.0.0.0"),
 					},
 					Parameters: map[string]interface{}{
 						"apiVersionDeployments": map[string]interface{}{"value": "[variables('apiVersionDeployments')]"},
@@ -286,7 +286,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 					},
 					Mode: resources.DeploymentMode("Incremental"),
 				},
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 			},
 		},
 		{
@@ -299,11 +299,11 @@ func TestCreateCustomExtensions(t *testing.T) {
 				DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), '/extensions/cse-agent-', copyIndex(variables('windowspool2Offset')))]"},
 			},
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat(variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), 'winrm')]"),
+				Name: to.StringPtr("[concat(variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), 'winrm')]"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					TemplateLink: &resources.TemplateLink{
-						URI:            helpers.PointerToString("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/winrm/v1/template.json"),
-						ContentVersion: helpers.PointerToString("1.0.0.0"),
+						URI:            to.StringPtr("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/winrm/v1/template.json"),
+						ContentVersion: to.StringPtr("1.0.0.0"),
 					},
 					Parameters: map[string]interface{}{
 						"apiVersionDeployments": map[string]interface{}{"value": "[variables('apiVersionDeployments')]"},
@@ -315,7 +315,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 					},
 					Mode: resources.DeploymentMode("Incremental"),
 				},
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 			},
 		},
 		{
@@ -328,11 +328,11 @@ func TestCreateCustomExtensions(t *testing.T) {
 				DependsOn: []string{"[concat(variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), 'winrm')]"},
 			},
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat(variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), 'HelloWorldK8s')]"),
+				Name: to.StringPtr("[concat(variables('windowspool2VMNamePrefix'), copyIndex(variables('windowspool2Offset')), 'HelloWorldK8s')]"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					TemplateLink: &resources.TemplateLink{
-						URI:            helpers.PointerToString("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/hello-world-k8s/v1/template.json"),
-						ContentVersion: helpers.PointerToString("1.0.0.0"),
+						URI:            to.StringPtr("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/hello-world-k8s/v1/template.json"),
+						ContentVersion: to.StringPtr("1.0.0.0"),
 					},
 					Parameters: map[string]interface{}{
 						"apiVersionDeployments": map[string]interface{}{"value": "[variables('apiVersionDeployments')]"},
@@ -344,7 +344,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 					},
 					Mode: resources.DeploymentMode("Incremental"),
 				},
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 			},
 		},
 	}
@@ -391,11 +391,11 @@ func TestCreateCustomExtensions(t *testing.T) {
 				DependsOn: []string{"[concat('Microsoft.Compute/virtualMachines/', variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), '/extensions/cse-master-', copyIndex(variables('masterOffset')))]"},
 			},
 			DeploymentExtended: resources.DeploymentExtended{
-				Name: helpers.PointerToString("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), 'HelloWorldK8s')]"),
+				Name: to.StringPtr("[concat(variables('masterVMNamePrefix'), copyIndex(variables('masterOffset')), 'HelloWorldK8s')]"),
 				Properties: &resources.DeploymentPropertiesExtended{
 					TemplateLink: &resources.TemplateLink{
-						URI:            helpers.PointerToString("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/hello-world-k8s/v1/template.json"),
-						ContentVersion: helpers.PointerToString("1.0.0.0"),
+						URI:            to.StringPtr("https://raw.githubusercontent.com/Azure/aks-engine/master/extensions/hello-world-k8s/v1/template.json"),
+						ContentVersion: to.StringPtr("1.0.0.0"),
 					},
 					Parameters: map[string]interface{}{
 						"apiVersionDeployments": map[string]interface{}{"value": "[variables('apiVersionDeployments')]"},
@@ -407,7 +407,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 					},
 					Mode: resources.DeploymentMode("Incremental"),
 				},
-				Type: helpers.PointerToString("Microsoft.Resources/deployments"),
+				Type: to.StringPtr("Microsoft.Resources/deployments"),
 			},
 		},
 	}

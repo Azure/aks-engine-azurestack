@@ -17,6 +17,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/blang/semver"
 )
@@ -1230,7 +1231,7 @@ func (p *Properties) NeedsAuditdRules() bool {
 // For Windows clusters, we should enable them when using K8s 1.18+.
 func (p *Properties) ShouldEnableAzureCloudAddon(addonName string) bool {
 	o := p.OrchestratorProfile
-	if !helpers.Bool(o.KubernetesConfig.UseCloudControllerManager) {
+	if !to.Bool(o.KubernetesConfig.UseCloudControllerManager) {
 		return false
 	}
 	// For Azure Stack Hub clusters, azuredisk-csi driver will not be enabled by default when cloud-controller-manager is enabled due to custom data oversize
@@ -1292,7 +1293,7 @@ func (m *MasterProfile) IsVHDDistro() bool {
 
 // IsAuditDEnabled returns true if the master profile is configured for auditd
 func (m *MasterProfile) IsAuditDEnabled() bool {
-	return helpers.Bool(m.AuditDEnabled)
+	return to.Bool(m.AuditDEnabled)
 }
 
 // IsVirtualMachineScaleSets returns true if the master availability profile is VMSS
@@ -1386,7 +1387,7 @@ func (m *MasterProfile) HasMultipleNodes() bool {
 
 // HasCosmosEtcd returns true if cosmos etcd configuration is enabled
 func (m *MasterProfile) HasCosmosEtcd() bool {
-	return helpers.Bool(m.CosmosEtcd)
+	return to.Bool(m.CosmosEtcd)
 }
 
 // GetCosmosEndPointURI returns the URI string for the cosmos etcd endpoint
@@ -1436,7 +1437,7 @@ func (a *AgentPoolProfile) IsVHDDistro() bool {
 
 // IsAuditDEnabled returns true if the master profile is configured for auditd
 func (a *AgentPoolProfile) IsAuditDEnabled() bool {
-	return helpers.Bool(a.AuditDEnabled)
+	return to.Bool(a.AuditDEnabled)
 }
 
 // IsAvailabilitySets returns true if the customer specified disks
@@ -1735,12 +1736,12 @@ func (o *OrchestratorProfile) IsAzureCNI() bool {
 
 // IsPrivateCluster returns true if this deployment is a private cluster
 func (o *OrchestratorProfile) IsPrivateCluster() bool {
-	return o.KubernetesConfig != nil && o.KubernetesConfig.PrivateCluster != nil && helpers.Bool(o.KubernetesConfig.PrivateCluster.Enabled)
+	return o.KubernetesConfig != nil && o.KubernetesConfig.PrivateCluster != nil && to.Bool(o.KubernetesConfig.PrivateCluster.Enabled)
 }
 
 // IsHostsConfigAgentEnabled returns true if hosts config agent is enabled
 func (o *OrchestratorProfile) IsHostsConfigAgentEnabled() bool {
-	return o.KubernetesConfig != nil && o.KubernetesConfig.PrivateCluster != nil && helpers.Bool(o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent)
+	return o.KubernetesConfig != nil && o.KubernetesConfig.PrivateCluster != nil && to.Bool(o.KubernetesConfig.PrivateCluster.EnableHostsConfigAgent)
 }
 
 // GetPodInfraContainerSpec returns the sandbox image as a string (ex: registry.k8s.io/pause-amd64:3.1)
@@ -1843,19 +1844,19 @@ func (k *KubernetesConfig) IsComponentEnabled(componentName string) (KubernetesC
 // IsRBACEnabled checks if RBAC is enabled
 func (k *KubernetesConfig) IsRBACEnabled() bool {
 	if k.EnableRbac != nil {
-		return helpers.Bool(k.EnableRbac)
+		return to.Bool(k.EnableRbac)
 	}
 	return false
 }
 
 // UserAssignedIDEnabled checks if the user assigned ID is enabled or not.
 func (k *KubernetesConfig) UserAssignedIDEnabled() bool {
-	return helpers.Bool(k.UseManagedIdentity) && k.UserAssignedID != ""
+	return to.Bool(k.UseManagedIdentity) && k.UserAssignedID != ""
 }
 
 // SystemAssignedIDEnabled checks if system assigned IDs should be used.
 func (k *KubernetesConfig) SystemAssignedIDEnabled() bool {
-	return helpers.Bool(k.UseManagedIdentity) && k.UserAssignedID == ""
+	return to.Bool(k.UseManagedIdentity) && k.UserAssignedID == ""
 }
 
 func (k *KubernetesConfig) ShouldCreateNewUserAssignedIdentity() bool {
@@ -2266,22 +2267,22 @@ func (cs *ContainerService) GetProvisionScriptParametersCommon(input ProvisionSc
 		"NETWORK_POLICY":                          kubernetesConfig.NetworkPolicy,
 		"VNET_CNI_PLUGINS_URL":                    kubernetesConfig.GetAzureCNIURLLinux(cloudSpecConfig),
 		"CNI_PLUGINS_URL":                         cloudSpecConfig.KubernetesSpecConfig.CNIPluginsDownloadURL,
-		"CLOUDPROVIDER_BACKOFF":                   strconv.FormatBool(helpers.Bool(kubernetesConfig.CloudProviderBackoff)),
+		"CLOUDPROVIDER_BACKOFF":                   strconv.FormatBool(to.Bool(kubernetesConfig.CloudProviderBackoff)),
 		"CLOUDPROVIDER_BACKOFF_MODE":              kubernetesConfig.CloudProviderBackoffMode,
 		"CLOUDPROVIDER_BACKOFF_RETRIES":           strconv.Itoa(kubernetesConfig.CloudProviderBackoffRetries),
 		"CLOUDPROVIDER_BACKOFF_EXPONENT":          strconv.FormatFloat(kubernetesConfig.CloudProviderBackoffExponent, 'f', -1, 64),
 		"CLOUDPROVIDER_BACKOFF_DURATION":          strconv.Itoa(kubernetesConfig.CloudProviderBackoffDuration),
 		"CLOUDPROVIDER_BACKOFF_JITTER":            strconv.FormatFloat(kubernetesConfig.CloudProviderBackoffJitter, 'f', -1, 64),
-		"CLOUDPROVIDER_RATELIMIT":                 strconv.FormatBool(helpers.Bool(kubernetesConfig.CloudProviderRateLimit)),
+		"CLOUDPROVIDER_RATELIMIT":                 strconv.FormatBool(to.Bool(kubernetesConfig.CloudProviderRateLimit)),
 		"CLOUDPROVIDER_RATELIMIT_QPS":             strconv.FormatFloat(kubernetesConfig.CloudProviderRateLimitQPS, 'f', -1, 64),
 		"CLOUDPROVIDER_RATELIMIT_QPS_WRITE":       strconv.FormatFloat(kubernetesConfig.CloudProviderRateLimitQPSWrite, 'f', -1, 64),
 		"CLOUDPROVIDER_RATELIMIT_BUCKET":          strconv.Itoa(kubernetesConfig.CloudProviderRateLimitBucket),
 		"CLOUDPROVIDER_RATELIMIT_BUCKET_WRITE":    strconv.Itoa(kubernetesConfig.CloudProviderRateLimitBucketWrite),
-		"LOAD_BALANCER_DISABLE_OUTBOUND_SNAT":     strconv.FormatBool(helpers.Bool(kubernetesConfig.CloudProviderDisableOutboundSNAT)),
-		"USE_MANAGED_IDENTITY_EXTENSION":          strconv.FormatBool(helpers.Bool(kubernetesConfig.UseManagedIdentity)),
-		"USE_INSTANCE_METADATA":                   strconv.FormatBool(helpers.Bool(kubernetesConfig.UseInstanceMetadata)),
+		"LOAD_BALANCER_DISABLE_OUTBOUND_SNAT":     strconv.FormatBool(to.Bool(kubernetesConfig.CloudProviderDisableOutboundSNAT)),
+		"USE_MANAGED_IDENTITY_EXTENSION":          strconv.FormatBool(to.Bool(kubernetesConfig.UseManagedIdentity)),
+		"USE_INSTANCE_METADATA":                   strconv.FormatBool(to.Bool(kubernetesConfig.UseInstanceMetadata)),
 		"LOAD_BALANCER_SKU":                       kubernetesConfig.LoadBalancerSku,
-		"EXCLUDE_MASTER_FROM_STANDARD_LB":         strconv.FormatBool(helpers.Bool(kubernetesConfig.ExcludeMasterFromStandardLB)),
+		"EXCLUDE_MASTER_FROM_STANDARD_LB":         strconv.FormatBool(to.Bool(kubernetesConfig.ExcludeMasterFromStandardLB)),
 		"MAXIMUM_LOADBALANCER_RULE_COUNT":         strconv.Itoa(kubernetesConfig.MaximumLoadBalancerRuleCount),
 		"CONTAINER_RUNTIME":                       kubernetesConfig.ContainerRuntime,
 		"CONTAINERD_DOWNLOAD_URL_BASE":            cloudSpecConfig.KubernetesSpecConfig.ContainerdDownloadURLBase,
@@ -2295,7 +2296,7 @@ func (cs *ContainerService) GetProvisionScriptParametersCommon(input ProvisionSc
 		"CUSTOM_HYPERKUBE_IMAGE":                  kubernetesConfig.CustomHyperkubeImage,
 		"MS_APT_REPO":                             kubernetesConfig.MicrosoftAptRepositoryURL,
 		"TAGS":                                    kubernetesConfig.Tags,
-		"ENABLE_MULTIPLE_STANDARD_LOAD_BALANCERS": strconv.FormatBool(helpers.Bool(kubernetesConfig.EnableMultipleStandardLoadBalancers)),
+		"ENABLE_MULTIPLE_STANDARD_LOAD_BALANCERS": strconv.FormatBool(to.Bool(kubernetesConfig.EnableMultipleStandardLoadBalancers)),
 	}
 
 	keys := make([]string, 0)

@@ -9,7 +9,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/compute"
 )
 
@@ -32,7 +32,7 @@ func GenerateARMResources(cs *api.ContainerService) []interface{} {
 	kubernetesConfig := cs.Properties.OrchestratorProfile.KubernetesConfig
 
 	if kubernetesConfig != nil {
-		useManagedIdentity = helpers.Bool(kubernetesConfig.UseManagedIdentity)
+		useManagedIdentity = to.Bool(kubernetesConfig.UseManagedIdentity)
 		userAssignedIDEnabled = kubernetesConfig.UserAssignedIDEnabled()
 		createNewUserAssignedIdentity = kubernetesConfig.ShouldCreateNewUserAssignedIdentity()
 	}
@@ -139,11 +139,11 @@ func createKubernetesAgentVMASResources(cs *api.ContainerService, profile *api.A
 				APIVersion: "[variables('apiVersionCompute')]",
 			},
 			AvailabilitySet: compute.AvailabilitySet{
-				Location: helpers.PointerToString("[variables('location')]"),
-				Name: helpers.PointerToString(fmt.Sprintf("[variables('%sAvailabilitySet')]",
+				Location: to.StringPtr("[variables('location')]"),
+				Name: to.StringPtr(fmt.Sprintf("[variables('%sAvailabilitySet')]",
 					profile.Name)),
 				AvailabilitySetProperties: &compute.AvailabilitySetProperties{},
-				Type:                      helpers.PointerToString("Microsoft.Compute/availabilitySets"),
+				Type:                      to.StringPtr("Microsoft.Compute/availabilitySets"),
 			},
 		}
 
@@ -153,7 +153,7 @@ func createKubernetesAgentVMASResources(cs *api.ContainerService, profile *api.A
 	agentVMASVM := createAgentAvailabilitySetVM(cs, profile)
 	agentVMASResources = append(agentVMASResources, agentVMASVM)
 
-	useManagedIdentity := helpers.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
+	useManagedIdentity := to.Bool(cs.Properties.OrchestratorProfile.KubernetesConfig.UseManagedIdentity)
 	userAssignedIDEnabled := cs.Properties.OrchestratorProfile.KubernetesConfig.UserAssignedIDEnabled()
 
 	if useManagedIdentity && !userAssignedIDEnabled {

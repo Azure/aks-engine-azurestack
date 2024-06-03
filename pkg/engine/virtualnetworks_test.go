@@ -8,7 +8,7 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
-	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
+	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
 	"github.com/Azure/azure-sdk-for-go/profiles/2020-09-01/network/mgmt/network"
 	"github.com/google/go-cmp/cmp"
 )
@@ -36,9 +36,9 @@ func TestCreateVirtualNetwork(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -47,11 +47,11 @@ func TestCreateVirtualNetwork(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("[variables('subnetName')]"),
+						Name: to.StringPtr("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 						},
 					},
@@ -86,14 +86,14 @@ func TestCreateVirtualNetwork(t *testing.T) {
 
 	expectedVnet.Subnets = &[]network.Subnet{
 		{
-			Name: helpers.PointerToString("[variables('subnetName')]"),
+			Name: to.StringPtr("[variables('subnetName')]"),
 			SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-				AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+				AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 				NetworkSecurityGroup: &network.SecurityGroup{
-					ID: helpers.PointerToString("[variables('nsgID')]"),
+					ID: to.StringPtr("[variables('nsgID')]"),
 				},
 				RouteTable: &network.RouteTable{
-					ID: helpers.PointerToString("[variables('routeTableID')]"),
+					ID: to.StringPtr("[variables('routeTableID')]"),
 				},
 			},
 		},
@@ -130,9 +130,9 @@ func TestCreateVirtualNetwork(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -142,17 +142,17 @@ func TestCreateVirtualNetwork(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("[variables('subnetName')]"),
+						Name: to.StringPtr("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
 							AddressPrefixes: &[]string{
 								"[parameters('masterSubnet')]",
 								"[parameters('masterSubnetIPv6')]",
 							},
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
@@ -191,9 +191,9 @@ func TestCreateVirtualNetwork(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -203,17 +203,17 @@ func TestCreateVirtualNetwork(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("[variables('subnetName')]"),
+						Name: to.StringPtr("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
 							AddressPrefixes: &[]string{
 								"[parameters('masterSubnet')]",
 								"[parameters('masterSubnetIPv6')]",
 							},
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
@@ -236,7 +236,7 @@ func TestCreateVirtualNetwork(t *testing.T) {
 					Addons: []api.KubernetesAddon{
 						{
 							Name:    common.AppGwIngressAddonName,
-							Enabled: helpers.PointerToBool(true),
+							Enabled: to.BoolPtr(true),
 							Config: map[string]string{
 								"appgw-subnet": "10.0.0.1/16",
 							},
@@ -256,9 +256,9 @@ func TestCreateVirtualNetwork(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -267,18 +267,18 @@ func TestCreateVirtualNetwork(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("[variables('subnetName')]"),
+						Name: to.StringPtr("[variables('subnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("[variables('appGwSubnetName')]"),
+						Name: to.StringPtr("[variables('appGwSubnetName')]"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('appGwSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('appGwSubnet')]"),
 						},
 					},
 				},
@@ -316,9 +316,9 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -327,20 +327,20 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("subnetmaster"),
+						Name: to.StringPtr("subnetmaster"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("subnetagent"),
+						Name: to.StringPtr("subnetagent"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('agentSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('agentSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 						},
 					},
@@ -375,26 +375,26 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 
 	expectedVnet.Subnets = &[]network.Subnet{
 		{
-			Name: helpers.PointerToString("subnetmaster"),
+			Name: to.StringPtr("subnetmaster"),
 			SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-				AddressPrefix: helpers.PointerToString("[parameters('masterSubnet')]"),
+				AddressPrefix: to.StringPtr("[parameters('masterSubnet')]"),
 				NetworkSecurityGroup: &network.SecurityGroup{
-					ID: helpers.PointerToString("[variables('nsgID')]"),
+					ID: to.StringPtr("[variables('nsgID')]"),
 				},
 				RouteTable: &network.RouteTable{
-					ID: helpers.PointerToString("[variables('routeTableID')]"),
+					ID: to.StringPtr("[variables('routeTableID')]"),
 				},
 			},
 		},
 		{
-			Name: helpers.PointerToString("subnetagent"),
+			Name: to.StringPtr("subnetagent"),
 			SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-				AddressPrefix: helpers.PointerToString("[parameters('agentSubnet')]"),
+				AddressPrefix: to.StringPtr("[parameters('agentSubnet')]"),
 				NetworkSecurityGroup: &network.SecurityGroup{
-					ID: helpers.PointerToString("[variables('nsgID')]"),
+					ID: to.StringPtr("[variables('nsgID')]"),
 				},
 				RouteTable: &network.RouteTable{
-					ID: helpers.PointerToString("[variables('routeTableID')]"),
+					ID: to.StringPtr("[variables('routeTableID')]"),
 				},
 			},
 		},
@@ -431,9 +431,9 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -443,29 +443,29 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("subnetmaster"),
+						Name: to.StringPtr("subnetmaster"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
 							AddressPrefixes: &[]string{
 								"[parameters('masterSubnet')]",
 								"[parameters('masterSubnetIPv6')]",
 							},
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("subnetagent"),
+						Name: to.StringPtr("subnetagent"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('agentSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('agentSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
@@ -504,9 +504,9 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 			},
 		},
 		VirtualNetwork: network.VirtualNetwork{
-			Location: helpers.PointerToString("[variables('location')]"),
-			Name:     helpers.PointerToString("[variables('virtualNetworkName')]"),
-			Type:     helpers.PointerToString("Microsoft.Network/virtualNetworks"),
+			Location: to.StringPtr("[variables('location')]"),
+			Name:     to.StringPtr("[variables('virtualNetworkName')]"),
+			Type:     to.StringPtr("Microsoft.Network/virtualNetworks"),
 			VirtualNetworkPropertiesFormat: &network.VirtualNetworkPropertiesFormat{
 				AddressSpace: &network.AddressSpace{
 					AddressPrefixes: &[]string{
@@ -516,29 +516,29 @@ func TestCreateVirtualNetworkVMSS(t *testing.T) {
 				},
 				Subnets: &[]network.Subnet{
 					{
-						Name: helpers.PointerToString("subnetmaster"),
+						Name: to.StringPtr("subnetmaster"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
 							AddressPrefixes: &[]string{
 								"[parameters('masterSubnet')]",
 								"[parameters('masterSubnetIPv6')]",
 							},
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
 					{
-						Name: helpers.PointerToString("subnetagent"),
+						Name: to.StringPtr("subnetagent"),
 						SubnetPropertiesFormat: &network.SubnetPropertiesFormat{
-							AddressPrefix: helpers.PointerToString("[parameters('agentSubnet')]"),
+							AddressPrefix: to.StringPtr("[parameters('agentSubnet')]"),
 							NetworkSecurityGroup: &network.SecurityGroup{
-								ID: helpers.PointerToString("[variables('nsgID')]"),
+								ID: to.StringPtr("[variables('nsgID')]"),
 							},
 							RouteTable: &network.RouteTable{
-								ID: helpers.PointerToString("[variables('routeTableID')]"),
+								ID: to.StringPtr("[variables('routeTableID')]"),
 							},
 						},
 					},
