@@ -14,8 +14,6 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/azure"
-
 	"github.com/leonelquinteros/gotext"
 	"github.com/pkg/errors"
 
@@ -3361,7 +3359,7 @@ func TestGetComponentFuncMap(t *testing.T) {
 						},
 					},
 					CustomCloudProfile: &api.CustomCloudProfile{
-						Environment: &azure.Environment{
+						Environment: &api.Environment{
 							Name: "AzureStackCloud",
 						},
 					},

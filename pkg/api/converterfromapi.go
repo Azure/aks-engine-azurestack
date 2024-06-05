@@ -8,7 +8,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/blang/semver"
 )
 
@@ -671,7 +670,7 @@ func convertFeatureFlagsToVLabs(api *FeatureFlags, vlabs *vlabs.FeatureFlags) {
 
 func convertCloudProfileToVLabs(api *CustomCloudProfile, vlabsccp *vlabs.CustomCloudProfile) {
 	if api.Environment != nil {
-		vlabsccp.Environment = &azure.Environment{}
+		vlabsccp.Environment = &vlabs.Environment{}
 		vlabsccp.Environment.Name = api.Environment.Name
 		vlabsccp.Environment.ManagementPortalURL = api.Environment.ManagementPortalURL
 		vlabsccp.Environment.PublishSettingsURL = api.Environment.PublishSettingsURL
@@ -692,7 +691,7 @@ func convertCloudProfileToVLabs(api *CustomCloudProfile, vlabsccp *vlabs.CustomC
 		vlabsccp.Environment.ResourceManagerVMDNSSuffix = api.Environment.ResourceManagerVMDNSSuffix
 		vlabsccp.Environment.ContainerRegistryDNSSuffix = api.Environment.ContainerRegistryDNSSuffix
 		vlabsccp.Environment.TokenAudience = api.Environment.TokenAudience
-		vlabsccp.Environment.ResourceIdentifiers = azure.ResourceIdentifier{
+		vlabsccp.Environment.ResourceIdentifiers = vlabs.ResourceIdentifier{
 			Graph:               api.Environment.ResourceIdentifiers.Graph,
 			KeyVault:            api.Environment.ResourceIdentifiers.KeyVault,
 			Datalake:            api.Environment.ResourceIdentifiers.Datalake,

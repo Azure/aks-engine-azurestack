@@ -46,7 +46,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/storageclass"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/Azure/aks-engine-azurestack/test/e2e/remote"
-	"github.com/Azure/go-autorest/autorest/azure"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -79,7 +78,7 @@ var (
 	dnsAddonName                    string
 	singleCommandTimeout            time.Duration
 	stabilityCommandTimeout         time.Duration
-	env                             azure.Environment
+	env                             api.Environment
 	firstMasterRegexStr             = fmt.Sprintf("^%s-.*-0", common.LegacyControlPlaneVMPrefix)
 	vmssHealthCommand               *exec.Cmd
 	vmssHealthCommandStdOut         string

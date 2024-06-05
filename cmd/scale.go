@@ -185,7 +185,14 @@ func (sc *scaleCmd) load() error {
 		return err
 	}
 
-	if sc.client, err = sc.authArgs.getClient(); err != nil {
+	// Set env var if custom cloud profile is not nil
+	var env *api.Environment
+	if sc.containerService != nil &&
+		sc.containerService.Properties != nil &&
+		sc.containerService.Properties.CustomCloudProfile != nil {
+		env = sc.containerService.Properties.CustomCloudProfile.Environment
+	}
+	if sc.client, err = sc.authArgs.getClient(env); err != nil {
 		return errors.Wrap(err, "failed to get client")
 	}
 

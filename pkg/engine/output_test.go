@@ -9,8 +9,6 @@ import (
 	"path"
 	"testing"
 
-	"github.com/Azure/go-autorest/autorest/azure"
-
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
@@ -79,7 +77,7 @@ func TestWriteTLSArtifacts(t *testing.T) {
 	csCustom := api.CreateMockContainerService("testcluster", "", 1, 2, false)
 	csCustom.Location = "customlocation"
 	csCustom.Properties.CustomCloudProfile = &api.CustomCloudProfile{
-		Environment: &azure.Environment{
+		Environment: &api.Environment{
 			Name:                         "azurestackcloud",
 			ManagementPortalURL:          "managementPortalURL",
 			PublishSettingsURL:           "publishSettingsURL",

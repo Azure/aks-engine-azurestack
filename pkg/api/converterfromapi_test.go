@@ -9,7 +9,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/api/vlabs"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -50,7 +49,7 @@ func TestConvertCloudProfileToVLabs(t *testing.T) {
 			CustomCloudProfile: &CustomCloudProfile{
 				IdentitySystem:       AzureADIdentitySystem,
 				AuthenticationMethod: ClientSecretAuthMethod,
-				Environment: &azure.Environment{
+				Environment: &Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
@@ -71,7 +70,7 @@ func TestConvertCloudProfileToVLabs(t *testing.T) {
 					ResourceManagerVMDNSSuffix:   resourceManagerVMDNSSuffix,
 					ContainerRegistryDNSSuffix:   containerRegistryDNSSuffix,
 					TokenAudience:                tokenAudience,
-					ResourceIdentifiers: azure.ResourceIdentifier{
+					ResourceIdentifiers: ResourceIdentifier{
 						Graph:               graphResourceIdentifier,
 						KeyVault:            keyVaultResourceIdentifier,
 						Datalake:            datalakeResourceIdentifier,

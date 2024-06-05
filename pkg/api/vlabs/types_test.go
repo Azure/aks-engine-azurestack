@@ -9,7 +9,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 func TestOrchestratorProfile(t *testing.T) {
@@ -752,7 +751,7 @@ func GetMockPropertiesWithCustomCloudProfile(name string, hasCustomCloudProfile,
 	if hasCustomCloudProfile {
 		p.CustomCloudProfile = &CustomCloudProfile{}
 		if hasEnvironment {
-			p.CustomCloudProfile.Environment = &azure.Environment{
+			p.CustomCloudProfile.Environment = &Environment{
 				Name:                         name,
 				ManagementPortalURL:          managementPortalURL,
 				PublishSettingsURL:           publishSettingsURL,

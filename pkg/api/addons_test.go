@@ -11,7 +11,6 @@ import (
 
 	"github.com/Azure/aks-engine-azurestack/pkg/api/common"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
-	"github.com/Azure/go-autorest/autorest/azure"
 )
 
 func TestAppendAddonIfNotPresent(t *testing.T) {
@@ -1913,7 +1912,7 @@ func TestSetAddonsConfig(t *testing.T) {
 						},
 					},
 					CustomCloudProfile: &CustomCloudProfile{
-						Environment: &azure.Environment{
+						Environment: &Environment{
 							Name: "AzureStackCloud",
 						},
 					},

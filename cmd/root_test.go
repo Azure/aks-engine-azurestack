@@ -11,7 +11,6 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers"
 	"github.com/Azure/aks-engine-azurestack/pkg/i18n"
-	"github.com/Azure/go-autorest/autorest/azure"
 	"github.com/google/uuid"
 	. "github.com/onsi/gomega"
 	"github.com/pkg/errors"
@@ -25,7 +24,7 @@ type mockAuthProvider struct {
 	*authArgs
 }
 
-func (provider *mockAuthProvider) getClient() (armhelpers.AKSEngineClient, error) {
+func (provider *mockAuthProvider) getClient(env *api.Environment) (armhelpers.AKSEngineClient, error) {
 	if provider.getClientMock == nil {
 		return &armhelpers.MockAKSEngineClient{}, nil
 	}
@@ -370,7 +369,7 @@ func prepareCustomCloudProfile() (*api.ContainerService, error) {
 			CustomCloudProfile: &api.CustomCloudProfile{
 				IdentitySystem:       api.AzureADIdentitySystem,
 				AuthenticationMethod: api.ClientSecretAuthMethod,
-				Environment: &azure.Environment{
+				Environment: &api.Environment{
 					Name:                         name,
 					ManagementPortalURL:          managementPortalURL,
 					PublishSettingsURL:           publishSettingsURL,
