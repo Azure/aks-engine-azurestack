@@ -180,7 +180,7 @@ func (authArgs *authArgs) validateAuthArgs() error {
 		fileName := os.Getenv("AZURE_ENVIRONMENT_FILEPATH")
 		if fileContents, err := os.ReadFile(fileName); err != nil ||
 			json.Unmarshal(fileContents, &api.Environment{}) != nil {
-			return errors.New(fmt.Sprintf("failed to read file or unmarshal JSON from file %s: %v", fileName, err))
+			return fmt.Errorf("failed to read file or unmarshal JSON from file %s: %v", fileName, err)
 		}
 	case "AZURECHINACLOUD", "AZUREGERMANCLOUD", "AZUREPUBLICCLOUD", "AZUREUSGOVERNMENTCLOUD":
 		// Known environment, no action needed
