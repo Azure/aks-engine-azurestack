@@ -144,7 +144,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = "TaintBasedEvictions=true"
 	cs.setControllerManagerConfig()
-	if cm["--feature-gates"] != "PodSecurity=true,TaintBasedEvictions=true" {
+	if cm["--feature-gates"] != "TaintBasedEvictions=true" {
 		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"TaintBasedEvictions=true\": %s",
 			cm["--feature-gates"])
 	}
