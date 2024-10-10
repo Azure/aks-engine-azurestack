@@ -236,6 +236,47 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/117570
 		invalidFeatureGates = append(invalidFeatureGates, "WindowsHostProcessContainers")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.29.0") {
+		// Remove --feature-gate CSIMigrationvSphere starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/121291
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationvSphere")
+
+		// Remove --feature-gate ProbeTerminationGracePeriod starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/121257
+		invalidFeatureGates = append(invalidFeatureGates, "ProbeTerminationGracePeriod")
+
+		// Remove --feature-gate JobTrackingWithFinalizers starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/119100
+		invalidFeatureGates = append(invalidFeatureGates, "JobTrackingWithFinalizers")
+
+		// Remove --feature-gate TopologyManager starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/121252
+		invalidFeatureGates = append(invalidFeatureGates, "TopologyManager")
+
+		// Remove --feature-gate OpenAPIV3 starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/121255
+		invalidFeatureGates = append(invalidFeatureGates, "OpenAPIV3")
+
+		// Remove --feature-gate SeccompDefault starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/121246
+		invalidFeatureGates = append(invalidFeatureGates, "SeccompDefault")
+
+		// Remove --feature-gate CronJobTimeZone, JobMutableNodeSchedulingDirectives, LegacyServiceAccountTokenNoAutoGeneration starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/120192
+		invalidFeatureGates = append(invalidFeatureGates, "CronJobTimeZone", "JobMutableNodeSchedulingDirectives", "LegacyServiceAccountTokenNoAutoGeneration")
+
+		// Remove --feature-gate DownwardAPIHugePages starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/120249
+		invalidFeatureGates = append(invalidFeatureGates, "DownwardAPIHugePages")
+
+		// Remove --feature-gate GRPCContainerProbe starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/120248
+		invalidFeatureGates = append(invalidFeatureGates, "GRPCContainerProbe")
+
+		// Remove --feature-gate RetroactiveDefaultStorageClass starting with 1.29
+		// Reference: https://github.com/kubernetes/kubernetes/pull/120861
+		invalidFeatureGates = append(invalidFeatureGates, "RetroactiveDefaultStorageClass")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 
 	// Master-specific kubelet config changes go here

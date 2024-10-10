@@ -250,4 +250,31 @@ func TestSchedulerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, expected sanitized value: %s \n, actual sanitized value: %s \n ",
 			"1.27.0", featuregate128, s["--feature-gates"], featuregate127Sanitized)
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.29
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate129 := "CSIMigrationvSphere=true,ProbeTerminationGracePeriod=true,JobTrackingWithFinalizers=true,TopologyManager=true,OpenAPIV3=true,SeccompDefault=true,CronJobTimeZone=true,JobMutableNodeSchedulingDirectives=true,LegacyServiceAccountTokenNoAutoGeneration=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,RetroactiveDefaultStorageClass=true"
+	s["--feature-gates"] = featuregate129
+	featuregate129Sanitized := ""
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate129Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.29.0", featuregate129, s["--feature-gates"], featuregate129Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.29
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate129
+	featuregate128Sanitized = featuregate129
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate128Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.28.0", featuregate129, s["--feature-gates"], featuregate128Sanitized)
+	}
 }
