@@ -1032,7 +1032,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = featuregate129
-	featuregate128Sanitized = featuregate129
+	featuregate128Sanitized = "CSIMigrationvSphere=true,CronJobTimeZone=true,DownwardAPIHugePages=true,ExecProbeTimeout=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,RotateKubeletServerCertificate=true,SeccompDefault=true,TopologyManager=true"
 	cs.setKubeletConfig(false)
 	if k["--feature-gates"] != featuregate128Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
