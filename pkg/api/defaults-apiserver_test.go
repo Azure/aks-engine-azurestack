@@ -706,7 +706,7 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	featuregate129 := "CronJobTimeZone=true,CSIMigrationvSphere=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
+	featuregate129 := "CSIMigrationvSphere=true,CronJobTimeZone=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	a["--feature-gates"] = featuregate129
 	featuregate129Sanitized := ""
 	cs.setAPIServerConfig()

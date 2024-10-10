@@ -145,7 +145,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cm["--feature-gates"] = "TaintBasedEvictions=true"
 	cs.setControllerManagerConfig()
 	if cm["--feature-gates"] != "PodSecurity=true,TaintBasedEvictions=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"PodSecurity=true,TaintBasedEvictions=true\": %s",
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"TaintBasedEvictions=true\": %s",
 			cm["--feature-gates"])
 	}
 
@@ -225,7 +225,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
-	featuregate129 := "CronJobTimeZone=true,CSIMigrationvSphere=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
+	featuregate129 := "CSIMigrationvSphere=true,CronJobTimeZone=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	cm["--feature-gates"] = featuregate129
 	featuregate129Sanitized := ""
 	cs.setControllerManagerConfig()
