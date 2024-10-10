@@ -84,8 +84,8 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setControllerManagerConfig()
 	cm := cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
-	if cm["--feature-gates"] != "PodSecurity=true" {
-		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"PodSecurity=true\": %s",
+	if cm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' Controller Manager config value for \"--feature-gates\": \"\": %s",
 			cm["--feature-gates"])
 	}
 
@@ -225,7 +225,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
-	featuregate129 := "CSIMigrationvSphere=true,ProbeTerminationGracePeriod=true,JobTrackingWithFinalizers=true,TopologyManager=true,OpenAPIV3=true,SeccompDefault=true,CronJobTimeZone=true,JobMutableNodeSchedulingDirectives=true,LegacyServiceAccountTokenNoAutoGeneration=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,RetroactiveDefaultStorageClass=true"
+	featuregate129 := "CronJobTimeZone=true,CSIMigrationvSphere=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	cm["--feature-gates"] = featuregate129
 	featuregate129Sanitized := ""
 	cs.setControllerManagerConfig()

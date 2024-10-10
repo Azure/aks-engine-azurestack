@@ -141,7 +141,7 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.setSchedulerConfig()
 	s := cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	if s["--feature-gates"] != "PodSecurity=true" {
+	if s["--feature-gates"] != "" {
 		t.Fatalf("got unexpected '--feature-gates' Scheduler config value for k8s v%s: %s",
 			defaultTestClusterVer, s["--feature-gates"])
 	}
@@ -256,7 +256,7 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
 	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	featuregate129 := "CSIMigrationvSphere=true,ProbeTerminationGracePeriod=true,JobTrackingWithFinalizers=true,TopologyManager=true,OpenAPIV3=true,SeccompDefault=true,CronJobTimeZone=true,JobMutableNodeSchedulingDirectives=true,LegacyServiceAccountTokenNoAutoGeneration=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,RetroactiveDefaultStorageClass=true"
+	featuregate129 := "CronJobTimeZone=true,CSIMigrationvSphere=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	s["--feature-gates"] = featuregate129
 	featuregate129Sanitized := ""
 	cs.setSchedulerConfig()

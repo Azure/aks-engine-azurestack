@@ -234,7 +234,7 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--rotate-certificates":               "true",
 		"--seccomp-default":                   "true",
 		"--streaming-connection-idle-timeout": "5m",
-		"--feature-gates":                     "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true",
+		"--feature-gates":                     "ExecProbeTimeout=true,RotateKubeletServerCertificate=true",
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
@@ -273,7 +273,7 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--enforce-node-allocatable":          "pods",
 		"--event-qps":                         DefaultKubeletEventQPS,
 		"--eviction-hard":                     DefaultKubernetesHardEvictionThreshold,
-		"--feature-gates":                     "ExecProbeTimeout=true,PodSecurity=true,RotateKubeletServerCertificate=true",
+		"--feature-gates":                     "ExecProbeTimeout=true,RotateKubeletServerCertificate=true",
 		"--image-gc-high-threshold":           strconv.Itoa(DefaultKubernetesGCHighThreshold),
 		"--image-gc-low-threshold":            strconv.Itoa(DefaultKubernetesGCLowThreshold),
 		"--image-pull-progress-deadline":      "30m",
@@ -949,7 +949,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = "DynamicKubeletConfig=true,ExecProbeTimeout=false"
 	cs.setKubeletConfig(false)
-	if k["--feature-gates"] != "DynamicKubeletConfig=true,ExecProbeTimeout=false,PodSecurity=true,RotateKubeletServerCertificate=true" {
+	if k["--feature-gates"] != "DynamicKubeletConfig=true,ExecProbeTimeout=false,RotateKubeletServerCertificate=true" {
 		t.Fatalf("got unexpected '--feature-gates' kubelet config value for \"--feature-gates\": \"\": %s",
 			k["--feature-gates"])
 	}
@@ -1017,7 +1017,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	featuregate129 := "CSIMigrationvSphere=true,ProbeTerminationGracePeriod=true,JobTrackingWithFinalizers=true,TopologyManager=true,OpenAPIV3=true,SeccompDefault=true,CronJobTimeZone=true,JobMutableNodeSchedulingDirectives=true,LegacyServiceAccountTokenNoAutoGeneration=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,RetroactiveDefaultStorageClass=true"
+	featuregate129 := "CronJobTimeZone=true,CSIMigrationvSphere=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,LegacyServiceAccountTokenNoAutoGeneration=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	k["--feature-gates"] = featuregate129
 	featuregate129Sanitized := ""
 	cs.setKubeletConfig(false)
