@@ -240,7 +240,7 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
 	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = featuregate129
-	featuregate128Sanitized = featuregate129
+	featuregate128Sanitized = "CSIMigrationvSphere=true,CronJobTimeZone=true,DownwardAPIHugePages=true,GRPCContainerProbe=true,JobMutableNodeSchedulingDirectives=true,JobTrackingWithFinalizers=true,OpenAPIV3=true,ProbeTerminationGracePeriod=true,RetroactiveDefaultStorageClass=true,SeccompDefault=true,TopologyManager=true"
 	cs.setControllerManagerConfig()
 	if cm["--feature-gates"] != featuregate128Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
