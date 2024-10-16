@@ -771,8 +771,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			for i := 1; i <= 3; i++ {
 				var jobFile, jobName string
 				if cfg.BlockOutboundInternet {
-					jobFile = "busybox-master-noegress.yaml"
-					jobName = "busybox-master-noegress"
+					jobFile = "busybox-master-no-egress.yaml"
+					jobName = "busybox-master-no-egress"
 				} else {
 					jobFile = "busybox-master.yaml"
 					jobName = "busybox-master"
@@ -800,8 +800,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				for i := 1; i <= 3; i++ {
 					var agentJobFile, agentJobName string
 					if cfg.BlockOutboundInternet {
-						agentJobFile = "busybox-agent-noegress.yaml"
-						agentJobName = "busybox-agent-noegress"
+						agentJobFile = "busybox-agent-no-egress.yaml"
+						agentJobName = "busybox-agent-no-egress"
 					} else {
 						agentJobFile = "busybox-agent.yaml"
 						agentJobName = "busybox-agent"
