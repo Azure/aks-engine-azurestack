@@ -769,16 +769,14 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should be able to schedule a pod to a control plane node", func() {
 			By("Creating a Job with control plane nodeSelector")
 			for i := 1; i <= 3; i++ {
-				var jobFile, jobName string
+				var jobFile string
 				if cfg.BlockOutboundInternet {
 					jobFile = "busybox-master-no-egress.yaml"
-					jobName = "busybox-master-no-egress"
 				} else {
 					jobFile = "busybox-master.yaml"
-					jobName = "busybox-master"
 				}
 
-				j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, jobFile), jobName, "default", 3*time.Second, 3*time.Minute)
+				j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, jobFile), "busybox-master", "default", 3*time.Second, 3*time.Minute)
 				if err != nil {
 					fmt.Printf("unable to create job: %s\n", err)
 					continue
@@ -798,16 +796,14 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			if eng.AnyAgentIsLinux() {
 				By("Creating a Job with agent nodeSelector")
 				for i := 1; i <= 3; i++ {
-					var agentJobFile, agentJobName string
+					var agentJobFile string
 					if cfg.BlockOutboundInternet {
 						agentJobFile = "busybox-agent-no-egress.yaml"
-						agentJobName = "busybox-agent-no-egress"
 					} else {
 						agentJobFile = "busybox-agent.yaml"
-						agentJobName = "busybox-agent"
 					}
 
-					j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, agentJobFile), agentJobName, "default", 3*time.Second, 3*time.Minute)
+					j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, agentJobFile), "busybox-agent", "default", 3*time.Second, 3*time.Minute)
 					if err != nil {
 						fmt.Printf("unable to create job: %s\n", err)
 						continue
