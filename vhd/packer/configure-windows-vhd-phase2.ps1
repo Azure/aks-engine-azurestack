@@ -48,10 +48,22 @@ function Get-ContainerImages {
     # CSE will configure and register containerd as a service at deployment time
     Start-Job -Name containerd -ScriptBlock { containerd.exe }
     foreach ($image in $imagesToPull) {
-        & ctr.exe -n k8s.io images pull $image > $containerdImagePullNotesFilePath
+        & ctr.exe -n k8s.io images pull $image >> $containerdImagePullNotesFilePath
     }
     Stop-Job  -Name containerd
     Remove-Job -Name containerd
+
+    # Read and log the contents of the file
+    if (Test-Path $containerdImagePullNotesFilePath) {
+        $fileContent = Get-Content $containerdImagePullNotesFilePath
+        Write-Log "Begin reading file: $containerdImagePullNotesFilePath"
+        foreach ($line in $fileContent) {
+            Write-Output $line
+        }
+        Write-Log "Finished reading file: $containerdImagePullNotesFilePath"
+    } else {
+        Write-Log "File not found: $containerdImagePullNotesFilePath"
+    }
 }
 
 function Get-FilesToCacheOnVHD {
