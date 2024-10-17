@@ -974,15 +974,14 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 
 		It("should not have outbound access if specified", func() {
 			if cfg.BlockOutboundInternet {
-				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
-				Expect(err).NotTo(HaveOccurred())
-				outboundInternetCommand := fmt.Sprintf("nc -vz microsoft.com 80")
-				for _, n := range nodes {
-					if n.IsLinux() {
-						err = sshConn.ExecuteRemoteWithRetry(n.Metadata.Name, outboundInternetCommand, true, 1*time.Minute, timeoutWhenWaitingForPodOutboundAccess)
-						Expect(err).To(HaveOccurred())
-					}
+				j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, "busybox-validate-no-egress.yaml"), "busybox-validate-no-egress", "default", 3*time.Second, 3*time.Minute)
+				if err != nil {
+					fmt.Printf("unable to create job: %s\n", err)
+					continue
 				}
+				ready, err := j.WaitOnSucceeded(1*time.Minute, timeoutWhenWaitingForPodOutboundAccess)
+				Expect(err).To(HaveOccurred())
+				Expect(ready).To(Equal(false))
 			} else {
 				Skip("Outbound access is allowed")
 			}

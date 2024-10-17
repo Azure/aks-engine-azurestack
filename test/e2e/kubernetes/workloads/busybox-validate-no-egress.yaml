@@ -1,0 +1,14 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: busybox-validate-no-egress
+spec:
+  template:
+    spec:
+      containers:
+      - image: mcr.microsoft.com/oss/busybox/busybox:1.33.1
+        name: busybox-validate-no-egress
+        command: ['sh', '-c', 'nc -vz microsoft.com 80']
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/os: linux
