@@ -977,7 +977,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				j, err := job.CreateJobFromFileWithRetry(filepath.Join(WorkloadDir, "busybox-validate-no-egress.yaml"), "busybox-validate-no-egress", "default", 3*time.Second, 3*time.Minute)
 				if err != nil {
 					fmt.Printf("unable to create job: %s\n", err)
-					continue
 				}
 				ready, err := j.WaitOnSucceeded(1*time.Minute, timeoutWhenWaitingForPodOutboundAccess)
 				Expect(err).To(HaveOccurred())
