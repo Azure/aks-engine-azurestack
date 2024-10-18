@@ -443,3 +443,18 @@ apt list --installed \
   }
   ))
 }' > ${VHD_CG_MANIFEST}
+
+# Function to output file contents with delineation
+output_file_contents() {
+    local filepath=$1
+
+    if [ -f "$filepath" ]; then
+        echo "===== Begin contents of $filepath ====="
+        cat "$filepath"
+        echo "===== End contents of $filepath ====="
+    else
+        echo "File not found: $filepath"
+    fi
+}
+output_file_contents "$VHD_LOGS_FILEPATH"
+output_file_contents "$VHD_CG_MANIFEST"

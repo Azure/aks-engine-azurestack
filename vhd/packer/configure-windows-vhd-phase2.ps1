@@ -50,20 +50,15 @@ function Get-ContainerImages {
     foreach ($image in $imagesToPull) {
         & ctr.exe -n k8s.io images pull $image >> $containerdImagePullNotesFilePath
     }
+    # List images and log the output
+    Write-Log "Begin listing containerd images"
+    $imagesList = & ctr.exe -n k8s.io images list
+    foreach ($line in $imagesList) {
+        Write-Output $line
+    }
+    Write-Log "End listing containerd images"
     Stop-Job  -Name containerd
     Remove-Job -Name containerd
-
-    # Read and log the contents of the file
-    if (Test-Path $containerdImagePullNotesFilePath) {
-        $fileContent = Get-Content $containerdImagePullNotesFilePath
-        Write-Log "Begin reading file: $containerdImagePullNotesFilePath"
-        foreach ($line in $fileContent) {
-            Write-Output $line
-        }
-        Write-Log "Finished reading file: $containerdImagePullNotesFilePath"
-    } else {
-        Write-Log "File not found: $containerdImagePullNotesFilePath"
-    }
 }
 
 function Get-FilesToCacheOnVHD {
