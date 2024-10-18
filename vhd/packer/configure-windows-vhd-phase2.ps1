@@ -48,8 +48,14 @@ function Get-ContainerImages {
     # CSE will configure and register containerd as a service at deployment time
     Start-Job -Name containerd -ScriptBlock { containerd.exe }
     foreach ($image in $imagesToPull) {
-        & ctr.exe -n k8s.io images pull $image > $containerdImagePullNotesFilePath
+        & ctr.exe -n k8s.io images pull $image >> $containerdImagePullNotesFilePath
     }
+    Write-Log "Begin listing containerd images"
+    $imagesList = & ctr.exe -n k8s.io images list
+    foreach ($line in $imagesList) {
+        Write-Output $line
+    }
+    Write-Log "End listing containerd images"
     Stop-Job  -Name containerd
     Remove-Job -Name containerd
 }
