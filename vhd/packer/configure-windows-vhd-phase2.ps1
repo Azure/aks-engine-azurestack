@@ -50,7 +50,6 @@ function Get-ContainerImages {
     foreach ($image in $imagesToPull) {
         & ctr.exe -n k8s.io images pull $image >> $containerdImagePullNotesFilePath
     }
-    # List images and log the output
     Write-Log "Begin listing containerd images"
     $imagesList = & ctr.exe -n k8s.io images list
     foreach ($line in $imagesList) {

@@ -444,7 +444,6 @@ apt list --installed \
   ))
 }' > ${VHD_CG_MANIFEST}
 
-# Function to output file contents with delineation
 output_file_contents() {
     local filepath=$1
 
