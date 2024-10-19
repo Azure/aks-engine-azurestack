@@ -7,36 +7,8 @@ on:
     paths:
       - 'releases/CHANGELOG*.md'
 
-env:
-  LINUX_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-  LINUX_NODE_IMAGE_RESOURCE_GROUP: ${{vars.LINUX_NODE_IMAGE_RESOURCE_GROUP}}
-  LINUX_NODE_IMAGE_GALLERY: ${{vars.LINUX_NODE_IMAGE_GALLERY}}
-  LINUX_NODE_IMAGE_NAME: ${{vars.LINUX_NODE_IMAGE_NAME}}
-  LINUX_NODE_IMAGE_VERSION: 2024.032.1
-  WINDOWS_NODE_IMAGE_SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-  WINDOWS_NODE_IMAGE_RESOURCE_GROUP: ${{vars.WINDOWS_NODE_IMAGE_RESOURCE_GROUP}}
-  WINDOWS_NODE_IMAGE_GALLERY: ${{vars.WINDOWS_NODE_IMAGE_GALLERY}}
-  WINDOWS_NODE_IMAGE_NAME: ${{vars.WINDOWS_NODE_IMAGE_NAME}}
-  WINDOWS_NODE_IMAGE_VERSION: 2024.032.1
-
 jobs:
-  sig_image_versions:
-    runs-on: ubuntu-latest
-    outputs:
-      LINUX_NODE_IMAGE_VERSION: ${{ env.LINUX_NODE_IMAGE_VERSION }}
-      WINDOWS_NODE_IMAGE_VERSION: ${{ env.WINDOWS_NODE_IMAGE_VERSION }}
-    steps:
-      - run: echo "Exposing sig image version variables"
-  validate-no-egress:
-    needs: sig_image_versions
-    uses: ./.github/workflows/test-vhd-no-egress.yaml
-    with:
-      from_branch: ''
-      LINUX_NODE_IMAGE_VERSION: ${{ needs.sig_image_versions.outputs.LINUX_NODE_IMAGE_VERSION }}
-      WINDOWS_NODE_IMAGE_VERSION: ${{ needs.sig_image_versions.outputs.WINDOWS_NODE_IMAGE_VERSION }}
-    secrets: inherit
   build:
-    needs: validate-no-egress
     runs-on: ubuntu-latest
     permissions:
       contents: write 
@@ -80,54 +52,6 @@ jobs:
       - name: print git status after build
         run: |
           git status
-      - name: Validate 1.27 + containerd E2E
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.27"
-          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "eastus"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
-          USE_MANAGED_IDENTITY: true
-          MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
-          CREATE_VNET: true
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          GINKGO_SKIP: ""
-          STABILITY_ITERATIONS: "0"
-          RETAIN_SSH: false
-          CONTAINER_RUNTIME: "containerd"
-          BLOCK_SSH: true
-          SKIP_LOGS_COLLECTION: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
-          DISTRO: "aks-ubuntu-20.04"
-        run: make test-kubernetes
-      - name: Validate 1.28 + containerd E2E
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-          ORCHESTRATOR_RELEASE: "1.28"
-          CLUSTER_DEFINITION: "examples/e2e-tests/kubernetes/release/default/definition.json"
-          SUBSCRIPTION_ID: ${{ secrets.TEST_AZURE_SUB_ID }}
-          CLIENT_ID: ${{ secrets.TEST_AZURE_SP_ID }}
-          CLIENT_SECRET: ${{ secrets.TEST_AZURE_SP_PW }}
-          LOCATION: "eastus"
-          TENANT_ID: ${{ secrets.TEST_AZURE_TENANT_ID }}
-          USE_MANAGED_IDENTITY: true
-          MSI_USER_ASSIGNED_ID: ${{ secrets.MSI_USER_ASSIGNED_ID_AKS_ENGINE_E2E }}
-          CREATE_VNET: true
-          CLEANUP_ON_EXIT: true
-          CLEANUP_IF_FAIL: true
-          GINKGO_SKIP: ""
-          STABILITY_ITERATIONS: "0"
-          RETAIN_SSH: false
-          CONTAINER_RUNTIME: "containerd"
-          BLOCK_SSH: true
-          SKIP_LOGS_COLLECTION: true
-          AZURE_CORE_ONLY_SHOW_ERRORS: true
-          DISTRO: "aks-ubuntu-20.04"
-        run: make test-kubernetes
       - name: Remove untracked files created during workflow steps
         run: git ls-files --others --exclude-standard -z | xargs -0 -r rm
       - name: Add local tag

@@ -123,3 +123,14 @@ Log ($displayObjects | Format-Table -Property File, Sha256, SizeBytes | Out-Stri
 
 # Ensure proper encoding is set for release notes file
 [IO.File]::ReadAllText($releaseNotesFilePath) | Out-File -Encoding utf8 $releaseNotesFilePath
+
+if (Test-Path $releaseNotesFilePath) {
+    $fileContent = Get-Content $releaseNotesFilePath
+    Write-Output "===== Begin contents of $releaseNotesFilePath ====="
+    foreach ($line in $fileContent) {
+        Write-Output $line
+    }
+    Write-Output "===== End contents of $releaseNotesFilePath ====="
+} else {
+    Write-Output "File not found: $releaseNotesFilePath"
+}
