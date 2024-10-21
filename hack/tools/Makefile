@@ -26,7 +26,7 @@ $(LOCALBIN)/mockgen:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/golang/mock/mockgen@v1.2.0
 
 xz-utils:
-	sudo apt-get update && sudo apt-get install -y xz-utils
+	apt-get update && apt-get install -y xz-utils
 
 $(LOCALBIN)/shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
