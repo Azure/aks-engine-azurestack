@@ -33,4 +33,4 @@ reload: clean install
 
 .PHONY: clean
 clean:
-    rm -rf $(LOCALBIN)
+	rm -rf $(LOCALBIN)
