@@ -39,10 +39,10 @@ azure-cli:
 	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION)
 
 kubectl:
-	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o $(LOCALBIN)/kubectl
-	chmod +x $(LOCALBIN)/kubectl
-	curl -o $(LOCALBIN)/k https://raw.githubusercontent.com/jakepearson/k/master/k
-	chmod +x $(LOCALBIN)/k
+	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+	chmod +x /usr/local/bin/kubectl
+	curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
+	chmod +x /usr/local/bin/k
 
 .PHONY: reload
 reload: clean install
