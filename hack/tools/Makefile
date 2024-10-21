@@ -30,7 +30,35 @@ $(LOCALBIN)/mockgen:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/golang/mock/mockgen@v1.2.0
 
 apt-get-install:
-	apt-get update && apt-get install -y curl jq xz-utils python3 python3-dev python3-pip python3-setuptools
+	apt-get install -y --no-install-recommends \
+		bash \
+		build-essential \
+		ca-certificates \
+		curl \
+		git-core \
+		jq \
+		libc6 \
+		libffi-dev \
+		libssl-dev \
+		libunwind8 \
+		man \
+		mercurial \
+		net-tools \
+		netcat \
+		openssh-client \
+		procps \
+		python3 \
+		python3-dev \
+		python3-pip \
+		python3-setuptools \
+		rsync \
+		ruby \
+		unzip \
+		util-linux \
+		vim \
+		wamerican \
+		wget \
+		zip \
 
 $(LOCALBIN)/shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
