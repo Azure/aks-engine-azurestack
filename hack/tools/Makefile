@@ -4,11 +4,12 @@ SHELLCHECK_VERSION ?= v0.8.0
 AZCLI_VERSION   ?= 2.56.0
 PYWINRM_VERSION ?= 0.4.3
 KUBECTL_VERSION ?= v1.28.6
+PACKER_VERSION  ?= 1.9.5
 
 all: install
 
 .PHONY: install
-install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install $(LOCALBIN)/shellcheck azure-cli kubectl
+install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install $(LOCALBIN)/shellcheck azure-cli kubectl packer
 
 $(LOCALBIN)/go-bindata:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/go-bindata/go-bindata/go-bindata@v3.1.2
@@ -43,6 +44,11 @@ kubectl:
 	chmod +x /usr/local/bin/kubectl
 	curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
 	chmod +x /usr/local/bin/k
+
+packer:
+	curl -sSL https://releases.hashicorp.com/packer/$(PACKER_VERSION)/packer_$(PACKER_VERSION)_linux_amd64.zip -o /tmp/packer.zip
+	unzip /tmp/packer.zip -d $(LOCALBIN)
+	rm /tmp/packer.zip
 
 .PHONY: reload
 reload: clean install
