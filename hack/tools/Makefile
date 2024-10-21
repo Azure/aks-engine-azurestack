@@ -77,7 +77,7 @@ kubectl:
 
 packer:
 	curl -sSL https://releases.hashicorp.com/packer/$(PACKER_VERSION)/packer_$(PACKER_VERSION)_linux_amd64.zip -o /tmp/packer.zip
-	unzip /tmp/packer.zip -d $(LOCALBIN)
+	if [ ! -f $(LOCALBIN)/packer ]; then unzip /tmp/packer.zip -d $(LOCALBIN); fi
 
 .PHONY: reload
 reload: clean install
