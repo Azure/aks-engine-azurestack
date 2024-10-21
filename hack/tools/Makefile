@@ -30,6 +30,8 @@ $(LOCALBIN)/mockgen:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/golang/mock/mockgen@v1.2.0
 
 apt-get-install:
+	apt-get update && \
+	apt-get upgrade -y --no-install-recommends && \
 	apt-get install -y --no-install-recommends \
 		bash \
 		build-essential \
