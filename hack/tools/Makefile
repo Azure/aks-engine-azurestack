@@ -41,6 +41,8 @@ azure-cli:
 kubectl:
 	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o $(LOCALBIN)/kubectl
 	chmod +x $(LOCALBIN)/kubectl
+	curl -o $(LOCALBIN)/k https://raw.githubusercontent.com/jakepearson/k/master/k
+    chmod +x $(LOCALBIN)/k
 
 .PHONY: reload
 reload: clean install
