@@ -9,7 +9,7 @@ PACKER_VERSION  ?= 1.9.5
 all: install
 
 .PHONY: install
-install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install shellcheck azure-cli kubectl packer
+install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install shellcheck azure-cli kubectl azcopy
 
 $(LOCALBIN)/go-bindata:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/go-bindata/go-bindata/go-bindata@v3.1.2
@@ -75,9 +75,11 @@ kubectl:
 	curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
 	chmod +x /usr/local/bin/k
 
-packer:
-	curl -sSL https://releases.hashicorp.com/packer/$(PACKER_VERSION)/packer_$(PACKER_VERSION)_linux_amd64.zip -o /tmp/packer.zip
-	if [ ! -f $(LOCALBIN)/packer ]; then unzip /tmp/packer.zip -d $(LOCALBIN); fi
+azcopy:
+	curl -sSL https://aka.ms/downloadazcopy-v10-linux | tar -vxz -C $(LOCALBIN) --strip=1
+	mv $(LOCALBIN)/azcopy $(LOCALBIN)/azcopy-preview
+	curl -sSL https://aka.ms/downloadazcopylinux64 | tar -vxz -C /tmp
+	/tmp/install.sh
 
 .PHONY: reload
 reload: clean install
