@@ -3,11 +3,12 @@ LOCALBIN		= $(shell pwd)/bin
 SHELLCHECK_VERSION ?= v0.8.0
 AZCLI_VERSION   ?= 2.56.0
 PYWINRM_VERSION ?= 0.4.3
+KUBECTL_VERSION ?= v1.28.6
 
 all: install
 
 .PHONY: install
-install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install $(LOCALBIN)/shellcheck azure-cli
+install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install $(LOCALBIN)/shellcheck azure-cli kubectl
 
 $(LOCALBIN)/go-bindata:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/go-bindata/go-bindata/go-bindata@v3.1.2
@@ -36,6 +37,10 @@ $(LOCALBIN)/shellcheck:
 azure-cli:
 	pip3 install --disable-pip-version-check --no-cache-dir --upgrade pip
 	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION)
+
+kubectl:
+	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o $(LOCALBIN)/kubectl
+	chmod +x $(LOCALBIN)/kubectl
 
 .PHONY: reload
 reload: clean install
