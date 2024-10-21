@@ -1,11 +1,13 @@
 GO              ?= go
 LOCALBIN		= $(shell pwd)/bin
 SHELLCHECK_VERSION ?= v0.8.0
+AZCLI_VERSION   ?= 2.56.0
+PYWINRM_VERSION ?= 0.4.3
 
 all: install
 
 .PHONY: install
-install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen xz-utils $(LOCALBIN)/shellcheck
+install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install $(LOCALBIN)/shellcheck azure-cli
 
 $(LOCALBIN)/go-bindata:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/go-bindata/go-bindata/go-bindata@v3.1.2
@@ -25,11 +27,15 @@ $(LOCALBIN)/pub:
 $(LOCALBIN)/mockgen:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/golang/mock/mockgen@v1.2.0
 
-xz-utils:
-	apt-get update && apt-get install -y xz-utils
+apt-get-install:
+	apt-get update && apt-get install -y xz-utils python3 python3-dev python3-pip python3-setuptools
 
 $(LOCALBIN)/shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
+
+azure-cli:
+	pip3 install --disable-pip-version-check --no-cache-dir --upgrade pip
+	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION)
 
 .PHONY: reload
 reload: clean install
