@@ -70,12 +70,7 @@ azure-cli:
 	mkdir -p /etc/apt/keyrings
 	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
 	chmod go+r /etc/apt/keyrings/microsoft.gpg
-	echo "Types: deb \
-	URIs: https://packages.microsoft.com/repos/azure-cli/ \
-	Suites: bullseye \
-	Components: main \
-	Architectures: amd64 \
-	Signed-by: /etc/apt/keyrings/microsoft.gpg" | tee /etc/apt/sources.list.d/azure-cli.sources
+	echo -e "Types: deb\nURIs: https://packages.microsoft.com/repos/azure-cli/\nSuites: bullseye\nComponents: main\nArchitectures: amd64\nSigned-by: /etc/apt/keyrings/microsoft.gpg" | tee /etc/apt/sources.list.d/azure-cli.sources
 	apt-get update
 	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
 
