@@ -66,8 +66,8 @@ shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
 
 azure-cli:
-	pip3 install --disable-pip-version-check --no-cache-dir --upgrade pip
-	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION)
+	pip3 install --disable-pip-version-check --no-cache-dir --upgrade pip --trusted-host pypi.org --trusted-host files.pythonhosted.org
+	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION) --trusted-host pypi.org --trusted-host files.pythonhosted.org
 
 kubectl:
 	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
