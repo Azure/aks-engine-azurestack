@@ -18,7 +18,7 @@ jobs:
           docker run --rm \
           -v ${GITHUB_WORKSPACE}:/go/src/github.com/Azure/aks-engine-azurestack \
           -w /go/src/github.com/Azure/aks-engine-azurestack \
-          mcr.microsoft.com/oss/azcu/go-dev:v1.38.3 make dist
+          mcr.microsoft.com/oss/go/microsoft/golang:1.20.13-bullseye make dist
       - name: Rename outputs
         run: |
           mkdir ./outputs
