@@ -70,15 +70,14 @@ azure-cli:
 	mkdir -p /etc/apt/keyrings
 	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
 	chmod go+r /etc/apt/keyrings/microsoft.gpg
-	AZ_DIST=$(lsb_release -cs) && \
 	echo "Types: deb \
 	URIs: https://packages.microsoft.com/repos/azure-cli/ \
-	Suites: ${AZ_DIST} \
+	Suites: bullseye \
 	Components: main \
-	Architectures: $(dpkg --print-architecture) \
+	Architectures: amd64 \
 	Signed-by: /etc/apt/keyrings/microsoft.gpg" | tee /etc/apt/sources.list.d/azure-cli.sources
 	apt-get update
-	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~${AZ_DIST}
+	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
 
 kubectl:
 	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
