@@ -51,7 +51,6 @@ apt-get-install:
 		procps \
 		python3 \
 		python3-dev \
-		python3-pip \
 		python3-setuptools \
 		rsync \
 		ruby \
@@ -66,8 +65,20 @@ shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
 
 azure-cli:
-	pip3 install --disable-pip-version-check --no-cache-dir --upgrade pip --trusted-host pypi.org --trusted-host files.pythonhosted.org
-	pip3 install --disable-pip-version-check --no-cache-dir --upgrade azure-cli==$(AZCLI_VERSION) PyJWT shyaml pywinrm==$(PYWINRM_VERSION) --trusted-host pypi.org --trusted-host files.pythonhosted.org
+	apt-get update
+	apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg lsb-release
+	mkdir -p /etc/apt/keyrings
+	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+	chmod go+r /etc/apt/keyrings/microsoft.gpg
+	AZ_DIST=$(lsb_release -cs) && \
+	echo "Types: deb \
+	URIs: https://packages.microsoft.com/repos/azure-cli/ \
+	Suites: ${AZ_DIST} \
+	Components: main \
+	Architectures: $(dpkg --print-architecture) \
+	Signed-by: /etc/apt/keyrings/microsoft.gpg" | tee /etc/apt/sources.list.d/azure-cli.sources
+	apt-get update
+	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~${AZ_DIST}
 
 kubectl:
 	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
