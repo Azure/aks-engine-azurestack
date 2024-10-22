@@ -78,7 +78,7 @@ function rotateCertificates {
     -e REGION=${REGION} \
     -e RESOURCE_GROUP=${RESOURCE_GROUP} \
     ${DEV_IMAGE} \
-    ./bin/aks-engine-azurestack rotate-certs \
+    make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
     --api-model _output/${RESOURCE_GROUP}/apimodel.json \
     --ssh-host ${API_SERVER} \
     --location ${REGION} \
@@ -99,7 +99,7 @@ function rotateCertificates {
       -w ${WORK_DIR} \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       ${DEV_IMAGE} \
-      /bin/bash -c "jq '.properties.certificateProfile' _output/${RESOURCE_GROUP}/_rotate_certs_output/apimodel.json > _output/${RESOURCE_GROUP}/certificateProfile.json" || exit 1
+      /bin/bash -c "make bootstrap && jq '.properties.certificateProfile' _output/${RESOURCE_GROUP}/_rotate_certs_output/apimodel.json > _output/${RESOURCE_GROUP}/certificateProfile.json" || exit 1
 
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
@@ -108,7 +108,7 @@ function rotateCertificates {
       -e REGION=${REGION} \
       -e RESOURCE_GROUP=${RESOURCE_GROUP} \
       ${DEV_IMAGE} \
-      ./bin/aks-engine-azurestack rotate-certs \
+      make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
       --api-model _output/${RESOURCE_GROUP}/apimodel.json \
       --ssh-host ${API_SERVER} \
       --location ${REGION} \
@@ -281,7 +281,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine-azurestack get-logs \
+      make bootstrap && ./bin/aks-engine-azurestack get-logs \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
       --location $REGION \
       --ssh-host $API_SERVER \
@@ -403,7 +403,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine-azurestack addpool \
+      make bootstrap && ./bin/aks-engine-azurestack addpool \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -488,7 +488,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine-azurestack scale \
+      make bootstrap && ./bin/aks-engine-azurestack scale \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -568,7 +568,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e MASTER_VM_UPGRADE_SKU=$MASTER_VM_UPGRADE_SKU \
       ${DEV_IMAGE} \
-      /bin/bash -c "jq --arg sku \"$MASTER_VM_UPGRADE_SKU\" '. | .properties.masterProfile.vmSize = \$sku' < _output/$RESOURCE_GROUP/apimodel.json > _output/$RESOURCE_GROUP/apimodel-upgrade.json" || exit 1
+      /bin/bash -c "make bootstrap && jq --arg sku \"$MASTER_VM_UPGRADE_SKU\" '. | .properties.masterProfile.vmSize = \$sku' < _output/$RESOURCE_GROUP/apimodel.json > _output/$RESOURCE_GROUP/apimodel-upgrade.json" || exit 1
   docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -w ${WORK_DIR} \
@@ -583,7 +583,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      ./bin/aks-engine-azurestack upgrade --force \
+      make bootstrap && ./bin/aks-engine-azurestack upgrade --force \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
@@ -663,7 +663,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     -e RESOURCE_GROUP=$RESOURCE_GROUP \
     -e REGION=$REGION \
     ${DEV_IMAGE} \
-    ./bin/aks-engine-azurestack scale \
+    make bootstrap && ./bin/aks-engine-azurestack scale \
     --azure-env ${AZURE_ENV} \
     --subscription-id ${AZURE_SUBSCRIPTION_ID} \
     --api-model _output/$RESOURCE_GROUP/apimodel.json \
