@@ -1,11 +1,15 @@
 GO              ?= go
 LOCALBIN		= $(shell pwd)/bin
+SHELLCHECK_VERSION ?= v0.8.0
+AZCLI_VERSION   ?= 2.56.0
+PYWINRM_VERSION ?= 0.4.3
+KUBECTL_VERSION ?= v1.28.6
+PACKER_VERSION  ?= 1.9.5
 
 all: install
 
 .PHONY: install
-install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen
-	@echo > /dev/null
+install: $(LOCALBIN)/go-bindata $(LOCALBIN)/gox $(LOCALBIN)/ginkgo $(LOCALBIN)/golangci-lint $(LOCALBIN)/pub $(LOCALBIN)/mockgen apt-get-install shellcheck azure-cli kubectl azcopy
 
 $(LOCALBIN)/go-bindata:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/go-bindata/go-bindata/go-bindata@v3.1.2
@@ -24,6 +28,64 @@ $(LOCALBIN)/pub:
 
 $(LOCALBIN)/mockgen:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/golang/mock/mockgen@v1.2.0
+
+apt-get-install:
+	apt-get update && \
+	apt-get upgrade -y --no-install-recommends && \
+	apt-get install -y --no-install-recommends \
+		bash \
+		build-essential \
+		ca-certificates \
+		curl \
+		git-core \
+		jq \
+		libc6 \
+		libffi-dev \
+		libssl-dev \
+		libunwind8 \
+		man \
+		mercurial \
+		net-tools \
+		netcat \
+		openssh-client \
+		procps \
+		python3 \
+		python3-dev \
+		python3-setuptools \
+		rsync \
+		ruby \
+		unzip \
+		util-linux \
+		vim \
+		wamerican \
+		wget \
+		zip \
+
+shellcheck:
+	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
+
+azure-cli:
+	apt-get update
+	apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg lsb-release
+	mkdir -p /etc/apt/keyrings
+	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
+	chmod go+r /etc/apt/keyrings/microsoft.gpg
+	echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ bullseye main" | tee /etc/apt/sources.list.d/azure-cli.list
+	apt-get update
+	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
+	apt-mark hold azure-cli
+
+kubectl:
+	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
+	chmod +x /usr/local/bin/kubectl
+	curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
+	chmod +x /usr/local/bin/k
+
+azcopy:
+	curl -sSL https://aka.ms/downloadazcopy-v10-linux | tar -vxz -C $(LOCALBIN) --strip=1
+	mv $(LOCALBIN)/azcopy $(LOCALBIN)/azcopy-preview
+	curl -sSL https://aka.ms/downloadazcopylinux64 | tar -vxz -C /tmp
+	/tmp/install.sh
 
 .PHONY: reload
 reload: clean install
