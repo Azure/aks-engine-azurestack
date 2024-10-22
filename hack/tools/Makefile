@@ -73,6 +73,7 @@ azure-cli:
 	echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ bullseye main" | tee /etc/apt/sources.list.d/azure-cli.list
 	apt-get update
 	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
+	apt-mark hold azure-cli
 
 kubectl:
 	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
