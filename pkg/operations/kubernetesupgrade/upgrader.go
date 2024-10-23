@@ -364,7 +364,7 @@ func (ku *Upgrader) upgradeAgentPools(ctx context.Context) error {
 			}
 		}
 		if err = transformer.NormalizeResourcesForK8sAgentUpgrade(ku.logger, templateMap, isMasterManagedDisk, preservePools); err != nil {
-			ku.logger.Errorf(err.Error())
+			ku.logger.Error(err.Error())
 			return ku.Translator.Errorf("Error generating upgrade template: %s", err.Error())
 		}
 
@@ -659,7 +659,7 @@ func (ku *Upgrader) copyCustomPropertiesToNewNode(client kubernetes.Client, oldN
 			return nil
 		case <-time.After(nodePropertiesCopyTimeout):
 			err := fmt.Errorf("Copying custom annotations, labels, taints from old node %s to new node %s can't complete within %v", oldNodeName, newNodeName, nodePropertiesCopyTimeout)
-			ku.logger.Errorf(err.Error())
+			ku.logger.Error(err.Error())
 			return err
 		}
 	}

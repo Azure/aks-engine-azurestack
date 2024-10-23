@@ -5,7 +5,6 @@ package vlabs
 
 import (
 	"encoding/base64"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"

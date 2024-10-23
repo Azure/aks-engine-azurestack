@@ -1767,7 +1767,7 @@ func TestGetDockerConfig(t *testing.T) {
 			want := expectedOutputs[c.name]
 			diff := cmp.Diff(want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatal(diff)
 			}
 		})
 	}
@@ -1843,7 +1843,7 @@ func TestGetContainerdConfig(t *testing.T) {
 			want := expectedOutputs[c.name]
 			diff := cmp.Diff(want, got)
 			if diff != "" {
-				t.Fatalf(diff)
+				t.Fatal(diff)
 			}
 		})
 	}
