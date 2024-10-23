@@ -27,7 +27,7 @@ ifeq ($(GITTAG),)
 GITTAG := $(VERSION_SHORT)
 endif
 
-DEV_ENV_IMAGE := mcr.microsoft.com/oss/go/microsoft/golang:1.20.13-bullseye
+DEV_ENV_IMAGE := mcr.microsoft.com/oss/go/microsoft/golang:1.23.2-bullseye
 DEV_ENV_WORK_DIR := /aks-engine-azurestack
 DEV_ENV_OPTS := --rm -v $(GOPATH)/pkg/mod:/go/pkg/mod -v $(CURDIR):$(DEV_ENV_WORK_DIR) -w $(DEV_ENV_WORK_DIR) $(DEV_ENV_VARS)
 DEV_ENV_CMD := docker run $(DEV_ENV_OPTS) $(DEV_ENV_IMAGE)

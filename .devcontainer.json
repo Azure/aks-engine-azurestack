@@ -1,6 +1,6 @@
 {
 	"name": "Go for aks-engine-azurestack",
-	"image": "mcr.microsoft.com/oss/go/microsoft/golang:1.20.13-bullseye",
+	"image": "mcr.microsoft.com/oss/go/microsoft/golang:1.23.2-bullseye",
 	"customizations": {
 		"vscode": {
 			"extensions": [
