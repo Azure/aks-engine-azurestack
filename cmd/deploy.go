@@ -320,8 +320,7 @@ func autofillApimodel(dc *deployCmd) error {
 		}
 	}
 
-	if dc.containerService.Properties.LinuxProfile != nil && (dc.containerService.Properties.LinuxProfile.SSH.PublicKeys == nil ||
-		len(dc.containerService.Properties.LinuxProfile.SSH.PublicKeys) == 0 ||
+	if dc.containerService.Properties.LinuxProfile != nil && (len(dc.containerService.Properties.LinuxProfile.SSH.PublicKeys) == 0 ||
 		dc.containerService.Properties.LinuxProfile.SSH.PublicKeys[0].KeyData == "") {
 		translator := &i18n.Translator{
 			Locale: dc.locale,

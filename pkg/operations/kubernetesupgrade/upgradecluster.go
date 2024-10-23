@@ -307,7 +307,7 @@ func (uc *UpgradeCluster) addVMToAgentPool(vm *compute.VirtualMachine, isUpgrada
 	if *vm.Properties.StorageProfile.OSDisk.OSType == compute.OperatingSystemTypesWindows {
 		poolPrefix, _, _, _, err = utils.WindowsVMNameParts(*vm.Name)
 		if err != nil {
-			uc.Logger.Errorf(err.Error())
+			uc.Logger.Error(err.Error())
 			return err
 		}
 		if !strings.Contains(uc.NameSuffix, poolPrefix) {
@@ -327,7 +327,7 @@ func (uc *UpgradeCluster) addVMToAgentPool(vm *compute.VirtualMachine, isUpgrada
 	} else { // vm.StorageProfile.OsDisk.OsType == compute.Linux
 		poolIdentifier, poolPrefix, _, err = utils.K8sLinuxVMNameParts(*vm.Name)
 		if err != nil {
-			uc.Logger.Errorf(err.Error())
+			uc.Logger.Error(err.Error())
 			return err
 		}
 
