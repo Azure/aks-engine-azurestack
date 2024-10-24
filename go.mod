@@ -1,6 +1,6 @@
 module github.com/Azure/aks-engine-azurestack
 
-go 1.20
+go 1.23
 
 require (
 	github.com/Azure/azure-sdk-for-go v49.0.0+incompatible

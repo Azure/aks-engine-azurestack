@@ -807,7 +807,7 @@ func (m *MasterProfile) IsVirtualMachineScaleSets() bool {
 
 // HasAvailabilityZones returns true if the master profile has availability zones
 func (m *MasterProfile) HasAvailabilityZones() bool {
-	return m.AvailabilityZones != nil && len(m.AvailabilityZones) > 0
+	return len(m.AvailabilityZones) > 0
 }
 
 // HasZonesForAllAgentPools returns true if all of the agent pools have zones
@@ -943,7 +943,7 @@ func (a *AgentPoolProfile) SetSubnet(subnet string) {
 
 // HasAvailabilityZones returns true if the agent pool has availability zones
 func (a *AgentPoolProfile) HasAvailabilityZones() bool {
-	return a.AvailabilityZones != nil && len(a.AvailabilityZones) > 0
+	return len(a.AvailabilityZones) > 0
 }
 
 // IsUbuntu1604 returns true if the agent pool profile distro is based on Ubuntu 16.04

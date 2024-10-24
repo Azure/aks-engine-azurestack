@@ -1,4 +1,4 @@
-$DEV_ENV_IMAGE = "mcr.microsoft.com/oss/go/microsoft/golang:1.20.13-bullseye"
+$DEV_ENV_IMAGE = "mcr.microsoft.com/oss/go/microsoft/golang:1.23.2-bullseye"
 $DEV_ENV_WORK_DIR = "/aks-engine"
 
 # Ensure docker is configured for linux containers

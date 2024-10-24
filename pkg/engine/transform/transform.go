@@ -275,7 +275,7 @@ func (t *Transformer) NormalizeForK8sVMASScalingUp(logger *logrus.Entry, templat
 
 			if nsgIndex != -1 {
 				err := t.Translator.Errorf("Found 2 resources with type %s in the template. There should only be 1", nsgResourceType)
-				logger.Errorf(err.Error())
+				logger.Error(err.Error())
 				return err
 			}
 			nsgIndex = index
@@ -283,7 +283,7 @@ func (t *Transformer) NormalizeForK8sVMASScalingUp(logger *logrus.Entry, templat
 		if ok && resourceType == rtResourceType {
 			if rtIndex != -1 {
 				err := t.Translator.Errorf("Found 2 resources with type %s in the template. There should only be 1", rtResourceType)
-				logger.Warnf(err.Error())
+				logger.Warn(err.Error())
 				return err
 			}
 			rtIndex = index
@@ -291,7 +291,7 @@ func (t *Transformer) NormalizeForK8sVMASScalingUp(logger *logrus.Entry, templat
 		if ok && resourceType == vnetResourceType {
 			if vnetIndex != -1 {
 				err := t.Translator.Errorf("Found 2 resources with type %s in the template. There should only be 1", vnetResourceType)
-				logger.Warnf(err.Error())
+				logger.Warn(err.Error())
 				return err
 			}
 			vnetIndex = index
@@ -798,7 +798,7 @@ func removeSingleOfType(logger *logrus.Entry, templateMap map[string]interface{}
 		if found && resourceType == typeToRemove {
 			if indexToRemove != -1 {
 				err := errors.Errorf("Found at least 2 resources of type %s in the template but only 1 is expected", vnetResourceType)
-				logger.Warnf(err.Error())
+				logger.Warn(err.Error())
 				return err
 			}
 			indexToRemove = i

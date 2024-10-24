@@ -90,7 +90,9 @@ func TestConvertVLabsKubernetesConfigProfile(t *testing.T) {
 		actual := &KubernetesConfig{}
 		convertVLabsKubernetesConfig(test.props, actual)
 		if !equality.Semantic.DeepEqual(test.expect, actual) {
-			t.Errorf(spew.Sprintf("Expected:\n%+v\nGot:\n%+v", test.expect, actual))
+			expectedDump := spew.Sdump(test.expect)
+			actualDump := spew.Sdump(actual)
+			t.Errorf("Expected:\n%s\nGot:\n%s", expectedDump, actualDump)
 		}
 	}
 }

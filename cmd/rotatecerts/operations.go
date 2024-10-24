@@ -36,7 +36,7 @@ func PauseClusterAutoscaler(client internal.KubeClient) (func() error, error) {
 
 	// autoscaler present
 	patch := func(msg string, count int32) error {
-		log.Infof(msg)
+		log.Info(msg)
 		json := fmt.Sprintf(`{"spec":{"replicas": %d}}`, count)
 		if _, err = client.PatchDeployment(metav1.NamespaceSystem, name, json); err != nil {
 			return errors.Wrapf(err, "applying patch to %s deployment", name)

@@ -1971,7 +1971,7 @@ func (a *KubernetesAddon) validateArcAddonConfig() error {
 		err = append(err, "azure-arc-onboarding addon configuration must have a 'clientSecret' property")
 	}
 	if len(err) > 0 {
-		return fmt.Errorf(strings.Join(err, "; "))
+		return errors.New(strings.Join(err, "; "))
 	}
 	return nil
 }

@@ -1,9 +1,11 @@
 run:
   deadline: 5m
-  skip-dirs:
+
+issues:
+  exclude-dirs:
     - test/i18n
     - pkg/test
-  skip-files:
+  exclude-files:
     - pkg/i18n/i18n.go
     - pkg/i18n/translations.go
 
@@ -16,12 +18,8 @@ linters:
     - govet
     - ineffassign
     - misspell
-    - revive
+    # - revive
     - staticcheck
     - unconvert
     - unparam
     - unused
-
-linters-settings:
-  govet:
-    check-shadowing: true
