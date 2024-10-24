@@ -108,8 +108,8 @@ installRunc() {
   local v
   local url
   v=$(runc --version | head -n 1 | cut -d" " -f3)
-  if [[ $v != "1.1.13" ]]; then
-    apt_get_install 20 30 120 moby-runc=1.1.13* --allow-downgrades || exit 27
+  if [[ $v != "1.1.14" ]]; then
+    apt_get_install 20 30 120 moby-runc=1.1.14* --allow-downgrades || exit 27
   fi
 }
 installMoby() {
