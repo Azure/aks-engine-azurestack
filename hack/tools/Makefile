@@ -3,8 +3,7 @@ LOCALBIN		= $(shell pwd)/bin
 SHELLCHECK_VERSION ?= v0.8.0
 AZCLI_VERSION   ?= 2.56.0
 PYWINRM_VERSION ?= 0.4.3
-KUBECTL_VERSION ?= v1.28.6
-PACKER_VERSION  ?= 1.9.5
+KUBECTL_VERSION ?= v1.29.10
 
 all: install
 
@@ -76,10 +75,11 @@ azure-cli:
 	apt-mark hold azure-cli
 
 kubectl:
-	curl -sSL https://storage.googleapis.com/kubernetes-release/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl -o /usr/local/bin/kubectl
-	chmod +x /usr/local/bin/kubectl
-	curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
-	chmod +x /usr/local/bin/k
+	curl -LO https://dl.k8s.io/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl
+	install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+	install -o root -g root -m 0755 kubectl /usr/local/bin/k
+	kubectl version --client
+	k version --client
 
 azcopy:
 	curl -sSL https://aka.ms/downloadazcopy-v10-linux | tar -vxz -C $(LOCALBIN) --strip=1
