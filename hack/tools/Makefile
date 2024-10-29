@@ -75,9 +75,13 @@ azure-cli:
 	apt-mark hold azure-cli
 
 kubectl:
+	@echo "Entered kubectl"
 	curl -LO https://dl.k8s.io/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl
+	@echo "Downloaded kubectl binary"
 	install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
+	@echo "Installed kubectl to /usr/local/bin/kubectl"
 	install -o root -g root -m 0755 kubectl /usr/local/bin/k
+	@echo "Installed kubectl to /usr/local/bin/k"
 	kubectl version --client
 	k version --client
 
