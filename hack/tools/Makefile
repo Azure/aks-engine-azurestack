@@ -74,6 +74,7 @@ azure-cli:
 	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
 	apt-mark hold azure-cli
 
+.PHONY: kubectl
 kubectl:
 	@echo "Entered kubectl"
 	curl -LO https://dl.k8s.io/release/$(KUBECTL_VERSION)/bin/linux/amd64/kubectl
