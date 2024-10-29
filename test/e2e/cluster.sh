@@ -283,6 +283,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       -w ${WORK_DIR} \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
+      -u root \
       ${DEV_IMAGE} \
       make bootstrap && ./bin/aks-engine-azurestack get-logs \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
