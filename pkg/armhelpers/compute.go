@@ -66,11 +66,15 @@ func (az *AzureClient) DeleteVirtualMachine(ctx context.Context, resourceGroup, 
 // GetVirtualMachinePowerState returns the virtual machine's PowerState status code
 func (az *AzureClient) GetVirtualMachinePowerState(ctx context.Context, resourceGroup, name string) (string, error) {
 	ctx = policy.WithHTTPHeader(ctx, az.acceptLanguageHeader)
-	vm, err := az.GetVirtualMachine(ctx, resourceGroup, name)
+	expandValue := "instanceView"
+	options := &compute.VirtualMachinesClientGetOptions{
+		Expand: &expandValue,
+	}
+	vm, err := az.virtualMachinesClient.Get(ctx, resourceGroup, name, options)
 	if err != nil {
 		return "", errors.Wrapf(err, "fetching virtual machine %s/%s", resourceGroup, name)
 	}
-	for _, status := range vm.Properties.InstanceView.Statuses {
+	for _, status := range vm.VirtualMachine.Properties.InstanceView.Statuses {
 		if strings.HasPrefix(*status.Code, "PowerState") {
 			return *status.Code, nil
 		}
