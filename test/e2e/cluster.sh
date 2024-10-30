@@ -79,7 +79,7 @@ function rotateCertificates {
     -e REGION=${REGION} \
     -e RESOURCE_GROUP=${RESOURCE_GROUP} \
     ${DEV_IMAGE} \
-    make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
+    make bootstrap && sudo ./bin/aks-engine-azurestack rotate-certs \
     --api-model _output/${RESOURCE_GROUP}/apimodel.json \
     --ssh-host ${API_SERVER} \
     --location ${REGION} \
@@ -110,7 +110,7 @@ function rotateCertificates {
       -e REGION=${REGION} \
       -e RESOURCE_GROUP=${RESOURCE_GROUP} \
       ${DEV_IMAGE} \
-      make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
+      make bootstrap && sudo ./bin/aks-engine-azurestack rotate-certs \
       --api-model _output/${RESOURCE_GROUP}/apimodel.json \
       --ssh-host ${API_SERVER} \
       --location ${REGION} \
