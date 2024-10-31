@@ -89,7 +89,7 @@
                 "vmProfile": 
                     {
                         "vmSize": "[parameters('vm_size')]",
-                        "osDiskSizeGB": 30,
+                        "osDiskSizeGB": 50,
                         "vnetConfig": {
                             "subnetId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vnet_resource_group_name'),'/providers/Microsoft.Network/virtualNetworks/',parameters('vnet_name'),'/subnets/',parameters('subnet_name'))]"
                         }
@@ -153,6 +153,34 @@
                         "runElevated": true,
                         "inline": [
                             "[concat('& c:\\akse-cache\\write-release-notes-windows.ps1 -BUILD_NUMBER ',parameters('build_number'),' -BUILD_ID ',parameters('build_id'),' -BUILD_REPO ',parameters('build_repo'),' -BUILD_BRANCH ',parameters('github_branch_name'),' -BUILD_COMMIT ',parameters('git_version'))]"
+                        ]
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "output c-drive info",
+                        "runElevated": true,
+                        "inline": [
+                            "$drive = Get-PSDrive -Name C"
+                        ]
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "remove extensions",
+                        "runElevated": true,
+                        "inline": [
+                            "$extensions = @(",
+                            "    'C:\\Packages\\Plugins\\Microsoft.Azure.Security.AntimalwareSignature.AntimalwareConfiguration',",
+                            "    'C:\\Packages\\Plugins\\Microsoft.Azure.Security.WindowsCodeIntegrity.CodeIntegrityAgent',",
+                            "    'C:\\Packages\\Plugins\\Microsoft.GuestConfiguration.ConfigurationforWindows'",
+                            ")",
+                            "foreach ($extension in $extensions) {",
+                            "    if (Test-Path $extension) {",
+                            "        Remove-Item -Recurse -Force $extension",
+                            "        Write-Output \"$extension was removed.\"",
+                            "    } else {",
+                            "        Write-Output \"$extension does not exist.\"",
+                            "    }",
+                            "}"
                         ]
                     }
                 ],
