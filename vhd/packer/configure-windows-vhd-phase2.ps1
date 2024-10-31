@@ -19,7 +19,6 @@ function Write-Log($Message) {
     Write-Output $msg
 }
 function Get-ContainerImages {
-    $containerdImagePullNotesFilePath = "c:\containerd-image-pull-notes.txt"
     $imagesToPull = @(
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
@@ -48,7 +47,7 @@ function Get-ContainerImages {
     # CSE will configure and register containerd as a service at deployment time
     Start-Job -Name containerd -ScriptBlock { containerd.exe }
     foreach ($image in $imagesToPull) {
-        & ctr.exe -n k8s.io images pull $image >> $containerdImagePullNotesFilePath
+        & ctr.exe -n k8s.io images pull $image
     }
     Write-Log "Begin listing containerd images"
     $imagesList = & ctr.exe -n k8s.io images list
