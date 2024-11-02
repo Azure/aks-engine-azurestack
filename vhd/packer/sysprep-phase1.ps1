@@ -8,7 +8,7 @@ Stop-Service RdAgent
 & sc.exe delete WindowsAzureGuestAgent
 # & sc.exe delete WindowsAzureNetAgentSvc
 & sc.exe delete RdAgent
-Write-Output '>>> Deleted agents complete ...'
+Write-Output '>>> Deleted Azure agents complete ...'
 
 # Remove the WindowsAzureGuestAgent registry key for sysprep 
 # This removes AzureGuestAgent from participating in sysprep 
@@ -32,4 +32,4 @@ $values | ForEach-Object {
 # Get-ChildItem c:\\WindowsAzure -Force | Sort-Object -Property FullName -Descending | ForEach-Object { try { Remove-Item -Path $_.FullName -Force -Recurse -ErrorAction SilentlyContinue; } catch { } }
 # Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse -ErrorAction SilentlyContinue
 
-Write-Output '>>> Remove agent script complete ...'
+Write-Output '>>> Sysprep phase1 script complete ...'

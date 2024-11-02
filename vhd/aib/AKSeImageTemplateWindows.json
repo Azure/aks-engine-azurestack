@@ -156,23 +156,16 @@
                         ]
                     },
                     {
-                        "type": "File",
-                        "name": "copy sysprep script",
-                        "runElevated": true,
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]",
-                        "destination":"c:\\akse-cache\\sysprep.ps1"
-                    },
-                    {
                         "type": "PowerShell",
-                        "name": "Run sysprep wrapper",
+                        "name": "run sysprep phase1",
                         "runElevated": true,
-                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-wrapper.ps1'))]"
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase1.ps1'))]"
                     },
                     {
                         "type": "File",
-                        "name": "copy sysprep deprovision script",
+                        "name": "copy sysprep phase2 script",
                         "runElevated": true,
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-deprovision.ps1'))]",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase2.ps1'))]",
                         "destination":"c:\\DeprovisioningScript.ps1"
                     }
                 ],
