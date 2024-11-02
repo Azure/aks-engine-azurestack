@@ -1,3 +1,27 @@
+Write-Output '>>> Waiting for GA Service (RdAgent) to start ...'
+while ((Get-Service RdAgent).Status -ne 'Running') { Start-Sleep -s 5 }
+Write-Output '>>> Waiting for GA Service (WindowsAzureTelemetryService) to start ...'
+while ((Get-Service WindowsAzureTelemetryService) -and ((Get-Service WindowsAzureTelemetryService).Status -ne 'Running')) { Start-Sleep -s 5 }
+Write-Output '>>> Waiting for GA Service (WindowsAzureGuestAgent) to start ...'
+while ((Get-Service WindowsAzureGuestAgent).Status -ne 'Running') { Start-Sleep -s 5 }
+if( Test-Path $Env:SystemRoot\system32\Sysprep\unattend.xml ) {
+  Write-Output '>>> Removing Sysprep\unattend.xml ...'
+  Remove-Item $Env:SystemRoot\system32\Sysprep\unattend.xml -Force
+}
+if (Test-Path $Env:SystemRoot\Panther\unattend.xml) {
+  Write-Output '>>> Removing Panther\unattend.xml ...'
+  Remove-Item $Env:SystemRoot\Panther\unattend.xml -Force
+}
+Write-Output '>>> Sysprepping VM ...'
+& $Env:SystemRoot\System32\Sysprep\Sysprep.exe /oobe /generalize /quiet /quit
+while($true) {
+  $imageState = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State).ImageState
+  Write-Output $imageState
+  if ($imageState -eq 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { break }
+  Start-Sleep -s 5
+}
+Write-Output '>>> Sysprep complete ...'
+
 # Stop and remove Azure Agents to enable use in Azure Stack
 # If deploying an Azure VM the agents will be re-added to the VMs at deployment time
 Stop-Service WindowsAzureGuestAgent
@@ -7,57 +31,7 @@ Stop-Service RdAgent
 # & sc.exe delete WindowsAzureNetAgentSvc
 & sc.exe delete RdAgent
 
-# Remove the WindowsAzureGuestAgent registry key for sysprep 
-# This removes AzureGuestAgent from participating in sysprep 
-# There was an update that is missing VMAgentDisabler.dll
-$path = "Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\SysPrepExternal\Generalize"
-$generalizeKey = Get-Item -Path $path
-$generalizeProperties = $generalizeKey | Select-Object -ExpandProperty property
-$values = $generalizeProperties | ForEach-Object {
-    New-Object psobject -Property @{"Name"=$_;
-    "Value" = (Get-ItemProperty -Path $path -Name $_).$_}
-}
-
-$values | ForEach-Object {
-    $item = $_;
-    if( $item.Value.Contains("VMAgentDisabler.dll")) {
-            Write-HOST "Removing " $item.Name - $item.Value;
-            Remove-ItemProperty -Path $path -Name $item.Name;
-    }
-}
-
-# run Sysprep
-try {
-    if( Test-Path $Env:SystemRoot\system32\Sysprep\unattend.xml ) {
-        Write-Output '>>> Removing Sysprep\unattend.xml ...'
-        Remove-Item $Env:SystemRoot\system32\Sysprep\unattend.xml -Force
-    }
-    if (Test-Path $Env:SystemRoot\Panther\unattend.xml) {
-        Write-Output '>>> Removing Panther\unattend.xml ...'
-        Remove-Item $Env:SystemRoot\Panther\unattend.xml -Force
-    }
-    Write-Output '>>> Sysprepping VM ...'
-    & $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /mode:vm /quiet /quit
-    Write-Output '>>> Sysprep exe triggered ...'
-} catch {
-    Write-Output "Sysprep exe failed: $_"
-    exit $LastExitCode
-}
-
 # when done clean up
-try {
-    while($true) {
-        $imageState = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State).ImageState
-        Write-Output $imageState
-        if ($imageState -eq 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { break }
-        Start-Sleep -s 5
-    }
-    Write-Output '>>> Sysprep command complete ...'
-} catch {
-    Write-Output "Sysprep wait for state IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE failed: $_"
-    exit $LastExitCode
-}
-
 Get-ChildItem c:\\WindowsAzure -Force | Sort-Object -Property FullName -Descending | ForEach-Object { try { Remove-Item -Path $_.FullName -Force -Recurse -ErrorAction SilentlyContinue; } catch { } }
 Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse -ErrorAction SilentlyContinue
 
