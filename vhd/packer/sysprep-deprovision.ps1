@@ -1,0 +1,1 @@
+Write-Output '>>> sysprep should have been run in a previous AIB stage'

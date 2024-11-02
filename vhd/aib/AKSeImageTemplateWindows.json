@@ -156,10 +156,16 @@
                         ]
                     },
                     {
+                        "type": "PowerShell",
+                        "name": "sysprep",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]"
+                    },
+                    {
                         "type": "File",
                         "name": "copy sysprep deprovision script",
                         "runElevated": true,
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-deprovision.ps1'))]",
                         "destination":"c:\\DeprovisioningScript.ps1"
                     }
                 ],
