@@ -156,10 +156,17 @@
                         ]
                     },
                     {
-                        "type": "PowerShell",
-                        "name": "sysprep",
+                        "type": "File",
+                        "name": "copy sysprep script",
                         "runElevated": true,
-                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]"
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep.ps1'))]",
+                        "destination":"c:\\akse-cache\\sysprep.ps1"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "Run sysprep wrapper",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-wrapper.ps1'))]"
                     },
                     {
                         "type": "File",
