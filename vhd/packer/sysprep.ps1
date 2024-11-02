@@ -28,8 +28,10 @@ Stop-Service WindowsAzureGuestAgent
 # Stop-Service WindowsAzureNetAgentSvc
 Stop-Service RdAgent
 & sc.exe delete WindowsAzureGuestAgent
+Write-Output '>>> Sysprep after: delete WindowsAzureGuestAgent complete ...'
 # & sc.exe delete WindowsAzureNetAgentSvc
 & sc.exe delete RdAgent
+Write-Output '>>> Sysprep after: delete RdAgent complete ...'
 
 # when done clean up
 Get-ChildItem c:\\WindowsAzure -Force | Sort-Object -Property FullName -Descending | ForEach-Object { try { Remove-Item -Path $_.FullName -Force -Recurse -ErrorAction SilentlyContinue; } catch { } }
