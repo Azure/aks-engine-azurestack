@@ -1,10 +1,10 @@
 # Stop and remove Azure Agents to enable use in Azure Stack
 # If deploying an Azure VM the agents will be re-added to the VMs at deployment time
 Stop-Service WindowsAzureGuestAgent
-Stop-Service WindowsAzureNetAgentSvc
+# Stop-Service WindowsAzureNetAgentSvc
 Stop-Service RdAgent
 & sc.exe delete WindowsAzureGuestAgent
-& sc.exe delete WindowsAzureNetAgentSvc
+# & sc.exe delete WindowsAzureNetAgentSvc
 & sc.exe delete RdAgent
 
 # Remove the WindowsAzureGuestAgent registry key for sysprep 
@@ -27,17 +27,36 @@ $values | ForEach-Object {
 }
 
 # run Sysprep
-if( Test-Path $Env:SystemRoot\\system32\\Sysprep\\unattend.xml ) {  Remove-Item $Env:SystemRoot\\system32\\Sysprep\\unattend.xml -Force }
-& $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /mode:vm /quiet /quit
+try {
+    if( Test-Path $Env:SystemRoot\system32\Sysprep\unattend.xml ) {
+        Write-Output '>>> Removing Sysprep\unattend.xml ...'
+        Remove-Item $Env:SystemRoot\system32\Sysprep\unattend.xml -Force
+    }
+    if (Test-Path $Env:SystemRoot\Panther\unattend.xml) {
+        Write-Output '>>> Removing Panther\unattend.xml ...'
+        Remove-Item $Env:SystemRoot\Panther\unattend.xml -Force
+    }
+    Write-Output '>>> Sysprepping VM ...'
+    & $env:SystemRoot\\System32\\Sysprep\\Sysprep.exe /oobe /generalize /mode:vm /quiet /quit
+    Write-Output '>>> Sysprep exe triggered ...'
+} catch {
+    Write-Output "Sysprep exe failed: $_"
+    exit $LastExitCode
+}
 
 # when done clean up
-while($true) {
-  $imageState = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State).ImageState
-  Write-Output $imageState
-  if ($imageState -eq 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { break }
-  Start-Sleep -s 5
+try {
+    while($true) {
+        $imageState = (Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\State).ImageState
+        Write-Output $imageState
+        if ($imageState -eq 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { break }
+        Start-Sleep -s 5
+    }
+    Write-Output '>>> Sysprep command complete ...'
+} catch {
+    Write-Output "Sysprep wait for state IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE failed: $_"
+    exit $LastExitCode
 }
-Write-Output '>>> Sysprep command complete ...'
 
 Get-ChildItem c:\\WindowsAzure -Force | Sort-Object -Property FullName -Descending | ForEach-Object { try { Remove-Item -Path $_.FullName -Force -Recurse -ErrorAction SilentlyContinue; } catch { } }
 Remove-Item -Path WSMan:\\Localhost\\listener\\listener* -Recurse -ErrorAction SilentlyContinue
