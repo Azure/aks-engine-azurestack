@@ -75,10 +75,11 @@ function rotateCertificates {
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e REGION=${REGION} \
     -e RESOURCE_GROUP=${RESOURCE_GROUP} \
     ${DEV_IMAGE} \
-    make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
+    make bootstrap && sudo ./bin/aks-engine-azurestack rotate-certs \
     --api-model _output/${RESOURCE_GROUP}/apimodel.json \
     --ssh-host ${API_SERVER} \
     --location ${REGION} \
@@ -105,10 +106,11 @@ function rotateCertificates {
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e REGION=${REGION} \
       -e RESOURCE_GROUP=${RESOURCE_GROUP} \
       ${DEV_IMAGE} \
-      make bootstrap && ./bin/aks-engine-azurestack rotate-certs \
+      make bootstrap && sudo ./bin/aks-engine-azurestack rotate-certs \
       --api-model _output/${RESOURCE_GROUP}/apimodel.json \
       --ssh-host ${API_SERVER} \
       --location ${REGION} \
@@ -174,6 +176,7 @@ docker run --rm \
 -v $(pwd):${WORK_DIR} \
 -v /etc/ssl/certs:/etc/ssl/certs \
 -w ${WORK_DIR} \
+-e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
 -e CLUSTER_DEFINITION=${TMP_BASENAME}/apimodel-input.json \
 -e CLIENT_ID="${AZURE_CLIENT_ID}" \
 -e CLIENT_SECRET="${AZURE_CLIENT_SECRET}" \
@@ -281,7 +284,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      make bootstrap && ./bin/aks-engine-azurestack get-logs \
+      make bootstrap && sudo ./bin/aks-engine-azurestack get-logs \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
       --location $REGION \
       --ssh-host $API_SERVER \
@@ -340,6 +343,7 @@ if [ "${ROTATE_CERTS}" = "true" ]; then
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
     -e CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
     -e CLIENT_OBJECTID=${CLIENT_OBJECTID} \
@@ -400,6 +404,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
@@ -424,6 +429,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
     -e CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
     -e CLIENT_OBJECTID=${CLIENT_OBJECTID} \
@@ -485,6 +491,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
@@ -507,6 +514,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
     -e CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
     -e CLIENT_OBJECTID=${CLIENT_OBJECTID} \
@@ -580,6 +588,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
@@ -600,6 +609,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e CLIENT_ID=${AZURE_CLIENT_ID} \
       -e CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
       -e CLIENT_OBJECTID=${CLIENT_OBJECTID} \
@@ -660,6 +670,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e RESOURCE_GROUP=$RESOURCE_GROUP \
     -e REGION=$REGION \
     ${DEV_IMAGE} \
@@ -682,6 +693,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
     -w ${WORK_DIR} \
+    -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
     -e CLIENT_SECRET=${AZURE_CLIENT_SECRET} \
     -e CLIENT_OBJECTID=${CLIENT_OBJECTID} \
