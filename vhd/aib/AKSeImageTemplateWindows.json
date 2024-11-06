@@ -154,6 +154,19 @@
                         "inline": [
                             "[concat('& c:\\akse-cache\\write-release-notes-windows.ps1 -BUILD_NUMBER ',parameters('build_number'),' -BUILD_ID ',parameters('build_id'),' -BUILD_REPO ',parameters('build_repo'),' -BUILD_BRANCH ',parameters('github_branch_name'),' -BUILD_COMMIT ',parameters('git_version'))]"
                         ]
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "run sysprep phase1",
+                        "runElevated": true,
+                        "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase1.ps1'))]"
+                    },
+                    {
+                        "type": "File",
+                        "name": "copy sysprep phase2 script",
+                        "runElevated": true,
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase2.ps1'))]",
+                        "destination":"c:\\DeprovisioningScript.ps1"
                     }
                 ],
                 "distribute": 
