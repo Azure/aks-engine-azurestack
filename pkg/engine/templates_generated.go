@@ -11675,6 +11675,9 @@ spec:
             cpu: 2000m
             memory: 512Mi
         {{- if IsAzureStackCloud}}
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
         volumeMounts:
         - name: etc-kubernetes
           mountPath: /etc/kubernetes
@@ -11725,6 +11728,9 @@ spec:
     spec:
       priorityClassName: system-node-critical
       serviceAccountName: cloud-node-manager
+      securityContext:
+        windowsOptions:
+          runAsUserName: "NT AUTHORITY\\system"
       nodeSelector:
         kubernetes.io/os: windows
       tolerations:
