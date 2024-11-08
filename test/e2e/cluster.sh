@@ -592,7 +592,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
-      make bootstrap && ./bin/aks-engine-azurestack upgrade --force \
+      make bootstrap && sudo ./bin/aks-engine-azurestack upgrade --force \
       --azure-env ${AZURE_ENV} \
       --subscription-id ${AZURE_SUBSCRIPTION_ID} \
       --api-model _output/$RESOURCE_GROUP/apimodel.json \
