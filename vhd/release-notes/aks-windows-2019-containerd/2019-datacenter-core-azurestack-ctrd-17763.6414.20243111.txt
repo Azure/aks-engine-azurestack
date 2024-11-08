@@ -1,10 +1,10 @@
-Build Number: 2024.299.3
-Build Id:     106695492
+Build Number: 2024.311.1
+Build Id:     107588320
 Build Repo:   https://msazure.visualstudio.com/One/_git/AzureStack-Solution-AKSEngine
 Build Branch: master
-Commit:       9b62558432e2e3d1733ba0dc09d783d6a9448d94
+Commit:       8ef216939791be6a027296f6e9f62f3cbc251b1f
 
-VHD ID:      82a28685-e451-479c-9c82-f1adf7d2a813
+VHD ID:      10ae1527-2e2a-42e8-8b10-83a992768aa2
 
 System Info
 	OS Name        : Windows Server 2019 Datacenter
@@ -57,7 +57,6 @@ Installed QFEs
 
 Installed Updates
 	Update for Windows Defender Antivirus antimalware platform - KB4052623 (Version 4.18.2001.10)
-	Update for Microsoft Defender Antivirus antimalware platform - KB4052623 (Version 4.18.24080.9) - Current Channel (Broad)
 	2024-10 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5044089)
 
 Windows Update Registry Settings
