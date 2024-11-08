@@ -32,19 +32,16 @@ apt-get-install:
 	apt-get update && \
 	apt-get upgrade -y --no-install-recommends && \
 	apt-get install -y --no-install-recommends \
-	    apt-transport-https \
 		bash \
 		build-essential \
 		ca-certificates \
 		curl \
 		git-core \
-		gnupg \
 		jq \
 		libc6 \
 		libffi-dev \
 		libssl-dev \
 		libunwind8 \
-		lsb-release \
 		man \
 		mercurial \
 		net-tools \
@@ -67,6 +64,8 @@ shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
 
 azure-cli:
+	apt-get update
+	apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg lsb-release
 	mkdir -p /etc/apt/keyrings
 	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
 	chmod go+r /etc/apt/keyrings/microsoft.gpg
