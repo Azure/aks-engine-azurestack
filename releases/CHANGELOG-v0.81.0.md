@@ -22,6 +22,7 @@ Notable changes in this release:
 - Fix disconnected tests ([#262](https://github.com/Azure/aks-engine-azurestack/issues/262))
 - bring back deployment error unit tests ([#251](https://github.com/Azure/aks-engine-azurestack/issues/251))
 - Add SkipAzLogin and CheckIngressIPOnly parameters ([#250](https://github.com/Azure/aks-engine-azurestack/issues/250))
+- fix release github action ([#278](https://github.com/Azure/aks-engine-azurestack/issues/278))
 
 ### Documentation 📘
 - Azure Stack Hub doc update for v0.80.2 ([#223](https://github.com/Azure/aks-engine-azurestack/issues/223))
