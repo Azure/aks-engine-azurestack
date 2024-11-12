@@ -48,7 +48,7 @@ jobs:
           sudo curl -o /usr/local/bin/k https://raw.githubusercontent.com/jakepearson/k/master/k
           sudo chmod +x /usr/local/bin/k
       - name: Build aks-engine-azurestack binary
-        run: make build-binary
+        run: sudo make build-binary
       - name: print git status after build
         run: |
           git status
@@ -65,7 +65,7 @@ jobs:
           git checkout -- .
       - name: Build Artifacts
         run: |
-          make dist
+          sudo make dist
       - name: Remove local tag
         run: git tag -d ${{ env.RELEASE_VERSION }}
       - name: Publish Release

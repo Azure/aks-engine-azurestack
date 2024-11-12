@@ -71,7 +71,7 @@ azure-cli:
 	chmod go+r /etc/apt/keyrings/microsoft.gpg
 	echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ bullseye main" | tee /etc/apt/sources.list.d/azure-cli.list
 	apt-get update
-	apt-get install -y --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
+	apt-get install -y --allow-downgrades --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
 	apt-mark hold azure-cli
 
 .PHONY: kubectl
