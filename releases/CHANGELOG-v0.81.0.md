@@ -2,7 +2,7 @@
 
 Notable changes in this release:
 
-- Chocolatey is a package manager fr Windows. Starting from this release, aks-engine-azurestack will no longer be released on chocolatey. 
+- Chocolatey is a package manager for Windows. Starting from this release, aks-engine-azurestack will no longer be released on chocolatey. 
   - Binary downloads for the latest version of AKS Engine are available on Github. Download the package for your operating system, and extract the aks-engine-azurestack file (optionally add it to your %PATH% environment variable for more convenient CLI usage).
 
 <a name="v0.81.0"></a>
