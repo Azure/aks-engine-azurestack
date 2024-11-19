@@ -183,7 +183,7 @@ type ImageARM struct {
 
 // DeploymentARM embeds the ARMResource type in resources.DeploymentExtended.
 type DeploymentARM struct {
-	DeploymentARMResource
+	ARMResource
 	resources.DeploymentExtended
 }
 

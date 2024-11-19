@@ -19,7 +19,7 @@ func createAzureStackTelemetry(azureTelemetryPID string) DeploymentARM {
 	}
 
 	return DeploymentARM{
-		DeploymentARMResource: DeploymentARMResource{
+		ARMResource: ARMResource{
 			APIVersion: "2015-01-01",
 		},
 		DeploymentExtended: resources.DeploymentExtended{
