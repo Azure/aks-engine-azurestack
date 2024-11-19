@@ -24,7 +24,7 @@ func TestCreateAzurestackTelemetry(t *testing.T) {
 	pid := "pid-1bda96ec-adf4-4eea-bb9a-8462de5475c0"
 	actual := createAzureStackTelemetry(pid)
 	expected := DeploymentARM{
-		DeploymentARMResource: DeploymentARMResource{
+		ARMResource: ARMResource{
 			APIVersion: "2015-01-01",
 		},
 		DeploymentExtended: resources.DeploymentExtended{
