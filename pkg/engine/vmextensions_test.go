@@ -261,7 +261,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 
 	expectedDeployments := []DeploymentARM{
 		{
-			DeploymentARMResource: DeploymentARMResource{
+			ARMResource: ARMResource{
 				APIVersion: "[variables('apiVersionDeployments')]",
 				Copy: map[string]string{
 					"count": "[sub(variables('windowspool1Count'), variables('windowspool1Offset'))]",
@@ -290,7 +290,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 			},
 		},
 		{
-			DeploymentARMResource: DeploymentARMResource{
+			ARMResource: ARMResource{
 				APIVersion: "[variables('apiVersionDeployments')]",
 				Copy: map[string]string{
 					"count": "[sub(variables('windowspool2Count'), variables('windowspool2Offset'))]",
@@ -319,7 +319,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 			},
 		},
 		{
-			DeploymentARMResource: DeploymentARMResource{
+			ARMResource: ARMResource{
 				APIVersion: "[variables('apiVersionDeployments')]",
 				Copy: map[string]string{
 					"count": "[sub(variables('windowspool2Count'), variables('windowspool2Offset'))]",
@@ -382,7 +382,7 @@ func TestCreateCustomExtensions(t *testing.T) {
 
 	expectedDeployments = []DeploymentARM{
 		{
-			DeploymentARMResource: DeploymentARMResource{
+			ARMResource: ARMResource{
 				APIVersion: "[variables('apiVersionDeployments')]",
 				Copy: map[string]string{
 					"count": "[sub(variables('masterCount'), variables('masterOffset'))]",
