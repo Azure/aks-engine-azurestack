@@ -67,6 +67,7 @@ var (
 	eng                             engine.Engine
 	masterSSHPort                   string
 	masterSSHPrivateKeyFilepath     string
+	masterSSHPublicKeyFilepath      string
 	longRunningApacheDeploymentName string
 	sshConn                         *remote.Connection
 	kubeConfig                      *Config
