@@ -44,8 +44,8 @@ type NewConnectionResult struct {
 }
 
 // NewConnectionAsync wraps NewConnection with a struct response for goroutine + channel usage
-func NewConnectionAsync(host, port, user, keyPath string) NewConnectionResult {
-	connection, err := NewConnection(host, port, user, keyPath)
+func NewConnectionAsync(host, port, user, keyPath string, keyPathPub string) NewConnectionResult {
+	connection, err := NewConnection(host, port, user, keyPath, keyPathPub)
 	if connection == nil {
 		connection = &Connection{}
 	}
@@ -56,7 +56,7 @@ func NewConnectionAsync(host, port, user, keyPath string) NewConnectionResult {
 }
 
 // NewConnection will build and return a new Connection object
-func NewConnection(host, port, user, keyPath string) (*Connection, error) {
+func NewConnection(host, port, user, keyPath string, keyPathPub string) (*Connection, error) {
 	conn, err := net.Dial("unix", os.Getenv("SSH_AUTH_SOCK"))
 	if err != nil {
 		log.Printf("unable to establish net connection $SSH_AUTH_SOCK has value %s\n", os.Getenv("SSH_AUTH_SOCK"))
@@ -86,10 +86,20 @@ func NewConnection(host, port, user, keyPath string) (*Connection, error) {
 	}
 	auths := []ssh.AuthMethod{ssh.PublicKeys(signers...)}
 
+	publicKeyBytes, err := os.ReadFile(keyPathPub)
+	if err != nil {
+		return nil, err
+	}
+
+	publicKey, err := ssh.ParsePublicKey(publicKeyBytes)
+	if err != nil {
+		return nil, err
+	}
+
 	cfg := &ssh.ClientConfig{
 		User:            user,
 		Auth:            auths,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		HostKeyCallback: ssh.FixedHostKey(publicKey),
 	}
 
 	cnctStr := fmt.Sprintf("%s:%s", host, port)
@@ -109,7 +119,7 @@ func NewConnection(host, port, user, keyPath string) (*Connection, error) {
 }
 
 // NewConnectionWithRetry establishes an ssh connection, allowing for retries
-func NewConnectionWithRetry(host, port, user, keyPath string, sleep, timeout time.Duration) (*Connection, error) {
+func NewConnectionWithRetry(host, port, user, keyPath string, keyPathPub string, sleep, timeout time.Duration) (*Connection, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 	ch := make(chan NewConnectionResult)
@@ -121,7 +131,7 @@ func NewConnectionWithRetry(host, port, user, keyPath string, sleep, timeout tim
 			case <-ctx.Done():
 				return
 			default:
-				ch <- NewConnectionAsync(host, port, user, keyPath)
+				ch <- NewConnectionAsync(host, port, user, keyPath, keyPathPub)
 				time.Sleep(sleep)
 			}
 		}

@@ -279,6 +279,14 @@ func (c *Config) GetSSHKeyPath() string {
 	return filepath.Join(c.CurrentWorkingDir, "_output", c.Name+"-ssh")
 }
 
+// GetSSHKeyPathPub will return the absolute path to the ssh public key
+func (c *Config) GetSSHKeyPathPub() string {
+	if c.UseDeployCommand {
+		return filepath.Join(c.CurrentWorkingDir, "_output", c.Name, "azureuser_rsa.pub")
+	}
+	return filepath.Join(c.CurrentWorkingDir, "_output", c.Name+"-ssh.pub")
+}
+
 // SetEnvVars will determine if we need to
 func (c *Config) SetEnvVars() error {
 	envFile := fmt.Sprintf("%s/%s.env", c.CurrentWorkingDir, c.ClusterDefinition)
