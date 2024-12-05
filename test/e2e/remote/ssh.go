@@ -91,7 +91,7 @@ func NewConnection(host, port, user, keyPath string, keyPathPub string) (*Connec
 		return nil, err
 	}
 
-	publicKey, err := ssh.ParsePublicKey(publicKeyBytes)
+	publicKey, _, _, _, err := ssh.ParseAuthorizedKey(publicKeyBytes)
 	if err != nil {
 		return nil, err
 	}
