@@ -67,7 +67,6 @@ var (
 	eng                             engine.Engine
 	masterSSHPort                   string
 	masterSSHPrivateKeyFilepath     string
-	masterSSHPublicKeyFilepath      string
 	longRunningApacheDeploymentName string
 	sshConn                         *remote.Connection
 	kubeConfig                      *Config
@@ -132,8 +131,7 @@ var _ = BeforeSuite(func() {
 			masterSSHPort = "22"
 		}
 		masterSSHPrivateKeyFilepath = cfg.GetSSHKeyPath()
-		masterSSHPublicKeyFilepath = cfg.GetSSHKeyPathPub()
-		sshConn, err = remote.NewConnectionWithRetry(kubeConfig.GetServerName(), masterSSHPort, eng.ExpandedDefinition.Properties.LinuxProfile.AdminUsername, masterSSHPrivateKeyFilepath, masterSSHPublicKeyFilepath, 3*time.Second, cfg.Timeout)
+		sshConn, err = remote.NewConnectionWithRetry(kubeConfig.GetServerName(), masterSSHPort, eng.ExpandedDefinition.Properties.LinuxProfile.AdminUsername, masterSSHPrivateKeyFilepath, 3*time.Second, cfg.Timeout)
 		Expect(err).NotTo(HaveOccurred())
 		success := false
 		for i := 0; i < 3; i++ {
