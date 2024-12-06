@@ -1149,7 +1149,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			Expect(err).NotTo(HaveOccurred())
 			Expect(successes).To(Equal(cfg.StabilityIterations))
 			// Ensure responsiveness
-			successes, err = pod.RunCommandMultipleTimes(pod.RunLinuxPod, "alpine", name, command, cfg.StabilityIterations, 10*time.Second, stabilityCommandTimeout, cfg.Timeout, cfg.StabilityIterationsSuccessRate == 1.0)
+			successes, err = pod.RunCommandMultipleTimes(pod.RunLinuxPod, "alpine", name, command, cfg.StabilityIterations, 1*time.Second, stabilityCommandTimeout, cfg.Timeout, cfg.StabilityIterationsSuccessRate == 1.0)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(successes).Should(BeNumerically(">=", cfg.StabilityIterationsSuccessRate*float32(cfg.StabilityIterations)))
 		})
