@@ -8,24 +8,38 @@ package remote
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/Azure/aks-engine-azurestack/test/e2e/kubernetes/util"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/agent"
+	kh "golang.org/x/crypto/ssh/knownhosts"
 )
 
 const (
 	sshRetries = 20
 	scriptsDir = "scripts"
 )
+
+var (
+	khpath    string
+	lineBreak string
+)
+
+func init() {
+	khpath = filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts")
+	lineBreak = "\n"
+}
 
 // Connection is
 type Connection struct {
@@ -86,15 +100,39 @@ func NewConnection(host, port, user, keyPath string) (*Connection, error) {
 	}
 	auths := []ssh.AuthMethod{ssh.PublicKeys(signers...)}
 
+	hkCallback, err := knownHostsHostKeyCallback()
+	if err != nil {
+		return nil, err
+	}
+	hostKeyCallback := func(host string, remote net.Addr, pubKey ssh.PublicKey) error {
+		var keyErr *kh.KeyError
+		if cbErr := hkCallback(host, remote, pubKey); cbErr != nil && errors.As(cbErr, &keyErr) {
+			hostname := strings.Split(host, ":")[0]
+			if len(keyErr.Want) > 0 {
+				log.Println("Strict host key check failed. Remote host identification has changed.")
+				log.Println("Key '%v' does not match a key known for host %s.", hostKeyString(pubKey), hostname)
+				return keyErr
+			}
+			if len(keyErr.Want) == 0 {
+				if err := addHostKey(hostname, pubKey); err != nil {
+					return err
+				}
+				log.Println("Permanently added '%s' (%s) to the list of known hosts (%s)", hostname, pubKey.Type(), khpath)
+			}
+		}
+		return nil
+	}
+
 	cfg := &ssh.ClientConfig{
 		User:            user,
 		Auth:            auths,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		HostKeyCallback: hostKeyCallback,
 	}
 
 	cnctStr := fmt.Sprintf("%s:%s", host, port)
 	sshClient, err := ssh.Dial("tcp", cnctStr, cfg)
 	if err != nil {
+		log.Println("unable to dial ssh connection, err: %s\n", err)
 		return nil, err
 	}
 
@@ -138,6 +176,58 @@ func NewConnectionWithRetry(host, port, user, keyPath string, sleep, timeout tim
 			return nil, errors.Errorf("NewConnectionWithRetry timed out: %s\n", mostRecentNewConnectionWithRetryError)
 		}
 	}
+}
+
+// knownHostsHostKeyCallback returns a host key callback that uses file
+// ${HOME}/.ssh/known_hosts to store known host keys
+func knownHostsHostKeyCallback() (ssh.HostKeyCallback, error) {
+	err := ensuresKnownHosts()
+	if err != nil {
+		return nil, err
+	}
+	khCallback, err := kh.New(khpath)
+	if err != nil {
+		return nil, errors.Wrap(err, "creating HostKeyCallback instance")
+	}
+	return khCallback, nil
+}
+
+// ensuresKnownHosts creates file ${HOME}/.ssh/known_hosts if it does not exist
+func ensuresKnownHosts() error {
+	if err := os.MkdirAll(path.Dir(khpath), 0700); err != nil {
+		return errors.Wrap(err, "creating .ssh directory")
+	}
+	f, err := os.OpenFile(khpath, os.O_CREATE, 0600)
+	if err != nil {
+		return errors.Wrap(err, "creating known_hosts file")
+	}
+	f.Close()
+	return nil
+}
+
+// hostKeyString pretty-prints a public key struct
+func hostKeyString(k ssh.PublicKey) string {
+	return fmt.Sprintf("%s %s", k.Type(), base64.StdEncoding.EncodeToString(k.Marshal()))
+}
+
+// addHostKey adds an entry to ${HOME}/.ssh/known_hosts
+func addHostKey(hostname string, pubKey ssh.PublicKey) error {
+	f, err := os.OpenFile(khpath, os.O_APPEND|os.O_WRONLY, 0600)
+	if err != nil {
+		return errors.Wrap(err, "opening known_hosts file")
+	}
+	defer f.Close()
+	// append blank line
+	if _, err = f.WriteString(lineBreak); err != nil {
+		return errors.Wrap(err, "appending blank line to known_hosts file")
+	}
+	// append host key line
+	knownHosts := kh.Normalize(hostname)
+	_, err = f.WriteString(kh.Line([]string{knownHosts}, pubKey))
+	if err != nil {
+		return errors.Wrap(err, "writing known_hosts file")
+	}
+	return nil
 }
 
 // Execute will execute a given cmd on a remote host
