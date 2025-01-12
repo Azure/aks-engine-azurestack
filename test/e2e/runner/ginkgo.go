@@ -63,6 +63,10 @@ func (g *Ginkgo) Run() error {
 		args = append(args, "-skip")
 		args = append(args, g.Config.GinkgoSkip)
 	}
+	if g.Config.GinkgoTimeout != "" {
+		args = append(args, "-timeout")
+		args = append(args, g.Config.GinkgoTimeout)
+	}
 	args = append(args, testFile)
 	var cmd = exec.Command("ginkgo", args...)
 
