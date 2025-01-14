@@ -88,9 +88,7 @@ kubectl:
 
 azcopy:
 	curl -sSL https://aka.ms/downloadazcopy-v10-linux | tar -vxz -C $(LOCALBIN) --strip=1
-	mv $(LOCALBIN)/azcopy $(LOCALBIN)/azcopy-preview
-	curl -sSL https://aka.ms/downloadazcopylinux64 | tar -vxz -C /tmp
-	/tmp/install.sh
+	cp $(LOCALBIN)/azcopy $(LOCALBIN)/azcopy-preview
 
 .PHONY: reload
 reload: clean install
