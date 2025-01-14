@@ -53,6 +53,7 @@ type Config struct {
 	UseDeployCommand                   bool   `envconfig:"USE_DEPLOY_COMMAND" default:"false"`
 	GinkgoFocus                        string `envconfig:"GINKGO_FOCUS" default:""`
 	GinkgoSkip                         string `envconfig:"GINKGO_SKIP" default:""`
+	GinkgoTimeout                      string `envconfig:"GINKGO_TIMEOUT" default:""`
 	GinkgoFailFast                     bool   `envconfig:"GINKGO_FAIL_FAST" default:"false"`
 	GinkgoParallel                     bool   `envconfig:"GINKGO_PARALLEL" default:"false"`
 	GinkgoJUnitReportPath              string `envconfig:"GINKGO_JUNIT_PATH" default:""`
