@@ -192,6 +192,14 @@ write_files:
     ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
     #EOF
 
+- path: /etc/udev/rules.d/99-ptp_hyperv.rules
+  permissions: "0644"
+  owner: root
+  content: |
+    ACTION!="add", GOTO="ptp_hyperv"
+    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+    LABEL="ptp_hyperv"
+
 - path: /etc/docker/daemon.json
   permissions: "0644"
   owner: root

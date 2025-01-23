@@ -15608,7 +15608,6 @@ configureEtcd() {
 }
 configureChrony() {
   sed -i "s/makestep.*/makestep 1.0 -1/g" /etc/chrony/chrony.conf
-  echo "refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0" >> /etc/chrony/chrony.conf
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
@@ -19170,6 +19169,14 @@ write_files:
     ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
     #EOF
 
+- path: /etc/udev/rules.d/99-ptp_hyperv.rules
+  permissions: "0644"
+  owner: root
+  content: |
+    ACTION!="add", GOTO="ptp_hyperv"
+    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+    LABEL="ptp_hyperv"
+
 - path: /etc/docker/daemon.json
   permissions: "0644"
   owner: root
@@ -19747,6 +19754,14 @@ write_files:
     {{- end}}
     ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
     #EOF
+
+- path: /etc/udev/rules.d/99-ptp_hyperv.rules
+  permissions: "0644"
+  owner: root
+  content: |
+    ACTION!="add", GOTO="ptp_hyperv"
+    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+    LABEL="ptp_hyperv"
 
 - path: /etc/docker/daemon.json
   permissions: "0644"
