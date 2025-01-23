@@ -109,6 +109,11 @@ configureEtcd() {
 }
 configureChrony() {
   sed -i "s/makestep.*/makestep 1.0 -1/g" /etc/chrony/chrony.conf
+  sudo cat > /etc/udev/rules.d/99-ptp_hyperv.rules << EOF
+    ACTION!="add", GOTO="ptp_hyperv"
+    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+    LABEL="ptp_hyperv"
+EOF
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}

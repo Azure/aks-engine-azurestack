@@ -15608,6 +15608,11 @@ configureEtcd() {
 }
 configureChrony() {
   sed -i "s/makestep.*/makestep 1.0 -1/g" /etc/chrony/chrony.conf
+  sudo cat > /etc/udev/rules.d/99-ptp_hyperv.rules << EOF
+    ACTION!="add", GOTO="ptp_hyperv"
+    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+    LABEL="ptp_hyperv"
+EOF
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
@@ -19176,14 +19181,6 @@ write_files:
 {{IndentString (GetDockerConfig false) 4}}
 {{end}}
 
-- path: /etc/udev/rules.d/99-ptp_hyperv.rules
-  permissions: "0644"
-  owner: root
-  content: |
-    ACTION!="add", GOTO="ptp_hyperv"
-    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
-    LABEL="ptp_hyperv"
-
 {{- if HasCiliumNetworkPlugin}}
 - path: /etc/systemd/system/sys-fs-bpf.mount
   permissions: "0644"
@@ -19761,14 +19758,6 @@ write_files:
   content: |
 {{IndentString (GetDockerConfig (IsNSeriesSKU .VMSize)) 4}}
 {{end}}
-
-- path: /etc/udev/rules.d/99-ptp_hyperv.rules
-  permissions: "0644"
-  owner: root
-  content: |
-    ACTION!="add", GOTO="ptp_hyperv"
-    SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
-    LABEL="ptp_hyperv"
 
 {{- if HasCiliumNetworkPlugin}}
 - path: /etc/systemd/system/sys-fs-bpf.mount
