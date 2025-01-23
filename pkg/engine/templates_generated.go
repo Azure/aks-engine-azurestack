@@ -19169,6 +19169,13 @@ write_files:
     ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
     #EOF
 
+- path: /etc/docker/daemon.json
+  permissions: "0644"
+  owner: root
+  content: |
+{{IndentString (GetDockerConfig false) 4}}
+{{end}}
+
 - path: /etc/udev/rules.d/99-ptp_hyperv.rules
   permissions: "0644"
   owner: root
@@ -19176,13 +19183,6 @@ write_files:
     ACTION!="add", GOTO="ptp_hyperv"
     SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
     LABEL="ptp_hyperv"
-
-- path: /etc/docker/daemon.json
-  permissions: "0644"
-  owner: root
-  content: |
-{{IndentString (GetDockerConfig false) 4}}
-{{end}}
 
 {{- if HasCiliumNetworkPlugin}}
 - path: /etc/systemd/system/sys-fs-bpf.mount
@@ -19755,6 +19755,13 @@ write_files:
     ExecStartPost=/sbin/iptables -P FORWARD ACCEPT
     #EOF
 
+- path: /etc/docker/daemon.json
+  permissions: "0644"
+  owner: root
+  content: |
+{{IndentString (GetDockerConfig (IsNSeriesSKU .VMSize)) 4}}
+{{end}}
+
 - path: /etc/udev/rules.d/99-ptp_hyperv.rules
   permissions: "0644"
   owner: root
@@ -19762,13 +19769,6 @@ write_files:
     ACTION!="add", GOTO="ptp_hyperv"
     SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
     LABEL="ptp_hyperv"
-
-- path: /etc/docker/daemon.json
-  permissions: "0644"
-  owner: root
-  content: |
-{{IndentString (GetDockerConfig (IsNSeriesSKU .VMSize)) 4}}
-{{end}}
 
 {{- if HasCiliumNetworkPlugin}}
 - path: /etc/systemd/system/sys-fs-bpf.mount
