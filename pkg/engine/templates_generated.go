@@ -15587,8 +15587,6 @@ configureEtcd() {
   fi
 
   if [[ -z ${ETCDCTL_ENDPOINTS} ]]; then
-    {{/* Variables necessary for etcdctl are not present */}}
-    {{/* Must pull them from /etc/environment */}}
     for entry in $(cat /etc/environment); do
       export ${entry}
     done
@@ -15620,8 +15618,6 @@ ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
 }
 disableSystemdResolved() {
-  {{/* Ignoring systemd-resolved query service but using its resolv.conf file */}}
-  {{/* This is the simplest approach to workaround resolved issues without completely uninstall it */}}
   [ -f /run/systemd/resolve/resolv.conf ] && sudo ln -sf /run/systemd/resolve/resolv.conf /etc/resolv.conf
 }
 ensureRPC() {
@@ -15681,7 +15677,6 @@ configureK8s() {
   touch $azure_json
   chmod 0600 $azure_json
   chown root:root $azure_json
-  {{/* Perform the required JSON escaping */}}
   local sp_secret=${SERVICE_PRINCIPAL_CLIENT_SECRET//\\/\\\\}
   sp_secret=${SERVICE_PRINCIPAL_CLIENT_SECRET//\"/\\\"}
   cat <<EOF >"${azure_json}"
@@ -15764,7 +15759,6 @@ installAzureCNI() {
 }
 {{end}}
 configureCNI() {
-  {{/* needed for the iptables rules to work on bridges */}}
   retrycmd 120 5 25 modprobe br_netfilter || exit {{GetCSEErrorCode "ERR_MODPROBE_FAIL"}}
   echo -n "br_netfilter" >/etc/modules-load.d/br_netfilter.conf
   configureAzureCNI
@@ -15775,8 +15769,6 @@ configureCNI() {
   {{end}}
 {{- if IsAzureStackCloud}}
   if [[ ${NETWORK_PLUGIN} == "azure" ]]; then
-    {{/* set environment to mas when using Azure CNI on Azure Stack */}}
-    {{/* shellcheck disable=SC2002,SC2005 */}}
     echo $(cat "$CNI_CFG_DIR/10-azure.conflist" | jq '.plugins[0].ipam.environment = "mas"') >"$CNI_CFG_DIR/10-azure.conflist"
   fi
 {{end}}
