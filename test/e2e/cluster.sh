@@ -294,7 +294,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
       --windows-script ./scripts/collect-windows-logs.ps1
 
       for logfile in "_output/${RESOURCE_GROUP}/_logs"/*.zip; do
-        if [ -z "$(cat ${logfile})" ]; then
+        if [ ! grep -q . "${logfile}" ]; then
           echo "File ${logfile} is empty"
           exit 1
         fi
