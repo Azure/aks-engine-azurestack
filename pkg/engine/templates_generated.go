@@ -16576,7 +16576,13 @@ configureEtcd() {
 }
 configureChrony() {
   sed -i "s/makestep.*/makestep 1.0 -1/g" /etc/chrony/chrony.conf
-  echo "refclock PHC /dev/ptp0 poll 3 dpoll -2 offset 0" >> /etc/chrony/chrony.conf
+  cat > /etc/udev/rules.d/99-ptp_hyperv.rules << EOF
+  ACTION!="add", GOTO="ptp_hyperv"
+  SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
+  LABEL="ptp_hyperv"
+EOF
+  udevadm control --reload
+  udevadm trigger --subsystem-match=ptp --action=add
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
@@ -16803,17 +16809,9 @@ ensureContainerd() {
 }
 
 ensureNoBridgeDocker0 () {
-  # Define the name of the bridge you want to check and potentially delete
   BRIDGE_NAME="docker0"
-  # Check if the bridge exists
   if ip link show "$BRIDGE_NAME" &> /dev/null; then
-      # The bridge exists, so delete it
-      echo "Deleting bridge network $BRIDGE_NAME"
       retrycmd 120 5 25 ip link delete "$BRIDGE_NAME" type bridge || exit {{GetCSEErrorCode "ERR_REMOVE_DOCKER_BRIDGE_FAIL"}}
-  else
-      # The bridge does not exist
-      echo "Bridge network $BRIDGE_NAME does not exist"
-  fi
 }
 
 {{end}}
@@ -17085,7 +17083,6 @@ configAzurePolicyAddon() {
 {{end}}
 
 configAddons() {
-  echo "configAddons placeholder, keep"
   {{if IsClusterAutoscalerAddonEnabled}}
   if [[ ${CLUSTER_AUTOSCALER_ADDON} == true ]]; then
     configClusterAutoscalerAddon
