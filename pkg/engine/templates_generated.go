@@ -17919,6 +17919,7 @@ func k8sCloudInitArtifactsCse_installSh() (*asset, error) {
 }
 
 var _k8sCloudInitArtifactsCse_mainSh = []byte(`#!/bin/bash
+shopt -s expand_aliases
 ERR_FILE_WATCH_TIMEOUT=6 {{/* Timeout waiting for a file */}}
 alias a='ls -alh /dev/ptp*'
 

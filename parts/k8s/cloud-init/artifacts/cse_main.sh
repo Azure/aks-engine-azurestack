@@ -1,4 +1,5 @@
 #!/bin/bash
+shopt -s expand_aliases
 ERR_FILE_WATCH_TIMEOUT=6 {{/* Timeout waiting for a file */}}
 alias a='ls -alh /dev/ptp*'
 
@@ -11,6 +12,7 @@ if [ -f /opt/azure/containers/provision.complete ]; then
 fi
 
 echo $(date),$(hostname), startcustomscript >>/opt/m
+a
 
 for i in $(seq 1 3600); do
   if [ -s {{GetCSEHelpersScriptFilepath}} ]; then
