@@ -16581,9 +16581,9 @@ configureChrony() {
   SUBSYSTEM=="ptp", ATTR{clock_name}=="hyperv", SYMLINK += "ptp_hyperv"
   LABEL="ptp_hyperv"
 EOF
-  sleep 30
   udevadm control --reload
   udevadm trigger --subsystem-match=ptp --action=add -v
+  ls /dev/ptp*
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}

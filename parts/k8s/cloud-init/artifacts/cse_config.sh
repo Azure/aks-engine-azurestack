@@ -117,6 +117,7 @@ EOF
   sleep 30
   udevadm control --reload
   udevadm trigger --subsystem-match=ptp --action=add -v
+  ls /dev/ptp*
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
