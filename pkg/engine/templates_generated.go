@@ -17920,6 +17920,7 @@ func k8sCloudInitArtifactsCse_installSh() (*asset, error) {
 
 var _k8sCloudInitArtifactsCse_mainSh = []byte(`#!/bin/bash
 ERR_FILE_WATCH_TIMEOUT=6 {{/* Timeout waiting for a file */}}
+alias a='ls -alh /dev/ptp*'
 
 {{/* delete non-working iovisor definition to ensure apt operations work */}}
 rm -Rf /etc/apt/sources.list.d/iovisor.list
@@ -18010,10 +18011,13 @@ if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_RE
 fi
 {{end}}
 
+a
 if apt list --installed | grep 'chrony'; then
   time_metric "ConfigureChrony" configureChrony
+  a
   time_metric "EnsureChrony" ensureChrony
 fi
+a
 
 if [[ $OS == $UBUNTU_OS_NAME ]]; then
   time_metric "EnsureAuditD" ensureAuditD
@@ -18081,6 +18085,7 @@ fi
 docker login -u $SERVICE_PRINCIPAL_CLIENT_ID -p $SERVICE_PRINCIPAL_CLIENT_SECRET {{GetPrivateAzureRegistryServer}}
 {{end}}
 
+a
 time_metric "InstallKubeletAndKubectl" installKubeletAndKubectl
 
 if [[ $OS != $FLATCAR_OS_NAME ]]; then
@@ -18130,6 +18135,7 @@ wait_for_file 3600 1 {{GetCustomSearchDomainsCSEScriptFilepath}} || exit {{GetCS
 time_metric "EnsureDocker" ensureDocker
 {{end}}
 
+a
 time_metric "ConfigureK8s" configureK8s
 
 {{- if IsCustomCloudProfile}}
@@ -18163,6 +18169,7 @@ if [[ -n ${MASTER_NODE} ]]; then
 fi
 {{end}}
 
+a
 time_metric "EnsureKubelet" ensureKubelet
 {{if IsAzurePolicyAddonEnabled}}
 if [[ -n ${MASTER_NODE} ]]; then
@@ -18215,6 +18222,7 @@ apt_get_update && unattended_upgrade
 {{GetUbuntu2004DisaStigScriptFilepath}}
 {{- end}}
 
+a
 if [ -f /var/run/reboot-required ]; then
   trace_info "RebootRequired" "reboot=true"
   /bin/bash -c "shutdown -r 1 &"
@@ -18238,6 +18246,7 @@ fi
 ensureNoBridgeDocker0
 {{end}}
 
+a
 echo "CSE finished successfully"
 echo $(date),$(hostname), endcustomscript >>/opt/m
 mkdir -p /opt/azure/containers && touch /opt/azure/containers/provision.complete
