@@ -2,7 +2,7 @@
 shopt -s expand_aliases
 ERR_FILE_WATCH_TIMEOUT=6 {{/* Timeout waiting for a file */}}
 alias a='ls -alh /dev/ptp*'
-apt-get install auditd
+AUDITD_ENABLED=true
 
 {{/* delete non-working iovisor definition to ensure apt operations work */}}
 rm -Rf /etc/apt/sources.list.d/iovisor.list
