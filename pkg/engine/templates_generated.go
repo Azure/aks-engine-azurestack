@@ -18225,6 +18225,7 @@ apt_get_update && unattended_upgrade
 {{- end}}
 
 a
+touch /var/run/reboot-required
 if [ -f /var/run/reboot-required ]; then
   trace_info "RebootRequired" "reboot=true"
   /bin/bash -c "shutdown -r 1 &"
