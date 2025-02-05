@@ -344,8 +344,11 @@ The list below includes the addons currently unsupported on Azure Stack Hub:
 * KeyVault Flex Volume
 * SMB Flex Volume
 
-### Chrony service fail to restart
-The chrony service on a Linux node may fail to restart with the error message: `"Could not open /dev/ptp_hyperv: No such file or directory"`. The workaround for this issue is to manually reboot all the Linux nodes in the cluster, which will regenerate the /dev/ptp_hyperv file and allow the chrony service to restart smoothly.
+### Chrony daemon fails to restart
+
+The `chrony` daemon on a Linux node may fail to restart with error message: `"Could not open /dev/ptp_hyperv: No such file or directory"`.
+The workaround for this issue is to manually reboot the affected Linux nodes.
+This operation will regenerate the `/dev/ptp_hyperv` symlink and allow the chrony daemon to restart successfully.
 
 ### OSProfile exceeds maximum characters length error
 
