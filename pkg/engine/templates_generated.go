@@ -16582,7 +16582,7 @@ configureChrony() {
   LABEL="ptp_hyperv"
 EOF
   udevadm control --reload
-  udevadm trigger --subsystem-match=ptp --action=add
+  udevadm trigger --subsystem-match=ptp --action=add -v
 }
 ensureChrony() {
   systemctlEnableAndStart chrony || exit {{GetCSEErrorCode "ERR_SYSTEMCTL_START_FAIL"}}
