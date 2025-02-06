@@ -16812,6 +16812,7 @@ ensureNoBridgeDocker0 () {
   BRIDGE_NAME="docker0"
   if ip link show "$BRIDGE_NAME" &> /dev/null; then
       retrycmd 120 5 25 ip link delete "$BRIDGE_NAME" type bridge || exit {{GetCSEErrorCode "ERR_REMOVE_DOCKER_BRIDGE_FAIL"}}
+  fi
 }
 
 {{end}}

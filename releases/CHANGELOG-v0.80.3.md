@@ -1,7 +1,6 @@
 
 # Attention!
 Notable changes in this release:
-
 - The `chrony` daemon on a Linux node may fail to restart with error message: `"Could not open /dev/ptp_hyperv: No such file or directory"`.
 The workaround for this issue is to manually reboot the affected Linux nodes.
 This operation will regenerate the `/dev/ptp_hyperv` symlink and allow the chrony daemon to restart successfully.
@@ -20,7 +19,7 @@ tolerations:
   - See [Azure Disk CSI Driver: Version Mapping](../docs/topics/azure-stack.md#azure-disk-csi-driver-version-mapping) for more details.
 
 <a name="v0.80.3"></a>
-# [v0.80.3] - 2025-01-27
+# [v0.80.3] - 2025-02-06
 ### Bug Fixes 🐞
 - Update Chrony Service Config ([#288](https://github.com/Azure/aks-engine-azurestack/issues/288))
 
