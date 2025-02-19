@@ -132,8 +132,8 @@
                     },
                     {
                         "type": "File",
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh'))]",
-                        "destination": "/home/packer/provision_stig_ubuntu2004.sh"
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh'))]",
+                        "destination": "/home/packer/provision_stig_ubuntu2204.sh"
                     },
                     {
                         "type": "File",

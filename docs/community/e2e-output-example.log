@@ -302,7 +302,6 @@ Non-terminated Pods:          (7 in total)
   ---------                   ----                                      ------------  ----------  ---------------  -------------  ---
   kube-system                 azure-cni-networkmonitor-qj682            0 (0%)        0 (0%)      0 (0%)           0 (0%)         33s
   kube-system                 azure-ip-masq-agent-hpgn5                 50m (2%)      50m (2%)    50Mi (0%)        250Mi (3%)     28s
-  kube-system                 blobfuse-flexvol-installer-shmmh          50m (2%)      50m (2%)    100Mi (1%)       100Mi (1%)     29s
   kube-system                 coredns-autoscaler-75899bd56c-phcdd       20m (1%)      0 (0%)      10Mi (0%)        0 (0%)         32s
   kube-system                 csi-secrets-store-provider-azure-lnmhr    50m (2%)      200m (10%)  100Mi (1%)       200Mi (2%)     32s
   kube-system                 csi-secrets-store-vwrnk                   70m (3%)      600m (30%)  140Mi (1%)       600Mi (8%)     32s
@@ -407,7 +406,6 @@ Non-terminated Pods:          (7 in total)
   ---------                   ----                                      ------------  ----------  ---------------  -------------  ---
   kube-system                 azure-cni-networkmonitor-wsbx8            0 (0%)        0 (0%)      0 (0%)           0 (0%)         33s
   kube-system                 azure-ip-masq-agent-xlpgb                 50m (2%)      50m (2%)    50Mi (0%)        250Mi (3%)     28s
-  kube-system                 blobfuse-flexvol-installer-zclxf          50m (2%)      50m (2%)    100Mi (1%)       100Mi (1%)     29s
   kube-system                 csi-secrets-store-provider-azure-n7xjg    50m (2%)      200m (10%)  100Mi (1%)       200Mi (2%)     32s
   kube-system                 csi-secrets-store-r6p6c                   70m (3%)      600m (30%)  140Mi (1%)       600Mi (8%)     32s
   kube-system                 kube-proxy-9v5vs                          100m (5%)     0 (0%)      0 (0%)           0 (0%)         29s
@@ -1042,8 +1040,6 @@ kube-system   pod/azure-cni-networkmonitor-wsbx8                  1/1     Runnin
 kube-system   pod/azure-ip-masq-agent-hpgn5                       1/1     Running   0          2m56s   10.240.0.34    k8s-agentpool1-24731180-vmss000000   <none>           <none>
 kube-system   pod/azure-ip-masq-agent-l2tcc                       1/1     Running   0          2m56s   10.255.255.5   k8s-master-24731180-0                <none>           <none>
 kube-system   pod/azure-ip-masq-agent-xlpgb                       1/1     Running   0          2m56s   10.240.0.65    k8s-agentpool1-24731180-vmss000001   <none>           <none>
-kube-system   pod/blobfuse-flexvol-installer-shmmh                1/1     Running   0          2m57s   10.240.0.64    k8s-agentpool1-24731180-vmss000000   <none>           <none>
-kube-system   pod/blobfuse-flexvol-installer-zclxf                1/1     Running   0          2m57s   10.240.0.67    k8s-agentpool1-24731180-vmss000001   <none>           <none>
 kube-system   pod/coredns-85f58d59cc-c8wb6                        1/1     Running   0          3m      10.240.0.26    k8s-master-24731180-0                <none>           <none>
 kube-system   pod/coredns-autoscaler-75899bd56c-phcdd             1/1     Running   0          3m      10.240.0.47    k8s-agentpool1-24731180-vmss000000   <none>           <none>
 kube-system   pod/csi-secrets-store-provider-azure-lnmhr          1/1     Running   0          3m      10.240.0.35    k8s-agentpool1-24731180-vmss000000   <none>           <none>
@@ -1067,7 +1063,6 @@ kube-system   service/metrics-server   ClusterIP   10.0.87.235   <none>        4
 NAMESPACE     NAME                                              DESIRED   CURRENT   READY   UP-TO-DATE   AVAILABLE   NODE SELECTOR                 AGE    CONTAINERS                                           IMAGES                                                                                                                                                                                  SELECTOR
 kube-system   daemonset.apps/azure-cni-networkmonitor           3         3         3       3            3           kubernetes.io/os=linux        3m1s   azure-cnms                                           mcr.microsoft.com/containernetworking/networkmonitor:v0.0.8                                                                                                                             k8s-app=azure-cnms
 kube-system   daemonset.apps/azure-ip-masq-agent                3         3         3       3            3           kubernetes.io/os=linux        3m3s   azure-ip-masq-agent                                  mcr.microsoft.com/oss/kubernetes/ip-masq-agent:v2.5.0                                                                                                                                   k8s-app=azure-ip-masq-agent,tier=node
-kube-system   daemonset.apps/blobfuse-flexvol-installer         2         2         2       2            2           kubernetes.io/os=linux        3m4s   blobfuse-flexvol-installer                           mcr.microsoft.com/k8s/flexvolume/blobfuse-flexvolume:1.0.8                                                                                                                              name=blobfuse
 kube-system   daemonset.apps/csi-secrets-store                  2         2         2       2            2           kubernetes.io/os=linux        3m     node-driver-registrar,secrets-store,liveness-probe   mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v1.2.0,mcr.microsoft.com/k8s/csi/secrets-store/driver:v0.0.9,mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v1.1.0   app=csi-secrets-store
 kube-system   daemonset.apps/csi-secrets-store-provider-azure   2         2         2       2            2           kubernetes.io/os=linux        3m     provider-azure-installer                             mcr.microsoft.com/k8s/csi/secrets-store/provider-azure:0.0.4                                                                                                                            app=csi-secrets-store-provider-azure
 kube-system   daemonset.apps/kube-proxy                         3         3         3       3            3           kubernetes.io/os=linux        3m3s   kube-proxy                                           mcr.microsoft.com/oss/kubernetes/kube-proxy:v1.18.2                                                                                                                                     component=kube-proxy,k8s-app=kube-proxy,tier=node
