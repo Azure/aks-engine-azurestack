@@ -41,8 +41,8 @@ copyPackerFiles() {
   NOTICE_DEST=/NOTICE.txt
   PROVISION_AZURESTACK_CNI_SRC=/home/packer/provision_azurestack_cni.sh
   PROVISION_AZURESTACK_CNI_DEST=/opt/azure/containers/provision_azurestack_cni.sh
-  UBUNTU_STIG_SRC=/home/packer/provision_stig_ubuntu2004.sh
-  UBUNTU_STIG_DEST=/opt/azure/containers/provision_stig_ubuntu2004.sh
+  UBUNTU_STIG_SRC=/home/packer/provision_stig_ubuntu2204.sh
+  UBUNTU_STIG_DEST=/opt/azure/containers/provision_stig_ubuntu2204.sh
   AUDITD_RULES_SRC=/home/packer/auditd-rules
   AUDITD_RULES_DEST=/etc/audit/rules.d/aks-engine.rules
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then

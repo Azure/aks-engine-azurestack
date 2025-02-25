@@ -119,7 +119,7 @@ func convertVLabsFeatureFlags(vlabs *vlabs.FeatureFlags, api *FeatureFlags) {
 	api.EnableTelemetry = vlabs.EnableTelemetry
 	api.EnableIPv6Only = vlabs.EnableIPv6Only
 	api.EnableWinDSR = vlabs.EnableWinDSR
-	api.EnforceUbuntu2004DisaStig = vlabs.EnforceUbuntu2004DisaStig
+	api.EnforceUbuntu2204DisaStig = vlabs.EnforceUbuntu2204DisaStig
 	api.EnforceKubernetesDisaStig = vlabs.EnforceKubernetesDisaStig
 }
 

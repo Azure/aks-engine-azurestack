@@ -726,8 +726,8 @@ version = 2
 		"GetCSEConfigScriptFilepath": func() string {
 			return cseConfigScriptFilepath
 		},
-		"GetUbuntu2004DisaStigScriptFilepath": func() string {
-			return cseUbuntu2004StigScriptFilepath
+		"GetUbuntu2204DisaStigScriptFilepath": func() string {
+			return cseUbuntu2204StigScriptFilepath
 		},
 		"GetCustomSearchDomainsCSEScriptFilepath": func() string {
 			return customSearchDomainsCSEScriptFilepath
@@ -760,8 +760,8 @@ version = 2
 		"HasTelemetryEnabled": func() bool {
 			return cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.EnableTelemetry
 		},
-		"ShouldEnforceUbuntu2004DisaStig": func() bool {
-			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2004DisaStig")
+		"ShouldEnforceUbuntu2204DisaStig": func() bool {
+			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2204DisaStig")
 		},
 		"ShouldEnforceKubernetesDisaStig": func() bool {
 			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceKubernetesDisaStig")

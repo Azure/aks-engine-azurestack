@@ -42,7 +42,7 @@
 // ../../parts/k8s/cloud-init/artifacts/cse_helpers.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_install.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_main.sh
-// ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh
+// ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh
 // ../../parts/k8s/cloud-init/artifacts/default-grub
 // ../../parts/k8s/cloud-init/artifacts/dhcpv6.service
 // ../../parts/k8s/cloud-init/artifacts/docker-monitor.service
@@ -17242,8 +17242,8 @@ apt_get_update && unattended_upgrade
     {{- end}}
 {{- end}}
 
-{{- if ShouldEnforceUbuntu2004DisaStig}}
-{{GetUbuntu2004DisaStigScriptFilepath}}
+{{- if ShouldEnforceUbuntu2204DisaStig}}
+{{GetUbuntu2204DisaStigScriptFilepath}}
 {{- end}}
 
 if [ -f /var/run/reboot-required ]; then
@@ -17294,7 +17294,7 @@ func k8sCloudInitArtifactsCse_mainSh() (*asset, error) {
 	return a, nil
 }
 
-var _k8sCloudInitArtifactsCse_stig_ubuntu2004Sh = []byte(`#!/bin/bash
+var _k8sCloudInitArtifactsCse_stig_ubuntu2204Sh = []byte(`#!/bin/bash
 
 setLoginDefs() {
   local f=/etc/login.defs
@@ -17381,17 +17381,17 @@ setAPTConfig
 #EOF
 `)
 
-func k8sCloudInitArtifactsCse_stig_ubuntu2004ShBytes() ([]byte, error) {
-	return _k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, nil
+func k8sCloudInitArtifactsCse_stig_ubuntu2204ShBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCse_stig_ubuntu2204Sh, nil
 }
 
-func k8sCloudInitArtifactsCse_stig_ubuntu2004Sh() (*asset, error) {
-	bytes, err := k8sCloudInitArtifactsCse_stig_ubuntu2004ShBytes()
+func k8sCloudInitArtifactsCse_stig_ubuntu2204Sh() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCse_stig_ubuntu2204ShBytes()
 	if err != nil {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -23933,7 +23933,7 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/cloud-init/artifacts/cse_helpers.sh":                            k8sCloudInitArtifactsCse_helpersSh,
 	"k8s/cloud-init/artifacts/cse_install.sh":                            k8sCloudInitArtifactsCse_installSh,
 	"k8s/cloud-init/artifacts/cse_main.sh":                               k8sCloudInitArtifactsCse_mainSh,
-	"k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh":                    k8sCloudInitArtifactsCse_stig_ubuntu2004Sh,
+	"k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh":                    k8sCloudInitArtifactsCse_stig_ubuntu2204Sh,
 	"k8s/cloud-init/artifacts/default-grub":                              k8sCloudInitArtifactsDefaultGrub,
 	"k8s/cloud-init/artifacts/dhcpv6.service":                            k8sCloudInitArtifactsDhcpv6Service,
 	"k8s/cloud-init/artifacts/docker-monitor.service":                    k8sCloudInitArtifactsDockerMonitorService,
@@ -24087,7 +24087,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"cse_helpers.sh":                            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},
 				"cse_install.sh":                            {k8sCloudInitArtifactsCse_installSh, map[string]*bintree{}},
 				"cse_main.sh":                               {k8sCloudInitArtifactsCse_mainSh, map[string]*bintree{}},
-				"cse_stig_ubuntu2004.sh":                    {k8sCloudInitArtifactsCse_stig_ubuntu2004Sh, map[string]*bintree{}},
+				"cse_stig_ubuntu2204.sh":                    {k8sCloudInitArtifactsCse_stig_ubuntu2204Sh, map[string]*bintree{}},
 				"default-grub":                              {k8sCloudInitArtifactsDefaultGrub, map[string]*bintree{}},
 				"dhcpv6.service":                            {k8sCloudInitArtifactsDhcpv6Service, map[string]*bintree{}},
 				"docker-monitor.service":                    {k8sCloudInitArtifactsDockerMonitorService, map[string]*bintree{}},

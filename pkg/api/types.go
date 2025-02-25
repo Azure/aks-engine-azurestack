@@ -76,7 +76,7 @@ type FeatureFlags struct {
 	EnableTelemetry           bool `json:"enableTelemetry,omitempty"`
 	EnableIPv6Only            bool `json:"enableIPv6Only,omitempty"`
 	EnableWinDSR              bool `json:"enableWinDSR,omitempty"`
-	EnforceUbuntu2004DisaStig bool `json:"enforceUbuntu2004DisaStig,omitempty"`
+	EnforceUbuntu2204DisaStig bool `json:"enforceUbuntu2204DisaStig,omitempty"`
 	EnforceKubernetesDisaStig bool `json:"EnforceKubernetesDisaStig,omitempty"`
 }
 
@@ -2258,8 +2258,8 @@ func (f *FeatureFlags) IsFeatureEnabled(feature string) bool {
 			return f.EnableIPv6Only
 		case "EnableWinDSR":
 			return f.EnableWinDSR
-		case "EnforceUbuntu2004DisaStig":
-			return f.EnforceUbuntu2004DisaStig
+		case "EnforceUbuntu2204DisaStig":
+			return f.EnforceUbuntu2204DisaStig
 		case "EnforceKubernetesDisaStig":
 			return f.EnforceKubernetesDisaStig
 		default:

@@ -45,7 +45,7 @@
             }
         },
         "featureFlags": {
-            "enforceUbuntu2004DisaStig": true,
+            "enforceUbuntu2204DisaStig": true,
             "enforceKubernetesDisaStig": true
         }
     }
