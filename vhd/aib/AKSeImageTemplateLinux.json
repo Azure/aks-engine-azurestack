@@ -11,6 +11,9 @@
         "vhd_resource_group_name": {
           "type": "string"
         },
+        "managed_identity_resource_group_name": {
+            "type": "string"
+        },
         "managed_identity_name": {
             "type": "string"
         },
@@ -82,7 +85,7 @@
             "identity": {
                 "type": "UserAssigned",
                 "userAssignedIdentities": {
-                    "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('managed_identity_name'))]": {}
+                    "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('managed_identity_resource_group_name'),'/providers/Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('managed_identity_name'))]": {}
                 }
             },
             "properties": {
