@@ -59,7 +59,7 @@ type FeatureFlags struct {
 	EnableTelemetry           bool `json:"enableTelemetry,omitempty"`
 	EnableIPv6Only            bool `json:"enableIPv6Only,omitempty"`
 	EnableWinDSR              bool `json:"enableWinDSR,omitempty"`
-	EnforceUbuntu2204DisaStig bool `json:"enforceUbuntu2204DisaStig,omitempty"`
+	EnforceUbuntuDisaStig     bool `json:"enforceUbuntuDisaStig,omitempty"`
 	EnforceKubernetesDisaStig bool `json:"enforceKubernetesDisaStig,omitempty"`
 }
 
@@ -1092,9 +1092,9 @@ func (f *FeatureFlags) IsWinDSREnabled() bool {
 	return f != nil && f.EnableWinDSR
 }
 
-// IsEnforceUbuntu2204DisaStigEnabled checks if EnforceUbuntu2204DisaStig feature is enabled
-func (f *FeatureFlags) IsEnforceUbuntu2204DisaStigEnabled() bool {
-	return f != nil && f.EnforceUbuntu2204DisaStig
+// IsEnforceUbuntuDisaStigEnabled checks if EnforceUbuntuDisaStig feature is enabled
+func (f *FeatureFlags) IsEnforceUbuntuDisaStigEnabled() bool {
+	return f != nil && f.EnforceUbuntuDisaStig
 }
 
 // IsEnforceKubernetesDisaStigEnabled checks if EnforceKubernetesDisaStig feature is enabled

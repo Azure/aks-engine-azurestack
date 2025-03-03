@@ -760,8 +760,8 @@ version = 2
 		"HasTelemetryEnabled": func() bool {
 			return cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.EnableTelemetry
 		},
-		"ShouldEnforceUbuntu2204DisaStig": func() bool {
-			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2204DisaStig")
+		"ShouldEnforceUbuntuDisaStig": func() bool {
+			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2004DisaStig") || cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceUbuntu2204DisaStig")
 		},
 		"ShouldEnforceKubernetesDisaStig": func() bool {
 			return cs.Properties.FeatureFlags.IsFeatureEnabled("EnforceKubernetesDisaStig")

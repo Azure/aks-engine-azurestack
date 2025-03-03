@@ -291,7 +291,7 @@ apt_get_update && unattended_upgrade
     {{- end}}
 {{- end}}
 
-{{- if ShouldEnforceUbuntu2204DisaStig}}
+{{- if ShouldEnforceUbuntuDisaStig}}
 {{GetUbuntu2204DisaStigScriptFilepath}}
 {{- end}}
 
