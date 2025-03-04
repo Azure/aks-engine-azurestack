@@ -43,7 +43,7 @@
 // ../../parts/k8s/cloud-init/artifacts/cse_install.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_main.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh
-// ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu.sh
+// ../../parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh
 // ../../parts/k8s/cloud-init/artifacts/default-grub
 // ../../parts/k8s/cloud-init/artifacts/dhcpv6.service
 // ../../parts/k8s/cloud-init/artifacts/docker-monitor.service

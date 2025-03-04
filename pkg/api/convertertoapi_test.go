@@ -503,7 +503,7 @@ func TestConvertVLabsContainerService(t *testing.T) {
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           false,
 				EnableWinDSR:              true,
-				EnforceUbuntu2204DisaStig: false,
+				EnforceUbuntuDisaStig:     false,
 				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{
@@ -712,7 +712,7 @@ func TestTelemetryEnabled(t *testing.T) {
 				EnableCSERunInBackground:  true,
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           true,
-				EnforceUbuntu2204DisaStig: false,
+				EnforceUbuntuDisaStig:     false,
 				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &vlabs.AADProfile{

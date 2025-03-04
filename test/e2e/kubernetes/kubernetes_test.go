@@ -514,7 +514,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
-		It("should validate DISA Ubuntu 20.04 STIG", func() {
+		It("should validate DISA Ubuntu 22.04 STIG", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
 			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2204DisaStig {

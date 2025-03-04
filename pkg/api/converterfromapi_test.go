@@ -415,6 +415,7 @@ func getDefaultContainerService() *ContainerService {
 				EnableCSERunInBackground:  true,
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           false,
+				EnforceUbuntu2004DisaStig: false,
 				EnforceUbuntu2204DisaStig: false,
 				EnforceKubernetesDisaStig: false,
 			},
