@@ -130,8 +130,7 @@ func TestSetSysctlDConfig(t *testing.T) {
 						},
 					},
 					FeatureFlags: &FeatureFlags{
-						EnforceUbuntu2004DisaStig: true,
-						EnforceUbuntu2204DisaStig: true,
+						EnforceUbuntuDisaStig: true,
 					},
 				},
 			},
