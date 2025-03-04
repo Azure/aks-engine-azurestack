@@ -16826,7 +16826,7 @@ downloadAzureCNI() {
 ensureAPMZ() {
   local ver=$1 v
   local d="$APMZ_DL_DIR/$ver"
-  local url="https://upstreamartifacts.azureedge.net/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
+  local url="https://packages.aks.azure.com/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
     fp="/opt/bin/apmz"
     export PATH="${PATH}:/opt/bin"
@@ -16845,7 +16845,7 @@ ensureAPMZ() {
 }
 installBpftrace() {
   local ver="v0.9.4" v bin="bpftrace" tools="bpftrace-tools.tar"
-  local url="https://upstreamartifacts.azureedge.net/$bin/$ver"
+  local url="https://packages.aks.azure.com/$bin/$ver"
   local bpftrace_fp="/usr/local/bin/$bin"
   local tools_fp="/usr/local/share/$bin"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
@@ -16875,7 +16875,7 @@ installBpftrace() {
 }
 installImg() {
   img_filepath=/usr/local/bin/img
-  retrycmd_get_executable 120 5 $img_filepath "https://upstreamartifacts.azureedge.net/img/img-linux-amd64-v0.5.6" ls || exit 33
+  retrycmd_get_executable 120 5 $img_filepath "https://packages.aks.azure.com/img/img-linux-amd64-v0.5.6" ls || exit 33
 }
 extractHyperkube() {
   local cli_tool=$1 fp="/home/hyperkube-downloads/${KUBERNETES_VERSION}" dest="/usr/local/bin"
@@ -16903,7 +16903,7 @@ extractHyperkube() {
   fi
 }
 extractKubeBinaries() {
-  KUBE_BINARY_URL=${KUBE_BINARY_URL:-"https://kubernetesartifacts.azureedge.net/kubernetes/v${KUBERNETES_VERSION}/binaries/kubernetes-node-linux-amd64.tar.gz"}
+  KUBE_BINARY_URL=${KUBE_BINARY_URL:-"https://packages.aks.azure.com/kubernetes/v${KUBERNETES_VERSION}/binaries/kubernetes-node-linux-amd64.tar.gz"}
   local dest="/opt/kubernetes/downloads" tmpDir=${KUBE_BINARY_URL##*/}
   mkdir -p "${dest}"
   retrycmd_get_tarball 120 5 "$dest/${tmpDir}" ${KUBE_BINARY_URL} || exit 31
@@ -20560,15 +20560,15 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
       "type": "string"
     },
     "cniPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/cni-plugins/v0.7.6/binaries/cni-plugins-amd64-v0.7.6.tgz",
+      "defaultValue": "https://packages.aks.azure.com/cni-plugins/v0.7.6/binaries/cni-plugins-amd64-v0.7.6.tgz",
       "type": "string"
     },
     "vnetCniLinuxPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/azure-cni/v1.0.30/binaries/azure-vnet-cni-linux-amd64-v1.0.30.tgz",
+      "defaultValue": "https://packages.aks.azure.com/azure-cni/v1.0.30/binaries/azure-vnet-cni-linux-amd64-v1.0.30.tgz",
       "type": "string"
     },
     "vnetCniWindowsPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/azure-cni/v1.0.30/binaries/azure-vnet-cni-windows-amd64-v1.0.30.zip",
+      "defaultValue": "https://packages.aks.azure.com/azure-cni/v1.0.30/binaries/azure-vnet-cni-windows-amd64-v1.0.30.zip",
       "type": "string"
     },
     "maxPods": {

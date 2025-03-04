@@ -195,7 +195,7 @@ installBpftrace() {
 }
 installImg() {
   img_filepath=/usr/local/bin/img
-  retrycmd_get_executable 120 5 $img_filepath "https://upstreamartifacts.azureedge.net/img/img-linux-amd64-v0.5.6" ls || exit 33
+  retrycmd_get_executable 120 5 $img_filepath "https://packages.aks.azure.com/img/img-linux-amd64-v0.5.6" ls || exit 33
 }
 extractHyperkube() {
   local cli_tool=$1 fp="/home/hyperkube-downloads/${KUBERNETES_VERSION}" dest="/usr/local/bin"
@@ -223,7 +223,7 @@ extractHyperkube() {
   fi
 }
 extractKubeBinaries() {
-  KUBE_BINARY_URL=${KUBE_BINARY_URL:-"https://kubernetesartifacts.azureedge.net/kubernetes/v${KUBERNETES_VERSION}/binaries/kubernetes-node-linux-amd64.tar.gz"}
+  KUBE_BINARY_URL=${KUBE_BINARY_URL:-"https://packages.aks.azure.com/kubernetes/v${KUBERNETES_VERSION}/binaries/kubernetes-node-linux-amd64.tar.gz"}
   local dest="/opt/kubernetes/downloads" tmpDir=${KUBE_BINARY_URL##*/}
   mkdir -p "${dest}"
   retrycmd_get_tarball 120 5 "$dest/${tmpDir}" ${KUBE_BINARY_URL} || exit 31
