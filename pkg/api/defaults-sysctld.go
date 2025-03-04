@@ -21,7 +21,7 @@ func (cs *ContainerService) setSysctlDConfig() {
 		defaultSysctlDConfig["net.ipv4.ip_forward"] = "1"
 	}
 
-	if cs.Properties.FeatureFlags != nil && cs.Properties.FeatureFlags.EnforceUbuntu2004DisaStig {
+	if cs.Properties.FeatureFlags != nil && (cs.Properties.FeatureFlags.EnforceUbuntuDisaStig) {
 		defaultSysctlDConfig["net.ipv4.tcp_syncookies"] = "1"
 	}
 

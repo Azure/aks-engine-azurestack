@@ -11,6 +11,9 @@
         "vhd_resource_group_name": {
           "type": "string"
         },
+        "managed_identity_resource_group_name": {
+            "type": "string"
+        },
         "managed_identity_name": {
             "type": "string"
         },
@@ -82,7 +85,7 @@
             "identity": {
                 "type": "UserAssigned",
                 "userAssignedIdentities": {
-                    "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vhd_resource_group_name'),'/providers/Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('managed_identity_name'))]": {}
+                    "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('managed_identity_resource_group_name'),'/providers/Microsoft.ManagedIdentity/userAssignedIdentities/',parameters('managed_identity_name'))]": {}
                 }
             },
             "properties": {
@@ -98,8 +101,8 @@
                 "source": {
                     "type": "PlatformImage",
                         "publisher": "Canonical",
-                        "offer": "0001-com-ubuntu-server-focal",
-                        "sku": "20_04-lts",
+                        "offer": "0001-com-ubuntu-server-jammy",
+                        "sku": "22_04-lts",
                         "version": "latest"
                 },
                 "customize": [
@@ -132,8 +135,8 @@
                     },
                     {
                         "type": "File",
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh'))]",
-                        "destination": "/home/packer/provision_stig_ubuntu2004.sh"
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh'))]",
+                        "destination": "/home/packer/provision_stig_ubuntu2204.sh"
                     },
                     {
                         "type": "File",
@@ -282,10 +285,10 @@
                 [
                     {   
                         "type": "SharedImage",
-                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-20.04/versions/',parameters('image_version'))]",
+                        "galleryImageId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('image_gallery_group_name'),'/providers/Microsoft.Compute/galleries/',parameters('image_gallery_name'),'/images/ubuntu-22.04/versions/',parameters('image_version'))]",
                         "runOutputName": "AKSeLinuxSIG",
                         "artifactTags": {
-                            "baseosimg": "ubuntu2004"
+                            "baseosimg": "ubuntu2204"
                         },
                         "replicationRegions": [
                             "[parameters('location')]"
@@ -295,7 +298,7 @@
                         "type": "VHD",
                         "runOutputName": "[parameters('vhd_run_output_name')]",
                         "artifactTags": {
-                            "baseosimg": "ubuntu2004"
+                            "baseosimg": "ubuntu2204"
                         },
                         "uri": "[concat(parameters('vhd_url'),'/',parameters('vhd_blob_container_name'),'/',parameters('vhd_name'))]"
                     }

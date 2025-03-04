@@ -254,6 +254,11 @@ func Test_OrchestratorProfile_Validate(t *testing.T) {
 						Count:  10,
 						Distro: AKSUbuntu2004,
 					},
+					{
+						Name:   "ubuntu2204pool",
+						Count:  10,
+						Distro: AKSUbuntu2204,
+					},
 				},
 			},
 		},
@@ -4479,7 +4484,7 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 				if err := cs.Properties.validateAgentPoolProfiles(false); err.Error() != expectedMsg {
 					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}
-			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, ACC1604:
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Ubuntu2204, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, AKSUbuntu2204, ACC1604:
 				if err := cs.Properties.validateAgentPoolProfiles(false); err != nil {
 					t.Errorf("AuditDEnabled should work with distro %s, got error %s", distro, err.Error())
 				}
@@ -4494,10 +4499,10 @@ func TestAgentPoolProfile_ValidateAuditDEnabled(t *testing.T) {
 			agentPoolProfiles := cs.Properties.AgentPoolProfiles
 			agentPoolProfiles[0].Distro = distro
 			agentPoolProfiles[0].AuditDEnabled = to.BoolPtr(false)
-			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true, EnforceUbuntu2204DisaStig: true}
 			switch distro {
-			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
-				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Ubuntu2204, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, AKSUbuntu2204, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' or 'EnforceUbuntu2204DisaStig' is set"
 				if err := cs.Properties.validateAgentPoolProfiles(false); err == nil || err.Error() != expectedMsg {
 					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}
@@ -4520,7 +4525,7 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 				if err := cs.Properties.validateMasterProfile(false); err.Error() != expectedMsg {
 					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}
-			case Ubuntu, Ubuntu1804, Ubuntu2004, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, ACC1604:
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Ubuntu2204, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, AKSUbuntu2204, ACC1604:
 				if err := cs.Properties.validateMasterProfile(false); err != nil {
 					t.Errorf("AuditDEnabled should work with distro %s, got error %s", distro, err.Error())
 				}
@@ -4535,10 +4540,10 @@ func TestMasterProfile_ValidateAuditDEnabled(t *testing.T) {
 			masterProfile := cs.Properties.MasterProfile
 			masterProfile.Distro = distro
 			masterProfile.AuditDEnabled = to.BoolPtr(false)
-			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true}
+			cs.Properties.FeatureFlags = &FeatureFlags{EnforceUbuntu2004DisaStig: true, EnforceUbuntu2204DisaStig: true}
 			switch distro {
-			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, AKSUbuntu1604, AKSUbuntu1804, ACC1604:
-				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set"
+			case Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Ubuntu2204, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, AKSUbuntu2204, ACC1604:
+				expectedMsg := "AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' or 'EnforceUbuntu2204DisaStig' is set"
 				if err := cs.Properties.validateMasterProfile(false); err == nil || err.Error() != expectedMsg {
 					t.Errorf("expected error with message : %s, but got %s", expectedMsg, err.Error())
 				}

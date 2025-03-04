@@ -84,6 +84,8 @@ func toImageConfig(distro api.Distro) api.AzureOSImageConfig {
 		return api.Ubuntu1804Gen2OSImageConfig
 	case api.Ubuntu2004:
 		return api.Ubuntu2004OSImageConfig
+	case api.Ubuntu2204:
+		return api.Ubuntu2204OSImageConfig
 	case api.Flatcar:
 		return api.FlatcarImageConfig
 	case api.AKSUbuntu1604:
@@ -92,6 +94,8 @@ func toImageConfig(distro api.Distro) api.AzureOSImageConfig {
 		return api.AKSUbuntu1804OSImageConfig
 	case api.AKSUbuntu2004:
 		return api.AKSUbuntu2004OSImageConfig
+	case api.AKSUbuntu2204:
+		return api.AKSUbuntu2204OSImageConfig
 	case api.ACC1604:
 		return api.ACC1604OSImageConfig
 	default:

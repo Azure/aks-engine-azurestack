@@ -26,6 +26,7 @@ const (
 	Ubuntu1804        Distro = "ubuntu-18.04"
 	Ubuntu1804Gen2    Distro = "ubuntu-18.04-gen2"
 	Ubuntu2004        Distro = "ubuntu-20.04"
+	Ubuntu2204        Distro = "ubuntu-22.04"
 	Flatcar           Distro = "flatcar"
 	AKS1604Deprecated Distro = "aks"               // deprecated AKS 16.04 distro. Equivalent to aks-ubuntu-16.04.
 	AKS1804Deprecated Distro = "aks-1804"          // deprecated AKS 18.04 distro. Equivalent to aks-ubuntu-18.04.
@@ -33,6 +34,7 @@ const (
 	AKSUbuntu1604     Distro = "aks-ubuntu-16.04"
 	AKSUbuntu1804     Distro = "aks-ubuntu-18.04"
 	AKSUbuntu2004     Distro = "aks-ubuntu-20.04"
+	AKSUbuntu2204     Distro = "aks-ubuntu-22.04"
 	ACC1604           Distro = "acc-16.04"
 )
 
@@ -100,7 +102,7 @@ var (
 	ContainerRuntimeValues = [...]string{"", Docker, Containerd}
 
 	// DistroValues holds the valid values for OS distros
-	DistroValues = []Distro{"", Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Flatcar, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, ACC1604}
+	DistroValues = []Distro{"", Ubuntu, Ubuntu1804, Ubuntu1804Gen2, Ubuntu2004, Ubuntu2204, Flatcar, AKSUbuntu1604, AKSUbuntu1804, AKSUbuntu2004, AKSUbuntu2204, ACC1604}
 
 	// DependenciesLocationValues holds the valid values for dependencies location
 	DependenciesLocationValues = []DependenciesLocation{"", AzureCustomCloudDependenciesLocationPublic, AzureCustomCloudDependenciesLocationChina, AzureCustomCloudDependenciesLocationGerman, AzureCustomCloudDependenciesLocationUSGovernment}

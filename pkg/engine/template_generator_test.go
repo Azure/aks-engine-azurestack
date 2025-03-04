@@ -1282,10 +1282,10 @@ func TestGetContainerServiceFuncMap(t *testing.T) {
 			if ret[0].Interface() != cseConfigScriptFilepath {
 				t.Errorf("expected funcMap invocation of GetCSEConfigScriptFilepath to return %s, instead got %s", cseConfigScriptFilepath, ret[0].Interface())
 			}
-			v = reflect.ValueOf(funcMap["GetUbuntu2004DisaStigScriptFilepath"])
+			v = reflect.ValueOf(funcMap["GetUbuntu2204DisaStigScriptFilepath"])
 			ret = v.Call(make([]reflect.Value, 0))
-			if ret[0].Interface() != cseUbuntu2004StigScriptFilepath {
-				t.Errorf("expected funcMap invocation of GetUbuntu2004DisaStigScriptFilepath to return %s, instead got %s", cseUbuntu2004StigScriptFilepath, ret[0].Interface())
+			if ret[0].Interface() != cseUbuntu2204StigScriptFilepath {
+				t.Errorf("expected funcMap invocation of GetUbuntu2204DisaStigScriptFilepath to return %s, instead got %s", cseUbuntu2204StigScriptFilepath, ret[0].Interface())
 			}
 			v = reflect.ValueOf(funcMap["GetCustomSearchDomainsCSEScriptFilepath"])
 			ret = v.Call(make([]reflect.Value, 0))
@@ -1537,8 +1537,8 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 			ExpectedResult: true,
 		},
 		{
-			Name:     "ShouldEnforceUbuntu2004DisaStigDisabled",
-			FuncName: "ShouldEnforceUbuntu2004DisaStig",
+			Name:     "ShouldEnforceUbuntu2204DisaStigDisabled",
+			FuncName: "ShouldEnforceUbuntu2204DisaStig",
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{}
 				return cs
@@ -1546,11 +1546,11 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 			ExpectedResult: false,
 		},
 		{
-			Name:     "ShouldEnforceUbuntu2004DisaStigEnabled",
-			FuncName: "ShouldEnforceUbuntu2004DisaStig",
+			Name:     "ShouldEnforceUbuntu2204DisaStigEnabled",
+			FuncName: "ShouldEnforceUbuntu2204DisaStig",
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{
-					EnforceUbuntu2004DisaStig: true,
+					EnforceUbuntu2204DisaStig: true,
 				}
 				return cs
 			},

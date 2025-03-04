@@ -415,7 +415,7 @@ func getDefaultContainerService() *ContainerService {
 				EnableCSERunInBackground:  true,
 				BlockOutboundInternet:     false,
 				EnableTelemetry:           false,
-				EnforceUbuntu2004DisaStig: false,
+				EnforceUbuntuDisaStig:     false,
 				EnforceKubernetesDisaStig: false,
 			},
 			AADProfile: &AADProfile{

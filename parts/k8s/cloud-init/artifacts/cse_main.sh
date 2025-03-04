@@ -291,8 +291,8 @@ apt_get_update && unattended_upgrade
     {{- end}}
 {{- end}}
 
-{{- if ShouldEnforceUbuntu2004DisaStig}}
-{{GetUbuntu2004DisaStigScriptFilepath}}
+{{- if ShouldEnforceUbuntuDisaStig}}
+{{GetUbuntu2204DisaStigScriptFilepath}}
 {{- end}}
 
 if [ -f /var/run/reboot-required ]; then

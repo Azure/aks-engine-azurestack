@@ -419,8 +419,8 @@ func (a *Properties) validateMasterProfile(isUpdate bool) error {
 			return errors.Errorf("auditd was enabled for master vms, but an Ubuntu-based distro was not selected")
 		}
 	} else {
-		if a.FeatureFlags.IsEnforceUbuntu2004DisaStigEnabled() && m.Distro != "" && m.IsUbuntu() {
-			return errors.New("AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set")
+		if a.FeatureFlags.IsEnforceUbuntuDisaStigEnabled() && m.Distro != "" && m.IsUbuntu() {
+			return errors.New("AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' or 'EnforceUbuntu2204DisaStig' is set")
 		}
 	}
 
@@ -489,8 +489,8 @@ func (a *Properties) validateAgentPoolProfiles(isUpdate bool) error {
 				return errors.Errorf("You have enabled auditd in agent pool %s, but you did not specify an Ubuntu-based distro", agentPoolProfile.Name)
 			}
 		} else {
-			if a.FeatureFlags.IsEnforceUbuntu2004DisaStigEnabled() && agentPoolProfile.IsUbuntu() {
-				return errors.New("AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' is set")
+			if a.FeatureFlags.IsEnforceUbuntuDisaStigEnabled() && agentPoolProfile.IsUbuntu() {
+				return errors.New("AuditD should be enabled in all Ubuntu-based pools if feature flag 'EnforceUbuntu2004DisaStig' or 'EnforceUbuntu2204DisaStig' is set")
 			}
 		}
 

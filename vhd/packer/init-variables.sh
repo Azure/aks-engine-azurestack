@@ -55,7 +55,7 @@ echo "UBUNTU_SKU set to ${UBUNTU_SKU}"
 UBUNTU_OFFER="UbuntuServer"
 UBUNTU_VER="18.04"
 if [[ "${UBUNTU_SKU}" == "20.04" ]]; then
-	UBUNTU_OFFER="0001-com-ubuntu-server-focal"
+	UBUNTU_OFFER="0001-com-ubuntu-server-jammy"
 	UBUNTU_VER="20_04"
 fi
 

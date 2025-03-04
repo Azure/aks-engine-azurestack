@@ -67,8 +67,8 @@
         },
         {
             "type": "file",
-            "source": "parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2004.sh",
-            "destination": "/home/packer/provision_stig_ubuntu2004.sh"
+            "source": "parts/k8s/cloud-init/artifacts/cse_stig_ubuntu2204.sh",
+            "destination": "/home/packer/provision_stig_ubuntu2204.sh"
         },
         {
             "type": "file",

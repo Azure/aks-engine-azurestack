@@ -517,8 +517,8 @@ func TestGetLogsGetClusterNodeScripts(t *testing.T) {
 		c := tc
 		t.Run(c.name, func(t *testing.T) {
 			if c.isVHD {
-				c.glc.cs.Properties.MasterProfile.Distro = api.AKSUbuntu1604
-				c.glc.cs.Properties.AgentPoolProfiles[0].Distro = api.AKSUbuntu1604
+				c.glc.cs.Properties.MasterProfile.Distro = api.AKSUbuntu2204
+				c.glc.cs.Properties.AgentPoolProfiles[0].Distro = api.AKSUbuntu2204
 				c.glc.cs.Properties.WindowsProfile = api.GetK8sDefaultProperties(c.isVHD).WindowsProfile
 				c.glc.cs.Properties.WindowsProfile.WindowsPublisher = api.AKSWindowsServer2019OSImageConfig.ImagePublisher
 				c.glc.cs.Properties.WindowsProfile.WindowsOffer = api.AKSWindowsServer2019OSImageConfig.ImageOffer
