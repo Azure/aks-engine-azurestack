@@ -6,10 +6,10 @@ Microsoft maintains a fork of the Kubernetes project at https://github.com/Azure
 
 ## Azure Pipelines Does the Work
 
-When a new release of Kubernetes is finalized, Microsoft builds it and makes its artifacts available in Azure storage under `https://kubernetesartifacts.azureedge.net/kubernetes/`.
+When a new release of Kubernetes is finalized, Microsoft builds it and makes its artifacts available in Azure storage under `https://packages.aks.azure.com/kubernetes/`.
 
 There are no build tasks for AKS Engine maintainers to perform. Just ensure Microsoft's build pipeline finishes, then validate that the Windows Kubernetes binaries were packaged for AKS Engine. The Windows archive will be named like this:
 
-`https://kubernetesartifacts.azureedge.net/kubernetes/v1.17.2/windowszip/v1.17.2-1int.zip`
+`https://packages.aks.azure.com/kubernetes/v1.17.2/windowszip/v1.17.2-1int.zip`
 
 Don't forget to update the Windows VHD with this archive name in the pull request for the new Kubernetes release.
