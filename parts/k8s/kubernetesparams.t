@@ -324,15 +324,15 @@
       "type": "string"
     },
     "cniPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/cni-plugins/v0.7.6/binaries/cni-plugins-amd64-v0.7.6.tgz",
+      "defaultValue": "https://packages.aks.azure.com/cni-plugins/v0.7.6/binaries/cni-plugins-amd64-v0.7.6.tgz",
       "type": "string"
     },
     "vnetCniLinuxPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/azure-cni/v1.0.30/binaries/azure-vnet-cni-linux-amd64-v1.0.30.tgz",
+      "defaultValue": "https://packages.aks.azure.com/azure-cni/v1.0.30/binaries/azure-vnet-cni-linux-amd64-v1.0.30.tgz",
       "type": "string"
     },
     "vnetCniWindowsPluginsURL": {
-      "defaultValue": "https://kubernetesartifacts.azureedge.net/azure-cni/v1.0.30/binaries/azure-vnet-cni-windows-amd64-v1.0.30.zip",
+      "defaultValue": "https://packages.aks.azure.com/azure-cni/v1.0.30/binaries/azure-vnet-cni-windows-amd64-v1.0.30.zip",
       "type": "string"
     },
     "maxPods": {
