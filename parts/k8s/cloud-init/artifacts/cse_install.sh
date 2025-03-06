@@ -146,7 +146,7 @@ downloadAzureCNI() {
 ensureAPMZ() {
   local ver=$1 v
   local d="$APMZ_DL_DIR/$ver"
-  local url="https://packages.aks.azure.com/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
+  local url="https://upstreamartifacts.azureedge.net/apmz/$ver/binaries/apmz_linux_amd64.tar.gz" fp="/usr/local/bin/apmz" dest="$d/apmz.gz" bin_fp="$d/apmz_linux_amd64"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
     fp="/opt/bin/apmz"
     export PATH="${PATH}:/opt/bin"
@@ -165,7 +165,7 @@ ensureAPMZ() {
 }
 installBpftrace() {
   local ver="v0.9.4" v bin="bpftrace" tools="bpftrace-tools.tar"
-  local url="https://packages.aks.azure.com/$bin/$ver"
+  local url="https://upstreamartifacts.azureedge.net/$bin/$ver"
   local bpftrace_fp="/usr/local/bin/$bin"
   local tools_fp="/usr/local/share/$bin"
   if [[ $OS == $FLATCAR_OS_NAME ]]; then
