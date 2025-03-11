@@ -109,12 +109,6 @@
                 },
                 "customize": [
                     {
-                        "type": "File",
-                        "name": "download signedscripts",
-                        "sourceUri": "[concat('https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip?', parameters('artifacts_token'))]",
-                        "destination":"c:\\akse-cache\\signedscripts-v0.0.18.zip"
-                    },
-                    {
                         "type": "PowerShell",
                         "name": "configure-windows-vhd-phase1",
                         "runElevated": true,
