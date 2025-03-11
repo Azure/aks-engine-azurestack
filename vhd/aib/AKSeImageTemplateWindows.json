@@ -108,7 +108,7 @@
                     {
                         "type": "File",
                         "name": "download signedscripts",
-                        "sourceUri": "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip",
+                        "sourceUri": "https://akseartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip",
                         "destination":"c:\\akse-cache\\signedscripts-v0.0.18.zip"
                     },
                     {
