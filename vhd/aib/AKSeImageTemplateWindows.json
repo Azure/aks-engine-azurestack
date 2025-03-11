@@ -69,6 +69,9 @@
         },
         "git_version": {
             "type": "string"
+        },
+        "artifacts_token": {
+            "type": "string"
         }
     },
     "resources": [
@@ -108,7 +111,7 @@
                     {
                         "type": "File",
                         "name": "download signedscripts",
-                        "sourceUri": "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip",
+                        "sourceUri": "[uri('https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip?', parameters('artifacts_token'))]",
                         "destination":"c:\\akse-cache\\signedscripts-v0.0.18.zip"
                     },
                     {
