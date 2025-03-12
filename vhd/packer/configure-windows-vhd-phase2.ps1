@@ -26,8 +26,8 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes/pause:1.4.1",
         "mcr.microsoft.com/oss/kubernetes/pause:3.4.1",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.28.5",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.29.9",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.8",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.10.0-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.26.5",
@@ -36,6 +36,8 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.28.3-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.30.9",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.30.9-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.4.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.6.2",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
@@ -85,8 +87,8 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.28.15/windowszip/v1.28.15-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip"
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip",
+            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
