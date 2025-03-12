@@ -1550,7 +1550,7 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 			FuncName: "ShouldEnforceUbuntu2204DisaStig",
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{
-					EnforceUbuntuDisaStig: true,
+					EnforceUbuntu2204DisaStig: true,
 				}
 				return cs
 			},
