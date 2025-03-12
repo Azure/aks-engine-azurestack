@@ -202,8 +202,8 @@ loadContainerImage ${BUSYBOX_IMAGE}
 echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
+1.30.10
 1.29.10
-1.28.15
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -217,8 +217,8 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
+1.30.7
 1.29.8
-1.28.5
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
@@ -228,8 +228,8 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
+1.30.8
 1.29.9
-1.28.5
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
@@ -242,6 +242,7 @@ AZUREDISK_CSI_VERSIONS="
 1.26.5
 1.28.3
 1.29.1
+1.30.9
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"

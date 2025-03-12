@@ -102,6 +102,22 @@ func getDefaultImage(image, kubernetesImageBaseType string) string {
 // The map supports GCR or MCR image string flavors
 var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string{
 	common.KubernetesImageBaseTypeGCR: {
+		"1.30": {
+			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v3.5.0",
+			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.3.0",
+			common.CSILivenessProbeContainerName:              "oss/kubernetes-csi/livenessprobe:v2.10.0",
+			common.CSILivenessProbeWindowsContainerName:       "oss/kubernetes-csi/livenessprobe:v2.10.0",
+			common.CSINodeDriverRegistrarContainerName:        "oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
+			common.CSINodeDriverRegistrarWindowsContainerName: "oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
+			common.CSISnapshotterContainerName:                "oss/kubernetes-csi/csi-snapshotter:v6.2.2",
+			common.CSISnapshotControllerContainerName:         "oss/kubernetes-csi/snapshot-controller:v6.2.2",
+			common.CSIResizerContainerName:                    "oss/kubernetes-csi/csi-resizer:v1.8.0",
+			common.CSIAzureDiskContainerName:                  "oss/kubernetes-csi/azuredisk-csi:v1.30.9",
+			common.AddonResizerComponentName:                  "addon-resizer:1.8.7",
+			common.MetricsServerAddonName:                     "metrics-server/metrics-server:v0.5.0",
+			common.AddonManagerComponentName:                  "kube-addon-manager-amd64:v9.1.6",
+			common.ClusterAutoscalerAddonName:                 "cluster-autoscaler:v1.18.0",
+		},
 		"1.29": {
 			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v3.5.0",
 			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.3.0",
