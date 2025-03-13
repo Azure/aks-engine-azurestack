@@ -517,7 +517,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate DISA Ubuntu 22.04 STIG", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
-			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2204DisaStig {
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntuDisaStig {
 				nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
 				Expect(err).NotTo(HaveOccurred())
 				STIGFilesValidateScript := "stig-validate.sh"
@@ -536,7 +536,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					}
 				}
 			} else {
-				Skip("Skip as feature flag EnforceUbuntu2204DisaStig is not set")
+				Skip("Skip as feature flag EnforceUbuntuDisaStig is not set")
 			}
 		})
 
@@ -597,8 +597,8 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 		It("should validate that every linux node has the right sshd config", func() {
 			if cfg.BlockSSHPort {
 				Skip("SSH port is blocked")
-			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2204DisaStig {
-				Skip("Skip as feature flag EnforceUbuntu2204DisaStig is set")
+			} else if eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntuDisaStig {
+				Skip("Skip as feature flag EnforceUbuntuDisaStig is set")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
 					nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
@@ -630,7 +630,7 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Skip("SSH port is blocked")
 			} else if !eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
 				if eng.ExpandedDefinition.Properties.IsVHDDistroForAllNodes() {
-					enforceStig := eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntu2204DisaStig
+					enforceStig := eng.ExpandedDefinition.Properties.FeatureFlags != nil && eng.ExpandedDefinition.Properties.FeatureFlags.EnforceUbuntuDisaStig
 					args := fmt.Sprintf("STIG=%t", enforceStig)
 
 					nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)

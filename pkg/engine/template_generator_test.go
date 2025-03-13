@@ -1538,7 +1538,7 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 		},
 		{
 			Name:     "ShouldEnforceUbuntu2204DisaStigDisabled",
-			FuncName: "ShouldEnforceUbuntu2204DisaStig",
+			FuncName: "ShouldEnforceUbuntuDisaStig",
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{}
 				return cs
@@ -1547,10 +1547,10 @@ func TestTemplateGenerator_FunctionMap(t *testing.T) {
 		},
 		{
 			Name:     "ShouldEnforceUbuntu2204DisaStigEnabled",
-			FuncName: "ShouldEnforceUbuntu2204DisaStig",
+			FuncName: "ShouldEnforceUbuntuDisaStig",
 			MutateFunc: func(cs api.ContainerService) api.ContainerService {
 				cs.Properties.FeatureFlags = &api.FeatureFlags{
-					EnforceUbuntu2204DisaStig: true,
+					EnforceUbuntuDisaStig: true,
 				}
 				return cs
 			},
