@@ -83,14 +83,14 @@ function Get-FilesToCacheOnVHD {
             $global:containerdPackageUrl
         );
         "c:\akse-cache\csi-proxy\"    = @(
-            "https://kubernetesartifacts.azureedge.net/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
+            "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.28.15/windowszip/v1.28.15-1int.zip",
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.28.15/windowszip/v1.28.15-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
-            "https://kubernetesartifacts.azureedge.net/azure-cni/v1.4.32/binaries/azure-vnet-cni-singletenancy-windows-amd64-v1.4.32.zip"
+            "https://packages.aks.azure.com/azure-cni/v1.4.32/binaries/azure-vnet-cni-singletenancy-windows-amd64-v1.4.32.zip"
         )
     }
 
