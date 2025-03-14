@@ -28,10 +28,17 @@ configureAzureStackInterfaces() {
     exit 120
   fi
 
+  echo "curl networkInterfaces"
+  curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
+    -H "Authorization: Bearer $TOKEN" \
+    -H "Content-Type: application/json" \
+    "${RESOURCE_MANAGER_ENDPOINT}subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Network/networkInterfaces?api-version=$NETWORK_API_VERSION"
   curl -s --retry 5 --retry-delay 10 --max-time 60 -f -X GET \
     -H "Authorization: Bearer $TOKEN" \
     -H "Content-Type: application/json" \
     "${RESOURCE_MANAGER_ENDPOINT}subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP/providers/Microsoft.Network/networkInterfaces?api-version=$NETWORK_API_VERSION" >${NETWORK_INTERFACES_FILE}
+  echo "cat ${NETWORK_INTERFACES_FILE}"
+  cat ${NETWORK_INTERFACES_FILE}
 
   if [[ ! -s ${NETWORK_INTERFACES_FILE} ]]; then
     echo "Error fetching network interface configuration for node"
