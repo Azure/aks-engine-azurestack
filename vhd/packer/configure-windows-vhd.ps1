@@ -186,6 +186,9 @@ function Install-Docker {
 
 function Install-OpenSSH {
     Write-Log "Installing OpenSSH Server"
+    # Somehow openssh client got added to Windows 2019 base image. 
+    # Remove openssh client in order to install the server.
+    Remove-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
     Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
 }
 
