@@ -77,7 +77,7 @@ var (
 		WindowsTelemetryGUID:                 "fb801154-36b9-41bc-89c2-f4d4f05472b0",
 		CNIPluginsDownloadURL:                "https://packages.aks.azure.com/cni-plugins/" + CNIPluginVer + "/binaries/cni-plugins-linux-amd64-" + CNIPluginVer + ".tgz",
 		VnetCNILinuxPluginsDownloadURL:       "https://packages.aks.azure.com/azure-cni/" + AzureCniPluginVerLinux + "/binaries/azure-vnet-cni-linux-amd64-" + AzureCniPluginVerLinux + ".tgz",
-		VnetCNIWindowsPluginsDownloadURL:     "https://packages.aks.azure.com/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-singletenancy-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
+		VnetCNIWindowsPluginsDownloadURL:     "https://packages.aks.azure.com/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
 		ContainerdDownloadURLBase:            "https://storage.googleapis.com/cri-containerd-release/",
 		CSIProxyDownloadURL:                  "https://packages.aks.azure.com/csi-proxy/" + DefaultWindowsCsiProxyVersion + "/binaries/csi-proxy-" + DefaultWindowsCsiProxyVersion + ".tar.gz",
 		WindowsProvisioningScriptsPackageURL: "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",
@@ -164,7 +164,7 @@ var (
 		ImageOffer:     "aks",
 		ImageSku:       "aks-engine-azurestack-ubuntu-2204",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "2024.032.1",
+		ImageVersion:   "2025.073.1",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
@@ -181,7 +181,7 @@ var (
 		ImageOffer:     "aks-windows",
 		ImageSku:       "2019-datacenter-core-azurestack-ctrd",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.6414.20243111",
+		ImageVersion:   "17763.7009.20250731",
 	}
 
 	// WindowsServer2019OSImageConfig is the 'vanilla' Windows Server 2019 image
@@ -290,7 +290,7 @@ var (
 			WindowsTelemetryGUID:                 DefaultKubernetesSpecConfig.WindowsTelemetryGUID,
 			CNIPluginsDownloadURL:                "https://mirror.azk8s.cn/kubernetes/containernetworking-plugins/cni-plugins-linux-amd64-" + CNIPluginVer + ".tgz",
 			VnetCNILinuxPluginsDownloadURL:       "https://mirror.azk8s.cn/azure-cni/" + AzureCniPluginVerLinux + "/binaries/azure-vnet-cni-linux-amd64-" + AzureCniPluginVerLinux + ".tgz",
-			VnetCNIWindowsPluginsDownloadURL:     "https://mirror.azk8s.cn/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-singletenancy-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
+			VnetCNIWindowsPluginsDownloadURL:     "https://mirror.azk8s.cn/azure-cni/" + AzureCniPluginVerWindows + "/binaries/azure-vnet-cni-windows-amd64-" + AzureCniPluginVerWindows + ".zip",
 			ContainerdDownloadURLBase:            "https://mirror.azk8s.cn/kubernetes/containerd/",
 			CSIProxyDownloadURL:                  "https://mirror.azk8s.cn/csi-proxy/" + DefaultWindowsCsiProxyVersion + "/binaries/csi-proxy-" + DefaultWindowsCsiProxyVersion + ".tar.gz",
 			WindowsProvisioningScriptsPackageURL: "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-" + DefaultWindowsProvisioningScriptsPackageVersion + ".zip",

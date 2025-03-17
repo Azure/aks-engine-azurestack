@@ -6234,7 +6234,7 @@ spec:
       - name: xtables-lock
         hostPath:
           path: /run/xtables.lock
-          type: File
+          type: FileOrCreate
       - name: protocols
         hostPath:
           path: /etc/protocols
@@ -6272,20 +6272,19 @@ data:
         "ResyncPeriodInMinutes":       15,
         "ListeningPort":               10091,
         "ListeningAddress":            "0.0.0.0",
-        "ApplyMaxBatches":             100,
-        "ApplyIntervalInMilliseconds": 500,
-        "MaxBatchedACLsPerPod":        30,
         "Toggles": {
             "EnablePrometheusMetrics": true,
             "EnablePprof":             true,
             "EnableHTTPDebugAPI":      true,
-            "EnableV2NPM":             true,
-            "PlaceAzureChainFirst":    true,
-            "ApplyIPSetsOnNeed":       false,
-            "ApplyInBackground":       true
+            "EnableV2NPM":             false,
+            "PlaceAzureChainFirst":    false
+        },
+        "Transport": {
+          "Address": "azure-npm.kube-system.svc.cluster.local",
+          "Port": 10092,
+          "ServicePort": 9001
         }
-    }
-`)
+    }`)
 
 func k8sAddonsAzureNetworkPolicyYamlBytes() ([]byte, error) {
 	return _k8sAddonsAzureNetworkPolicyYaml, nil
@@ -13130,6 +13129,7 @@ spec:
         name: etc-kubernetes
       - hostPath:
           path: /run/xtables.lock
+          type: FileOrCreate
         name: iptableslock
       - hostPath:
           path: /lib/modules/
