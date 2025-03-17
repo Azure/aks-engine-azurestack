@@ -12,8 +12,6 @@ $ErrorActionPreference = "Stop"
 
 filter Timestamp { "$(Get-Date -Format o): $_" }
 
-$global:containerdPackageUrl = "https://mobyartifacts.azureedge.net/moby/moby-containerd/1.6.36+azure/windows/windows_amd64/moby-containerd-1.6.36+azure-u1.amd64.zip"
-
 function Write-Log($Message) {
     $msg = $message | Timestamp
     Write-Output $msg
