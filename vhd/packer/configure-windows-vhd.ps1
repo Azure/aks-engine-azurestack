@@ -115,21 +115,20 @@ function Get-FilesToCacheOnVHD {
             "https://github.com/Microsoft/SDN/raw/master/Kubernetes/windows/debug/VFP.psm1",
             "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/helper.psm1",
             "https://github.com/microsoft/SDN/raw/master/Kubernetes/windows/hns.v2.psm1"
-            "https://globalcdn.nuget.org/packages/microsoft.applicationinsights.2.11.0.nupkg",
-            "https://akseashartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip"
+            "https://globalcdn.nuget.org/packages/microsoft.applicationinsights.2.11.0.nupkg"
         );
         "c:\akse-cache\containerd\"   = @(
             $global:containerdPackageUrl
         );
         "c:\akse-cache\csi-proxy\"    = @(
-            "https://kubernetesartifacts.azureedge.net/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
+            "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.28.15/windowszip/v1.28.15-1int.zip",
-            "https://kubernetesartifacts.azureedge.net/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.28.15/windowszip/v1.28.15-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
-            "https://kubernetesartifacts.azureedge.net/azure-cni/v1.4.32/binaries/azure-vnet-cni-singletenancy-windows-amd64-v1.4.32.zip"
+            "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
         )
     }
 

@@ -117,6 +117,7 @@ spec:
         name: etc-kubernetes
       - hostPath:
           path: /run/xtables.lock
+          type: FileOrCreate
         name: iptableslock
       - hostPath:
           path: /lib/modules/

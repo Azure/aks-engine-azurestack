@@ -92,7 +92,7 @@ installEtcd "docker"
 echo "  - etcd v${ETCD_VERSION}" >> ${VHD_LOGS_FILEPATH}
 
 VNET_CNI_VERSIONS="
-1.4.32
+1.4.59
 "
 for VNET_CNI_VERSION in $VNET_CNI_VERSIONS; do
     VNET_CNI_PLUGINS_URL="https://packages.aks.azure.com/azure-cni/v${VNET_CNI_VERSION}/binaries/azure-vnet-cni-linux-amd64-v${VNET_CNI_VERSION}.tgz"
@@ -164,7 +164,7 @@ done
 
 AZURE_CNIIMAGEBASE="mcr.microsoft.com/containernetworking"
 AZURE_NPM_VERSIONS="
-1.4.32
+1.4.59
 "
 for AZURE_NPM_VERSION in ${AZURE_NPM_VERSIONS}; do
     CONTAINER_IMAGE="${AZURE_CNIIMAGEBASE}/azure-npm:v${AZURE_NPM_VERSION}"
