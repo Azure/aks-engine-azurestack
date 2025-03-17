@@ -65,9 +65,11 @@ function Get-ContainerImages {
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.4.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.6.2",
                 "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
+                "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.5.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.8.0",
                 "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.10.0",
+                "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
                 "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
         }
         '2004' {
