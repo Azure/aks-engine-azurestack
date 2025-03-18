@@ -265,7 +265,7 @@ func (cs *ContainerService) setControllerManagerConfig() {
 
 		// Remove --feature-gate CSIMigrationAzureFile  starting with 1.30
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122576
-		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationAzureFile ")
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationAzureFile")
 
 		// Remove --feature-gate ExpandedDNSConfig starting with 1.30
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122086
