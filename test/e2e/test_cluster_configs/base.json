@@ -60,8 +60,7 @@
 			"kubernetesConfig": {
 				"kubeletConfig": {
 					"--cloud-provider": "",
-					"--cloud-config": "",
-					"--azure-container-registry-config": ""
+					"--cloud-config": ""
 				}
 			}
 		},

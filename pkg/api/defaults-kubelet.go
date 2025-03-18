@@ -65,7 +65,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
-	staticWindowsKubeletConfig["--azure-container-registry-config"] = "c:\\k\\azure.json"
 	staticWindowsKubeletConfig["--pod-infra-container-image"] = "kubletwin/pause"
 	staticWindowsKubeletConfig["--kubeconfig"] = "c:\\k\\config"
 	staticWindowsKubeletConfig["--cloud-config"] = "c:\\k\\azure.json"
@@ -95,7 +94,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--non-masquerade-cidr":               DefaultNonMasqueradeCIDR,
 		"--cloud-provider":                    "azure",
 		"--cloud-config":                      "/etc/kubernetes/azure.json",
-		"--azure-container-registry-config":   "/etc/kubernetes/azure.json",
 		"--event-qps":                         DefaultKubeletEventQPS,
 		"--cadvisor-port":                     DefaultKubeletCadvisorPort,
 		"--pod-max-pids":                      strconv.Itoa(DefaultKubeletPodMaxPIDs),

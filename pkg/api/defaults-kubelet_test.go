@@ -107,7 +107,6 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	delete(expected, "--register-with-taints")
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
-	expected["--azure-container-registry-config"] = "c:\\k\\azure.json"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -172,16 +171,13 @@ func TestKubeletConfigDefaults(t *testing.T) {
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	// TODO test all default overrides
+	// Removed kubelet --azure-container-registry-config deprecated CLI flag
 	overrideVal := "/etc/override"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
-		"--azure-container-registry-config": overrideVal,
-	}
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key, val := range map[string]string{"--azure-container-registry-config": overrideVal} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
+	for key := range map[string]string{"--azure-container-registry-config": overrideVal} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--azure-container-registry-config' kubelet config value")
 		}
 	}
 
@@ -206,7 +202,6 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--anonymous-auth":                    "false",
 		"--authorization-mode":                "Webhook",
 		"--authentication-token-webhook":      "true",
-		"--azure-container-registry-config":   "/etc/kubernetes/azure.json",
 		"--cadvisor-port":                     "", // Validate that we delete this key for >= 1.12 clusters
 		"--cgroups-per-qos":                   "true",
 		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
@@ -262,7 +257,6 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--anonymous-auth":                    "false",
 		"--authentication-token-webhook":      "true",
 		"--authorization-mode":                "Webhook",
-		"--azure-container-registry-config":   "/etc/kubernetes/azure.json",
 		"--cadvisor-port":                     "", // Validate that we delete this key for >= 1.12 clusters
 		"--cgroups-per-qos":                   "true",
 		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
@@ -321,7 +315,6 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	}
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
-	expected["--azure-container-registry-config"] = "c:\\k\\azure.json"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -365,16 +358,13 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	// TODO test all default overrides
+	// Removed kubelet --azure-container-registry-config deprecated CLI flag
 	overrideVal := "/etc/override"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
-		"--azure-container-registry-config": overrideVal,
-	}
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key, val := range map[string]string{"--azure-container-registry-config": overrideVal} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
+	for key := range map[string]string{"--azure-container-registry-config": overrideVal} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--azure-container-registry-config' kubelet config value")
 		}
 	}
 
@@ -466,26 +456,6 @@ func TestKubeletConfigCloudConfig(t *testing.T) {
 	if k["--cloud-config"] != "custom.json" {
 		t.Fatalf("got unexpected '--cloud-config' kubelet config default value: %s",
 			k["--cloud-config"])
-	}
-}
-
-func TestKubeletConfigAzureContainerRegistryConfig(t *testing.T) {
-	// Test default value and custom value for --azure-container-registry-config
-	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.setKubeletConfig(false)
-	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--azure-container-registry-config"] != "/etc/kubernetes/azure.json" {
-		t.Fatalf("got unexpected '--azure-container-registry-config' kubelet config default value: %s",
-			k["--azure-container-registry-config"])
-	}
-
-	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--azure-container-registry-config"] = "custom.json"
-	cs.setKubeletConfig(false)
-	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--azure-container-registry-config"] != "custom.json" {
-		t.Fatalf("got unexpected '--azure-container-registry-config' kubelet config default value: %s",
-			k["--azure-container-registry-config"])
 	}
 }
 
@@ -893,7 +863,6 @@ func TestStaticWindowsConfig(t *testing.T) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
-	expected["--azure-container-registry-config"] = "c:\\k\\azure.json"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"

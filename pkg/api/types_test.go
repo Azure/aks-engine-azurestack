@@ -493,9 +493,8 @@ func TestRequiresCloudproviderConfig(t *testing.T) {
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider":                  "azure",
-						"--cloud-config":                    "",
-						"--azure-container-registry-config": "",
+						"--cloud-provider": "azure",
+						"--cloud-config":   "",
 					},
 				},
 			},
@@ -506,35 +505,20 @@ func TestRequiresCloudproviderConfig(t *testing.T) {
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider":                  "",
-						"--cloud-config":                    "/etc/kubernetes/azure.json",
-						"--azure-container-registry-config": "",
+						"--cloud-provider": "",
+						"--cloud-config":   "/etc/kubernetes/azure.json",
 					},
 				},
 			},
 			expected: true,
 		},
 		{
-			name: "--azure-container-registry-config provided",
+			name: "all flags set explicitly to empty string",
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider":                  "",
-						"--cloud-config":                    "",
-						"--azure-container-registry-config": "/etc/kubernetes/azure.json",
-					},
-				},
-			},
-			expected: true,
-		},
-		{
-			name: "all 3 flags set explicitly to empty string",
-			ap: AgentPoolProfile{
-				KubernetesConfig: &KubernetesConfig{
-					KubeletConfig: map[string]string{
-						"--cloud-provider":                  "",
-						"--cloud-config":                    "",
-						"--azure-container-registry-config": "",
+						"--cloud-provider": "",
+						"--cloud-config":   "",
 					},
 				},
 			},
