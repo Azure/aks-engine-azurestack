@@ -136,6 +136,55 @@ func (cs *ContainerService) setSchedulerConfig() {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/120861
 		invalidFeatureGates = append(invalidFeatureGates, "RetroactiveDefaultStorageClass")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.30.0") {
+		// Remove --feature-gate KubeletPodResources starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122139
+		invalidFeatureGates = append(invalidFeatureGates, "KubeletPodResources")
+
+		// Remove --feature-gate KubeletPodResourcesGetAllocatable starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122138
+		invalidFeatureGates = append(invalidFeatureGates, "KubeletPodResourcesGetAllocatable")
+
+		// Remove --feature-gate LegacyServiceAccountTokenTracking starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122409
+		invalidFeatureGates = append(invalidFeatureGates, "LegacyServiceAccountTokenTracking")
+
+		// Remove --feature-gate MinimizeIPTablesRestore starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122136
+		invalidFeatureGates = append(invalidFeatureGates, "MinimizeIPTablesRestore")
+
+		// Remove --feature-gate ProxyTerminatingEndpoints starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122134
+		invalidFeatureGates = append(invalidFeatureGates, "ProxyTerminatingEndpoints")
+
+		// Remove --feature-gate RemoveSelfLink starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122468
+		invalidFeatureGates = append(invalidFeatureGates, "RemoveSelfLink")
+
+		// Remove --feature-gate SecurityContextDeny starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122612
+		invalidFeatureGates = append(invalidFeatureGates, "SecurityContextDeny")
+
+		// Remove --feature-gate APISelfSubjectReview starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122032
+		invalidFeatureGates = append(invalidFeatureGates, "APISelfSubjectReview")
+
+		// Remove --feature-gate CSIMigrationAzureFile  starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122576
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationAzureFile")
+
+		// Remove --feature-gate ExpandedDNSConfig starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122086
+		invalidFeatureGates = append(invalidFeatureGates, "ExpandedDNSConfig")
+
+		// Remove --feature-gate ExperimentalHostUserNamespaceDefaulting starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122088
+		invalidFeatureGates = append(invalidFeatureGates, "ExperimentalHostUserNamespaceDefaulting")
+
+		// Remove --feature-gate IPTablesOwnershipCleanup starting with 1.30
+		// Reference: https://github.com/kubernetes/kubernetes/pull/122137
+		invalidFeatureGates = append(invalidFeatureGates, "IPTablesOwnershipCleanup")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.SchedulerConfig, invalidFeatureGates)
 
 	// Replace the flag names
