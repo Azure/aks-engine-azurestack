@@ -89,7 +89,7 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.29.10/windowszip/v1.29.10-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip",
             "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
