@@ -65,7 +65,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
-	staticWindowsKubeletConfig["--azure-container-registry-config"] = "c:\\k\\azure.json"
 	staticWindowsKubeletConfig["--pod-infra-container-image"] = "kubletwin/pause"
 	staticWindowsKubeletConfig["--kubeconfig"] = "c:\\k\\config"
 	staticWindowsKubeletConfig["--cloud-config"] = "c:\\k\\azure.json"
@@ -95,7 +94,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--non-masquerade-cidr":               DefaultNonMasqueradeCIDR,
 		"--cloud-provider":                    "azure",
 		"--cloud-config":                      "/etc/kubernetes/azure.json",
-		"--azure-container-registry-config":   "/etc/kubernetes/azure.json",
 		"--event-qps":                         DefaultKubeletEventQPS,
 		"--cadvisor-port":                     DefaultKubeletCadvisorPort,
 		"--pod-max-pids":                      strconv.Itoa(DefaultKubeletPodMaxPIDs),
@@ -443,6 +441,13 @@ func removeKubeletFlags(k map[string]string, v string) {
 	// Get rid of values not supported in v1.27 and up
 	if common.IsKubernetesVersionGe(v, "1.27.0") {
 		for _, key := range []string{"--master-service-namespace", "--container-runtime"} {
+			delete(k, key)
+		}
+	}
+
+	// Get rid of values not supported in v1.30 and up
+	if common.IsKubernetesVersionGe(v, "1.30.0") {
+		for _, key := range []string{"--azure-container-registry-config"} {
 			delete(k, key)
 		}
 	}

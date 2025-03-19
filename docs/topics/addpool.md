@@ -32,8 +32,7 @@ The above assumes that the new node pool specification is in the current working
 	"kubernetesConfig": {
 			"kubeletConfig": {
 			"--cloud-provider": "",
-			"--cloud-config": "",
-			"--azure-container-registry-config": ""
+			"--cloud-config": ""
 		}
 	}
 }
