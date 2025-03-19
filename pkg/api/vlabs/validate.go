@@ -1360,15 +1360,6 @@ func (k *KubernetesConfig) Validate(k8sVersion string, hasWindows, ipv6DualStack
 		}
 	}
 
-	if k.KubeletConfig != nil {
-		if _, ok := k.KubeletConfig["--azure-container-registry-config"]; ok {
-			if isUpdate {
-				log.Warnf("The azure-container-registry-config flag in kubelet config has been deprecated and disabled, it will be removed during this update")
-			}
-			return errors.Errorf("The azure-container-registry-config flag in kubelet config has been deprecated and disabled, please remove it from your cluster configuration before creating a new cluster")
-		}
-	}
-
 	if _, ok := k.ControllerManagerConfig["--node-monitor-grace-period"]; ok {
 		_, err := time.ParseDuration(k.ControllerManagerConfig["--node-monitor-grace-period"])
 		if err != nil {

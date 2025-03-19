@@ -444,6 +444,13 @@ func removeKubeletFlags(k map[string]string, v string) {
 			delete(k, key)
 		}
 	}
+
+	// Get rid of values not supported in v1.30 and up
+	if common.IsKubernetesVersionGe(v, "1.30.0") {
+		for _, key := range []string{"--azure-container-registry-config"} {
+			delete(k, key)
+		}
+	}
 }
 
 func setMissingKubeletValues(p *KubernetesConfig, d map[string]string) {

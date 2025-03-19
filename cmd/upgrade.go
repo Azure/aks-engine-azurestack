@@ -251,18 +251,6 @@ func (uc *upgradeCmd) loadCluster() error {
 		}
 	}
 
-	// Remove --azure-container-registry-config flag from kubelet config for Kubernetes 1.30+
-	if uc.containerService.Properties.IsAzureStackCloud() && common.IsKubernetesVersionGe(uc.upgradeVersion, "1.30.0") {
-		if _, ok := uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--azure-container-registry-config"]; ok {
-			log.Infoln("The kubelet config flag '--azure-container-registry-config' is no longer supported for v1.30+ clusters, removing it")
-			delete(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig, "--azure-container-registry-config")
-			delete(uc.containerService.Properties.MasterProfile.KubernetesConfig.KubeletConfig, "--azure-container-registry-config")
-			for _, agentPool := range uc.containerService.Properties.AgentPoolProfiles {
-				delete(agentPool.KubernetesConfig.KubeletConfig, "--azure-container-registry-config")
-			}
-		}
-	}
-
 	if uc.containerService.Properties.IsCustomCloudProfile() {
 		if err = writeCustomCloudProfile(uc.containerService); err != nil {
 			return errors.Wrap(err, "error writing custom cloud profile")
