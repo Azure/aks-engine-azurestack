@@ -239,7 +239,7 @@ done
 
 AZUREDISK_CSI_VERSIONS="
 1.29.1
-1.32.0
+1.31.5
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
