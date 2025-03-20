@@ -238,11 +238,8 @@ for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
 done
 
 AZUREDISK_CSI_VERSIONS="
-1.10.0
-1.26.5
-1.28.3
 1.29.1
-1.30.9
+1.32.0
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
@@ -260,10 +257,8 @@ for AZUREFILE_CSI_VERSION in ${AZUREFILE_CSI_VERSIONS}; do
 done
 
 CSI_ATTACHER_VERSIONS="
-4.8.1
+4.8.0
 4.3.0
-4.0.0
-3.3.0
 "
 for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
@@ -274,8 +269,6 @@ done
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
 2.13.0
 2.8.0
-2.6.2
-2.4.0
 "
 for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
@@ -286,8 +279,6 @@ done
 CSI_PROVISIONER_VERSIONS="
 5.2.0
 3.5.0
-3.3.0
-3.0.0
 "
 for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
@@ -298,8 +289,6 @@ done
 LIVENESSPROBE_VERSIONS="
 2.15.0
 2.10.0
-2.8.0
-2.5.0
 "
 for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
@@ -308,10 +297,8 @@ for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
 done
 
 CSI_RESIZER_VERSIONS="
-1.13.2
+1.13.1
 1.8.0
-1.6.0
-1.3.0
 "
 for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
@@ -322,8 +309,6 @@ done
 CSI_SNAPSHOTTER_VERSIONS="
 8.2.0
 6.2.2
-5.0.1
-4.2.1
 "
 for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-snapshotter:v${CSI_SNAPSHOTTER_VERSION}"
@@ -334,8 +319,6 @@ done
 SNAPSHOT_CONTROLLER_VERSIONS="
 8.2.0
 6.2.2
-5.0.1
-4.2.1
 "
 for SNAPSHOT_CONTROLLER_VERSION in ${SNAPSHOT_CONTROLLER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/snapshot-controller:v${SNAPSHOT_CONTROLLER_VERSION}"
