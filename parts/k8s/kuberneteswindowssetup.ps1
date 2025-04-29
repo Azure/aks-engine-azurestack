@@ -135,10 +135,6 @@ $global:NetworkPlugin = "{{WrapAsParameter "networkPlugin"}}"
 $global:VNetCNIPluginsURL = "{{WrapAsParameter "vnetCniWindowsPluginsURL"}}"
 $global:IsDualStackEnabled = {{if IsIPv6DualStackFeatureEnabled}}$true{{else}}$false{{end}}
 
-# Telemetry settings
-$global:EnableTelemetry = "{{WrapAsVariable "enableTelemetry" }}";
-$global:TelemetryKey = "{{WrapAsVariable "applicationInsightsKey" }}";
-
 # CSI Proxy settings
 $global:EnableCsiProxy = [System.Convert]::ToBoolean("{{WrapAsVariable "windowsEnableCSIProxy" }}");
 $global:CsiProxyUrl = "{{WrapAsVariable "windowsCSIProxyURL" }}";
@@ -185,67 +181,19 @@ try
         Write-Log ".\CustomDataSetupScript.ps1 -MasterIP $MasterIP -KubeDnsServiceIp $KubeDnsServiceIp -MasterFQDNPrefix $MasterFQDNPrefix -Location $Location -AgentKey $AgentKey -AADClientId $AADClientId -AADClientSecret $AADClientSecret -NetworkAPIVersion $NetworkAPIVersion -TargetEnvironment $TargetEnvironment"
         Write-Log "Provisioning $global:DockerServiceName... with IP $MasterIP"
 
-        $global:globalTimer = [System.Diagnostics.Stopwatch]::StartNew()
-
-        $configAppInsightsClientTimer = [System.Diagnostics.Stopwatch]::StartNew()
-        # Get app insights binaries and set up app insights client
-        mkdir c:\k\appinsights
-        DownloadFileOverHttp -Url "https://globalcdn.nuget.org/packages/microsoft.applicationinsights.2.11.0.nupkg" -DestinationPath "c:\k\appinsights\microsoft.applicationinsights.2.11.0.zip"
-        Expand-Archive -Path "c:\k\appinsights\microsoft.applicationinsights.2.11.0.zip" -DestinationPath "c:\k\appinsights"
-        $appInsightsDll = "c:\k\appinsights\lib\net46\Microsoft.ApplicationInsights.dll"
-        [Reflection.Assembly]::LoadFile($appInsightsDll)
-        $conf = New-Object "Microsoft.ApplicationInsights.Extensibility.TelemetryConfiguration"
-        $conf.DisableTelemetry = -not $global:enableTelemetry
-        $conf.InstrumentationKey = $global:TelemetryKey
-        $global:AppInsightsClient = New-Object "Microsoft.ApplicationInsights.TelemetryClient"($conf)
-
-        $global:AppInsightsClient.Context.Properties["correlation_id"] = New-Guid
-        $global:AppInsightsClient.Context.Properties["cri"] = $global:ContainerRuntime
-        # TODO: Update once containerd versioning story is decided
-        $global:AppInsightsClient.Context.Properties["cri_version"] = if ($global:ContainerRuntime -eq "docker") { $global:DockerVersion } else { "" }
-        $global:AppInsightsClient.Context.Properties["k8s_version"] = $global:KubeBinariesVersion
-        $global:AppInsightsClient.Context.Properties["lb_sku"] = $global:LoadBalancerSku
-        $global:AppInsightsClient.Context.Properties["location"] = $Location
-        $global:AppInsightsClient.Context.Properties["os_type"] = "windows"
-        $global:AppInsightsClient.Context.Properties["os_version"] = Get-WindowsVersion
-        $global:AppInsightsClient.Context.Properties["network_plugin"] = $global:NetworkPlugin
-        $global:AppInsightsClient.Context.Properties["network_plugin_version"] = Get-CniVersion
-        $global:AppInsightsClient.Context.Properties["network_mode"] = $global:NetworkMode
-        $global:AppInsightsClient.Context.Properties["subscription_id"] = $global:SubscriptionId
-
-        $vhdId = ""
-        if (Test-Path "c:\vhd-id.txt") {
-            $vhdId = Get-Content "c:\vhd-id.txt"
-        }
-        $global:AppInsightsClient.Context.Properties["vhd_id"] = $vhdId
-
-        $imdsProperties = Get-InstanceMetadataServiceTelemetry
-        foreach ($key in $imdsProperties.keys) {
-            $global:AppInsightsClient.Context.Properties[$key] = $imdsProperties[$key]
-        }
-
-        $configAppInsightsClientTimer.Stop()
-        $global:AppInsightsClient.TrackMetric("Config-AppInsightsClient", $configAppInsightsClientTimer.Elapsed.TotalSeconds)
-
         # Install OpenSSH if SSH enabled
         $sshEnabled = [System.Convert]::ToBoolean("{{ WindowsSSHEnabled }}")
 
         if ( $sshEnabled ) {
             Write-Log "Install OpenSSH"
-            $installOpenSSHTimer = [System.Diagnostics.Stopwatch]::StartNew()
             Install-OpenSSH -SSHKeys $SSHKeys
-            $installOpenSSHTimer.Stop()
-            $global:AppInsightsClient.TrackMetric("Install-OpenSSH", $installOpenSSHTimer.Elapsed.TotalSeconds)
         }
 
         Write-Log "Apply telemetry data setting"
         Set-TelemetrySetting -WindowsTelemetryGUID $global:WindowsTelemetryGUID
 
         Write-Log "Resize os drive if possible"
-        $resizeTimer = [System.Diagnostics.Stopwatch]::StartNew()
         Resize-OSDrive
-        $resizeTimer.Stop()
-        $global:AppInsightsClient.TrackMetric("Resize-OSDrive", $resizeTimer.Elapsed.TotalSeconds)
 
         Write-Log "Initialize data disks"
         Initialize-DataDisks
@@ -277,7 +225,6 @@ try
         }
 
         Write-Log "Installing ContainerD"
-        $containerdTimer = [System.Diagnostics.Stopwatch]::StartNew()
         $cniBinPath = $global:AzureCNIBinDir
         $cniConfigPath = $global:AzureCNIConfDir
         if ($global:NetworkPlugin -eq "kubenet") {
@@ -285,8 +232,6 @@ try
             $cniConfigPath = $global:CNIConfigPath
         }
         Install-Containerd -ContainerdUrl $global:ContainerdUrl -CNIBinDir $cniBinPath -CNIConfDir $cniConfigPath -KubeDir $global:KubeDir
-        $containerdTimer.Stop()
-        $global:AppInsightsClient.TrackMetric("Install-ContainerD", $containerdTimer.Elapsed.TotalSeconds)
 
         Write-Log "Write Azure cloud provider config"
         Write-AzureConfig `
@@ -339,10 +284,7 @@ try
          }
 
         Write-Log "Create the Pause Container kubletwin/pause"
-        $infraContainerTimer = [System.Diagnostics.Stopwatch]::StartNew()
         New-InfraContainer -KubeDir $global:KubeDir
-        $infraContainerTimer.Stop()
-        $global:AppInsightsClient.TrackMetric("New-InfraContainer", $infraContainerTimer.Elapsed.TotalSeconds)
 
         if (-not (Test-ContainerImageExists -Image "kubletwin/pause")) {
             Write-Log "Could not find container with name kubletwin/pause"
@@ -481,10 +423,6 @@ try
             Remove-Item $CacheDir -Recurse -Force
         }
 
-        $global:globalTimer.Stop()
-        $global:AppInsightsClient.TrackMetric("TotalDuration", $global:globalTimer.Elapsed.TotalSeconds)
-        $global:AppInsightsClient.Flush()
-
         Write-Log "Setup Complete, reboot computer"
         Restart-Computer
     }
@@ -496,11 +434,6 @@ try
 }
 catch
 {
-    $exceptionTelemtry = New-Object "Microsoft.ApplicationInsights.DataContracts.ExceptionTelemetry"
-    $exceptionTelemtry.Exception = $_.Exception
-    $global:AppInsightsClient.TrackException($exceptionTelemtry)
-    $global:AppInsightsClient.Flush()
-
     Write-Error $_
     throw $_
 }
