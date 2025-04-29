@@ -42,21 +42,11 @@ function DownloadFileOverHttp {
         $oldProgressPreference = $ProgressPreference
         $ProgressPreference = 'SilentlyContinue'
 
-        $downloadTimer = [System.Diagnostics.Stopwatch]::StartNew()
         try {
             $args = @{Uri=$Url; Method="Get"; OutFile=$DestinationPath}
             Retry-Command -Command "Invoke-RestMethod" -Args $args -Retries 5 -RetryDelaySeconds 10
         } catch {
             throw "Fail in downloading $Url. Error: $_"
-        }
-        $downloadTimer.Stop()
-
-        if ($global:AppInsightsClient -ne $null) {
-            $event = New-Object "Microsoft.ApplicationInsights.DataContracts.EventTelemetry"
-            $event.Name = "FileDownload"
-            $event.Properties["FileName"] = $fileName
-            $event.Metrics["DurationMs"] = $downloadTimer.ElapsedMilliseconds
-            $global:AppInsightsClient.TrackEvent($event)
         }
 
         $ProgressPreference = $oldProgressPreference
