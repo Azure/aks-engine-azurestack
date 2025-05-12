@@ -250,28 +250,55 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	// test user-overrides, removal of feature gates for k8s versions >= 1.30
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
-	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	featuregate130 := "APISelfSubjectReview=true,CSIMigrationAzureFile=true,ExpandedDNSConfig=true,ExperimentalHostUserNamespaceDefaulting=true,IPTablesOwnershipCleanup=true,KubeletPodResources=true,KubeletPodResourcesGetAllocatable=true,LegacyServiceAccountTokenTracking=true,MinimizeIPTablesRestore=true,ProxyTerminatingEndpoints=true,RemoveSelfLink=true,SecurityContextDeny=true"
 	cm["--feature-gates"] = featuregate130
 	featuregate130Sanitized := ""
-	cs.setAPIServerConfig()
+	cs.setControllerManagerConfig()
 	if cm["--feature-gates"] != featuregate130Sanitized {
-		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Controller Manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate130, cm["--feature-gates"], featuregate130Sanitized)
 	}
 
 	// test user-overrides, no removal of feature gates for k8s versions < 1.30
 	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.29.0"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
-	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
 	cm["--feature-gates"] = featuregate130
 	featuregate129Sanitized = featuregate130
-	cs.setAPIServerConfig()
+	cs.setControllerManagerConfig()
 	if cm["--feature-gates"] != featuregate129Sanitized {
-		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Controller Manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.29.0", featuregate130, cm["--feature-gates"], featuregate129Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	featuregate131 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	cm["--feature-gates"] = featuregate131
+	featuregate131Sanitized := ""
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != featuregate131Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Controller Manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.31.0", featuregate131, cm["--feature-gates"], featuregate131Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = featuregate131
+	featuregate130Sanitized = featuregate131
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != featuregate130Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Controller Manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.30.0", featuregate131, cm["--feature-gates"], featuregate130Sanitized)
 	}
 }
 
