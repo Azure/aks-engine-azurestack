@@ -42,12 +42,12 @@ Updates default version strings across the codebase.
 
 Removes deprecated feature gates for new version.
 
-- Command: `AddNewVersion feature-gates <version>`
-- Example: `AddNewVersion feature-gates 1.31.8`
+- Command: `AddNewVersion feature-gates <version> <json array of feature gate list>`
+- Example: `AddNewVersion feature-gates 1.31.8 ["Featuregate01", "Featuregate02"]`
 
 ### 4. Feature Gates Unit Tests (`components/04-feature-gates-tests.md`)
 
 Adds tests to verify deprecated feature gates for new version..
 
-- Command: `AddNewVersion feature-gates-tests <version>`
-- Example: `AddNewVersion feature-gates-tests 1.31.8`
+- Command: `AddNewVersion feature-gates-tests <version> <json array of feature gate list>`
+- Example: `AddNewVersion feature-gates-tests 1.31.8 ["Featuregate01", "Featuregate02"]`

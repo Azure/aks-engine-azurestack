@@ -1,5 +1,27 @@
 # Remove Deprecated Kubernetes Feature Gates
 
+## User Interaction Required
+
+Before proceeding, ensure the following information is provided by the user:
+
+1. **Kubernetes Version**
+
+   - The specific Kubernetes version from which the feature gates should be removed.
+
+2. **List of Feature Gates to Remove**
+   - A JSON array containing the names of the feature gates to be removed.
+   - Example: `["FeatureGateA", "FeatureGateB"]`
+
+---
+
+## Input Validation
+
+- **If either the Kubernetes version or the feature gate list is missing, prompt the user to provide the missing information.**
+  - If the Kubernetes version is missing:
+    - _"Please specify the Kubernetes version from which to remove the feature gates."_
+  - If the feature gate list is missing:
+    - _"Please provide a JSON array of feature gates to remove (e.g., [\"FeatureGateA\", \"FeatureGateB\"])."_
+
 ## Objective
 
 Modify the specified Go source files to add logic for removing feature gates that have been deprecated or have become generally available (GA) in the `NEW_VERSION`. This involves appending the names of these feature gates to an `invalidFeatureGates` slice if the cluster's Kubernetes version is `NEW_VERSION`'s `major.minor.0` or newer.
@@ -54,14 +76,6 @@ if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.31.0") {
     invalidFeatureGates = append(invalidFeatureGates, "ValidatingAdmissionPolicy")
 }
 ```
-
-## User Interaction Required
-
-The user must provide:
-
-1. List of feature gates to remove (as JSON array)
-2. Any reference URLs for documentation
-3. Component specificity (if known)
 
 ## Validation Checks
 
