@@ -959,7 +959,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.28.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	featuregate128 := "AdvancedAuditing=true,CSIMigrationGCE=true,CSIStorageCapacity=true,DelegateFSGroupToCSIDriver=true,DevicePlugins=true,DisableAcceleratorUsageMetrics=true,DryRun=true,EndpointSliceTerminatingCondition=true,KubeletCredentialProviders=true,MixedProtocolLBService=true,NetworkPolicyStatus=true,PodHasNetworkCondition=true,PodSecurity=true,ServiceIPStaticSubrange=true,ServiceInternalTrafficPolicy=true,UserNamespacesStatelessPodsSupport=true,WindowsHostProcessContainers=true"
+	featuregate128 := "AdvancedAuditing=true,CSIMigrationGCE=true,CSIStorageCapacity=true,DelegateFSGroupToCSIDriver=true,DevicePlugins=true,DisableAcceleratorUsageMetrics=true,DryRun=true,EndpointSliceTerminatingCondition=true,ExecProbeTimeout=true,KubeletCredentialProviders=true,MixedProtocolLBService=true,NetworkPolicyStatus=true,PodHasNetworkCondition=true,PodSecurity=true,ServiceIPStaticSubrange=true,ServiceInternalTrafficPolicy=true,UserNamespacesStatelessPodsSupport=true,WindowsHostProcessContainers=true"
 	k["--feature-gates"] = featuregate128
 	featuregate128Sanitized := "ExecProbeTimeout=true,RotateKubeletServerCertificate=true"
 	cs.setKubeletConfig(false)
@@ -1033,6 +1033,33 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	if k["--feature-gates"] != featuregate129Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.29.0", featuregate130, k["--feature-gates"], featuregate129Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	featuregate131 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	k["--feature-gates"] = featuregate131
+	featuregate131Sanitized := "ExecProbeTimeout=true,RotateKubeletServerCertificate=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != featuregate131Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.31.0", featuregate131, k["--feature-gates"], featuregate131Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	k["--feature-gates"] = featuregate131
+	featuregate130Sanitized = "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,ExecProbeTimeout=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,RotateKubeletServerCertificate=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != featuregate130Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.30.0", featuregate131, k["--feature-gates"], featuregate130Sanitized)
 	}
 }
 
@@ -1674,7 +1701,6 @@ func TestSupportPodPidsLimitFeatureGateInMasterProfile(t *testing.T) {
 					MasterProfile: &MasterProfile{
 						KubernetesConfig: &KubernetesConfig{
 							KubeletConfig: map[string]string{
-								"--pod-max-pids":  "0",
 								"--feature-gates": "SupportPodPidsLimit=true",
 							},
 						},

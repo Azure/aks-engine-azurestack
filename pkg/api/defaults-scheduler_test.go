@@ -304,4 +304,31 @@ func TestSchedulerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.29.0", featuregate130, s["--feature-gates"], featuregate129Sanitized)
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate131 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	s["--feature-gates"] = featuregate131
+	featuregate131Sanitized := ""
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate131Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.31.0", featuregate131, s["--feature-gates"], featuregate131Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate131
+	featuregate130Sanitized = featuregate131
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != featuregate130Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.30.0", featuregate131, s["--feature-gates"], featuregate130Sanitized)
+	}
 }

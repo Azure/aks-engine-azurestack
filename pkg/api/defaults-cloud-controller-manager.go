@@ -205,6 +205,25 @@ func (cs *ContainerService) setCloudControllerManagerConfig() {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122137
 		invalidFeatureGates = append(invalidFeatureGates, "IPTablesOwnershipCleanup")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.31.0") {
+		// Remove multiple feature gates starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates,
+			"CloudDualStackNodeIPs",
+			"DRAControlPlaneController",
+			"HPAContainerMetrics",
+			"KMSv2",
+			"KMSv2KDF",
+			"LegacyServiceAccountTokenCleanUp",
+			"MinDomainsInPodTopologySpread",
+			"NewVolumeManagerReconstruction",
+			"NodeOutOfServiceVolumeDetach",
+			"PodHostIPs",
+			"ServerSideApply",
+			"ServerSideFieldValidation",
+			"StableLoadBalancerNodeSet",
+			"ValidatingAdmissionPolicy",
+			"ZeroLimitedNominalConcurrencyShares")
+	}
 
 	removeInvalidFeatureGates(o.KubernetesConfig.CloudControllerManagerConfig, invalidFeatureGates)
 
