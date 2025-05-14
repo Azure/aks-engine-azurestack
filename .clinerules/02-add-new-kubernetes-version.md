@@ -51,3 +51,10 @@ Adds tests to verify deprecated feature gates for new version..
 
 - Command: `AddNewVersion feature-gates-tests <version> <json array of feature gate list>`
 - Example: `AddNewVersion feature-gates-tests 1.31.8 ["Featuregate01", "Featuregate02"]`
+
+### 5. Component Versions (`components/05-components-version.md`)
+
+Updates component versions for both GCR and MCR registries.
+
+- Command: `AddNewVersion components <version> <comma-separated component versions>`
+- Example: `AddNewVersion components 1.31 "csi-provisioner=v5.2.0,csi-attacher=v4.8.0"`
