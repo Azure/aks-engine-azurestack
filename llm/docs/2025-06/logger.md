@@ -8,72 +8,60 @@ The logging component is responsible for recording all actions, changes, and err
 
 ## Functional Requirements
 
-### 1. Verbosity Levels
+### Functional Requirements
 
-Use logging library
+**Logging System Integration**:  
+  Implement an application-level logging wrapper that leverages Python’s standard logging library. The wrapper should provide a unified interface for recording actions, changes, and errors throughout the code update workflow. It must support configurable log levels, structured log messages.
 
-- Support the following log levels:
-  - `DEBUG`: Detailed information for diagnosing problems.
-  - `INFO`: Confirmation that things are working as expected.
-  - `WARNING`: Indication of unexpected events or potential issues.
-  - `ERROR`: Serious problems that prevent some functionality.
-- The minimum log level must be configurable at runtime.
-
-### 2. Automatic Contextual Information
+### 1. Automatic Contextual Information
 
 Each log entry must automatically include:
 
 - **Timestamp**: Date and time in ISO 8601 format (UTC).
-- **Source File Name**: Name of the Python file where the logger was called.
+- **Source File Path**: File path of the Python file where the logger was called.
 - **Line Number**: Line number in the source file.
 - **Function Name**: Name of the function or method where the logger was called (if available, otherwise null).
 - **Process ID**: ID of the process (always included).
 - **Thread ID**: ID of the thread (always included).
 - **Host Name**: Name of the host machine (always included).
 
-If any contextual information is unavailable, the field must be present with a null value.
+### 2. Additional Context
 
-### Log Message Format
+- The application must support the inclusion of supplementary context as key-value pairs alongside the main message for each operation.
+- Example context keys include (but are not limited to):
+    - `correlationId`
+    - `operationId`
+    - `httpMethod`
+    - `uri`
+    - `body`
+    - `elapsedTime`
+- The system should allow for flexible extension to accommodate additional context keys as needed.
 
-All log messages must be structured as key-value pairs (`string`, `string`). Each log entry should be serialized as a JSON object before being written to the log, ensuring consistency and facilitating downstream parsing and analysis.
+### 3. Log Entry Format
 
-Each log entry must be output in the following format:
+- Each log entry **must be output as a single JSON object** with the following structure:
 
-`[TIMESTAMP] [LEVEL] [FILENAME:LINENO] [FUNCTION] {"Key1":"Value1", "Key2":"Value2"}`
-
-#### Example
-
-`[2024-06-10T14:23:45.123Z] [INFO] [data_processor.py:42] [UpdateFunctionSnippet] {"correlationId":"abc123-xyz789","operationId":"op456","operationName":"UpdateFunctionSnippet","url":"https://abc.com","body":"request body","message":"Function 'process_data' updated successfully."}`
-
-### 3. Output Destinations
-
-The logger must support configurable output destinations, including:
-
-1. **Standard Output (stdout):**
-
-   - Log messages can be directed to standard output for real-time monitoring or containerized environments.
-
-2. **File Output:**
-   - Log messages can be written to a file on disk.
-   - The logger must implement log file rotation:
-     - Create a new log file when the current file reaches 5 MB in size.
-     - Maintain a maximum total log storage size of 500 MB by deleting or archiving the oldest log files as needed.
-   - File naming should include a timestamp or sequence number to distinguish rotated files.
-   - File permissions must be set appropriately to prevent unauthorized access.
-
-The output destination(s) must be configurable at runtime.
-
-#### Log File Naming Pattern
-
-- Log files should be named using a pattern that includes the date and time to ensure uniqueness and facilitate easy log management.
-- The recommended pattern is:  
-  `appname-YYYYMMDD-HHMMSS.log`
-
-  - `appname`: (Optional) A short identifier for the application or service.
-  - `YYYYMMDD`: 4-digit year, 2-digit month, 2-digit day.
-  - `HHMMSS`: 2-digit hour (24-hour), 2-digit minute, 2-digit second (UTC or local time, specify in documentation).
-
-- Use UTC time for consistency across distributed systems.
-- Avoid spaces and special characters in file names.
-- **Example:**  
-   `codeupdater-20240611-153045.log`
+```json
+{
+  "timestamp": "2024-06-15T14:23:45.123Z",
+  "sourceFilePath": "/app/code_updater/workflows/update_manager.py",
+  "lineNumber": 87,
+  "functionName": "apply_update_template",
+  "processId": 4521,
+  "threadId": 140735218045696,
+  "hostName": "dev-machine-01",
+  "level": "INFO",
+  "message": "Applied update template to function 'process_data' in 'data_utils.py'.",
+  "correlationId": "b7e2c1d0-8f3a-4e2a-9c1a-2e4f5b6c7d8e",
+  "operationId": "update-20240615-001",
+  "httpMethod": "POST",
+  "uri": "/api/v1/code/update",
+  "body": "{\"function\": \"process_data\", \"template\": \"add_logging\"}",
+  "elapsedTime": 0.342,
+  "customKey": "customValue"
+}
+```
+### 4. Default values
+- Set the default logging level to INFO.
+- Set the default logging output to the console.
+- Set the default app name to "code-updator"

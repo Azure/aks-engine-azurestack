@@ -1,6 +1,26 @@
-
+# filepath: /home/honcao/code/akse4/llm/logcore/.coveragerc
 [run]
-omit =
-    **/test_*.py
-    **/tests/**
-    **/conftest.py
+source = .
+branch = True
+omit = 
+    tests.py
+    __init__.py
+    conftest.py
+    example.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    def __str__
+    @abstractmethod
+    @abc.abstractmethod
+    raise NotImplementedError
+    if __name__ == '__main__':
+    pass
+    raise ImportError
+    if TYPE_CHECKING:
+    if typing.TYPE_CHECKING:
+
+[html]
+directory = coverage_html_report

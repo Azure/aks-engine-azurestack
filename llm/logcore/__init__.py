@@ -1,23 +1,10 @@
 """
-Core logging package for the application.
+Logging component for code update workflow.
 
-This package provides a structured logging implementation with configurable
-verbosity levels, automatic contextual information, and multiple output destinations.
+This module provides a unified interface for recording actions, changes,
+and errors throughout the code update workflow.
 """
 
-from .log_level import LogLevel
-from .destinations import LogDestination, StdoutDestination, FileDestination
-from .formatter import StructuredLogFormatter
-from .logger import Logger
-from .config import configure_logger, get_logger
+from .logger import Logger, get_logger, setup_logging
 
-__all__ = [
-    'LogLevel',
-    'LogDestination',
-    'StdoutDestination',
-    'FileDestination',
-    'StructuredLogFormatter',
-    'Logger',
-    'configure_logger',
-    'get_logger',
-]
+__all__ = ["Logger", "get_logger", "setup_logging"]

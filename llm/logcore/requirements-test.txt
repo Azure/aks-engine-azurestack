@@ -1,3 +1,0 @@
-# filepath: c:\one2\akse05\llm\logcore\requirements-test.txt
-pytest>=7.0.0
-pytest-cov>=4.1.0
