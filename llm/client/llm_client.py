@@ -14,7 +14,11 @@ from azure.ai.inference.models import SystemMessage, UserMessage
 from azure.core.credentials import AzureKeyCredential
 from dotenv import load_dotenv
 
-from ..logcore.logger import get_logger
+# Try relative import first, fallback to absolute import
+try:
+    from ..logcore.logger import get_logger
+except (ImportError, ValueError):
+    from logcore.logger import get_logger
 
 # Load environment variables from .env file
 load_dotenv()
