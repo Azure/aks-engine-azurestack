@@ -142,6 +142,7 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 
 	cloudInitFiles := map[string]interface{}{
 		"apiServerAdmissionConfiguration": getBase64EncodedGzippedCustomScript(apiServerAdmissionConfiguration, cs),
+		"imageCredentialProviderConfig":   getBase64EncodedGzippedCustomScript(imageCredentialProviderConfig, cs),
 		"provisionScript":                 getBase64EncodedGzippedCustomScript(kubernetesCSEMainScript, cs),
 		"provisionSource":                 getBase64EncodedGzippedCustomScript(kubernetesCSEHelpersScript, cs),
 		"provisionInstalls":               getBase64EncodedGzippedCustomScript(kubernetesCSEInstall, cs),

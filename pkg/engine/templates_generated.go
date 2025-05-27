@@ -37,6 +37,7 @@
 // ../../parts/k8s/cloud-init/artifacts/apt-preferences
 // ../../parts/k8s/cloud-init/artifacts/auditd-rules
 // ../../parts/k8s/cloud-init/artifacts/cis.sh
+// ../../parts/k8s/cloud-init/artifacts/credential-provider-config.yaml
 // ../../parts/k8s/cloud-init/artifacts/cse_config.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_customcloud.sh
 // ../../parts/k8s/cloud-init/artifacts/cse_helpers.sh
@@ -15498,6 +15499,36 @@ func k8sCloudInitArtifactsCisSh() (*asset, error) {
 	return a, nil
 }
 
+var _k8sCloudInitArtifactsCredentialProviderConfigYaml = []byte(`kind: CredentialProviderConfig
+apiVersion: kubelet.config.k8s.io/v1
+providers:
+  - name: azure-acr-credential-provider
+    apiVersion: credentialprovider.kubelet.k8s.io/v1
+    defaultCacheDuration: 10m
+    matchImages:
+      - "*.azurecr.io"
+      - "*.azurecr.cn"
+      - "*.azurecr.de"
+      - "*.azurecr.us"
+    args:
+      - /etc/kubernetes/azure.json
+`)
+
+func k8sCloudInitArtifactsCredentialProviderConfigYamlBytes() ([]byte, error) {
+	return _k8sCloudInitArtifactsCredentialProviderConfigYaml, nil
+}
+
+func k8sCloudInitArtifactsCredentialProviderConfigYaml() (*asset, error) {
+	bytes, err := k8sCloudInitArtifactsCredentialProviderConfigYamlBytes()
+	if err != nil {
+		return nil, err
+	}
+
+	info := bindataFileInfo{name: "k8s/cloud-init/artifacts/credential-provider-config.yaml", size: 0, mode: os.FileMode(0), modTime: time.Unix(0, 0)}
+	a := &asset{bytes: bytes, info: info}
+	return a, nil
+}
+
 var _k8sCloudInitArtifactsCse_configSh = []byte(`#!/bin/bash
 NODE_INDEX=$(hostname | tail -c 2)
 NODE_NAME=$(hostname)
@@ -19451,6 +19482,15 @@ write_files:
     {{CloudInitData "apiServerAdmissionConfiguration"}}
 {{end}}
 
+{{- if NeedsDefaultImageCredentialProviderConfig}}
+- path: {{GetImageCredentialProviderConfigFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "imageCredentialProviderConfig"}}
+{{end}}
+
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER
 
 MASTER_CUSTOM_FILES_PLACEHOLDER
@@ -20024,6 +20064,15 @@ write_files:
     {{- /* Ensure that container traffic can't connect to internal Azure IP endpoint */}}
     iptables -I FORWARD -d 168.63.129.16 -p tcp --dport 80 -j DROP
     #EOF
+
+{{- if NeedsDefaultImageCredentialProviderConfig}}
+- path: {{GetImageCredentialProviderConfigFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "imageCredentialProviderConfig"}}
+{{end}}
 
 {{- if IsCustomCloudProfile}}
 - path: "/etc/kubernetes/azurestackcloud.json"
@@ -23981,6 +24030,7 @@ var _bindata = map[string]func() (*asset, error){
 	"k8s/cloud-init/artifacts/apt-preferences":                           k8sCloudInitArtifactsAptPreferences,
 	"k8s/cloud-init/artifacts/auditd-rules":                              k8sCloudInitArtifactsAuditdRules,
 	"k8s/cloud-init/artifacts/cis.sh":                                    k8sCloudInitArtifactsCisSh,
+	"k8s/cloud-init/artifacts/credential-provider-config.yaml":           k8sCloudInitArtifactsCredentialProviderConfigYaml,
 	"k8s/cloud-init/artifacts/cse_config.sh":                             k8sCloudInitArtifactsCse_configSh,
 	"k8s/cloud-init/artifacts/cse_customcloud.sh":                        k8sCloudInitArtifactsCse_customcloudSh,
 	"k8s/cloud-init/artifacts/cse_helpers.sh":                            k8sCloudInitArtifactsCse_helpersSh,
@@ -24136,6 +24186,7 @@ var _bintree = &bintree{nil, map[string]*bintree{
 				"apt-preferences":                           {k8sCloudInitArtifactsAptPreferences, map[string]*bintree{}},
 				"auditd-rules":                              {k8sCloudInitArtifactsAuditdRules, map[string]*bintree{}},
 				"cis.sh":                                    {k8sCloudInitArtifactsCisSh, map[string]*bintree{}},
+				"credential-provider-config.yaml":           {k8sCloudInitArtifactsCredentialProviderConfigYaml, map[string]*bintree{}},
 				"cse_config.sh":                             {k8sCloudInitArtifactsCse_configSh, map[string]*bintree{}},
 				"cse_customcloud.sh":                        {k8sCloudInitArtifactsCse_customcloudSh, map[string]*bintree{}},
 				"cse_helpers.sh":                            {k8sCloudInitArtifactsCse_helpersSh, map[string]*bintree{}},

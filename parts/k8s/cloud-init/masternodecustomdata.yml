@@ -407,6 +407,15 @@ write_files:
     {{CloudInitData "apiServerAdmissionConfiguration"}}
 {{end}}
 
+{{- if NeedsDefaultImageCredentialProviderConfig}}
+- path: {{GetImageCredentialProviderConfigFilepath}}
+  permissions: "0644"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "imageCredentialProviderConfig"}}
+{{end}}
+
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER
 
 MASTER_CUSTOM_FILES_PLACEHOLDER

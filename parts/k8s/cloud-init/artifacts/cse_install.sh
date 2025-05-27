@@ -3,6 +3,7 @@
 CNI_CFG_DIR="/etc/cni/net.d"
 CNI_BIN_DIR="/opt/cni/bin"
 CNI_DL_DIR="/opt/cni/downloads"
+ACR_DL_DIR="/opt/acr/downloads"
 CTRD_DL_DIR="/opt/containerd/downloads"
 APMZ_DL_DIR="/opt/apmz/downloads"
 UBUNTU_RELEASE=$(lsb_release -r -s)
@@ -37,7 +38,7 @@ installEtcd() {
   fi
 }
 installDeps() {
-  packages="apt-transport-https ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
+  packages="oras apt-transport-https ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
@@ -142,6 +143,10 @@ downloadAzureCNI() {
   mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
   retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
+}
+downloadACR() {
+  mkdir -p $ACR_DL_DIR
+  retrycmd_get_tarball_oci 120 5 "$CNI_DL_DIR/${ACR_TGZ_TMP}" ${PROVIDER_ARTIFACT} || exit 41
 }
 ensureAPMZ() {
   local ver=$1 v

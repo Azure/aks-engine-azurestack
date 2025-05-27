@@ -107,6 +107,8 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	delete(expected, "--register-with-taints")
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
+	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -171,13 +173,16 @@ func TestKubeletConfigDefaults(t *testing.T) {
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	// TODO test all default overrides
-	// Removed kubelet --azure-container-registry-config deprecated CLI flag
 	overrideVal := "/etc/override"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
+		"--image-credential-provider-config": overrideVal,
+	}
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key := range map[string]string{"--azure-container-registry-config": overrideVal} {
-		if _, ok := k[key]; ok {
-			t.Fatal("got unexpected (removed) '--azure-container-registry-config' kubelet config value")
+	for key, val := range map[string]string{"--image-credential-provider-config": overrideVal} {
+		if k[key] != val {
+			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
+				key, k[key], val)
 		}
 	}
 
@@ -202,6 +207,8 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--anonymous-auth":                    "false",
 		"--authorization-mode":                "Webhook",
 		"--authentication-token-webhook":      "true",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
+		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 		"--cadvisor-port":                     "", // Validate that we delete this key for >= 1.12 clusters
 		"--cgroups-per-qos":                   "true",
 		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
@@ -257,6 +264,8 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--anonymous-auth":                    "false",
 		"--authentication-token-webhook":      "true",
 		"--authorization-mode":                "Webhook",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
+		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 		"--cadvisor-port":                     "", // Validate that we delete this key for >= 1.12 clusters
 		"--cgroups-per-qos":                   "true",
 		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
@@ -315,6 +324,8 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	}
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
+	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -358,13 +369,16 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	// TODO test all default overrides
-	// Removed kubelet --azure-container-registry-config deprecated CLI flag
 	overrideVal := "/etc/override"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
+		"--image-credential-provider-config": overrideVal,
+	}
 	cs.setKubeletConfig(false)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key := range map[string]string{"--azure-container-registry-config": overrideVal} {
-		if _, ok := k[key]; ok {
-			t.Fatal("got unexpected (removed) '--azure-container-registry-config' kubelet config value")
+	for key, val := range map[string]string{"--image-credential-provider-config": overrideVal} {
+		if k[key] != val {
+			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
+				key, k[key], val)
 		}
 	}
 
@@ -456,6 +470,34 @@ func TestKubeletConfigCloudConfig(t *testing.T) {
 	if k["--cloud-config"] != "custom.json" {
 		t.Fatalf("got unexpected '--cloud-config' kubelet config default value: %s",
 			k["--cloud-config"])
+	}
+}
+
+func TestKubeletConfigAzureContainerRegistryConfig(t *testing.T) {
+	// Test default value and custom value for --image-credential-provider-config
+	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.setKubeletConfig(false)
+	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	if k["--image-credential-provider-config"] != "/var/lib/kubelet/credential-provider-config.yaml" {
+		t.Fatalf("got unexpected '--image-credential-provider-config' kubelet config default value: %s",
+			k["--image-credential-provider-config"])
+	}
+	if k["--image-credential-provider-bin-dir"] != "/var/lib/kubelet/credential-provider" {
+		t.Fatalf("got unexpected '--image-credential-provider-bin-dir' kubelet config default value: %s",
+			k["--image-credential-provider-bin-dir"])
+	}
+
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--image-credential-provider-config"] = "custom.json"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	if k["--image-credential-provider-config"] != "custom.json" {
+		t.Fatalf("got unexpected '--image-credential-provider-config' kubelet config default value: %s",
+			k["--image-credential-provider-config"])
+	}
+	if k["--image-credential-provider-bin-dir"] != "/var/lib/kubelet/credential-provider" {
+		t.Fatalf("got unexpected '--image-credential-provider-bin-dir' kubelet config default value: %s",
+			k["--image-credential-provider-bin-dir"])
 	}
 }
 
@@ -863,6 +905,8 @@ func TestStaticWindowsConfig(t *testing.T) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
+	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"

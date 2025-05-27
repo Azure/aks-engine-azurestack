@@ -73,6 +73,19 @@ retrycmd_no_stats() {
       fi
   done
 }
+retrycmd_get_tarball_oci() {
+  oci_retries=$1; wait_sleep=$2; oci=$3; url=$4
+  echo "${oci_retries} retries"
+  for i in $(seq 1 $oci_retries); do
+    tar -tzf $oci && break ||
+      if [ $i -eq $oci_retries ]; then
+        return 1
+      else
+        timeout 60 oras pull $url -o $oci
+        sleep $wait_sleep
+      fi
+  done
+}
 retrycmd_get_tarball() {
   tar_retries=$1; wait_sleep=$2; tarball=$3; url=$4
   echo "${tar_retries} retries"

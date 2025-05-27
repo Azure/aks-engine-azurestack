@@ -751,6 +751,13 @@ version = 2
 		"GetAPIServerAdmissionConfigurationFilepath": func() string {
 			return apiServerAdmissionConfigurationFilepath
 		},
+		"NeedsDefaultImageCredentialProviderConfig": func() bool {
+			configFilePath := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--image-credential-provider-config"]
+			return !containsCustomFile(masterCustomFiles(cs.Properties), configFilePath)
+		},
+		"GetImageCredentialProviderConfigFilepath": func() string {
+			return imageCredentialProviderConfigFilepath
+		},
 		"HasPrivateAzureRegistryServer": func() bool {
 			return cs.Properties.OrchestratorProfile.KubernetesConfig.PrivateAzureRegistryServer != ""
 		},

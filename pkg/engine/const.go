@@ -92,6 +92,7 @@ const (
 	// kubernetesKubeletMonitorSystemdTimer     = "k8s/cloud-init/artifacts/kubelet-monitor.timer" // TODO enable
 	kubernetesKubeletMonitorSystemdService   = "k8s/cloud-init/artifacts/kubelet-monitor.service"
 	apiServerAdmissionConfiguration          = "k8s/cloud-init/artifacts/apiserver-admission-control.yaml"
+	imageCredentialProviderConfig            = "k8s/cloud-init/artifacts/credential-provider-config.yaml"
 	apiserverMonitorSystemdService           = "k8s/cloud-init/artifacts/apiserver-monitor.service"
 	kubernetesDockerMonitorSystemdService    = "k8s/cloud-init/artifacts/docker-monitor.service"
 	etcdMonitorSystemdService                = "k8s/cloud-init/artifacts/etcd-monitor.service"
@@ -118,6 +119,7 @@ const (
 // cloud-init destination file references
 const (
 	apiServerAdmissionConfigurationFilepath    = "/etc/kubernetes/apiserver-admission-control.yaml"
+	imageCredentialProviderConfigFilepath      = "/var/lib/kubelet/credential-provider-config.yaml"
 	customCloudConfigCSEScriptFilepath         = "/opt/azure/containers/provision_configs_custom_cloud.sh"
 	customCloudAzureCNIConfigCSEScriptFilepath = "/opt/azure/containers/provision_azurestack_cni.sh"
 	cseHelpersScriptFilepath                   = "/opt/azure/containers/provision_source.sh"

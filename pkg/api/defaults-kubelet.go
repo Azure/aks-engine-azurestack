@@ -15,20 +15,21 @@ import (
 func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	o := cs.Properties.OrchestratorProfile
 	staticLinuxKubeletConfig := map[string]string{
-		"--address":                     "0.0.0.0",
-		"--allow-privileged":            "true",
-		"--anonymous-auth":              "false",
-		"--authorization-mode":          "Webhook",
-		"--client-ca-file":              "/etc/kubernetes/certs/ca.crt",
-		"--pod-manifest-path":           "/etc/kubernetes/manifests",
-		"--cluster-dns":                 o.KubernetesConfig.DNSServiceIP,
-		"--cgroups-per-qos":             "true",
-		"--kubeconfig":                  "/var/lib/kubelet/kubeconfig",
-		"--keep-terminated-pod-volumes": "false",
-		"--tls-cert-file":               "/etc/kubernetes/certs/kubeletserver.crt",
-		"--tls-private-key-file":        "/etc/kubernetes/certs/kubeletserver.key",
-		"--v":                           "2",
-		"--volume-plugin-dir":           "/etc/kubernetes/volumeplugins",
+		"--address":                           "0.0.0.0",
+		"--allow-privileged":                  "true",
+		"--anonymous-auth":                    "false",
+		"--authorization-mode":                "Webhook",
+		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
+		"--pod-manifest-path":                 "/etc/kubernetes/manifests",
+		"--cluster-dns":                       o.KubernetesConfig.DNSServiceIP,
+		"--cgroups-per-qos":                   "true",
+		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
+		"--keep-terminated-pod-volumes":       "false",
+		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
+		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
+		"--v":                                 "2",
+		"--volume-plugin-dir":                 "/etc/kubernetes/volumeplugins",
+		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 	}
 
 	for key := range staticLinuxKubeletConfig {
@@ -65,6 +66,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
+	staticWindowsKubeletConfig["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
+	staticWindowsKubeletConfig["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
 	staticWindowsKubeletConfig["--pod-infra-container-image"] = "kubletwin/pause"
 	staticWindowsKubeletConfig["--kubeconfig"] = "c:\\k\\config"
 	staticWindowsKubeletConfig["--cloud-config"] = "c:\\k\\azure.json"
@@ -103,6 +106,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
 		"--seccomp-default":                   "true",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
 	}
 
 	// Set --non-masquerade-cidr if ip-masq-agent is disabled on AKS or

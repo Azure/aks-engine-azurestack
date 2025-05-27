@@ -52,6 +52,7 @@ apt packages:
   - ntp
   - ntpstat
   - opensc-pkcs11
+  - oras
   - pigz
   - socat
   - sysstat
@@ -107,6 +108,17 @@ for CNI_PLUGIN_VERSION in $CNI_PLUGIN_VERSIONS; do
     CNI_PLUGINS_URL="https://packages.aks.azure.com/cni-plugins/v${CNI_PLUGIN_VERSION}/binaries/cni-plugins-linux-amd64-v${CNI_PLUGIN_VERSION}.tgz"
     downloadCNI
     echo "  - CNI plugin version ${CNI_PLUGIN_VERSION}" >> ${VHD_LOGS_FILEPATH}
+done
+
+ACR_CREDENTIAL_PROVIDER_VERSIONS="
+1.30.8
+1.29.9
+"
+for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
+    PROVIDER_ARTIFACT="mcr.microsoft.com/oss/binaries/kubernetes/azure-acr-credential-provider:${ACR_CREDENTIAL_PROVIDER_VERSION}-linux-amd64"
+    ACR_TGZ_TMP="azure-acr-credential-provider_${ACR_CREDENTIAL_PROVIDER_VERSION}-linux-amd64.tar.gz"
+    downloadACR
+    echo "  - ACR credential provider ${PROVIDER_ARTIFACT}" >> ${VHD_LOGS_FILEPATH}
 done
 
 installImg
