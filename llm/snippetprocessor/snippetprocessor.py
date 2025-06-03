@@ -99,3 +99,18 @@ class SnippetProcessor(ABC):
         """
         pass
 
+    @abstractmethod
+    def get_system_prompt(self) -> str:
+        """
+        Get the system prompt for AI-assisted code processing.
+        
+        This method should return a language-specific system prompt that provides
+        context and instructions for AI models when processing code snippets.
+        Each concrete implementation should define its own prompt based on the
+        programming language and specific requirements.
+        
+        Returns:
+            A string containing the system prompt for the specific programming language
+        """
+        pass
+

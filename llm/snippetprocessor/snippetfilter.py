@@ -3,9 +3,12 @@
 Snippet filter module for extracting code elements from source files.
 """
 
-from typing import Dict
+import json
+from dataclasses import dataclass, field
+from typing import Dict, Union, Self
 
 
+@dataclass(frozen=True)
 class SnippetFilter:
     """
     Extracts and manages code elements from source code files.
@@ -19,40 +22,91 @@ class SnippetFilter:
     The extracted elements are stored as a mapping of element names to their content.
     """
     
-    def __init__(self, source_code_path: str) -> None:
+    source_code_path: str
+    code_elements: Dict[str, str] = field(default_factory=dict)
+    
+    def __post_init__(self) -> None:
+        """Validate the instance after initialization."""
+        if not self.source_code_path or not self.source_code_path.strip():
+            raise ValueError("source_code_path cannot be empty")
+    
+    @classmethod
+    def from_json(cls, json_data: Union[str, Dict]) -> Self:
         """
-        Initialize a SnippetFilter instance.
+        Create a SnippetFilter instance from JSON data.
         
         Args:
-            source_code_path: The path to the source code file
-        """
-        self._source_code_path: str = source_code_path
-        self._code_elements: Dict[str, str] = {}
-    
-    @property
-    def source_code_path(self) -> str:
-        """
-        Get the source code path (readonly property).
+            json_data: Either a JSON string or a dictionary containing the filter data
+                      Expected format: {
+                          "source_code_path": "<path>",
+                          "code_elements": {
+                              "<element_name>": "<element_value>",
+                              ...
+                          }
+                      }
         
         Returns:
-            The source code file path
+            A SnippetFilter instance initialized with the JSON data
+            
+        Raises:
+            ValueError: If the JSON data is invalid or missing required fields
+            TypeError: If json_data is neither string nor dict
         """
-        return self._source_code_path
+        # Parse JSON string if needed
+        match json_data:
+            case str():
+                try:
+                    data = json.loads(json_data)
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Failed to parse JSON string: {e}") from e
+            case dict():
+                data = json_data
+            case _:
+                raise TypeError(f"json_data must be str or dict, got {type(json_data)}")
+        
+        # Validate that data is a dictionary
+        if not isinstance(data, dict):
+            raise ValueError("Parsed JSON data must be a dictionary")
+        
+        # Extract and validate source_code_path
+        source_code_path = data.get("source_code_path", "")
+        if not source_code_path or not isinstance(source_code_path, str):
+            raise ValueError("source_code_path is required and must be a non-empty string")
+        
+        # Extract and validate code_elements
+        code_elements = data.get("code_elements", {})
+        if code_elements and not isinstance(code_elements, dict):
+            raise ValueError("code_elements must be a dictionary")
+        
+        # Validate that all keys and values are strings
+        if code_elements:
+            for key, value in code_elements.items():
+                if not isinstance(key, str) or not isinstance(value, str):
+                    raise ValueError("All code_elements keys and values must be strings")
+        
+        return cls(source_code_path=source_code_path, code_elements=code_elements)
     
-    @property
-    def code_elements(self) -> Dict[str, str]:
+    def to_dict(self) -> Dict[str, Union[str, Dict[str, str]]]:
         """
-        Get the extracted code elements mapping (readonly property).
+        Convert the SnippetFilter to a dictionary.
         
         Returns:
-            Dictionary mapping element names to their content:
-            - For Go: function names, type names, struct names
-            - For PowerShell: function names
-            - For Markdown: header text
-            - For other files: relevant code elements
+            Dictionary representation of the SnippetFilter
         """
-        return self._code_elements.copy()  # Return a copy to maintain readonly behavior
-
+        return {
+            "source_code_path": self.source_code_path,
+            "code_elements": self.code_elements.copy()
+        }
+    
+    def to_json(self) -> str:
+        """
+        Convert the SnippetFilter to a JSON string.
+        
+        Returns:
+            JSON string representation of the SnippetFilter
+        """
+        return json.dumps(self.to_dict(), indent=2)
+    
     def __str__(self) -> str:
         """
         Return a string representation of the SnippetFilter.
@@ -60,10 +114,9 @@ class SnippetFilter:
         Returns:
             A formatted string showing the source code path and code elements content
         """
-        elements_str = ""
-        if self._code_elements:
+        if self.code_elements:
             elements_list = []
-            for name, content in self._code_elements.items():
+            for name, content in self.code_elements.items():
                 # Truncate long content for readability
                 display_content = content[:100] + "..." if len(content) > 100 else content
                 # Replace newlines with \n for single-line display
@@ -73,4 +126,4 @@ class SnippetFilter:
         else:
             elements_str = "{}"
         
-        return f"SnippetFilter(source_code_path='{self._source_code_path}', code_elements={elements_str})"
+        return f"SnippetFilter(source_code_path='{self.source_code_path}', code_elements={elements_str})"

@@ -4,10 +4,21 @@ Instruction processor module for processing instruction objects.
 """
 
 import json
+import os
+import sys
 from typing import Optional, Dict
-from .instruction import Instruction
-from .snippetprocessor import SnippetFilter, FileType
-from .client.llm_client import AzureLLMClient
+
+# Handle both direct execution and module import
+try:
+    from .instruction import Instruction
+    from .snippetprocessor import SnippetFilter, FileType
+    from .client.llm_client import AzureLLMClient
+except ImportError:
+    # Direct execution - add parent directory to path
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from llm.instruction import Instruction
+    from llm.snippetprocessor import SnippetFilter, FileType
+    from llm.client.llm_client import AzureLLMClient
 
 
 class InstructionProcessor:
@@ -18,14 +29,29 @@ class InstructionProcessor:
     to analyze and transform instruction data.
     """
     
-    def __init__(self, instruction: Instruction) -> None:
+    def __init__(self, instruction: Instruction, code_root_path: str) -> None:
         """
         Initialize an InstructionProcessor instance.
         
         Args:
             instruction: An Instruction object to process
+            code_root_path: The root path of the source code directory
+            
+        Raises:
+            ValueError: If code_root_path is empty or doesn't exist
+            NotADirectoryError: If code_root_path is not a directory
         """
+        if not code_root_path or not code_root_path.strip():
+            raise ValueError("code_root_path cannot be empty")
+            
+        if not os.path.exists(code_root_path):
+            raise FileNotFoundError(f"Code root path not found: {code_root_path}")
+            
+        if not os.path.isdir(code_root_path):
+            raise NotADirectoryError(f"Code root path is not a directory: {code_root_path}")
+        
         self._instruction: Instruction = instruction
+        self._code_root_path: str = os.path.abspath(code_root_path)
         self._azure_llm_client: AzureLLMClient = AzureLLMClient()
     
     @property
@@ -37,6 +63,16 @@ class InstructionProcessor:
             The Instruction object
         """
         return self._instruction
+    
+    @property
+    def code_root_path(self) -> str:
+        """
+        Get the code root path (readonly property).
+        
+        Returns:
+            The absolute path to the code root directory
+        """
+        return self._code_root_path
     
     def get_content(self) -> str:
         """
@@ -83,12 +119,37 @@ class InstructionProcessor:
         """
         return FileType.get_filetype(self.get_file_path())
     
+    def resolve_source_code_path(self, relative_path: str) -> str:
+        """
+        Resolve a relative source code path to an absolute path.
+        
+        Args:
+            relative_path: The relative path from the instruction
+            
+        Returns:
+            The absolute path resolved against the code root path
+            
+        Raises:
+            ValueError: If the relative_path is empty
+        """
+        if not relative_path or not relative_path.strip():
+            raise ValueError("relative_path cannot be empty")
+            
+        # Join the code root path with the relative path
+        absolute_path = os.path.join(self._code_root_path, relative_path)
+        
+        # Normalize the path to handle any '..' or '.' components
+        return os.path.normpath(absolute_path)
+    
     def get_snippet_filter(self) -> SnippetFilter:
         """
-        Get a SnippetFilter for this instruction's source code.
+        Get a SnippetFilter for this instruction's source code with resolved paths.
         
         Returns:
-            A SnippetFilter instance initialized with the instruction's file path
+            A SnippetFilter instance with absolute source code path
+            
+        Raises:
+            ValueError: If LLM response is invalid or paths cannot be resolved
         """
         # Get the system prompt for instruction extraction
         system_prompt = self._get_instruction_extractor_system_prompt()
@@ -103,19 +164,24 @@ class InstructionProcessor:
             system_message=system_prompt
         )
         
-        # Parse the LLM response as JSON
+        # Parse the LLM response as JSON and create SnippetFilter
         try:
+            # Parse JSON response
             response_data = json.loads(llm_response)
             
-            # Extract source_code_path from the response
-            source_code_path = response_data.get("source_code_path", "")
+            # Create SnippetFilter from the JSON response
+            snippet_filter = SnippetFilter.from_json(response_data)
             
-            # Validate that source_code_path is not empty
-            if not source_code_path or source_code_path.strip() == "":
-                raise ValueError("source_code_path is empty or missing in LLM response")
+            # Resolve the relative path to absolute path
+            absolute_path = self.resolve_source_code_path(snippet_filter.source_code_path)
             
-            # Create and return SnippetFilter with the extracted path
-            return SnippetFilter(source_code_path)
+            # Create a new SnippetFilter with the resolved absolute path
+            resolved_snippet_filter = SnippetFilter(
+                source_code_path=absolute_path,
+                code_elements=snippet_filter.code_elements
+            )
+            
+            return resolved_snippet_filter
             
         except json.JSONDecodeError as e:
             raise ValueError(f"Failed to parse LLM response as JSON: {e}")
@@ -156,7 +222,8 @@ Parse only the markdown content found within the XML tag `<Instruction>`. Ignore
 
 3. **Output Format:**
    - Return a valid JSON object with the following structure:
-     ```json
+   - Provide the JSON as plain text, without any code block or language identifier.
+   - "Do not use ```json or any code block formatting in your response."
      {
        "source_code_path": "<value>",
        "code_elements": {
@@ -164,7 +231,6 @@ Parse only the markdown content found within the XML tag `<Instruction>`. Ignore
          ...
        }
      }
-     ```
    - If the required section or bullet points are missing, return an empty JSON object: `{}`.
 
 **Example Input:**
@@ -180,7 +246,6 @@ Parse only the markdown content found within the XML tag `<Instruction>`. Ignore
 
 **Example Output:**
 
-```json
 {
   "source_code_path": "pkg/api/common/versions.go",
   "code_elements": {
@@ -188,7 +253,6 @@ Parse only the markdown content found within the XML tag `<Instruction>`. Ignore
     "begin_with": "var AllKubernetesSupportedVersions = map[string]bool"
   }
 }
-```
 """
         return system_prompt
     

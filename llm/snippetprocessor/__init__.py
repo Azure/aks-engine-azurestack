@@ -7,6 +7,16 @@ from .filetype import FileType
 from .location import Location
 from .snippetprocessor import SnippetProcessor
 from .gosnippetprocessor import GoSnippetProcessor
+from .snippetprocessorfactory import SnippetProcessorFactory, UnsupportedFileTypeError
 from .exceptions import SnippetNotFoundError
 
-__all__ = ['SnippetFilter', 'FileType', 'Location', 'SnippetProcessor', 'GoSnippetProcessor', 'SnippetNotFoundError']
+__all__ = [
+    'SnippetFilter', 
+    'FileType', 
+    'Location', 
+    'SnippetProcessor', 
+    'GoSnippetProcessor',
+    'SnippetProcessorFactory',
+    'UnsupportedFileTypeError',
+    'SnippetNotFoundError'
+]
