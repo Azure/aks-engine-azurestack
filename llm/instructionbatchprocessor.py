@@ -7,7 +7,10 @@ batch processing of instruction files with proper error handling and reporting.
 
 import os
 import re
+import html
 from typing import Dict, List, Optional
+from urllib.request import urlopen
+from urllib.error import URLError
 
 from .instruction import InstructionLoader, Instruction
 from .instructionprocessor import InstructionProcessor
@@ -348,11 +351,23 @@ Please provide only the modified code in your response, without any additional e
             raise ValueError("Kubernetes version is required to initialize component data")
         
         try:
-
             # Component data mapping based on Kubernetes version
             component_data = {
                 "k8s_version": self._k8s_version,
             }
+            
+            # Add removed feature gates if available
+            try:
+                removed_feature_gates = self._find_removed_feature_gates()
+                component_data["removed_feature_gates"] = removed_feature_gates
+                
+                if self._verbose and removed_feature_gates:
+                    print(f"  Added removed feature gates: {removed_feature_gates}")
+                    
+            except Exception as e:
+                if self._verbose:
+                    print(f"  Warning: Could not retrieve removed feature gates: {e}")
+                component_data["removed_feature_gates"] = ""
             
             if self._verbose:
                 print(f"  Initialized component data for Kubernetes {self._k8s_version}")
@@ -436,3 +451,214 @@ Please provide only the modified code in your response, without any additional e
             normalized_content = normalized_content.replace(placeholder, value)
         
         return normalized_content
+    
+    def _get_previous_minor_version(self, k8s_version: str) -> str:
+        """
+        Extract the previous minor version from a Kubernetes version string.
+        
+        Args:
+            k8s_version: Kubernetes version string (e.g., "1.31.8")
+            
+        Returns:
+            Previous minor version string (e.g., "1.30")
+            
+        Raises:
+            ValueError: If the version format is invalid or minor version is 0
+        """
+        # Match version pattern like "1.31.8" or "v1.31.8"
+        version_pattern = r'^v?(\d+)\.(\d+)(?:\.(\d+))?'
+        match = re.match(version_pattern, k8s_version.strip())
+        
+        if not match:
+            raise ValueError(f"Invalid Kubernetes version format: {k8s_version}")
+        
+        major = int(match.group(1))
+        minor = int(match.group(2))
+        
+        if minor == 0:
+            raise ValueError(f"Cannot get previous minor version for {k8s_version} (minor version is 0)")
+        
+        return f"{major}.{minor - 1}"
+    
+    def _fetch_html_content(self, url: str) -> str:
+        """
+        Fetch HTML content from the given URL using urllib.
+        
+        Args:
+            url: URL to fetch content from
+            
+        Returns:
+            HTML content as string
+            
+        Raises:
+            URLError: If the request fails
+        """
+        try:
+            with urlopen(url, timeout=30) as response:
+                content = response.read()
+                # Decode content, handling potential encoding issues
+                if isinstance(content, bytes):
+                    try:
+                        return content.decode('utf-8')
+                    except UnicodeDecodeError:
+                        return content.decode('utf-8', errors='ignore')
+                return content
+        except URLError as e:
+            raise URLError(f"Failed to fetch content from {url}: {e}")
+    
+    def _extract_table_rows(self, html_content: str) -> List[List[str]]:
+        """
+        Extract table rows from HTML content using regex patterns.
+        
+        Args:
+            html_content: HTML content containing the feature gates table
+            
+        Returns:
+            List of table rows, where each row is a list of cell contents
+        """
+        # Find the table with "Feature Gates Removed" caption
+        # Look for caption with the text, case-insensitive
+        caption_pattern = r'<caption[^>]*>.*?Feature\s+Gates\s+Removed.*?</caption>'
+        caption_match = re.search(caption_pattern, html_content, re.IGNORECASE | re.DOTALL)
+        
+        if not caption_match:
+            raise ValueError("Feature Gates Removed table not found")
+        
+        # Find the table that contains this caption
+        # Look for the table tag that comes before or after the caption
+        table_start = html_content.rfind('<table', 0, caption_match.start())
+        if table_start == -1:
+            # Caption might be inside the table, look for table after caption
+            table_start = html_content.find('<table', caption_match.end())
+            if table_start == -1:
+                raise ValueError("Table containing Feature Gates Removed caption not found")
+        
+        # Find the end of this table
+        table_end = html_content.find('</table>', table_start)
+        if table_end == -1:
+            raise ValueError("Table end tag not found")
+        
+        table_html = html_content[table_start:table_end + 8]  # +8 for </table>
+        
+        # Extract all table rows
+        rows = []
+        row_pattern = r'<tr[^>]*>(.*?)</tr>'
+        row_matches = re.findall(row_pattern, table_html, re.DOTALL | re.IGNORECASE)
+        
+        for row_content in row_matches:
+            # Extract cell content from each row
+            cell_pattern = r'<(?:td|th)[^>]*>(.*?)</(?:td|th)>'
+            cell_matches = re.findall(cell_pattern, row_content, re.DOTALL | re.IGNORECASE)
+            
+            # Clean up cell content - remove HTML tags and decode entities
+            clean_cells = []
+            for cell in cell_matches:
+                # Remove HTML tags
+                clean_cell = re.sub(r'<[^>]+>', '', cell)
+                # Decode HTML entities
+                clean_cell = html.unescape(clean_cell)
+                # Clean up whitespace
+                clean_cell = re.sub(r'\s+', ' ', clean_cell).strip()
+                clean_cells.append(clean_cell)
+            
+            if clean_cells:  # Only add non-empty rows
+                rows.append(clean_cells)
+        
+        return rows
+    
+    def _parse_removed_features_table(self, html_content: str, target_version: str) -> List[str]:
+        """
+        Parse the HTML content to extract removed feature gates for the target version.
+        
+        Args:
+            html_content: HTML content containing the feature gates table
+            target_version: Target Kubernetes version to look for
+            
+        Returns:
+            List of removed feature gate names
+        """
+        rows = self._extract_table_rows(html_content)
+        
+        if not rows:
+            raise ValueError("No table rows found")
+        
+        # The first row should be the header
+        headers = rows[0]
+        
+        # Find column indices
+        feature_col_idx = None
+        to_col_idx = None
+        stage_col_idx = None
+        
+        for idx, header in enumerate(headers):
+            header_lower = header.lower()
+            if 'feature' in header_lower or 'gate' in header_lower:
+                feature_col_idx = idx
+            elif 'to' in header_lower:
+                to_col_idx = idx
+            elif 'stage' in header_lower:
+                stage_col_idx = idx
+        
+        if feature_col_idx is None or to_col_idx is None or stage_col_idx is None:
+            raise ValueError(f"Required columns not found. Headers: {headers}")
+        
+        # Extract removed features
+        removed_features = []
+        
+        for row in rows[1:]:  # Skip header row
+            if len(row) <= max(feature_col_idx, to_col_idx, stage_col_idx):
+                continue
+            
+            feature_name = row[feature_col_idx].strip()
+            to_version = row[to_col_idx].strip()
+            stage = row[stage_col_idx].strip()
+            
+            # Check if this row matches our criteria
+            if (to_version == target_version and 
+                stage.lower() in ['deprecated', 'ga']):
+                removed_features.append(feature_name)
+        
+        return removed_features
+    
+    def _find_removed_feature_gates(self) -> str:
+        """
+        Find removed feature gates for the previous Kubernetes minor release.
+        
+        Uses the instance's k8s_version to determine removed feature gates.
+        
+        Returns:
+            Comma-separated string of removed feature gates with =true suffix
+            
+        Raises:
+            ValueError: If k8s_version is not set or format is invalid
+            URLError: If fetching web content fails
+        """
+        if not self._k8s_version:
+            raise ValueError("Kubernetes version is required but not set")
+            
+        feature_gates_url = "https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates-removed/"
+        
+        # Get previous minor version
+        previous_version = self._get_previous_minor_version(self._k8s_version)
+        
+        if self._verbose:
+            print(f"  Looking for removed feature gates for version: {previous_version}")
+        
+        # Fetch HTML content
+        html_content = self._fetch_html_content(feature_gates_url)
+        
+        # Parse and extract removed features
+        removed_features = self._parse_removed_features_table(html_content, previous_version)
+        
+        # Format as comma-separated string with =true suffix
+        if not removed_features:
+            if self._verbose:
+                print(f"  No removed feature gates found for version: {previous_version}")
+            return ""
+        
+        result = ",".join(f"{feature}=true" for feature in removed_features)
+        
+        if self._verbose:
+            print(f"  Found {len(removed_features)} removed feature gates: {result}")
+        
+        return result

@@ -88,12 +88,15 @@ class GoSnippetProcessor(SnippetProcessor):
             A tuple containing (start_location, end_location) if found, None otherwise.
         """
         # Check if "object_type" is in code_elements to determine which extraction method to use
-        if "object_type" in self.code_elements and "begin_with" in self.code_elements and self.code_elements["object_type"] in ("function","map"):
-            # Get the first object name from code_elements for object extraction
-            object_name = list(self.code_elements.keys())[0] if self.code_elements else ""
-            return self._extract_block_location(self.code_elements["begin_with"])
-        else:
-            return self._extract_entire_file_location()
+        if "object_type" in self.code_elements and "begin_with" in self.code_elements:
+            if self.code_elements["object_type"] in ("func", "map"):
+                return self._extract_block_location(self.code_elements["begin_with"])
+            elif self.code_elements["object_type"] == "const":
+                # Handle const extraction
+                return self._extract_const_group_location(self.code_elements["begin_with"])
+        
+        # If no specific object type or extraction method found, extract entire file
+        return self._extract_entire_file_location()
 
     def apply_snippet_change(self, modified_code: str) -> None:
         """
@@ -239,7 +242,82 @@ class GoSnippetProcessor(SnippetProcessor):
             
         except (FileNotFoundError, IOError) as e:
             raise e
-
+        
+    def _extract_const_group_location(self, const_definition: str) -> Optional[Tuple[Location, Location]]:
+        """
+        Extract the start and end location of a Go const group containing the specified const definition.
+        
+        Args:
+            const_definition: One of the const definitions as a string to search for
+            
+        Returns:
+            Tuple of (start_location, end_location) if found, None otherwise
+            
+        Raises:
+            FileNotFoundError: If the source code file doesn't exist
+            ValueError: If the const definition is not found or not in a const group
+        """
+        try:
+            with open(self.source_code_path, 'r', encoding='utf-8') as file:
+                lines = file.readlines()
+        except FileNotFoundError:
+            raise FileNotFoundError(f"Source code file not found: {self.source_code_path}")
+        
+        if not const_definition.strip():
+            raise ValueError("Const definition cannot be empty")
+        
+        # Find the line containing the const definition
+        const_line_index = None
+        for i, line in enumerate(lines):
+            if const_definition in line:
+                const_line_index = i
+                break
+        
+        if const_line_index is None:
+            return None
+        
+        # Search upward from the const definition to find the start of const group
+        start_line_index = None
+        start_column = None
+        
+        for i in range(const_line_index, -1, -1):
+            line = lines[i]
+            # Look for "const (" pattern
+            const_group_match = re.search(r'\bconst\s*\(', line)
+            if const_group_match:
+                start_line_index = i
+                start_column = const_group_match.start() + 1  # 1-based column
+                break
+        
+        if start_line_index is None:
+            return None
+        
+        # Search downward from the const definition to find the end of const group
+        end_line_index = None
+        end_column = None
+        
+        for i in range(const_line_index, len(lines)):
+            line = lines[i]
+            # Look for closing parenthesis that ends the const group
+            # We need to be careful about nested parentheses and strings
+            paren_match = re.search(r'^\s*\)', line)
+            if paren_match:
+                end_line_index = i
+                end_column = paren_match.end()  # 1-based column (end of the ')')
+                break
+        
+        if end_line_index is None:
+            return None
+        
+        # At this point, we know start_column and end_column are not None due to the checks above
+        assert start_column is not None, "start_column should not be None at this point"
+        assert end_column is not None, "end_column should not be None at this point"
+        
+        start_location = Location(start_line_index + 1, start_column)  # Convert to 1-based
+        end_location = Location(end_line_index + 1, end_column)       # Convert to 1-based
+        
+        return (start_location, end_location)
+    
     def _extract_entire_file_location(self) -> Optional[Tuple[Location, Location]]:
         """
         Extract the location representing the entire source code file.
