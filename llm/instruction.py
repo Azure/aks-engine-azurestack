@@ -103,7 +103,8 @@ class InstructionLoader:
             raise FileNotFoundError(f"Instruction directory not found: {self._directory}")
 
         instructions = []
-        for filename in os.listdir(self._directory):
+        filenames = sorted(os.listdir(self._directory))
+        for filename in filenames:
             if filename.endswith(".md"):
                 file_path = os.path.join(self._directory, filename)
                 instructions.append(Instruction(file_path))

@@ -8,9 +8,13 @@ batch processing of instruction files with proper error handling and reporting.
 import os
 import re
 import html
-from typing import Dict, List, Optional
+import json
+from typing import Dict, List, Optional, Tuple
 from urllib.request import urlopen
 from urllib.error import URLError
+
+import requests
+import yaml
 
 from .instruction import InstructionLoader, Instruction
 from .instructionprocessor import InstructionProcessor
@@ -369,6 +373,31 @@ Please provide only the modified code in your response, without any additional e
                     print(f"  Warning: Could not retrieve removed feature gates: {e}")
                 component_data["removed_feature_gates"] = ""
             
+            # Add CSI driver version information if available
+            try:
+                csi_version = self._find_latest_csi_driver_version()
+                if csi_version:
+                    component_data["csi_driver_version"] = csi_version
+                    
+                    # Get CSI image versions
+                    csi_image_versions = self._find_csi_image_versions(csi_version)
+                    if csi_image_versions:
+                        component_data["csi_image_versions"] = csi_image_versions
+                    
+                    if self._verbose:
+                        print(f"  Added CSI driver version: {csi_version}")
+                        if csi_image_versions:
+                            print(f"  Added CSI image versions")
+                else:
+                    component_data["csi_driver_version"] = ""
+                    component_data["csi_image_versions"] = ""
+                    
+            except Exception as e:
+                if self._verbose:
+                    print(f"  Warning: Could not retrieve CSI driver information: {e}")
+                component_data["csi_driver_version"] = ""
+                component_data["csi_image_versions"] = ""
+            
             if self._verbose:
                 print(f"  Initialized component data for Kubernetes {self._k8s_version}")
                 print(f"  Component count: {len(component_data)}")
@@ -426,31 +455,6 @@ Please provide only the modified code in your response, without any additional e
             
         except Exception as e:
             raise RuntimeError(f"Failed to normalize instruction content: {e}") from e
-    
-    def _replace_system_placeholders(self, content: str) -> str:
-        """
-        Replace system-level placeholders in the content.
-        
-        Args:
-            content: The content to process
-            
-        Returns:
-            Content with system placeholders replaced
-        """
-        system_replacements = {
-            "__code_root_path__": self._code_root_path,
-            "__instruction_path__": self._instruction_path,
-            "{{code_root_path}}": self._code_root_path,
-            "{{instruction_path}}": self._instruction_path,
-            "${code_root_path}": self._code_root_path,
-            "${instruction_path}": self._instruction_path,
-        }
-        
-        normalized_content = content
-        for placeholder, value in system_replacements.items():
-            normalized_content = normalized_content.replace(placeholder, value)
-        
-        return normalized_content
     
     def _get_previous_minor_version(self, k8s_version: str) -> str:
         """
@@ -662,3 +666,190 @@ Please provide only the modified code in your response, without any additional e
             print(f"  Found {len(removed_features)} removed feature gates: {result}")
         
         return result
+    
+    def _find_latest_csi_driver_version(self, timeout: float = 30.0) -> Optional[str]:
+        """
+        Find the latest Azure Disk CSI driver version for the current Kubernetes version.
+        
+        Args:
+            timeout: Request timeout in seconds for HTTP requests
+            
+        Returns:
+            The latest CSI driver version string (e.g., 'v1.31.10') or None if not found
+            
+        Raises:
+            requests.RequestException: If there's an error fetching data from GitHub API
+        """
+        if not self._k8s_version:
+            return None
+            
+        api_url = "https://api.github.com/repos/kubernetes-sigs/azuredisk-csi-driver/contents/charts"
+        
+        # Extract major and minor version from k8s_version
+        normalized_version = self._k8s_version.lstrip('v')
+        parts = normalized_version.split('.')
+        major, minor = int(parts[0]), int(parts[1])
+        
+        # Set up session with appropriate headers
+        session = requests.Session()
+        session.headers.update({
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'InstructionBatchProcessor/1.0'
+        })
+        
+        try:
+            # Fetch available versions from GitHub API
+            response = session.get(api_url, timeout=timeout)
+            response.raise_for_status()
+            
+            data = response.json()
+            if not isinstance(data, list):
+                return None
+            
+            # Parse directory names and filter for valid version format
+            versions = []
+            version_pattern = r'^v\d+\.\d+\.\d+$'
+            
+            for item in data:
+                if isinstance(item, dict) and item.get('type') == 'dir':
+                    name = item.get('name', '')
+                    if re.match(version_pattern, name):
+                        versions.append(name)
+            
+            # Filter versions that match the major and minor version
+            target_prefix = f"v{major}.{minor}."
+            matching_versions = [v for v in versions if v.startswith(target_prefix)]
+            
+            if not matching_versions:
+                return None
+            
+            # Find the highest version
+            def version_key(version: str) -> Tuple[int, int, int]:
+                """Extract version tuple for sorting."""
+                clean_version = version[1:]  # Remove 'v'
+                parts = clean_version.split('.')
+                return int(parts[0]), int(parts[1]), int(parts[2])
+            
+            return max(matching_versions, key=version_key)
+            
+        except requests.RequestException as e:
+            raise requests.RequestException(
+                f"Failed to fetch CSI driver versions from GitHub API: {e}"
+            ) from e
+        finally:
+            session.close()
+    
+    def _find_csi_image_versions(self, csi_version: str, timeout: float = 30.0) -> Optional[str]:
+        """
+        Find the image versions for CSI components from the values.yaml file.
+        
+        Args:
+            csi_version: CSI driver version (e.g., 'v1.31.10')
+            timeout: Request timeout in seconds for HTTP requests
+            
+        Returns:
+            JSON string with image versions or None if not found
+            
+        Raises:
+            requests.RequestException: If there's an error fetching data from GitHub API
+        """
+        # Construct the URL for the values.yaml file
+        values_url = f"https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts/{csi_version}/azuredisk-csi-driver/values.yaml"
+        
+        # List of image components we're interested in
+        target_components = [
+            "oss/kubernetes-csi/csi-provisioner",
+            "oss/kubernetes-csi/csi-attacher", 
+            "oss/kubernetes-csi/livenessprobe",
+            "oss/kubernetes-csi/csi-node-driver-registrar",
+            "oss/kubernetes-csi/csi-snapshotter",
+            "oss/kubernetes-csi/snapshot-controller",
+            "oss/kubernetes-csi/csi-resizer",
+            "oss/kubernetes-csi/azuredisk-csi"
+        ]
+        
+        # Set up session
+        session = requests.Session()
+        session.headers.update({
+            'User-Agent': 'InstructionBatchProcessor/1.0'
+        })
+        
+        try:
+            # Fetch the values.yaml file
+            response = session.get(values_url, timeout=timeout)
+            response.raise_for_status()
+            
+            yaml_content = response.text
+            image_versions = {}
+            
+            # Parse the YAML content
+            try:
+                yaml_data = yaml.safe_load(yaml_content)
+                image_versions = self._extract_all_image_versions(yaml_data, target_components)
+            except yaml.YAMLError as e:
+                raise ValueError(f"Failed to parse YAML content: {e}")
+            
+            return json.dumps(image_versions) if image_versions else None
+            
+        except requests.RequestException as e:
+            raise requests.RequestException(
+                f"Failed to fetch values.yaml from GitHub: {e}"
+            ) from e
+        finally:
+            session.close()
+    
+    def _extract_all_image_versions(self, yaml_data: Dict, target_components: List[str]) -> Dict[str, str]:
+        """
+        Extract image versions for all target components from parsed YAML data.
+        
+        Args:
+            yaml_data: The parsed YAML data as a dictionary
+            target_components: List of component names to extract versions for
+            
+        Returns:
+            Dictionary mapping component names to their versions
+        """
+        image_versions = {}
+        
+        # Component name mapping from target_components to YAML keys
+        component_mapping = {
+            "oss/kubernetes-csi/azuredisk-csi": ["image", "azuredisk"],
+            "oss/kubernetes-csi/csi-provisioner": ["image", "csiProvisioner"],
+            "oss/kubernetes-csi/csi-attacher": ["image", "csiAttacher"],
+            "oss/kubernetes-csi/csi-resizer": ["image", "csiResizer"],
+            "oss/kubernetes-csi/livenessprobe": ["image", "livenessProbe"],
+            "oss/kubernetes-csi/csi-node-driver-registrar": ["image", "nodeDriverRegistrar"],
+            "oss/kubernetes-csi/csi-snapshotter": ["snapshot", "image", "csiSnapshotter"],
+            "oss/kubernetes-csi/snapshot-controller": ["snapshot", "image", "csiSnapshotController"]
+        }
+        
+        for component in target_components:
+            if component in component_mapping:
+                path = component_mapping[component]
+                version = self._get_nested_value(yaml_data, path + ["tag"])
+                if version:
+                    # Ensure version starts with 'v'
+                    version = version if version.startswith('v') else f'v{version}'
+                    image_versions[component] = version
+        
+        return image_versions
+    
+    def _get_nested_value(self, data: Dict, path: List[str]) -> Optional[str]:
+        """
+        Get a nested value from a dictionary using a path list.
+        
+        Args:
+            data: The dictionary to search in
+            path: List of keys representing the path to the value
+            
+        Returns:
+            The value if found, None otherwise
+        """
+        current = data
+        for key in path:
+            if isinstance(current, dict) and key in current:
+                current = current[key]
+            else:
+                return None
+        
+        return str(current) if current is not None else None
