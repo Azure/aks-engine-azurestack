@@ -388,15 +388,30 @@ Please provide only the modified code in your response, without any additional e
                         print(f"  Added CSI driver version: {csi_version}")
                         if csi_image_versions:
                             print(f"  Added CSI image versions")
-                else:
-                    component_data["csi_driver_version"] = ""
-                    component_data["csi_image_versions"] = ""
+                else:                component_data["csi_driver_version"] = ""
+                component_data["csi_image_versions"] = ""
                     
             except Exception as e:
                 if self._verbose:
                     print(f"  Warning: Could not retrieve CSI driver information: {e}")
                 component_data["csi_driver_version"] = ""
                 component_data["csi_image_versions"] = ""
+            
+            # Add Cloud Provider image versions if available
+            try:
+                cloud_provider_versions = self._find_cloud_provider_image_versions()
+                if cloud_provider_versions:
+                    component_data["cloud_provider_image_versions"] = cloud_provider_versions
+                    
+                    if self._verbose:
+                        print(f"  Added Azure Cloud Provider image versions")
+                else:
+                    component_data["cloud_provider_image_versions"] = ""
+                    
+            except Exception as e:
+                if self._verbose:
+                    print(f"  Warning: Could not retrieve Cloud Provider image versions: {e}")
+                component_data["cloud_provider_image_versions"] = ""
             
             if self._verbose:
                 print(f"  Initialized component data for Kubernetes {self._k8s_version}")
@@ -853,3 +868,87 @@ Please provide only the modified code in your response, without any additional e
                 return None
         
         return str(current) if current is not None else None
+    
+    def _find_cloud_provider_image_versions(self, timeout: float = 30.0) -> Optional[str]:
+        """
+        Find the latest image versions for Azure Cloud Controller Manager and 
+        Azure Cloud Node Manager from GitHub tags.
+        
+        Args:
+            timeout: Request timeout in seconds for HTTP requests
+            
+        Returns:
+            JSON string with image versions or None if not found
+            
+        Raises:
+            requests.RequestException: If there's an error fetching data from GitHub API
+        """
+        if not self._k8s_version:
+            return None
+            
+        api_url = "https://api.github.com/repos/kubernetes-sigs/cloud-provider-azure/tags"
+        
+        # Extract major and minor version from k8s_version
+        normalized_version = self._k8s_version.lstrip('v')
+        parts = normalized_version.split('.')
+        major, minor = int(parts[0]), int(parts[1])
+        
+        # Target components to find versions for
+        target_components = [
+            "oss/kubernetes/azure-cloud-controller-manager",
+            "oss/kubernetes/azure-cloud-node-manager"
+        ]
+        
+        # Set up session with appropriate headers
+        session = requests.Session()
+        session.headers.update({
+            'Accept': 'application/vnd.github.v3+json',
+            'User-Agent': 'InstructionBatchProcessor/1.0'
+        })
+        
+        try:
+            # Fetch tags from GitHub API
+            response = session.get(api_url, timeout=timeout)
+            response.raise_for_status()
+            
+            data = response.json()
+            if not isinstance(data, list):
+                return None
+            
+            # Parse tag names and filter for valid version format
+            versions = []
+            version_pattern = r'^v\d+\.\d+\.\d+$'
+            
+            for item in data:
+                if isinstance(item, dict):
+                    name = item.get('name', '')
+                    if re.match(version_pattern, name):
+                        versions.append(name)
+            
+            # Filter versions that match the major and minor version
+            target_prefix = f"v{major}.{minor}."
+            matching_versions = [v for v in versions if v.startswith(target_prefix)]
+            
+            if not matching_versions:
+                return None
+            
+            # Find the highest version
+            def version_key(version: str) -> Tuple[int, int, int]:
+                """Extract version tuple for sorting."""
+                clean_version = version[1:]  # Remove 'v'
+                parts = clean_version.split('.')
+                return int(parts[0]), int(parts[1]), int(parts[2])
+            
+            latest_version = max(matching_versions, key=version_key)
+            
+            # Create the result dictionary with both components having the same version
+            image_versions = {component: latest_version for component in target_components}
+            
+            return json.dumps(image_versions) if image_versions else None
+            
+        except requests.RequestException as e:
+            raise requests.RequestException(
+                f"Failed to fetch cloud provider versions from GitHub API: {e}"
+            ) from e
+        finally:
+            session.close()
