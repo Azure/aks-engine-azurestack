@@ -238,8 +238,13 @@ class InstructionBatchProcessor:
         """
         try:
             snippet_processor = SnippetProcessorFactory.create_processor(snippet_filter)
-            modified_code = self._get_modified_code_from_llm(snippet_processor, instruction)
-            snippet_processor.apply_snippet_change(modified_code=modified_code)
+            
+            # Check if changes should be applied based on input validation
+            if self._should_apply_changes(snippet_processor, instruction):
+                modified_code = self._get_modified_code_from_llm(snippet_processor, instruction)
+                snippet_processor.apply_snippet_change(modified_code=modified_code)
+            else:
+                print("  ✓ No changes detected by Input Validation, skipping snippet modification")
             
         except UnsupportedFileTypeError as e:
             print(f"  ⚠ Warning: Unsupported file type for snippet processing: {e}")
@@ -388,8 +393,9 @@ Please provide only the modified code in your response, without any additional e
                         print(f"  Added CSI driver version: {csi_version}")
                         if csi_image_versions:
                             print(f"  Added CSI image versions")
-                else:                component_data["csi_driver_version"] = ""
-                component_data["csi_image_versions"] = ""
+                else:      
+                    component_data["csi_driver_version"] = ""
+                    component_data["csi_image_versions"] = ""
                     
             except Exception as e:
                 if self._verbose:
@@ -952,3 +958,94 @@ Please provide only the modified code in your response, without any additional e
             ) from e
         finally:
             session.close()
+    
+    def _should_apply_changes(self, snippet_processor: 'SnippetProcessor', instruction: Instruction) -> bool:
+        """
+        Check if changes should be applied based on input validation section in instruction.
+        
+        This method evaluates the "# Input Validation" section in the instruction content.
+        If the section doesn't exist, changes should be applied. If it exists, the LLM
+        evaluates the validation criteria and returns whether changes are needed.
+        
+        Args:
+            snippet_processor: The snippet processor instance containing the code to validate
+            instruction: The instruction object containing validation requirements
+            
+        Returns:
+            True if changes should be applied, False otherwise
+            
+        Raises:
+            RuntimeError: If LLM evaluation fails
+        """
+        try:
+            # Get the instruction content
+            instruction_content = instruction.get_content()
+
+            # Normalize the instruction content by replacing placeholders
+            normalized_instruction = self._normalize_instruction(instruction.get_content())
+
+            # Extract the current code snippet
+            current_snippet = snippet_processor.extract_snippet()
+
+            # Check if "# Input Validation" section exists
+            if "# Input Validation" not in instruction_content:
+                if self._verbose:
+                    print("  No Input Validation section found, proceeding with changes")
+                return True
+            
+            # Import AzureLLMClient here to avoid circular imports
+            from .client.llm_client import AzureLLMClient
+            
+            # Create the validation prompt using the full instruction content
+            validation_prompt = f"""
+
+<INSTRUCTION>
+{normalized_instruction}
+</INSTRUCTION>
+
+<CURRENTCODE>
+{current_snippet}
+</CURRENTCODE>
+
+Process the instruction in xml tag `<INSTRUCTION>`. Find the "# Input Validation" section and execute its logic.
+If "# Input Validation" section exists: Execute the validation logic and return its result ("True" or "False").
+If "# Input Validation" section does not exist: Return "True".
+
+Return only "True" or "False".
+"""
+            
+            # System message for validation
+            system_message = """You are a validation processor. Your task is to find and execute "# Input Validation" logic.
+
+Instructions:
+1. Look for "# Input Validation" section in the instruction content
+2. If found: Execute the validation logic within that section and return its direct result
+3. If not found: Return "True"
+
+The validation logic will directly evaluate to "True" or "False" - return exactly that result.
+Respond with only "True" or "False"."""
+            
+            # Initialize LLM client and get validation result
+            llm_client = AzureLLMClient()
+            validation_result = llm_client.get_completion(
+                prompt=validation_prompt,
+                system_message=system_message,
+                temperature=0.0  # Low temperature for consistent evaluation
+            )
+            
+            # Parse the validation result
+            validation_result = validation_result.strip().lower()
+            
+            if validation_result == "true":
+                print("  Input validation indicates changes are needed")
+                return True
+            else:
+                # For all other responses (including "false" and unexpected responses), return False
+                print(f"  Input validation result: '{validation_result}', no changes needed")
+                return False
+                
+        except Exception as e:
+            # If validation fails, default to applying changes to be safe
+            if self._verbose:
+                print(f"  Validation check failed: {e}, proceeding with changes")
+            return True
