@@ -10,10 +10,9 @@
    - begin with: `func (cs *ContainerService) overrideAPIServerConfig()`
 
 # Input Validation
-- Get Kubernetes version in xml tag <KubernetesVersion>
-- Ensure the Kubernetes version is in the format [MAJOR].[MINOR].[REVISION]. If the version starts with a leading 'v' (e.g., v1.31.8), remove the 'v'.
-- Get Removed feature gate in xml tag <RemovedFeatureGate>
-- If a test for [MAJOR].[MINOR].[REVISION] does not exist, add the test logic for [MAJOR].[MINOR].[REVISION] at the end of the function TestAPIServerFeatureGates.
+- Extract the Kubernetes version from the <KubernetesVersion> XML tag.
+- Inspect the overrideAPIServerConfig function to look for the statement `if common.IsKubernetesVersionGe(o.OrchestratorVersion, "[MAJOR][MINOR].0")`. For instance, for Kubernetes version 1.30.10, check for `if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.30.0")`.
+    - If this statement is NOT present, return "True"; if it is present, return "False".
 
 Function **overrideAPIServerConfig** put removed feature gate into list invalidFeatureGates for [MAJOR].[MINOR].[REVISION]
 

@@ -6,7 +6,8 @@
 
 # Input Validation
 - Get Kubernetes version in xml tag <KubernetesVersion>
-
+- Examinate the switch case to search `case "[MAJOR][MINOR]":`
+	- If DOES NOT exist, return "True"; otherwise, return "False".
 # Code Snippt Filter:
    - source code path: `pkg/api/k8s_versions.go`
    - object name: getK8sVersionComponents

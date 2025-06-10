@@ -10,17 +10,16 @@
    - begin with: `func TestAPIServerFeatureGates`
 
 # Input Validation
-- Get Kubernetes version in xml tag <KubernetesVersion>
-- Ensure the Kubernetes version is in the format [MAJOR].[MINOR].[REVISION]. If the version starts with a leading 'v' (e.g., v1.31.8), remove the 'v'.
-- Get Removed feature gate in xml tag <RemovedFeatureGate>
-- If a test for [MAJOR].[MINOR].[REVISION] does not exist, add the test logic for [MAJOR].[MINOR].[REVISION] at the end of the function TestAPIServerFeatureGates.
+- Extract the Kubernetes version from the <KubernetesVersion> XML tag.
+- Retrieve the removed feature gate from the <RemovedFeatureGate> XML tag.
+- In the **TestAPIServerFeatureGates** function, search for the variable named `featuregate[MAJOR][MINOR]` corresponding to the Kubernetes version (e.g., for version 1.30.10, look for `featuregate130`).
+    - If this variable is NOT found, return "True"; if it is found, return "False".
 
 Function **TestAPIServerFeatureGates** verify the elimination of removed feature gates for [MAJOR].[MINOR].[REVISION]
 
 Here's the checklist for adding a test logic at the end of the function **TestAPIServerFeatureGates** for [MAJOR].[MINOR].[REVISION]:
 
-Code Structure:
-
+# Code Structure:
 - [ ] Location function **TestAPIServerFeatureGates**
 - [ ] Add test logic at end of function **TestAPIServerFeatureGates**
 - [ ] Follow naming convention `featuregate[MAJOR][MINOR]` and `featuregate[MAJOR][MINOR-1]Sanitized`

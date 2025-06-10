@@ -6,7 +6,8 @@
 
 # Input Validation
 - Get Kubernetes version in xml tag <KubernetesVersion>
-- Ensure the Kubernetes version is in the format [MAJOR].[MINOR].[REVISION]. If the version starts with a leading 'v' (e.g., v1.31.8), remove the 'v'.
+- Examinate the map `common.KubernetesImageBaseTypeGCR` and `common.KubernetesImageBaseTypeMCR` to search key `"[MAJOR][MINOR]": {")`
+	- If DOES NOT exist, return "True"; otherwise, return "False".
 
 # Code Snippt Filter:
    - source code path: `pkg/api/k8s_versions.go`
