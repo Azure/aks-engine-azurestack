@@ -419,6 +419,22 @@ Please provide only the modified code in your response, without any additional e
                     print(f"  Warning: Could not retrieve Cloud Provider image versions: {e}")
                 component_data["cloud_provider_image_versions"] = ""
             
+            # Add all supported versions if available
+            try:
+                supported_versions_list = self._get_current_supported_versions()
+                if supported_versions_list:
+                    component_data["all_supported_versions"] = ','.join(supported_versions_list)
+                    
+                    if self._verbose:
+                        print(f"  Added all supported versions: {component_data['all_supported_versions']}")
+                else:
+                    component_data["all_supported_versions"] = ""
+                    
+            except Exception as e:
+                if self._verbose:
+                    print(f"  Warning: Could not retrieve supported versions: {e}")
+                component_data["all_supported_versions"] = ""
+            
             if self._verbose:
                 print(f"  Initialized component data for Kubernetes {self._k8s_version}")
                 print(f"  Component count: {len(component_data)}")
@@ -557,7 +573,6 @@ Please provide only the modified code in your response, without any additional e
             table_start = html_content.find('<table', caption_match.end())
             if table_start == -1:
                 raise ValueError("Table containing Feature Gates Removed caption not found")
-        
         # Find the end of this table
         table_end = html_content.find('</table>', table_start)
         if table_end == -1:
@@ -1049,3 +1064,55 @@ Respond with only "True" or "False"."""
             if self._verbose:
                 print(f"  Validation check failed: {e}, proceeding with changes")
             return True
+    
+    def _get_current_supported_versions(self) -> List[str]:
+        """
+        Get the currently supported Kubernetes versions from AllKubernetesSupportedVersionsAzureStack.
+        
+        This method reads the versions.go file and extracts versions where the value is True
+        from the AllKubernetesSupportedVersionsAzureStack map.
+        
+        Returns:
+            List of supported Kubernetes version strings
+            
+        Raises:
+            FileNotFoundError: If the versions.go file doesn't exist
+            ValueError: If the map cannot be parsed
+        """
+        versions_file_path = os.path.join(self._code_root_path, "pkg", "api", "common", "versions.go")
+        
+        if not os.path.exists(versions_file_path):
+            raise FileNotFoundError(f"versions.go file not found at: {versions_file_path}")
+        
+        try:
+            with open(versions_file_path, 'r', encoding='utf-8') as file:
+                content = file.read()
+            
+            # Find the AllKubernetesSupportedVersionsAzureStack map
+            map_pattern = r'var\s+AllKubernetesSupportedVersionsAzureStack\s*=\s*map\[string\]bool\s*\{([^}]+)\}'
+            match = re.search(map_pattern, content, re.DOTALL)
+            
+            if not match:
+                raise ValueError("AllKubernetesSupportedVersionsAzureStack map not found in versions.go")
+            
+            map_content = match.group(1)
+            
+            # Parse the map entries
+            supported_versions = []
+            entry_pattern = r'"([^"]+)":\s*(true|false)'
+            entries = re.findall(entry_pattern, map_content)
+            
+            for version, is_supported in entries:
+                if is_supported.lower() == 'true':
+                    supported_versions.append(version)
+            
+            # Sort versions for consistent output
+            supported_versions.sort(key=lambda v: [int(x) for x in v.split('.')])
+            
+            if self._verbose:
+                print(f"  Found {len(supported_versions)} supported versions: {supported_versions}")
+            
+            return supported_versions
+            
+        except Exception as e:
+            raise ValueError(f"Failed to parse AllKubernetesSupportedVersionsAzureStack map: {e}") from e

@@ -15,7 +15,7 @@
   - **Do not add code to implement the Input Validation logic.**
   
 # Code Snippt Filter:
-   - source code path: `vhd/packer/configure-windows-vhd.ps1`
+   - source code path: `vhd/packer/configure-windows-vhd-phase2.ps1`
    - object name: Get-ContainerImages
    - object type: func
    - begin with: `function Get-ContainerImages {`

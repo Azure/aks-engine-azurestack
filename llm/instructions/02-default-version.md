@@ -3,8 +3,14 @@
 <KubernetesVersion>{{k8s_version}}</KubernetesVersion>
 
 # Input Validation
-- Get Kubernetes version in xml tag <KubernetesVersion>
-- Ensure the Kubernetes version is in the format [MAJOR].[MINOR].[REVISION]. If the version starts with a leading 'v' (e.g., v1.31.8), remove the 'v'.
+- Retrieve the Kubernetes version from the <KubernetesVersion> XML tag.
+- Ensure the Kubernetes version follows the [MAJOR].[MINOR].[REVISION] format. If the version has a leading 'v' (e.g., v1.31.8), remove the 'v'.
+- For each of the following default version constants, check if they are set to [MAJOR].[MINOR-1]:
+   - KubernetesDefaultRelease
+   - KubernetesDefaultReleaseWindows
+   - KubernetesDefaultReleaseAzureStack
+   - KubernetesDefaultReleaseWindowsAzureStack
+- If any of these constants are not set to [MAJOR].[MINOR-1], return "True"; otherwise, return "False".
 
 # Code Snippt Filter:
    - source code path: `pkg/api/common/const.go`

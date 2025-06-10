@@ -80,6 +80,7 @@ class AzureLLMClient:
         self._model = model.strip()
         self._token = token
         self._logger = get_logger(context={"component": "AzureLLMClient"})
+        self._logger.set_level("WARNING")
         
         # Initialize the Azure chat completions client
         self._client = ChatCompletionsClient(

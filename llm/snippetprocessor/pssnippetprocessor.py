@@ -331,6 +331,7 @@ class PsSnippetProcessor(SnippetProcessor):
 - Do not abort the process prematurely; ensure the instruction is fully applied.
 - **When returning code, follow these rules:**
     - return only the code as plain text, with no explanations, comments, or extra formatting.
+    - do not wrap code in ``` or any other code block markers.
 
 **GENERAL INSTRUCTIONS**
 - Maintain the existing code style and patterns when making modifications.
