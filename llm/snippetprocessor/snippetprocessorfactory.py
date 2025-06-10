@@ -9,6 +9,7 @@ from .filetype import FileType
 from .snippetprocessor import SnippetProcessor
 from .gosnippetprocessor import GoSnippetProcessor
 from .pssnippetprocessor import PsSnippetProcessor
+from .bashsnippetprocessor import BashSnippetProcessor
 from .exceptions import SnippetNotFoundError
 
 
@@ -107,8 +108,7 @@ class SnippetProcessorFactory:
                 return PsSnippetProcessor(snippet_filter)
             
             case FileType.BASH:
-                # TODO: Implement BashSnippetProcessor when needed
-                raise UnsupportedFileTypeError(snippet_filter.source_code_path, file_type)
+                return BashSnippetProcessor(snippet_filter)
             
             case FileType.MAKEFILE:
                 # TODO: Implement MakefileSnippetProcessor when needed
@@ -134,7 +134,7 @@ class SnippetProcessorFactory:
         Returns:
             List of FileType enums that have concrete processor implementations
         """
-        return [FileType.GOLANG, FileType.PS1]
+        return [FileType.GOLANG, FileType.PS1, FileType.BASH]
     
     @classmethod
     def is_file_type_supported(cls, file_path: str) -> bool:
