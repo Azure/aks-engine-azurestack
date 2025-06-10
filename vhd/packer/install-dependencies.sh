@@ -201,6 +201,7 @@ BUSYBOX_IMAGE="mcr.microsoft.com/oss/busybox/busybox:1.33.1"
 loadContainerImage ${BUSYBOX_IMAGE}
 echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
+installKubeBinaries() {
 K8S_VERSIONS="
 1.30.10
 1.29.15
@@ -214,8 +215,11 @@ for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   KUBE_BINARY_URL="https://packages.aks.azure.com/kubernetes/v${KUBERNETES_VERSION}/binaries/kubernetes-node-linux-amd64.tar.gz"
   extractKubeBinaries
 done
+}
+installKubeBinaries
 
-# Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
+installCloudControllerManager() {
+  # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
 1.30.7
 1.29.8
@@ -225,8 +229,11 @@ for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCloudControllerManager
 
-# Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
+installCloudNodeManager() {
+  # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
 1.30.8
 1.29.9
@@ -236,7 +243,11 @@ for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
 
+installCloudNodeManager
+
+installCSIAzureDisk() {
 AZUREDISK_CSI_VERSIONS="
 1.29.1
 1.31.5
@@ -246,7 +257,10 @@ for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSIAzureDisk
 
+installCSIAzureFile() {
 AZUREFILE_CSI_VERSIONS="
 1.9.0
 "
@@ -255,7 +269,10 @@ for AZUREFILE_CSI_VERSION in ${AZUREFILE_CSI_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSIAzureFile
 
+installCSIAttacher() {
 CSI_ATTACHER_VERSIONS="
 4.8.0
 4.3.0
@@ -265,7 +282,10 @@ for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSIAttacher
 
+installCSINodeDriverRegistrar() {
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
 2.13.0
 2.8.0
@@ -275,7 +295,10 @@ for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; 
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSINodeDriverRegistrar
 
+installCSIProvisioner() {
 CSI_PROVISIONER_VERSIONS="
 5.2.0
 3.5.0
@@ -285,7 +308,10 @@ for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSIProvisioner
 
+installCSILivenessProbe() {
 LIVENESSPROBE_VERSIONS="
 2.15.0
 2.10.0
@@ -295,7 +321,10 @@ for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSILivenessProbe
 
+installCSIResizer() {
 CSI_RESIZER_VERSIONS="
 1.13.1
 1.8.0
@@ -305,7 +334,10 @@ for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSIResizer
 
+installCSISnapshotter() {
 CSI_SNAPSHOTTER_VERSIONS="
 8.2.0
 6.2.2
@@ -315,7 +347,10 @@ for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+installCSISnapshotter
 
+installSnapshotController() {
 SNAPSHOT_CONTROLLER_VERSIONS="
 8.2.0
 6.2.2
@@ -325,6 +360,9 @@ for SNAPSHOT_CONTROLLER_VERSION in ${SNAPSHOT_CONTROLLER_VERSIONS}; do
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
+}
+
+installSnapshotController
 
 CSI_SECRETS_STORE_PROVIDER_AZURE_VERSIONS="
 0.0.12
