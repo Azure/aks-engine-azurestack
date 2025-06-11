@@ -5,12 +5,12 @@
 <CSIImages>{{csi_image_versions}}</CSIImages>
 
 # Input Validation
+  - **Do not add code to implement the Input Validation logic.**
   - Retrieve the desired `azuredisk-csi` container image version from the `<CSIImages>` XML tag.
   - Review the current entries in the `$imagesToPull` list.
   - **Version Existence Check**: Search the `$imagesToPull` find the list of versions for `azuredisk-csi` . 
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
-  - **Do not add code to implement the Input Validation logic.**
   
 # Code Snippt Filter:
    - source code path: `vhd/packer/configure-windows-vhd-phase2.ps1`

@@ -6,6 +6,7 @@
 <CSIImages>{{csi_image_versions}}</CSIImages>
 
 # Input Validation
+  - **Do not add code to implement the Input Validation logic.**
   - Extract all supported Kubernetes versions from the `<KubernetesVersions>` XML tag.
   - The versions are provided as a comma-separated string.
   - Inspect the current entries in the $map for the key `c:\akse-cache\win-k8s\`.
@@ -13,7 +14,6 @@
   - **Version Presence Check**:
     - If any of the desired versions are NOT present in the list, return "True".
     - If all desired versions are present in the list, return "False".
-  - **Do not add code to implement the Input Validation logic.**
   
 # Code Snippt Filter:
    - source code path: `vhd/packer/configure-windows-vhd.ps1`
