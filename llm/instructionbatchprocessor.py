@@ -1033,12 +1033,15 @@ Return only "True" or "False".
             system_message = """You are a validation processor. Your task is to find and execute "# Input Validation" logic.
 
 Instructions:
-1. Look for "# Input Validation" section in the instruction content
-2. If found: Execute the validation logic within that section and return its direct result
-3. If not found: Return "True"
+1. Look for "# Input Validation" section in the instruction content.
+2. If found: Execute the validation logic within that section and return its direct result.
+3. If not found: Return "True".
 
-The validation logic will directly evaluate to "True" or "False" - return exactly that result.
-Respond with only "True" or "False"."""
+Double-Check Step:
+- After determining your answer ("True" or "False"), re-read both the "# Input Validation" logic and the relevant code section.
+- Confirm that your answer matches the logic exactly.
+- If there is any uncertainty, explain the reasoning step-by-step (internally) before returning the final answer.
+- Only return "True" or "False" as the final output."""
             
             # Initialize LLM client and get validation result
             llm_client = AzureLLMClient()

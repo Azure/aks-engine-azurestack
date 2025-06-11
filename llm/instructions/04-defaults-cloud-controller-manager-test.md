@@ -12,8 +12,8 @@
 # Input Validation
 - Extract the Kubernetes version from the <KubernetesVersion> XML tag.
 - Retrieve the removed feature gate from the <RemovedFeatureGate> XML tag.
-- In the **TestCloudControllerManagerFeatureGates** function, search for the variable named `featuregate[MAJOR][MINOR]` corresponding to the Kubernetes version (e.g., for version 1.30.10, look for `featuregate130`).
-    - If this variable is NOT found, return "True"; if it is found, return "False".
+- In the **TestCloudControllerManagerFeatureGates** function, search for the string `featuregate[MAJOR][MINOR] :=` corresponding to the Kubernetes version (e.g., for version 1.30.10, look for `featuregate130 :=`).
+    - If this string is NOT found, return "True"; if it is found, return "False".
 
 Function **TestCloudControllerManagerFeatureGates** verify the elimination of removed feature gates for [MAJOR].[MINOR].[REVISION]
 
