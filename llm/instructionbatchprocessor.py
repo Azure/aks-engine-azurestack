@@ -1023,7 +1023,7 @@ Please provide only the modified code in your response, without any additional e
 </CURRENTCODE>
 
 Process the instruction in xml tag `<INSTRUCTION>`. Find the "# Input Validation" section and execute its logic.
-If "# Input Validation" section exists: Execute the validation logic and return its result ("True" or "False").
+If "# Input Validation" section exists: Execute the validation logic and return its direct result ("True" or "False").
 If "# Input Validation" section does not exist: Return "True".
 
 Return only "True" or "False".
@@ -1109,8 +1109,21 @@ Double-Check Step:
                 if is_supported.lower() == 'true':
                     supported_versions.append(version)
             
-            # Sort versions for consistent output
-            supported_versions.sort(key=lambda v: [int(x) for x in v.split('.')])
+            # Sort versions in descending order (newest first)
+            supported_versions.sort(key=lambda v: [int(x) for x in v.split('.')], reverse=True)
+            
+            # Check if self._k8s_version is in the list
+            if self._k8s_version and self._k8s_version not in supported_versions:
+                # Remove the oldest version (last item after descending sort)
+                if supported_versions:
+                    removed_version = supported_versions.pop()
+                    if self._verbose:
+                        print(f"  Removed oldest version: {removed_version}")
+                
+                # Add self._k8s_version as the first item
+                supported_versions.insert(0, self._k8s_version)
+                if self._verbose:
+                    print(f"  Added {self._k8s_version} as the first item in the list")
             
             if self._verbose:
                 print(f"  Found {len(supported_versions)} supported versions: {supported_versions}")
