@@ -4,12 +4,11 @@
 <KubernetesVersion>{{k8s_version}}</KubernetesVersion>
 
 # Input Validation
+- **Do not add code to implement the Input Validation logic.**
 - Get Kubernetes version in xml tag <KubernetesVersion>
-- Ensure the Kubernetes version is in the format [MAJOR].[MINOR].[REVISION]. If the version starts with a leading 'v' (e.g., v1.31.8), remove the 'v'.
 - **Version Existence Check**: Search the `AllKubernetesSupportedVersionsAzureStack` find the list of keys for `AllKubernetesSupportedVersionsAzureStack` . 
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
-  - **Do not add code to implement the Input Validation logic.**
   
 # Code Snippt Filter:
    - source code path: `pkg/api/common/versions.go`

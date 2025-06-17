@@ -4,7 +4,6 @@
 
 # Input Validation
 - Retrieve the Kubernetes version from the <KubernetesVersion> XML tag.
-- Ensure the Kubernetes version follows the [MAJOR].[MINOR].[REVISION] format. If the version has a leading 'v' (e.g., v1.31.8), remove the 'v'.
 - For each of the following default version constants, check if they are set to [MAJOR].[MINOR-1]:
    - KubernetesDefaultRelease
    - KubernetesDefaultReleaseWindows
