@@ -55,7 +55,7 @@ After the cluster is deployed, the [scale][], [addpool][], and [upgrade][] comma
 $ az account list -o table
 Name                                             CloudName    SubscriptionId                        State    IsDefault
 -----------------------------------------------  -----------  ------------------------------------  -------  -----------
-Contoso Subscription                             AzureCloud   51ac25de-afdg-9201-d923-8d8e8e8e8e8e  Enabled  True
+Contoso Subscription                             AzureCloud   <SUBSCRIPTION_ID>                     Enabled  True
 ```
 * Proper access rights within the subscription; especially the right to create and assign [service principals][sp] to applications
 * A `dnsPrefix` which forms part of the hostname for your cluster (e.g. staging, prodwest, blueberry). In the [example](/examples/kubernetes.json) we're using we are not building a private cluster (declared by assigning a `true` value to `properties.orchestratorProfile.kubernetesConfig.privateCluster.enabled` in your API model: see [this example](/examples/kubernetes-config/kubernetes-private-cluster.json)), and so we have to consider that the value of `dnsPrefix` *must* produce a unique fully-qualified domain name DNS record composed of <value of `dnsPrefix`>.<value of `location`>.cloudapp.azure.com. Depending on the uniqueness of your `dnsPrefix`, it may be a good idea to pre-check the availability of the resultant DNS record prior to deployment. (Also see the `--auto-suffix` option below if having to do this pre-check is onerous, and you don't care about having a randomly named cluster.)
@@ -64,7 +64,7 @@ Contoso Subscription                             AzureCloud   51ac25de-afdg-9201
 
 ### Deploy
 
-For this example, the subscription id is `51ac25de-afdg-9201-d923-8d8e8e8e8e8e`, the DNS prefix is `contoso-apple`, and the location is `westus2`.
+For this example, the subscription id is `<SUBSCRIPTION_ID>`, the DNS prefix is `contoso-apple`, and the location is `westus2`.
 
 First, we need to log in to Azure:
 
@@ -83,8 +83,8 @@ $ aks-engine-azurestack deploy --dns-prefix contoso-apple \
     --api-model examples/kubernetes.json \
     --auto-suffix
 
-INFO[0000] No subscription provided, using selected subscription from azure CLI: 51ac25de-afdg-9201-d923-8d8e8e8e8e8e
-INFO[0003] Generated random suffix 5f776b0d, DNS Prefix is contoso-apple2-5f776b0d
+INFO[0000] No subscription provided, using selected subscription from azure CLI: <SUBSCRIPTION_ID>
+INFO[0003] Generated random suffix <GUID_1>, DNS Prefix is contoso-apple2-<GUID_1>
 WARN[0005] Running only 1 control plane VM not recommended for production clusters, use 3 or 5 for control plane redundancy
 INFO[0011] Starting ARM Deployment contoso-apple-1877721870 in resource group contoso-apple. This will take some time...
 INFO[0273] Finished ARM Deployment (contoso-apple-1877721870). Succeeded
@@ -92,31 +92,31 @@ INFO[0273] Finished ARM Deployment (contoso-apple-1877721870). Succeeded
 
 `aks-engine-azurestack` creates a new resource group automatically from the `--resource-group` value passed into the `aks-engine-azurestack deploy` statement, if that resource group doesn't already exist. A resource group is a container that holds related resources for an Azure solution. In Azure, you can organize related resources such as storage accounts, virtual networks, and virtual machines (VMs) into resource groups. AKS Engine takes advantage of that organizational model to place all Kubernetes cluster resources into a dedicated resource group.
 
-`aks-engine-azurestack` will generate ARM templates, SSH keys, and a kubeconfig (A specification that may be used as input to the `kubectl` command to establish a privileged connection to the Kubernetes apiserver, see [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) for more documentation.), and then persist those as local files under a child directory in the relative path `_output/`. Because we used the `--auto-suffix` option, AKS Engine created the cluster configuration artifacts under the child directory `contoso-apple-5f776b0d`:
+`aks-engine-azurestack` will generate ARM templates, SSH keys, and a kubeconfig (A specification that may be used as input to the `kubectl` command to establish a privileged connection to the Kubernetes apiserver, see [here](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/) for more documentation.), and then persist those as local files under a child directory in the relative path `_output/`. Because we used the `--auto-suffix` option, AKS Engine created the cluster configuration artifacts under the child directory `contoso-apple-<GUID_1>`:
 
 ```sh
-$ ls _output/contoso-apple-5f776b0d/
+$ ls _output/contoso-apple-<GUID_1>/
 apimodel.json			azuredeploy.parameters.json	client.crt			etcdpeer0.crt			kubeconfig
 apiserver.crt			azureuser_rsa			client.key			etcdpeer0.key			kubectlClient.crt
 apiserver.key			ca.crt				etcdclient.crt			etcdserver.crt			kubectlClient.key
 azuredeploy.json		ca.key				etcdclient.key			etcdserver.key
 ```
 
-Access the new cluster by using the kubeconfig generated for the cluster's location. This example used `westus2`, so the kubeconfig is located at `_output/contoso-apple-5f776b0d/kubeconfig/kubeconfig.westus2.json`:
+Access the new cluster by using the kubeconfig generated for the cluster's location. This example used `westus2`, so the kubeconfig is located at `_output/contoso-apple-<GUID_1>/kubeconfig/kubeconfig.westus2.json`:
 
 ```sh
-$ export KUBECONFIG=_output/contoso-apple-5f776b0d/kubeconfig/kubeconfig.westus2.json 
+$ export KUBECONFIG=_output/contoso-apple-<GUID_1>/kubeconfig/kubeconfig.westus2.json 
 $ kubectl cluster-info
-Kubernetes master is running at https://contoso-apple-5f776b0d.westus2.cloudapp.azure.com
-CoreDNS is running at https://contoso-apple-5f776b0d.westus2.cloudapp.azure.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
-Metrics-server is running at https://contoso-apple-5f776b0d.westus2.cloudapp.azure.com/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
+Kubernetes master is running at https://contoso-apple-<GUID_1>.westus2.cloudapp.azure.com
+CoreDNS is running at https://contoso-apple-<GUID_1>.westus2.cloudapp.azure.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+Metrics-server is running at https://contoso-apple-<GUID_1>.westus2.cloudapp.azure.com/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy
 
 To further debug and diagnose cluster problems, use 'kubectl cluster-info dump'.
 ```
 
-The files saved to the `output/contoso-apple-5f776b0d/` directory (using our example) are critical to keep save for any future cluster operations using the `aks-engine-azurestack` CLI. Store them somewhere safe and reliable!
+The files saved to the `output/contoso-apple-<GUID_1>/` directory (using our example) are critical to keep save for any future cluster operations using the `aks-engine-azurestack` CLI. Store them somewhere safe and reliable!
 
-Administrative note: By default, the directory where aks-engine-azurestack stores cluster configuration (`_output/contoso-apple-5f776b0d` above) won't be overwritten as a result of subsequent attempts to deploy a cluster using the same `--dns-prefix`) To re-use the same resource group name repeatedly, include the `--force-overwrite` command line option with your `aks-engine-azurestack deploy` command. On a related note, include an `--auto-suffix` option to append a randomly generated suffix to the dns-prefix to form the resource group name, for example if your workflow requires a common prefix across multiple cluster deployments. Using the `--auto-suffix` pattern appends a compressed timestamp to ensure a unique cluster name (and thus ensure that each deployment's configuration artifacts will be stored locally under a discrete `_output/<resource-group-name>/` directory).
+Administrative note: By default, the directory where aks-engine-azurestack stores cluster configuration (`_output/contoso-apple-<GUID_1>` above) won't be overwritten as a result of subsequent attempts to deploy a cluster using the same `--dns-prefix`) To re-use the same resource group name repeatedly, include the `--force-overwrite` command line option with your `aks-engine-azurestack deploy` command. On a related note, include an `--auto-suffix` option to append a randomly generated suffix to the dns-prefix to form the resource group name, for example if your workflow requires a common prefix across multiple cluster deployments. Using the `--auto-suffix` pattern appends a compressed timestamp to ensure a unique cluster name (and thus ensure that each deployment's configuration artifacts will be stored locally under a discrete `_output/<resource-group-name>/` directory).
 
 **Note**: If the cluster is using an existing VNET, please see the [Custom VNET][custom-vnet] feature documentation for additional steps that must be completed after cluster provisioning.
 
@@ -126,7 +126,7 @@ Administrative note: By default, the directory where aks-engine-azurestack store
 
 This example uses the more traditional method of generating raw ARM templates, which are submitted to Azure using the `az deployment group create` command.
 
-For this example, we will use the same information as before: the subscription id is `51ac25de-afdg-9201-d923-8d8e8e8e8e8e`, the DNS prefix is `contoso-apple-5eac6ed8` (note the manual use of a unique string suffix to better ensure uniqueness), and the location is `westus2`.
+For this example, we will use the same information as before: the subscription id is `<SUBSCRIPTION_ID>`, the DNS prefix is `contoso-apple-<GUID_2>` (note the manual use of a unique string suffix to better ensure uniqueness), and the location is `westus2`.
 
 We will also need to generate an SSH key. When creating VMs, you will need an SSH RSA key for SSH access. Use the following articles to create your SSH RSA Key:
 
@@ -136,12 +136,12 @@ We will also need to generate an SSH key. When creating VMs, you will need an SS
 Next, we'll create a resource group to demonstrate building a cluster into a resource group that already exists (Note: we recommend you use this resource group *only* for your Kubernetes cluster resources, and use *one, dedicated resource group per cluster*).
 
 ```console
-$ az group create --name contoso-apple-5eac6ed8 --location westus2
+$ az group create --name contoso-apple-<GUID_2> --location westus2
 {
-  "id": "/subscriptions/51ac25de-afdg-9201-d923-8d8e8e8e8e8e/resourceGroups/contoso-apple-5eac6ed8",
+  "id": "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/contoso-apple-<GUID_2>",
   "location": "westus2",
   "managedBy": null,
-  "name": "contoso-apple-5eac6ed8",
+  "name": "contoso-apple-<GUID_2>",
   "properties": {
     "provisioningState": "Succeeded"
   },
@@ -152,13 +152,13 @@ $ az group create --name contoso-apple-5eac6ed8 --location westus2
 In this example, we'll create a [service principal][sp] to demonstrate that authentication option for establishing a privileged connection between the Kubernetes runtime and Azure APIs. Normally, we recommend that you use the managed identity configuration (the default), which uses service principals generated from the VM identity itself, rather than maintain your own service principals. [More documentation about managed identity is here](https://docs.microsoft.com/en-us/azure/app-service/overview-managed-identity).
 
 ```console
-$ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/51ac25de-afdg-9201-d923-8d8e8e8e8e8e/resourceGroups/contoso-apple-5eac6ed8"
+$ az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/contoso-apple-<GUID_2>"
 {
-  "appId": "47a62f0b-917c-4def-aa85-9b010455e591",
+  "appId": "<SERVICE_PRINCIPAL_APP_ID>",
   "displayName": "azure-cli-2019-01-11-22-22-06",
   "name": "http://azure-cli-2019-01-11-22-22-06",
-  "password": "26054d2b-799b-448e-962a-783d0d6f976b",
-  "tenant": "72f988bf-86f1-41af-91ab-2d7cd011db47"
+  "password": "<SERVICE_PRINCIPAL_SECRET>",
+  "tenant": "<TENANT_ID>"
 }
 ```
 
@@ -166,7 +166,7 @@ We make a note of the `appId` and the `password` fields, as we will be providing
 
 Edit the [simple Kubernetes cluster definition](/examples/kubernetes.json) and fill out the required values:
 
-* `properties.MasterProfile.dnsPrefix`: in this example we're using "contoso-apple-5eac6ed8"
+* `properties.MasterProfile.dnsPrefix`: in this example we're using "contoso-apple-<GUID_2>"
 * `properties.linuxProfile.ssh.publicKeys[0].keyData`: must contain the public portion of the SSH key we generated - this will be associated with the `adminUsername` value found in the same section of the cluster definition (e.g. 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABA....')
 * Add a new `properties.servicePrincipalProfile` JSON object:
   * `properties.servicePrincipalProfile.clientId`: this is the service principal's appId UUID or name from earlier
@@ -176,7 +176,7 @@ Optional: attach to an existing virtual network (VNET). Details [here][custom-vn
 
 ### Generate the Templates
 
-The generate command takes a cluster definition and outputs a number of templates which describe your Kubernetes cluster. By default, `generate` will create a new directory named after your cluster nested in the `_output` directory. If your dnsPrefix was `contoso-apple-5eac6ed8`, your cluster templates would be found in `_output/contoso-apple-5eac6ed8-`.
+The generate command takes a cluster definition and outputs a number of templates which describe your Kubernetes cluster. By default, `generate` will create a new directory named after your cluster nested in the `_output` directory. If your dnsPrefix was `contoso-apple-<GUID_2>`, your cluster templates would be found in `_output/contoso-apple-<GUID_2>-`.
 
 Run `aks-engine-azurestack generate examples/kubernetes.json`
 
@@ -203,15 +203,15 @@ Using the CLI:
 ```console
 $ az deployment group create \
     --name "contoso-apple-k8s" \
-    --resource-group "contoso-apple-5eac6ed8" \
-    --template-file "./_output/contoso-apple-5eac6ed8/azuredeploy.json" \
-    --parameters "./_output/contoso-apple-5eac6ed8/azuredeploy.parameters.json"
+    --resource-group "contoso-apple-<GUID_2>" \
+    --template-file "./_output/contoso-apple-<GUID_2>/azuredeploy.json" \
+    --parameters "./_output/contoso-apple-<GUID_2>/azuredeploy.parameters.json"
 ```
 
 When your ARM template deployment is complete you should return some JSON output, and a `0` exit code. You now have a Kubernetes cluster with the (mostly complete) set of default configurations.
 
 ```sh
-export KUBECONFIG=_output/contoso-apple-5eac6ed8/kubeconfig/kubeconfig.westus2.json
+export KUBECONFIG=_output/contoso-apple-<GUID_2>/kubeconfig/kubeconfig.westus2.json
 ```
 
 Now you're ready to start using your Kubernetes cluster with `kubectl`!
