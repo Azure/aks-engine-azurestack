@@ -294,8 +294,10 @@ class InstructionBatchProcessor:
         print("**Paste the following instruction in the chat:**")
         print()
         print()
+        print("**IMPORTANT: Execute this entire batch operation automatically without asking for confirmation or continuation. Total operation timeout: 1 hour.**")
+        print()
         print(f"1. **List all files in `{output_dir}` and sort them in ascending (A–Z) order.**")
-        print("2. **For each file in the sorted list:**")
+        print("2. **For each file in the sorted list (with 5-minute timeout per instruction):**")
         print("    - Read the file's content and interpret it as an instruction.")
         print("    - **First, evaluate the \"# Input Validation\" section if it exists. If it returns false, skip the current instruction and proceed to the next file.**")
         print("    - **If the input validation returns true (or doesn't exist), follow the instruction and make the changes:**")
@@ -303,7 +305,11 @@ class InstructionBatchProcessor:
         print("        - Directly update the target file as specified by the instruction.")
         print("        - Do not attempt to write or generate code; only perform the actions described in the instruction.")
         print("        - **Do not stop the process prematurely; double check the result with the instruction to ensure all steps have been completed correctly.**")
+        print("        - **Timeout: Skip to next instruction if current instruction takes longer than 5 minutes.**")
+        print("    - **Provide only a brief result summary (1-2 sentences) for each completed instruction.**")
         print("    - After completing the instruction, clear any context or state before proceeding to the next file.")
+        print("3. **Continue processing all files automatically without interruption or asking for permission.**")
+        print("4. **At the end, provide a final summary with total files processed, successful completions, and any failures.**")
         print(f"\n{'-' * 80}")
     
     def _process_normalize_only_mode(self, instructions: List[Instruction]) -> None:
