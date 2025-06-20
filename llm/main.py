@@ -59,6 +59,7 @@ Examples:
   python -m llm.main --code-root-path /path/to/code --instruction-path /path/to/instructions
   python -m llm.main --code-root-path ./pkg --instruction-path ./llm/instructions --k8s-version 1.31.8
   python main.py --code-root-path ../pkg --instruction-path ./instructions --k8s-version v1.30.10
+  python main.py --code-root-path ../pkg --instruction-path ./instructions --normalize-only
         """
     )
     
@@ -86,6 +87,12 @@ Examples:
         help="Kubernetes version in format [MAJOR].[MINOR].[REVISION] (e.g., 1.31.8 or v1.31.8)"
     )
     
+    parser.add_argument(
+        "--normalize-only",
+        action="store_true",
+        help="Only normalize the instructions and save them to _output folder, without processing snippets"
+    )
+    
     args = parser.parse_args()
     
     try:
@@ -98,13 +105,18 @@ Examples:
             print(f"Instruction path (absolute): {instruction_path}")
             if args.k8s_version:
                 print(f"Kubernetes version: {args.k8s_version}")
+            if args.normalize_only:
+                print("Mode: Normalize-only (no snippet processing)")
+            else:
+                print("Mode: Full processing (normalize + snippet processing)")
         
         # Create and use the batch processor
         batch_processor = InstructionBatchProcessor(
             code_root_path=code_root_path,
             instruction_path=instruction_path,
             verbose=args.verbose,
-            k8s_version=args.k8s_version
+            k8s_version=args.k8s_version,
+            normalize_only=args.normalize_only
         )
         batch_processor.process_instructions()
         

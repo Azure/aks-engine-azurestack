@@ -30,7 +30,7 @@ class InstructionBatchProcessor:
     reporting and error handling for each instruction.
     """
     
-    def __init__(self, code_root_path: str, instruction_path: str, verbose: bool = False, k8s_version: Optional[str] = None) -> None:
+    def __init__(self, code_root_path: str, instruction_path: str, verbose: bool = False, k8s_version: Optional[str] = None, normalize_only: bool = False) -> None:
         """
         Initialize the batch processor with required paths.
         
@@ -39,6 +39,7 @@ class InstructionBatchProcessor:
             instruction_path: The directory path containing instruction files
             verbose: Whether to enable verbose output
             k8s_version: The Kubernetes version to use for processing (optional)
+            normalize_only: If True, only normalize instructions and save to _output folder
             
         Raises:
             FileNotFoundError: If code_root_path or instruction_path doesn't exist
@@ -48,6 +49,7 @@ class InstructionBatchProcessor:
         self._instruction_path = self._validate_and_resolve_path(instruction_path, "Instruction")
         self._verbose = verbose
         self._k8s_version = k8s_version
+        self._normalize_only = normalize_only
         self._processed_count = 0
         self._failed_count = 0
         self._k8s_component_data: Optional[Dict[str, str]] = None  # Late binding field
@@ -73,6 +75,11 @@ class InstructionBatchProcessor:
         return self._k8s_version
     
     @property
+    def normalize_only(self) -> bool:
+        """Get the normalize-only setting."""
+        return self._normalize_only
+    
+    @property
     def processed_count(self) -> int:
         """Get the number of successfully processed instructions."""
         return self._processed_count
@@ -88,6 +95,9 @@ class InstructionBatchProcessor:
         
         This method loads all instructions, validates them, and processes each one
         with comprehensive error handling and progress reporting.
+        
+        If normalize_only is True, instructions are only normalized and saved to
+        the _output folder without snippet processing.
         """
         # Load instructions from the directory
         instructions = self._load_instructions()
@@ -98,9 +108,13 @@ class InstructionBatchProcessor:
         
         self._print_header(instructions)
         
-        # Process each instruction
-        for i, instruction in enumerate(instructions, 1):
-            self._process_single_instruction(instruction, i, len(instructions))
+        # Handle normalize-only mode
+        if self._normalize_only:
+            self._process_normalize_only_mode(instructions)
+        else:
+            # Process each instruction normally
+            for i, instruction in enumerate(instructions, 1):
+                self._process_single_instruction(instruction, i, len(instructions))
         
         self._print_summary()
     
@@ -254,10 +268,118 @@ class InstructionBatchProcessor:
     def _print_summary(self) -> None:
         """Print the final processing summary."""
         print(f"\n{'-' * 60}")
-        print("Instruction processing completed.")
+        if self._normalize_only:
+            print("Instruction normalization completed.")
+            self._print_copilot_instructions()
+        else:
+            print("Instruction processing completed.")
         print(f"Successfully processed: {self._processed_count}")
         if self._failed_count > 0:
             print(f"Failed to process: {self._failed_count}")
+    
+    def _print_copilot_instructions(self) -> None:
+        """Print GitHub Copilot agent instructions for processing normalized instructions."""
+        output_dir = os.path.join(os.path.dirname(self._instruction_path), "_output")
+        
+        print(f"\n{'-' * 80}")
+        print("GitHub Copilot Agent Instructions:")
+        print(f"{'-' * 80}")
+        print()
+        print("**Setup Steps:**")
+        print("1. Open GitHub Copilot in VS Code")
+        print("2. Switch to Agent mode")
+        print("3. Start a new session")
+        print("4. Choose Claude Sonnet 4 model")
+        print()
+        print("**Paste the following instruction in the chat:**")
+        print()
+        print()
+        print(f"1. **List all files in `{output_dir}` and sort them in ascending (A–Z) order.**")
+        print("2. **For each file in the sorted list:**")
+        print("    - Read the file's content and interpret it as an instruction.")
+        print("    - **First, evaluate the \"# Input Validation\" section if it exists. If it returns false, skip the current instruction and proceed to the next file.**")
+        print("    - **If the input validation returns true (or doesn't exist), follow the instruction and make the changes:**")
+        print("        - Strictly follow and apply the instruction step by step, in the order given.")
+        print("        - Directly update the target file as specified by the instruction.")
+        print("        - Do not attempt to write or generate code; only perform the actions described in the instruction.")
+        print("        - **Do not stop the process prematurely; double check the result with the instruction to ensure all steps have been completed correctly.**")
+        print("    - After completing the instruction, clear any context or state before proceeding to the next file.")
+        print(f"\n{'-' * 80}")
+    
+    def _process_normalize_only_mode(self, instructions: List[Instruction]) -> None:
+        """
+        Process instructions in normalize-only mode.
+        
+        In this mode, instructions are only normalized (placeholders replaced)
+        and saved to the _output folder without any snippet processing.
+        
+        Args:
+            instructions: List of instructions to normalize
+        """
+        # Check folder existence, remove and recreate the output directory
+        output_dir = os.path.join(os.path.dirname(self._instruction_path), "_output")
+        
+        # Remove existing output directory if it exists
+        if os.path.exists(output_dir):
+            import shutil
+            shutil.rmtree(output_dir)
+            if self._verbose:
+                print(f"Removed existing output directory: {output_dir}")
+        
+        # Create fresh output directory
+        os.makedirs(output_dir, exist_ok=True)
+        
+        print(f"Normalize-only mode: Saving normalized instructions to: {output_dir}")
+        print()
+        
+        # Process each instruction
+        for i, instruction in enumerate(instructions, 1):
+            self._process_single_instruction_normalize_only(instruction, i, len(instructions), output_dir)
+    
+    def _process_single_instruction_normalize_only(self, instruction: Instruction, current: int, total: int, output_dir: str) -> None:
+        """
+        Process a single instruction in normalize-only mode.
+        
+        Args:
+            instruction: The instruction to normalize
+            current: Current instruction number (1-based)
+            total: Total number of instructions
+            output_dir: Directory to save normalized instructions
+        """
+        try:
+            print(f"Normalizing instruction {current}/{total}: {instruction.file_path}")
+            
+            # Get original content
+            original_content = instruction.get_content()
+            
+            # Normalize the instruction content
+            normalized_content = self._normalize_instruction(original_content)
+            
+            # Generate output filename (keep original name)
+            input_filename = os.path.basename(instruction.file_path)
+            output_filename = input_filename
+            output_path = os.path.join(output_dir, output_filename)
+            
+            # Save normalized content
+            with open(output_path, 'w', encoding='utf-8') as f:
+                f.write(normalized_content)
+            
+            print(f"  ✓ Saved normalized instruction to: {output_path}")
+            
+            # Show change summary if verbose
+            if self._verbose:
+                original_length = len(original_content)
+                normalized_length = len(normalized_content)
+                if original_length != normalized_length:
+                    print(f"  Content length: {original_length} → {normalized_length} characters")
+                else:
+                    print(f"  Content length: {original_length} characters (no changes)")
+            
+            self._processed_count += 1
+            
+        except Exception as e:
+            print(f"  ✗ Error normalizing instruction: {e}")
+            self._failed_count += 1
     
     def _get_modified_code_from_llm(self, snippet_processor: 'SnippetProcessor', instruction: Instruction) -> str:
         """
