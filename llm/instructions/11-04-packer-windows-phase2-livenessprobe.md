@@ -29,15 +29,29 @@
       Examine the current pattern, add the new container image version to the list, and remove the oldest version from the list.
       **It is crucial to keep the indentation consistent with the existing format when making any changes.**
 
+## Newline Preservation Guidelines for String Replacement
+
+**CRITICAL**: To prevent accidental line merging when using `replace_string_in_file`, follow these strategies:
+
+### Strategy 2: Target Single Line Only
+Replace only the specific line that needs to change:
+
+```powershell
+# CORRECT - Replace only the target line:
+oldString: "                \"mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.8.0\","
+newString: "                \"mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0\","
+```
+
 ## Component version Check list
 - [ ] For `livenessprobe`:
 	- Retrieve the desired `livenessprobe` container image version from the `<CSIImages>` XML tag.
 	- Review the current entries in the `$imagesToPull` list.
 	- **Check if the `livenessprobe` container image version already exists in the `$imagesToPull` list.**
 		- If it exists, **skip the update** for `livenessprobe`.
-		- If it does not exist, proceed with the following steps:
-			- Remove the first occurrence of the `livenessprobe` entry from `$imagesToPull`.
-			- Add the new `livenessprobe` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
+		- If it does not exist, proceed with the following steps:      
+		- Replace the oldest occurrence of the `livenessprobe` entry from `$imagesToPull` with the new version.
+			- Update the `livenessprobe` entry with the new image version while maintaining the same position in `$imagesToPull` (maintain correct indentation).
+			- **CRITICAL**: Ensure each array entry remains on its own separate line with proper indentation. Do not accidentally merge lines during the edit process.
 			- Double-check the list for proper formatting and indentation.
 
 
@@ -50,6 +64,12 @@
 **After:**
         "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.10.0",
         "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
+
+**IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
+1. Each array entry stays on its own separate line
+2. Proper indentation (8 spaces) is maintained for each entry
+3. No lines are accidentally merged together during the edit process
+4. The comma placement and string quotes remain consistent
 
 ## **Example: Attempting to add `livenessprobe` v2.15.0 when it already exists (no change needed)**
 

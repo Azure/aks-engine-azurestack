@@ -16,14 +16,25 @@
 # Code snippet Filter:
    - source code path: `vhd/packer/configure-windows-vhd-phase2.ps1`
    - object name: Get-FilesToCacheOnVHD
-   - object type: func
-   - begin with: `function Get-FilesToCacheOnVHD {`
+   - object type: func   - begin with: `function Get-FilesToCacheOnVHD {`
 
-# Kubernetes Binaries
-  - Extract all supported Kubernetes versions from the `<KubernetesVersions>` XML tag.
+## Newline Preservation Guidelines for String Replacement
+
+**CRITICAL**: To prevent accidental line merging when using `replace_string_in_file`, follow this strategy:
+
+### Target Single Line Only
+Replace only the specific line that needs to change:
+
+```powershell
+# CORRECT - Replace only the target line:
+oldString: "        \"https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip\","
+newString: "        \"https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip\","
+```
+
+# Kubernetes Binaries  - Extract all supported Kubernetes versions from the `<KubernetesVersions>` XML tag.
   - The versions are provided as a comma-separated string.
   - Sort the versions in ascending order.
-  - Remove all existing entries in the $map for the key `c:\akse-cache\win-k8s\`.
+  - Replace the existing entries in the $map for the key `c:\akse-cache\win-k8s\` with the new supported versions.
   - For each version in the sorted list, directly calculate and construct the new entry string (do not write implementation code):
     - Format: https://packages.aks.azure.com/kubernetes/v[MAJOR].[MINOR].[PATCH]/windowszip/v[MAJOR].[MINOR].[PATCH]-1int.zip
     - Example: For version 1.29.15, the URL is https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip
@@ -32,7 +43,13 @@
 # Examples:
 Supported Versions: "1.30.10,1.29.15"
 
-The resulting value:
+Existing entries in $map for `c:\akse-cache\win-k8s\`:
+    "c:\akse-cache\win-k8s\" = @(
+        "https://packages.aks.azure.com/kubernetes/v1.28.12/windowszip/v1.28.12-1int.zip",
+        "https://packages.aks.azure.com/kubernetes/v1.29.8/windowszip/v1.29.8-1int.zip"
+    );
+
+The resulting value (replacing existing versions with new supported versions):
     "c:\akse-cache\win-k8s\" = @(
         "https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip",
         "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"

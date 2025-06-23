@@ -27,15 +27,27 @@
       Examine the current pattern, add the new container image version to the list, and remove the oldest version from the list.
       **It is crucial to keep the indentation consistent with the existing format when making any changes.**
 
+## Newline Preservation Guidelines for String Replacement
+
+**CRITICAL**: To prevent accidental line merging when using `replace_string_in_file`, follow these strategies:
+
+### Strategy 2: Target Single Line Only
+Replace only the specific line that needs to change:
+
+```powershell
+# CORRECT - Replace only the target line:
+oldString: "                \"mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.28.3\","
+newString: "                \"mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5\","
+```
+
 ## Component version Check list
 - [ ] For `azuredisk-csi`:
   - Retrieve the  `azuredisk-csi` container image version from the `<CSIImages>` XML tag.
   - Review the current entries in the `$imagesToPull` list.
   - **Check if the `azuredisk-csi` container image version already exists in the `$imagesToPull` list.**
-    - If it exists, **skip the update** for `azuredisk-csi`.
-    - If it does not exist, proceed with the following steps:      
-    - Remove the first occurrence of the `azuredisk-csi` entry from `$imagesToPull`.
-      - Add the new `azuredisk-csi` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
+    - If it exists, **skip the update** for `azuredisk-csi`.    - If it does not exist, proceed with the following steps:      
+    - Replace the oldest occurrence of the `azuredisk-csi` entry from `$imagesToPull` with the new version.
+      - Update the `azuredisk-csi` entry with the new image version while maintaining the same position in `$imagesToPull` (maintain correct indentation).
       - **CRITICAL**: Ensure each array entry remains on its own separate line with proper indentation. Do not accidentally merge lines during the edit process.
       - Double-check the list for proper formatting and indentation.
 
@@ -50,10 +62,10 @@ Example to add `azuredisk-csi` for v1.30.8
         
 **After:**
 
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
 
 **IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
 1. Each array entry stays on its own separate line
