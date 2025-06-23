@@ -1,5 +1,5 @@
 # Input 
-<KubernetesVersions>{{all_supported_versions}}</KubernetesVersions>
+<KubernetesVersions>{{k8s_version}}</KubernetesVersions>
 <AzureCloudManagerImages>{{cloud_provider_image_versions}}</AzureCloudManagerImages>
 <CSIImages>{{csi_image_versions}}</CSIImages>
 
@@ -36,12 +36,12 @@ Replace only the specific line that needs to change:
 
 ```powershell
 # CORRECT - Replace only the target line:
-oldString: "        \"https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip\","
+oldString: "        \"https://packages.aks.azure.com/kubernetes/v1.28.12/windowszip/v1.28.12-1int.zip\","
 newString: "        \"https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip\","
 ```
 
 # Examples:
-Supported Versions: "1.30.10,1.29.15"
+For New Kuberntes version: "1.30.10"
 
 Existing entries in $map for `c:\akse-cache\win-k8s\`:
     "c:\akse-cache\win-k8s\" = @(
@@ -51,8 +51,8 @@ Existing entries in $map for `c:\akse-cache\win-k8s\`:
 
 The resulting value (replacing existing versions with new supported versions):
     "c:\akse-cache\win-k8s\" = @(
-        "https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip",
-        "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
+        "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip",
+        "https://packages.aks.azure.com/kubernetes/v1.29.8/windowszip/v1.29.8-1int.zip"
     );
 
 **IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
