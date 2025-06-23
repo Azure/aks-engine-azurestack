@@ -14,7 +14,7 @@
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
       
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `vhd/packer/configure-windows-vhd-phase2.ps1`
    - object name: Get-ContainerImages
    - object type: func

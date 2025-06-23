@@ -3,7 +3,7 @@
 <KubernetesVersion>{{k8s_version}}</KubernetesVersion>
 <RemovedFeatureGate>{{removed_feature_gates}}</RemovedFeatureGate>
 
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/defaults-controller-manager_test.go`
    - object name: TestControllerManagerConfigFeatureGates
    - object type: func

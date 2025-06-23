@@ -10,7 +10,7 @@
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
   
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/common/versions.go`
    - object name: AllKubernetesSupportedVersionsAzureStack
    - object type: map

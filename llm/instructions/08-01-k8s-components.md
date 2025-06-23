@@ -9,7 +9,7 @@
 - Examinate the map `common.KubernetesImageBaseTypeGCR` to search key `"[MAJOR][MINOR]": {")`
 	- If DOES NOT exist, return "True"; otherwise, return "False".
 
-# Target File Information
+# Code snippet Filter:
 - **File Path:** `pkg/api/k8s_versions.go`
 - **Target Object:** `kubernetesImageBaseVersionedImages` (map variable)
 - **Object Type:** `map[string]map[string]map[string]string`

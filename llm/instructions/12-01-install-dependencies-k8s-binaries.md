@@ -9,7 +9,7 @@
     - If the desired version exists in the array, return "False". 
   - **Do not add code to implement the Input Validation logic.**
   
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `vhd/packer/install-dependencies.sh`
    - object name: installKubeBinaries
    - object type: func

@@ -11,7 +11,7 @@
    - KubernetesDefaultReleaseWindowsAzureStack
 - If any of these constants are not set to [MAJOR].[MINOR-1], return "True"; otherwise, return "False".
 
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/common/const.go`
    - object name: AllKubernetesSupportedVersions
    - object type: const

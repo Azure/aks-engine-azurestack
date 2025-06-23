@@ -1,3 +1,4 @@
+
 # Input 
 <KubernetesVersion>{{k8s_version_revision}}</KubernetesVersion>
 <KubernetesPreviousVersion>{{k8s_previous_version_revision}}</KubernetesPreviousVersion>
@@ -5,14 +6,14 @@
 <CSIImages>{{csi_image_versions}}</CSIImages>
 
 # Input Validation
-- **Do not add code to implement the Input Validation logic.**
+  - **Do not add code to implement the Input Validation logic.**
   - Retrieve the desired `csi-node-driver-registrar` container image version from the `<CSIImages>` XML tag.
   - Review the current entries in the `$imagesToPull` list.
   - **Version Existence Check**: Search the `$imagesToPull` find the list of versions for `csi-node-driver-registrar` . 
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
-    
-# Code Snippt Filter:
+
+# Code snippet Filter:
   - source code path: `vhd/packer/configure-windows-vhd.ps1`
   - object name: Get-ContainerImages
   - object type: func
@@ -29,43 +30,60 @@
 ## Component version Check list
 
 - [ ] For `csi-node-driver-registrar`:
-	- Retrieve the desired  `csi-node-driver-registrar` container image version from the `<CSIImages>` XML tag.
-	- Review the current entries in the `$imagesToPull` list.
-	- **Check if the `csi-node-driver-registrar` container image version already exists in the `$imagesToPull` list.**
-		- If it exists, **skip the update** for `csi-node-driver-registrar`.
-		- If it does not exist, proceed with the following steps:
-			- Remove the first occurrence of the `csi-node-driver-registrar` entry from `$imagesToPull`.
-			- Add the new `csi-node-driver-registrar` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
-			- Double-check the list for proper formatting and indentation.
+  - Retrieve the desired  `csi-node-driver-registrar` container image version from the `<CSIImages>` XML tag.
+  - Review the current entries in the `$imagesToPull` list.
+  - **Check if the `csi-node-driver-registrar` container image version already exists in the `$imagesToPull` list.**
+    - If it exists, **skip the update** for `csi-node-driver-registrar`.
+    - If it does not exist, proceed with the following steps:      
+    - Remove the first occurrence of the `csi-node-driver-registrar` entry from `$imagesToPull`.
+      - Add the new `csi-node-driver-registrar` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
+      - **CRITICAL**: Ensure each array entry remains on its own separate line with proper indentation. Do not accidentally merge lines during the edit process.
+      - Double-check the list for proper formatting and indentation.
 
 # Examples
 ## **Example: Add `csi-node-driver-registrar` v2.13.0 when it does not exist (following preceding rules)**
 
 **Before:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.6.2",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
+        
 **After:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
 
 ## **Example: Attempting to add `csi-node-driver-registrar` v2.13.0 when it already exists (no change needed)**
 
 **Before:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        
 **After:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
 
 ## **Example: Incorrect (should NOT happen)**
 
 **Before:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        
 **After (Incorrect):**
+
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        
 *This is incorrect, it should no change because the target version already in the list*
+
+**IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
+1. Each array entry stays on its own separate line
+2. Proper indentation (8 spaces) is maintained for each entry
+3. No lines are accidentally merged together during the edit process
+4. The comma placement and string quotes remain consistent
 
 **You must review and ensure that all items on the **Component version Check list** are checked. If any items are not checked, make the necessary changes to ensure all checkboxes are checked.**
 

@@ -1,3 +1,4 @@
+
 # Input 
 <KubernetesVersion>{{k8s_version_revision}}</KubernetesVersion>
 <KubernetesPreviousVersion>{{k8s_previous_version_revision}}</KubernetesPreviousVersion>
@@ -12,8 +13,7 @@
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
 
-  
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `vhd/packer/configure-windows-vhd.ps1`
    - object name: Get-ContainerImages
    - object type: func
@@ -28,26 +28,38 @@
       **It is crucial to keep the indentation consistent with the existing format when making any changes.**
 
 ## Component version Check list
-  - [ ] For `azuredisk-csi`:
-    - Retrieve the  `azuredisk-csi` container image version from the `<CSIImages>` XML tag.
-    - Review the current entries in the `$imagesToPull` list.
-    - Identify the first existing `azuredisk-csi` version and its `-windows-hp` variant in the list and remove them
-    - Insert the new `azuredisk-csi` and `azuredisk-csi-windows-hp` entries, each with the updated image version, immediately after the existing version in the `$imagesToPull` list. Ensure indentation matches the surrounding entries.
-    - Double-check the list for proper formatting and indentation.
-
+- [ ] For `azuredisk-csi`:
+  - Retrieve the  `azuredisk-csi` container image version from the `<CSIImages>` XML tag.
+  - Review the current entries in the `$imagesToPull` list.
+  - **Check if the `azuredisk-csi` container image version already exists in the `$imagesToPull` list.**
+    - If it exists, **skip the update** for `azuredisk-csi`.
+    - If it does not exist, proceed with the following steps:      
+    - Remove the first occurrence of the `azuredisk-csi` entry from `$imagesToPull`.
+      - Add the new `azuredisk-csi` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
+      - **CRITICAL**: Ensure each array entry remains on its own separate line with proper indentation. Do not accidentally merge lines during the edit process.
+      - Double-check the list for proper formatting and indentation.
 
 Example to add `azuredisk-csi` for v1.30.8
 
 **Before:**
-	"mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.28.3",
+
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.28.3",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.28.3-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
+        
 **After:**
+
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5-windows-hp",
+
+**IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
+1. Each array entry stays on its own separate line
+2. Proper indentation (8 spaces) is maintained for each entry
+3. No lines are accidentally merged together during the edit process
+4. The comma placement and string quotes remain consistent
 **You must review and ensure that all items on the **Component version Check list** are checked. If any items are not checked, make the necessary changes to ensure all checkboxes are checked.**
 
 

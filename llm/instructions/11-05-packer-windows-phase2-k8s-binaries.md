@@ -1,5 +1,3 @@
-
-
 # Input 
 <KubernetesVersions>{{all_supported_versions}}</KubernetesVersions>
 <AzureCloudManagerImages>{{cloud_provider_image_versions}}</AzureCloudManagerImages>
@@ -15,7 +13,7 @@
     - If any of the desired versions are NOT present in the list, return "True".
     - If all desired versions are present in the list, return "False".
   
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `vhd/packer/configure-windows-vhd-phase2.ps1`
    - object name: Get-FilesToCacheOnVHD
    - object type: func
@@ -39,3 +37,14 @@ The resulting value:
         "https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip",
         "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
     );
+
+**IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
+1. Each key stays on its own separate line
+2. Proper indentation (8 spaces) is maintained for each entry
+3. No lines are accidentally merged together during the edit process
+4. The comma placement and string quotes remain consistent
+5. Each URL entry is properly formatted and aligned
+
+**You must review and ensure that the new key entries are properly formatted with each entry on its own separate line with correct indentation.**
+
+**After making changes, you MUST verify that all URL entries in the array remain on separate lines and maintain proper indentation and formatting.**

@@ -11,7 +11,7 @@
     - If the desired version exists in the array, return "False". 
   
   
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/common/versions.go`
    - object name: AllKubernetesSupportedVersions
    - object type: map

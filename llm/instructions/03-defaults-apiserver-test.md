@@ -3,7 +3,7 @@
 <KubernetesVersion>{{k8s_version}}</KubernetesVersion>
 <RemovedFeatureGate>{{removed_feature_gates}}</RemovedFeatureGate>
 
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/defaults-apiserver_test.go`
    - object name: TestAPIServerFeatureGates
    - object type: func

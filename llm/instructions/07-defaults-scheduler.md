@@ -3,7 +3,7 @@
 <KubernetesVersion>{{k8s_version}}</KubernetesVersion>
 <RemovedFeatureGate>{{removed_feature_gates}}</RemovedFeatureGate>
 
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `pkg/api/defaults-scheduler.go`
    - object name: setSchedulerConfig
    - object type: func

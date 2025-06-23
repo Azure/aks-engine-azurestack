@@ -14,7 +14,7 @@
     - If the desired version DO NOT exist in the list, return "True".
     - If the desired version exists in the array, return "False". 
 
-# Code Snippt Filter:
+# Code snippet Filter:
    - source code path: `vhd/packer/configure-windows-vhd.ps1`
    - object name: Get-ContainerImages
    - object type: func
@@ -35,9 +35,10 @@
   - Review the current entries in the `$imagesToPull` list.
   - **Check if the `azure-cloud-node-manager` container image version already exists in the `$imagesToPull` list.**
     - If it exists, **skip the update** for `azure-cloud-node-manager`.
-    - If it does not exist, proceed with the following steps:
-      - Remove the first occurrence of the `azure-cloud-node-manager` entry from `$imagesToPull`.
+    - If it does not exist, proceed with the following steps:      
+    - Remove the first occurrence of the `azure-cloud-node-manager` entry from `$imagesToPull`.
       - Add the new `azure-cloud-node-manager` entry with the updated image version directly below the previous version's position in `$imagesToPull` (maintain correct indentation).
+      - **CRITICAL**: Ensure each array entry remains on its own separate line with proper indentation. Do not accidentally merge lines during the edit process.
       - Double-check the list for proper formatting and indentation.
 
 Example to add `azure-cloud-node-manager` for v1.30.8
@@ -46,9 +47,17 @@ Example to add `azure-cloud-node-manager` for v1.30.8
 
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.28.5",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.29.9",
+        
 **After:**
+
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.29.9",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.8",
+
+**IMPORTANT FORMATTING NOTE**: When performing the replacement, ensure that:
+1. Each array entry stays on its own separate line
+2. Proper indentation (8 spaces) is maintained for each entry
+3. No lines are accidentally merged together during the edit process
+4. The comma placement and string quotes remain consistent
 
 **You must review and ensure that all items on the **Component version Check list** are checked. If any items are not checked, make the necessary changes to ensure all checkboxes are checked.**
 

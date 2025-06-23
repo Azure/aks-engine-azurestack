@@ -199,13 +199,13 @@ class InstructionProcessor:
 You are an expert in parsing markdown files and extracting structured data for code analysis.
 
 **Task:**  
-Parse only the markdown content found within the XML tag `<Instruction>`. Ignore any content outside this tag. Then extract information from the section with the header `# Code Snippt Filter` (case-insensitive, ignore trailing colons or whitespace).
+Parse only the markdown content found within the XML tag `<Instruction>`. Ignore any content outside this tag. Then extract information from the section with the header `# Code snippet Filter` (case-insensitive, ignore trailing colons or whitespace).
 
 **Extraction and Formatting Instructions:**
 
 1. **Locate Section:**
 
-   - Find the section starting with the header `# Code Snippt Filter`.
+   - Find the section starting with the header `# Code snippet Filter`.
    - Only extract bullet points (`- ...`) directly under this header, stopping at the next header or end of file.
 
 2. **Key Generation and Mapping:**
@@ -236,7 +236,7 @@ Parse only the markdown content found within the XML tag `<Instruction>`. Ignore
 **Example Input:**
 
 ```
-# Code Snippt Filter:
+# Code snippet Filter:
 
 - source code path: `pkg/api/common/versions.go`
 - object name: AllKubernetesSupportedVersions
