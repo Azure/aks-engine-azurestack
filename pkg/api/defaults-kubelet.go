@@ -328,6 +328,40 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122137
 		invalidFeatureGates = append(invalidFeatureGates, "IPTablesOwnershipCleanup")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.31.0") {
+		// Remove --feature-gate APIPriorityAndFairness starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "APIPriorityAndFairness")
+
+		// Remove --feature-gate ConsistentHTTPGetHandlers starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ConsistentHTTPGetHandlers")
+
+		// Remove --feature-gate CSIMigrationRBD starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationRBD")
+
+		// Remove --feature-gate CSINodeExpandSecret starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CSINodeExpandSecret")
+
+		// Remove --feature-gate CustomResourceValidationExpressions starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CustomResourceValidationExpressions")
+
+		// Remove --feature-gate DefaultHostNetworkHostPortsInPodTemplates starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "DefaultHostNetworkHostPortsInPodTemplates")
+
+		// Remove --feature-gate InTreePluginRBDUnregister starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "InTreePluginRBDUnregister")
+
+		// Remove --feature-gate JobReadyPods starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "JobReadyPods")
+
+		// Remove --feature-gate ReadWriteOncePod starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ReadWriteOncePod")
+
+		// Remove --feature-gate ServiceNodePortStaticSubrange starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ServiceNodePortStaticSubrange")
+
+		// Remove --feature-gate SkipReadOnlyValidationGCE starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "SkipReadOnlyValidationGCE")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 
 	// Master-specific kubelet config changes go here
