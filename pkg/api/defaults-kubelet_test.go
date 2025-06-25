@@ -1084,7 +1084,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	featuregate131 := "APIPriorityAndFairness=true,ConsistentHTTPGetHandlers=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
 	k["--feature-gates"] = featuregate131
 	featuregate131Sanitized := "ExecProbeTimeout=true,RotateKubeletServerCertificate=true"
 	cs.setKubeletConfig(false)
@@ -1099,7 +1099,7 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
 	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	k["--feature-gates"] = featuregate131
-	featuregate130Sanitized = featuregate131
+	featuregate130Sanitized = "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,ExecProbeTimeout=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,RotateKubeletServerCertificate=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
 	cs.setKubeletConfig(false)
 	if k["--feature-gates"] != featuregate130Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",

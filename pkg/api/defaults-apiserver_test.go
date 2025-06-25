@@ -760,7 +760,7 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	featuregate131 := "APIPriorityAndFairness=true,ConsistentHTTPGetHandlers=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
 	a["--feature-gates"] = featuregate131
 	featuregate131Sanitized := ""
 	cs.setAPIServerConfig()
