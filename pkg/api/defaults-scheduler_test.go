@@ -310,7 +310,7 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
 	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
-	featuregate131 := "APIPriorityAndFairness=true,ConsistentHTTPGetHandlers=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
 	s["--feature-gates"] = featuregate131
 	featuregate131Sanitized := ""
 	cs.setSchedulerConfig()

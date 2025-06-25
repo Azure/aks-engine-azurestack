@@ -184,7 +184,7 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
 	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
 	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
-	featuregate131 := "APIPriorityAndFairness=true,ConsistentHTTPGetHandlers=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
 	ccm["--feature-gates"] = featuregate131
 	featuregate131Sanitized := ""
 	cs.setCloudControllerManagerConfig()
