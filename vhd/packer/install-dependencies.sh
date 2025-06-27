@@ -212,7 +212,7 @@ echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 installKubeBinaries() {
 K8S_VERSIONS="
-1.31.10
+1.31.9
 1.30.10
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
