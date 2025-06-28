@@ -26,14 +26,12 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.7",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.8",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.10",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.10-windows-hp",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.12.0",
         "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.10.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.14.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
     # start containerd to pre-pull the images to disk on VHD

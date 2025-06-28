@@ -220,9 +220,7 @@ The following script uses `Helm` to install the Azure Disk CSI Driver:
 ```bash
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
 DRIVER_VERSION=v1.28.3 # if using k8s v1.27
-DRIVER_VERSION=v1.29.1 # if using k8s >= v1.28
-DRIVER_VERSION=v1.31.5 # if using k8s >= v1.30
-DRIVER_VERSION=v1.31.10 # if using k8s >= v1.31
+DRIVER_VERSION=v1.29.12 # if using k8s >= v1.28
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
