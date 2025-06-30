@@ -212,6 +212,7 @@ echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 installKubeBinaries() {
 K8S_VERSIONS="
+1.32.5
 1.31.9
 1.30.10
 "
@@ -230,6 +231,7 @@ installKubeBinaries
 installCloudControllerManager() {
   # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
+1.32.6
 1.31.7
 1.30.7
 "
@@ -244,6 +246,7 @@ installCloudControllerManager
 installCloudNodeManager() {
   # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
+1.32.6
 1.31.7
 1.30.8
 "
@@ -282,6 +285,7 @@ installCSIAzureFile
 
 installCSIAttacher() {
 CSI_ATTACHER_VERSIONS="
+4.8.0
 4.7.0
 "
 for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
@@ -294,8 +298,8 @@ installCSIAttacher
 
 installCSINodeDriverRegistrar() {
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
+2.13.0
 2.12.0
-2.8.0
 "
 for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
@@ -307,8 +311,8 @@ installCSINodeDriverRegistrar
 
 installCSIProvisioner() {
 CSI_PROVISIONER_VERSIONS="
+5.2.0
 5.1.0
-3.5.0
 "
 for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
@@ -320,8 +324,8 @@ installCSIProvisioner
 
 installCSILivenessProbe() {
 LIVENESSPROBE_VERSIONS="
+2.15.0
 2.14.0
-2.10.0
 "
 for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
@@ -333,6 +337,7 @@ installCSILivenessProbe
 
 installCSIResizer() {
 CSI_RESIZER_VERSIONS="
+1.13.1
 1.12.0
 "
 for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
