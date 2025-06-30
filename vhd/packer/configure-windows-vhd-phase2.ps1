@@ -140,12 +140,32 @@ function Update-Registry {
     }
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\hns\State" -Name HNSControlFlag -Value $hnsControlFlag -Type DWORD
 
+    # --- WCIFS Fix ---
     Write-Log "Enable a WCIFS fix in 2022-10B"
     $currentValue=(Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\wcifs" -Name WcifsSOPCountDisabled -ErrorAction Ignore)
     if (![string]::IsNullOrEmpty($currentValue)) {
         Write-Log "The current value of WcifsSOPCountDisabled is $currentValue"
     }
     Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\wcifs" -Name WcifsSOPCountDisabled -Value 0 -Type DWORD
+
+    # --- TLS 1.0 and 1.1 Disablement ---
+    Write-Host "Disabling TLS 1.0 and 1.1 for Client and Server roles"
+    $basePath = "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols"
+    $protocols = @(
+        @{ Name = "TLS 1.0"; Roles = @("Client", "Server") },
+        @{ Name = "TLS 1.1"; Roles = @("Client", "Server") }
+    )
+    foreach ($protocol in $protocols) {
+        foreach ($role in $protocol.Roles) {
+            $regPath = Join-Path -Path $basePath -ChildPath "$($protocol.Name)\$role"
+            if (-not (Test-Path $regPath)) {
+                New-Item -Path $regPath -Force | Out-Null
+            }
+            New-ItemProperty -Path $regPath -Name "Enabled" -Value 0 -PropertyType "DWORD" -Force
+            New-ItemProperty -Path $regPath -Name "DisabledByDefault" -Value 1 -PropertyType "DWORD" -Force
+        }
+    }
+    Write-Host "TLS 1.0 and 1.1 have been disabled successfully."
 }
 
 # Disable progress writers for this session to greatly speed up operations such as Invoke-WebRequest
