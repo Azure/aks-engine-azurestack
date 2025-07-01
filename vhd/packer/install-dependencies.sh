@@ -55,7 +55,6 @@ apt packages:
   - pigz
   - socat
   - sysstat
-  - traceroute
   - util-linux
   - vlock
   - xz-utils
