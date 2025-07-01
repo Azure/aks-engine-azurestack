@@ -1,4 +1,4 @@
-    "etcdServerCertificate": {
+"etcdServerCertificate": {
       "metadata": {
         "description": "The base 64 server certificate used on the master"
       },
@@ -239,7 +239,7 @@
       "type": "string"
     },
     "containerdVersion": {
-      "defaultValue": "1.6.36",
+      "defaultValue": "1.7.27",
       "metadata": {
         "description": "The Azure containerd build version"
       },
@@ -263,7 +263,8 @@
          "1.5.16",
          "1.6.21",
          "1.6.28",
-         "1.6.36"
+         "1.6.36",
+         "1.7.27"
        ],
       "type": "string"
     },
