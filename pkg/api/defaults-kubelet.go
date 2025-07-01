@@ -24,7 +24,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--cluster-dns":                       o.KubernetesConfig.DNSServiceIP,
 		"--cgroups-per-qos":                   "true",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
-		"--keep-terminated-pod-volumes":       "false",
 		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
 		"--v":                                 "2",
@@ -578,6 +577,13 @@ func removeKubeletFlags(k map[string]string, v string) {
 	// Get rid of values not supported in v1.30 and up
 	if common.IsKubernetesVersionGe(v, "1.30.0") {
 		for _, key := range []string{"--azure-container-registry-config"} {
+			delete(k, key)
+		}
+	}
+
+	// Get rid of values not supported in v1.31 and up
+	if common.IsKubernetesVersionGe(v, "1.31.0") {
+		for _, key := range []string{"--keep-terminated-pod-volumes"} {
 			delete(k, key)
 		}
 	}
