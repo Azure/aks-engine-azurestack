@@ -1204,8 +1204,8 @@ func TestAgentPoolProfileGetKubernetesLabels(t *testing.T) {
 }
 
 func TestKubernetesConfigGetOrderedKubeletConfigString(t *testing.T) {
-	alphabetizedString := "--address=0.0.0.0 --allow-privileged=true --anonymous-auth=false --authorization-mode=Webhook --cgroups-per-qos=true --client-ca-file=/etc/kubernetes/certs/ca.crt --keep-terminated-pod-volumes=false --kubeconfig=/var/lib/kubelet/kubeconfig --pod-manifest-path=/etc/kubernetes/manifests "
-	alphabetizedStringForPowershell := `"--address=0.0.0.0", "--allow-privileged=true", "--anonymous-auth=false", "--authorization-mode=Webhook", "--cgroups-per-qos=true", "--client-ca-file=/etc/kubernetes/certs/ca.crt", "--keep-terminated-pod-volumes=false", "--kubeconfig=/var/lib/kubelet/kubeconfig", "--pod-manifest-path=/etc/kubernetes/manifests"`
+	alphabetizedString := "--address=0.0.0.0 --allow-privileged=true --anonymous-auth=false --authorization-mode=Webhook --cgroups-per-qos=true --client-ca-file=/etc/kubernetes/certs/ca.crt --kubeconfig=/var/lib/kubelet/kubeconfig --pod-manifest-path=/etc/kubernetes/manifests "
+	alphabetizedStringForPowershell := `"--address=0.0.0.0", "--allow-privileged=true", "--anonymous-auth=false", "--authorization-mode=Webhook", "--cgroups-per-qos=true", "--client-ca-file=/etc/kubernetes/certs/ca.crt", "--kubeconfig=/var/lib/kubelet/kubeconfig", "--pod-manifest-path=/etc/kubernetes/manifests"`
 	cases := []struct {
 		name                  string
 		kc                    KubernetesConfig
@@ -1223,15 +1223,14 @@ func TestKubernetesConfigGetOrderedKubeletConfigString(t *testing.T) {
 			name: "expected values",
 			kc: KubernetesConfig{
 				KubeletConfig: map[string]string{
-					"--address":                     "0.0.0.0",
-					"--allow-privileged":            "true",
-					"--anonymous-auth":              "false",
-					"--authorization-mode":          "Webhook",
-					"--client-ca-file":              "/etc/kubernetes/certs/ca.crt",
-					"--pod-manifest-path":           "/etc/kubernetes/manifests",
-					"--cgroups-per-qos":             "true",
-					"--kubeconfig":                  "/var/lib/kubelet/kubeconfig",
-					"--keep-terminated-pod-volumes": "false",
+					"--address":            "0.0.0.0",
+					"--allow-privileged":   "true",
+					"--anonymous-auth":     "false",
+					"--authorization-mode": "Webhook",
+					"--client-ca-file":     "/etc/kubernetes/certs/ca.crt",
+					"--pod-manifest-path":  "/etc/kubernetes/manifests",
+					"--cgroups-per-qos":    "true",
+					"--kubeconfig":         "/var/lib/kubelet/kubeconfig",
 				},
 			},
 			expected:              alphabetizedString,
@@ -1242,15 +1241,14 @@ func TestKubernetesConfigGetOrderedKubeletConfigString(t *testing.T) {
 			name: "expected values re-ordered",
 			kc: KubernetesConfig{
 				KubeletConfig: map[string]string{
-					"--address":                     "0.0.0.0",
-					"--allow-privileged":            "true",
-					"--kubeconfig":                  "/var/lib/kubelet/kubeconfig",
-					"--client-ca-file":              "/etc/kubernetes/certs/ca.crt",
-					"--authorization-mode":          "Webhook",
-					"--pod-manifest-path":           "/etc/kubernetes/manifests",
-					"--cgroups-per-qos":             "true",
-					"--keep-terminated-pod-volumes": "false",
-					"--anonymous-auth":              "false",
+					"--address":            "0.0.0.0",
+					"--allow-privileged":   "true",
+					"--kubeconfig":         "/var/lib/kubelet/kubeconfig",
+					"--client-ca-file":     "/etc/kubernetes/certs/ca.crt",
+					"--authorization-mode": "Webhook",
+					"--pod-manifest-path":  "/etc/kubernetes/manifests",
+					"--cgroups-per-qos":    "true",
+					"--anonymous-auth":     "false",
 				},
 			},
 			expected:              alphabetizedString,

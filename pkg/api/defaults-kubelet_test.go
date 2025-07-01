@@ -182,6 +182,18 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	}
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	// TODO test all default overrides
+	// Removed kubelet --keep-terminated-pod-volumes deprecated CLI flag
+	overrideValue := "false"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	for key := range map[string]string{"--keep-terminated-pod-volumes": overrideValue} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--keep-terminated-pod-volumes' kubelet config value")
+		}
+	}
+
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.setKubeletConfig(false)
 	kubeletConfig = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	expectedKeys := []string{
@@ -215,7 +227,6 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--image-gc-high-threshold":           strconv.Itoa(DefaultKubernetesGCHighThreshold),
 		"--image-gc-low-threshold":            strconv.Itoa(DefaultKubernetesGCLowThreshold),
 		"--image-pull-progress-deadline":      "30m",
-		"--keep-terminated-pod-volumes":       "false",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
 		"--max-pods":                          strconv.Itoa(DefaultKubernetesMaxPods),
 		"--network-plugin":                    NetworkPluginKubenet,
@@ -271,7 +282,6 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--image-gc-high-threshold":           strconv.Itoa(DefaultKubernetesGCHighThreshold),
 		"--image-gc-low-threshold":            strconv.Itoa(DefaultKubernetesGCLowThreshold),
 		"--image-pull-progress-deadline":      "30m",
-		"--keep-terminated-pod-volumes":       "false",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
 		"--max-pods":                          strconv.Itoa(DefaultKubernetesMaxPods),
 		"--network-plugin":                    NetworkPluginKubenet,
@@ -365,6 +375,18 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	for key := range map[string]string{"--azure-container-registry-config": overrideVal} {
 		if _, ok := k[key]; ok {
 			t.Fatal("got unexpected (removed) '--azure-container-registry-config' kubelet config value")
+		}
+	}
+
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	// TODO test all default overrides
+	// Removed kubelet --keep-terminated-pod-volumes deprecated CLI flag
+	overrideValue := "false"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	for key := range map[string]string{"--keep-terminated-pod-volumes": overrideValue} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--keep-terminated-pod-volumes' kubelet config value")
 		}
 	}
 
@@ -843,16 +865,15 @@ func TestStaticWindowsConfig(t *testing.T) {
 
 	// Start with copy of Linux config
 	staticLinuxKubeletConfig := map[string]string{
-		"--address":                     "0.0.0.0",
-		"--allow-privileged":            "true",
-		"--anonymous-auth":              "false",
-		"--authorization-mode":          "Webhook",
-		"--client-ca-file":              "/etc/kubernetes/certs/ca.crt",
-		"--pod-manifest-path":           "/etc/kubernetes/manifests",
-		"--cluster-dns":                 cs.Properties.OrchestratorProfile.KubernetesConfig.DNSServiceIP,
-		"--cgroups-per-qos":             "true",
-		"--kubeconfig":                  "/var/lib/kubelet/kubeconfig",
-		"--keep-terminated-pod-volumes": "false",
+		"--address":            "0.0.0.0",
+		"--allow-privileged":   "true",
+		"--anonymous-auth":     "false",
+		"--authorization-mode": "Webhook",
+		"--client-ca-file":     "/etc/kubernetes/certs/ca.crt",
+		"--pod-manifest-path":  "/etc/kubernetes/manifests",
+		"--cluster-dns":        cs.Properties.OrchestratorProfile.KubernetesConfig.DNSServiceIP,
+		"--cgroups-per-qos":    "true",
+		"--kubeconfig":         "/var/lib/kubelet/kubeconfig",
 	}
 	expected := make(map[string]string)
 	for key, val := range staticLinuxKubeletConfig {
