@@ -14,7 +14,7 @@
 * [Disconnected Azure Stack Hub Instances](#disconnected-azure-stack-hub-instances)
 * [AKS Engine Versions](#aks-engine-versions)
 * [Cloud Provider for Azure](#cloud-provider-for-azure)
-* [Volume Provisioner: Container Storage Interface Drivers (preview)](#volume-provisioner-container-storage-interface-drivers-preview)
+* [Volume Provisioners: Container Storage Interface Drivers (Azure Disk CSI Driver)](#volume-provisioners-container-storage-interface-drivers-azure-disk-csi-driver)
 * [Known Issues and Limitations](#known-issues-and-limitations)
 * [Frequently Asked Questions](#frequently-asked-questions)
 
@@ -346,6 +346,27 @@ The list below includes the addons currently unsupported on Azure Stack Hub:
 * KeyVault Flex Volume
 * SMB Flex Volume
 * Azure Monitor for containers
+
+### Azure Disk CSI Driver 1.30+ not supported on Azure Stack Hub
+
+Azure Disk CSI Driver version 1.30 and later are not supported on Azure Stack Hub due to a dependency on a library that is not currently available on Azure Stack Hub. A fix is in progress and will be provided in a future AKS Engine release.
+
+**Current Recommendation:** Use the compatible Azure Disk CSI Driver version specified in the [Azure Disk CSI driver version mapping table](#azure-disk-csi-driver-version-mapping) that corresponds to your cluster's Kubernetes version.
+
+**If you have already installed Azure Disk CSI Driver 1.30+:** You need to uninstall the incompatible version and reinstall a supported version. Follow the steps below:
+
+**Uninstall Azure Disk CSI Driver:**
+
+* **If installed via Helm:**
+  ```bash
+  helm uninstall azuredisk-csi-driver --namespace kube-system
+  helm repo remove azuredisk-csi-driver
+  ```
+
+* **If installed via AKS Engine addon:**
+  1. Delete the `azuredisk-csi-driver-deployment.yaml` file from the `/etc/kubernetes/addons` directory on each master node to prevent auto-recreation by the Kubernetes addon manager
+  2. Remove the currently deployed driver: `kubectl delete -f azuredisk-csi-driver-deployment.yaml`
+  3. Install the correct version using the Helm approach described in the [Azure Disk CSI Driver examples section](#azure-disk-csi-driver-examples)
 
 ### Chrony daemon fails to restart
 
