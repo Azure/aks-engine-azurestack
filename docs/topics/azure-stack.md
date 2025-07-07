@@ -298,6 +298,7 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
 DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 DRIVER_VERSION=v1.29.12 # if using k8s >= v1.28
+-DRIVER_VERSION=v1.31.5 # if using k8s >= v1.30
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -347,9 +348,9 @@ The list below includes the addons currently unsupported on Azure Stack Hub:
 * SMB Flex Volume
 * Azure Monitor for containers
 
-### Azure Disk CSI Driver 1.30+ not supported on Azure Stack Hub
+### Azure Disk CSI Driver 1.30 not supported on Azure Stack Hub
 
-Azure Disk CSI Driver version 1.30 and later are not supported on Azure Stack Hub due to a dependency on a library that is not currently available on Azure Stack Hub. A fix is in progress and will be provided in a future AKS Engine release.
+Azure Disk CSI Driver version 1.30 and later are not supported on Azure Stack Hub. A fix is in progress and will be provided in a future AKS Engine release.
 
 **Current Recommendation:** Use the compatible Azure Disk CSI Driver version specified in the [Azure Disk CSI driver version mapping table](#azure-disk-csi-driver-version-mapping) that corresponds to your cluster's Kubernetes version.
 
@@ -365,7 +366,7 @@ Azure Disk CSI Driver version 1.30 and later are not supported on Azure Stack Hu
 
 * **If installed via AKS Engine addon:**
   1. First, backup the deployment file: Copy the `azuredisk-csi-driver-deployment.yaml` file from `/etc/kubernetes/addons/` on the master node to a different location (either another directory on the master node or transfer it to a jump server/bastion host that can manage the cluster)
-  2. Delete the `azuredisk-csi-driver-deployment.yaml` file from the `/etc/kubernetes/addons` directory on each master node to prevent auto-recreation by the Kubernetes addon manager
+  2. Delete the `azuredisk-csi-driver-deployment.yaml` file from the `/etc/kubernetes/addons` directory on each master node to prevent recreation by the Kubernetes addon manager
   3. Remove the currently deployed driver: `kubectl delete -f azuredisk-csi-driver-deployment.yaml` (use the backup file from step 1)
   4. Install the correct version using the Helm approach described in the [Azure Disk CSI Driver examples section](#azure-disk-csi-driver-examples)
 
