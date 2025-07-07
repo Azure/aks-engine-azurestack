@@ -348,13 +348,13 @@ The list below includes the addons currently unsupported on Azure Stack Hub:
 * SMB Flex Volume
 * Azure Monitor for containers
 
-### Azure Disk CSI Driver 1.30 not supported on Azure Stack Hub
+### Azure Disk CSI Driver v1.30 not supported on Azure Stack Hub
 
-Azure Disk CSI Driver version 1.30 and later are not supported on Azure Stack Hub. A fix is in progress and will be provided in a future AKS Engine release.
+Azure Disk CSI Driver v1.30 and later are not supported on Azure Stack Hub. A fix is in progress and will be provided in a future AKS Engine release.
 
 **Current Recommendation:** Use the compatible Azure Disk CSI Driver version specified in the [Azure Disk CSI driver version mapping table](#azure-disk-csi-driver-version-mapping) that corresponds to your cluster's Kubernetes version.
 
-**If you have already installed Azure Disk CSI Driver 1.30+:** You need to uninstall the incompatible version and reinstall a supported version. Follow the steps below:
+**If you have already installed Azure Disk CSI Driver v1.30+:** You need to uninstall the incompatible version and reinstall a supported version. Follow the steps below:
 
 **Uninstall Azure Disk CSI Driver:**
 
