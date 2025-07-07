@@ -16727,7 +16727,7 @@ var _k8sCloudInitArtifactsCse_installSh = []byte(`#!/bin/bash
 CNI_CFG_DIR="/etc/cni/net.d"
 CNI_BIN_DIR="/opt/cni/bin"
 CNI_DL_DIR="/opt/cni/downloads"
-ACR_DL_DIR="/opt/acr/downloads"
+ACR_DL_DIR="/var/lib/kubelet/credential-provider"
 CTRD_DL_DIR="/opt/containerd/downloads"
 APMZ_DL_DIR="/opt/apmz/downloads"
 UBUNTU_RELEASE=$(lsb_release -r -s)
@@ -16870,30 +16870,7 @@ downloadAzureCNI() {
 }
 downloadACR() {
   mkdir -p $ACR_DL_DIR
-  retrycmd_get_tarball_oci 120 5 "$CNI_DL_DIR/${ACR_TGZ_TMP}" ${PROVIDER_ARTIFACT} || exit 41
-}
-installOras() {
-  local version="v1.2.0"
-  local oras_url="https://github.com/oras-project/oras/releases/download/${version}/oras_${version#v}_linux_amd64.tar.gz"
-  local oras_dir="/opt/oras/downloads/${version}"
-  local oras_tmp="${oras_dir}/oras.tar.gz"
-  local oras_bin="/usr/local/bin/oras"
-  
-  # Check if oras is already installed with correct version
-  if [[ -f "$oras_bin" ]]; then
-    local current_version
-    current_version=$($oras_bin version --short 2>/dev/null | head -n1 || echo "")
-    if [[ "$current_version" == "$version" ]]; then
-      return 0
-    fi
-  fi
-  
-  mkdir -p "$oras_dir"
-  retrycmd_get_tarball 120 5 "$oras_tmp" "$oras_url" || exit 41
-  tar -xzf "$oras_tmp" -C "$oras_dir" oras || exit 41
-  chmod +x "$oras_dir/oras"
-  mv "$oras_dir/oras" "$oras_bin" || exit 41
-  rm -rf "$oras_tmp"
+  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider-linux-amd64" || exit 41
 }
 ensureAPMZ() {
   local ver=$1 v
@@ -17109,7 +17086,6 @@ disableSshd
 if [[ $OS == $UBUNTU_OS_NAME || $OS == $DEBIAN_OS_NAME ]] && [ "$FULL_INSTALL_REQUIRED" = "true" ]; then
   time_metric "InstallDeps" installDeps
   overrideNetworkConfig
-  time_metric "InstallOras" installOras
   {{- if not IsDockerContainerRuntime}}
   time_metric "InstallImg" installImg
   {{end}}
