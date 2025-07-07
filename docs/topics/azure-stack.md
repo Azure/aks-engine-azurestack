@@ -298,7 +298,7 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
 DRIVER_VERSION=v1.28.3 # if using k8s v1.27
 DRIVER_VERSION=v1.29.12 # if using k8s >= v1.28
--DRIVER_VERSION=v1.31.5 # if using k8s >= v1.30
+# (unsupported) DRIVER_VERSION=v1.31.5 # if using k8s >= v1.30
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
