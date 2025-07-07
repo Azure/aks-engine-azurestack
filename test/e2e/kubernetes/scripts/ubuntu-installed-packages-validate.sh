@@ -61,7 +61,6 @@ opensc-pkcs11
 pigz
 socat
 sysstat
-traceroute
 util-linux
 vlock
 xz-utils
