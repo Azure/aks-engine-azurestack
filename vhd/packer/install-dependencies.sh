@@ -109,6 +109,9 @@ for CNI_PLUGIN_VERSION in $CNI_PLUGIN_VERSIONS; do
     echo "  - CNI plugin version ${CNI_PLUGIN_VERSION}" >> ${VHD_LOGS_FILEPATH}
 done
 
+installOras
+echo "  - oras v1.2.0" >> ${VHD_LOGS_FILEPATH}
+
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
 1.30.8
 1.29.9
@@ -122,9 +125,6 @@ done
 
 installImg
 echo "  - img" >> ${VHD_LOGS_FILEPATH}
-
-installOras
-echo "  - oras v1.2.0" >> ${VHD_LOGS_FILEPATH}
 
 systemctl status docker --no-pager || exit 1
 echo "Docker images pre-pulled:" >> ${VHD_LOGS_FILEPATH}
