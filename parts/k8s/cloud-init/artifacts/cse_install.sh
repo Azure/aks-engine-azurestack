@@ -146,7 +146,9 @@ downloadAzureCNI() {
 }
 downloadACR() {
   mkdir -p $ACR_DL_DIR
-  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider-linux-amd64" || exit 41
+  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider" || exit 41
+  chown -R root:root $ACR_DL_DIR
+  chmod 755 $ACR_DL_DIR/azure-acr-credential-provider
 }
 ensureAPMZ() {
   local ver=$1 v

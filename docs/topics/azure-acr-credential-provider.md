@@ -1,47 +1,48 @@
-# Image Credential Providers
+# Azure Container Registry (ACR) Credential Provider
 
-Kubernetes v1.29 requires users to migrate to [Out-of-Tree Credential Providers][KEP]
-in order to pull container images from private Azure Container Registry (ACR) instances.
+## Overview
 
-For AKS Engine-based clusters migration to the ACR credential provider will be transparent.
-AKS Engine will remove the deprecated kubelet flag `--azure-container-registry-config` from the cluster API Model
-and replace it with flags `--image-credential-provider-bin-dir` and `--image-credential-provider-config`.
+Starting with Kubernetes v1.29, you **must** use [Out-of-Tree Credential Providers][KEP] to pull container images from private Azure Container Registry (ACR) instances. The legacy `--azure-container-registry-config` kubelet flag has been deprecated and removed. See [Cloud Provider Azure][CPA] documentation for more details.
 
-See [Cloud Provider Azure][CPA] documentation for more details.
+## What This Means for Your Cluster
 
-## Image Credential Provider Configuration
+When you deploy an AKS Engine cluster, the migration to ACR credential providers happens automatically:
 
-The `Image Credential Provider Configuration` file instructs kubelet how to authenticate with Azure Container Registry
-(see [credential-provider-config.yaml][CPC] for the default configuration file).
+ **Automatic Migration**: AKS Engine removes the deprecated `--azure-container-registry-config` flag  
+ **New Configuration**: Replaces it with modern credential provider flags:
+- `--image-credential-provider-bin-dir`
+- `--image-credential-provider-config`
 
-### Custom Image Credential Provider Configuration
+> **No Action Required**: This transition is transparent - your cluster will continue to authenticate with ACR without any manual intervention.
 
-To use a custom `Image Credential Provider Configuration` file, combine [CustomFiles](/examples/customfiles/README.md) 
-and kublet flag `--image-credential-provider-config`
-(default location `/var/lib/kubelet/credential-provider-config.yaml`).
+## How It Works
 
-> **Note:** The `Image Credential Provider Configuration` file will be provisioned to all nodes in the cluster.
+### Configuration File Location
 
-```json
-{
-  "orchestratorProfile": {
-    "kubernetesConfig": {
-      "kubeletConfig": {
-        "--image-credential-provider-config": "/var/lib/kubelet/credential-provider-config.yaml",
-      }
-    },
-  },
-  "masterProfile": {
-    "customFiles": [
-      {
-        "source" : "/local/path/to/my/credential-provider-config.yaml",
-        "dest" : "/var/lib/kubelet/credential-provider-config.yaml"
-      }
-    ]
-  }
-}
+The credential provider uses a configuration file automatically deployed to:
 ```
+/var/lib/kubelet/credential-provider-config.yaml
+```
+
+This file is **automatically provisioned** to all nodes (both master and worker) in your cluster.
+
+### Default Configuration
+
+The default configuration handles authentication for all Azure Container Registry endpoints:
+
+```yaml
+kind: CredentialProviderConfig
+apiVersion: kubelet.config.k8s.io/v1
+providers:
+  - name: azure-acr-credential-provider
+    matchImages:
+      - "*.azurecr.io"    # Azure Public Cloud
+      - "*.azurecr.cn"    # Azure China Cloud  
+      - "*.azurecr.de"    # Azure Germany Cloud
+      - "*.azurecr.us"    # Azure US Government Cloud
+```
+
+> **Reference**: View the complete default configuration file at [`credential-provider-config.yaml`](../../parts/k8s/cloud-init/artifacts/credential-provider-config.yaml)
 
 [KEP]: https://github.com/kubernetes/enhancements/tree/master/keps/sig-cloud-provider/2133-out-of-tree-credential-provider
 [CPA]: https://cloud-provider-azure.sigs.k8s.io/topics/credential-provider/
-[CPC]: /parts/k8s/cloud-init/artifacts/credential-provider-config.yaml

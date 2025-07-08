@@ -66,8 +66,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
-	staticWindowsKubeletConfig["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
-	staticWindowsKubeletConfig["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
+	staticWindowsKubeletConfig["--image-credential-provider-config"] = "c:\\k\\credential-provider\\credential-provider-config.yaml"
+	staticWindowsKubeletConfig["--image-credential-provider-bin-dir"] = "c:\\k\\credential-provider"
 	staticWindowsKubeletConfig["--pod-infra-container-image"] = "kubletwin/pause"
 	staticWindowsKubeletConfig["--kubeconfig"] = "c:\\k\\config"
 	staticWindowsKubeletConfig["--cloud-config"] = "c:\\k\\azure.json"

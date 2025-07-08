@@ -367,16 +367,6 @@ write_files:
     {{- /* Ensure that container traffic can't connect to internal Azure IP endpoint */}}
     iptables -I FORWARD -d 168.63.129.16 -p tcp --dport 80 -j DROP
     #EOF
-
-{{- if NeedsDefaultImageCredentialProviderConfig}}
-- path: {{GetImageCredentialProviderConfigFilepath}}
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "imageCredentialProviderConfig"}}
-{{end}}
-
 {{- if IsCustomCloudProfile}}
 - path: "/etc/kubernetes/azurestackcloud.json"
   permissions: "0600"

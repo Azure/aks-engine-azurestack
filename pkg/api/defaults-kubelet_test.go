@@ -107,8 +107,8 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	delete(expected, "--register-with-taints")
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
-	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
-	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
+	expected["--image-credential-provider-config"] = "c:\\k\\credential-provider\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\k\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -324,8 +324,8 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	}
 
 	windowsProfileKubeletConfig := cs.Properties.AgentPoolProfiles[1].KubernetesConfig.KubeletConfig
-	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
-	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
+	expected["--image-credential-provider-config"] = "c:\\k\\credential-provider\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\k\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"
@@ -905,8 +905,8 @@ func TestStaticWindowsConfig(t *testing.T) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
-	expected["--image-credential-provider-config"] = "c:\\var\\lib\\kubelet\\credential-provider-config.yaml"
-	expected["--image-credential-provider-bin-dir"] = "c:\\var\\lib\\kubelet\\credential-provider"
+	expected["--image-credential-provider-config"] = "c:\\k\\credential-provider\\credential-provider-config.yaml"
+	expected["--image-credential-provider-bin-dir"] = "c:\\k\\credential-provider"
 	expected["--pod-infra-container-image"] = "kubletwin/pause"
 	expected["--kubeconfig"] = "c:\\k\\config"
 	expected["--cloud-config"] = "c:\\k\\azure.json"

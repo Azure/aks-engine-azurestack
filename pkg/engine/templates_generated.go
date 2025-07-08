@@ -16870,7 +16870,9 @@ downloadAzureCNI() {
 }
 downloadACR() {
   mkdir -p $ACR_DL_DIR
-  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider-linux-amd64" || exit 41
+  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider" || exit 41
+  chown -R root:root $ACR_DL_DIR
+  chmod 755 $ACR_DL_DIR/azure-acr-credential-provider
 }
 ensureAPMZ() {
   local ver=$1 v
@@ -19500,15 +19502,6 @@ write_files:
     {{CloudInitData "apiServerAdmissionConfiguration"}}
 {{end}}
 
-{{- if NeedsDefaultImageCredentialProviderConfig}}
-- path: {{GetImageCredentialProviderConfigFilepath}}
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "imageCredentialProviderConfig"}}
-{{end}}
-
 MASTER_MANIFESTS_CONFIG_PLACEHOLDER
 
 MASTER_CUSTOM_FILES_PLACEHOLDER
@@ -20082,16 +20075,6 @@ write_files:
     {{- /* Ensure that container traffic can't connect to internal Azure IP endpoint */}}
     iptables -I FORWARD -d 168.63.129.16 -p tcp --dport 80 -j DROP
     #EOF
-
-{{- if NeedsDefaultImageCredentialProviderConfig}}
-- path: {{GetImageCredentialProviderConfigFilepath}}
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "imageCredentialProviderConfig"}}
-{{end}}
-
 {{- if IsCustomCloudProfile}}
 - path: "/etc/kubernetes/azurestackcloud.json"
   permissions: "0600"

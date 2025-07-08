@@ -11,7 +11,10 @@
                         "name": "azuredisk-csi-driver",
                         "enabled": true
                     }
-                ]
+                ],
+                "kubeletConfig": {
+                    "--image-credential-provider-config": "/var/lib/kubelet/credential-provider-config.yaml"
+                }
             }
         },
         "masterProfile": {
