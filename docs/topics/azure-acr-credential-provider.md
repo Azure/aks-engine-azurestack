@@ -21,7 +21,9 @@ When you deploy an AKS Engine cluster, the migration to ACR credential providers
 
 The credential provider uses a configuration file automatically deployed to:
 ```
-/var/lib/kubelet/credential-provider-config.yaml
+/var/lib/kubelet/credential-provider-config.yaml (on Linux nodes)
+
+C:\k\credential-provider\credential-provider-config.yaml (on Windows nodes)
 ```
 
 This file is **automatically provisioned** to all nodes (both master and worker) in your cluster.

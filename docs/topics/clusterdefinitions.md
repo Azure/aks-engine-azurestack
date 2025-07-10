@@ -461,7 +461,7 @@ Below is a list of kubelet options that AKS Engine will configure by default:
 | "--register-with-taints"              | "node-role.kubernetes.io/control-plane=true:NoSchedule" (`masterProfile` only; Note: you may add your own master-specific taints in the `kubeletConfig` under `masterProfile`, which will augment the built-in "node-role.kubernetes.io/control-plane=true:NoSchedule" taint, which will always be present.)            |
 | "--runtime-request-timeout"           | "15m" if in a containerd configuration, otherwise this configuration is not passed to kubelet runtime                                                                                                                                                                                                     |
 | "--container-runtime-endpoint"        | "unix:///run/containerd/containerd.sock" if in a containerd configuration, otherwise this configuration is not passed to kubelet runtime                                                                                                                                                                  |
-| "--image-credential-provider-config"   | "/var/lib/kubelet/credential-provider-config.yaml"  (default content overridable through _CustomFiles_) |
+
 
 
 Below is a list of kubelet options that are _not_ currently user-configurable, either because a higher order configuration vector is available that enforces kubelet configuration, or because a static configuration is required to build a functional cluster:
@@ -483,7 +483,8 @@ Below is a list of kubelet options that are _not_ currently user-configurable, e
 | "--tls-private-key-file"        | "/etc/kubernetes/certs/kubeletserver.key"          |
 | "--v"                           | "2"                                                |
 | "--volume-plugin-dir"           | "/etc/kubernetes/volumeplugins"                    |
-| "--image-credential-provider-bin-dir"  | "/var/lib/kubelet/credential-provider"                                                  |
+| "--image-credential-provider-config"   | "/var/lib/kubelet/credential-provider-config.yaml" |
+| "--image-credential-provider-bin-dir"  | "/var/lib/kubelet/credential-provider"             |
 
 <a name="feat-controller-manager-config"></a>
 
