@@ -3,6 +3,7 @@
 CNI_CFG_DIR="/etc/cni/net.d"
 CNI_BIN_DIR="/opt/cni/bin"
 CNI_DL_DIR="/opt/cni/downloads"
+ACR_DL_DIR="/var/lib/kubelet/credential-provider"
 CTRD_DL_DIR="/opt/containerd/downloads"
 APMZ_DL_DIR="/opt/apmz/downloads"
 UBUNTU_RELEASE=$(lsb_release -r -s)
@@ -142,6 +143,12 @@ downloadAzureCNI() {
   mkdir -p $CNI_DL_DIR
   CNI_TGZ_TMP=${VNET_CNI_PLUGINS_URL##*/}
   retrycmd_get_tarball 120 5 "$CNI_DL_DIR/${CNI_TGZ_TMP}" ${VNET_CNI_PLUGINS_URL} || exit 41
+}
+downloadACR() {
+  mkdir -p $ACR_DL_DIR
+  retrycmd 30 5 60 curl ${PROVIDER_ARTIFACT} -fSL -o "$ACR_DL_DIR/azure-acr-credential-provider" || exit 41
+  chown -R root:root $ACR_DL_DIR
+  chmod 755 $ACR_DL_DIR/azure-acr-credential-provider
 }
 ensureAPMZ() {
   local ver=$1 v

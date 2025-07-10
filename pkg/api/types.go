@@ -1613,6 +1613,13 @@ func (a *AgentPoolProfile) RequiresCloudproviderConfig() bool {
 		} else {
 			return true
 		}
+		if v, ok := a.KubernetesConfig.KubeletConfig["--image-credential-provider-config"]; ok {
+			if v != "" {
+				return true
+			}
+		} else {
+			return true
+		}
 	} else {
 		return true
 	}

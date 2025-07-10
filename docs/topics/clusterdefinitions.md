@@ -462,6 +462,8 @@ Below is a list of kubelet options that AKS Engine will configure by default:
 | "--runtime-request-timeout"           | "15m" if in a containerd configuration, otherwise this configuration is not passed to kubelet runtime                                                                                                                                                                                                     |
 | "--container-runtime-endpoint"        | "unix:///run/containerd/containerd.sock" if in a containerd configuration, otherwise this configuration is not passed to kubelet runtime                                                                                                                                                                  |
 
+
+
 Below is a list of kubelet options that are _not_ currently user-configurable, either because a higher order configuration vector is available that enforces kubelet configuration, or because a static configuration is required to build a functional cluster:
 
 | kubelet option                  | default value                                      |
@@ -481,6 +483,8 @@ Below is a list of kubelet options that are _not_ currently user-configurable, e
 | "--tls-private-key-file"        | "/etc/kubernetes/certs/kubeletserver.key"          |
 | "--v"                           | "2"                                                |
 | "--volume-plugin-dir"           | "/etc/kubernetes/volumeplugins"                    |
+| "--image-credential-provider-config"   | "/var/lib/kubelet/credential-provider-config.yaml" |
+| "--image-credential-provider-bin-dir"  | "/var/lib/kubelet/credential-provider"             |
 
 <a name="feat-controller-manager-config"></a>
 
