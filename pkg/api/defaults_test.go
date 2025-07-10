@@ -128,17 +128,18 @@ func TestCertsAlreadyPresent(t *testing.T) {
 func TestSetMissingKubeletValues(t *testing.T) {
 	config := &KubernetesConfig{}
 	defaultKubeletConfig := map[string]string{
-		"--network-plugin":               "1",
-		"--pod-infra-container-image":    "2",
-		"--max-pods":                     "3",
-		"--eviction-hard":                "4",
-		"--node-status-update-frequency": "5",
-		"--image-gc-high-threshold":      "6",
-		"--image-gc-low-threshold":       "7",
-		"--non-masquerade-cidr":          "8",
-		"--pod-max-pids":                 "10",
-		"--cloud-provider":               "azure",
-		"--cloud-config":                 "/etc/kubernetes/azure.json",
+		"--network-plugin":                   "1",
+		"--pod-infra-container-image":        "2",
+		"--max-pods":                         "3",
+		"--eviction-hard":                    "4",
+		"--node-status-update-frequency":     "5",
+		"--image-gc-high-threshold":          "6",
+		"--image-gc-low-threshold":           "7",
+		"--non-masquerade-cidr":              "8",
+		"--pod-max-pids":                     "10",
+		"--cloud-provider":                   "azure",
+		"--cloud-config":                     "/etc/kubernetes/azure.json",
+		"--image-credential-provider-config": "/var/lib/kubelet/credential-provider-config.yaml",
 	}
 	setMissingKubeletValues(config, defaultKubeletConfig)
 	for key, val := range defaultKubeletConfig {
@@ -155,17 +156,18 @@ func TestSetMissingKubeletValues(t *testing.T) {
 		},
 	}
 	expectedResult := map[string]string{
-		"--network-plugin":               "a",
-		"--pod-infra-container-image":    "b",
-		"--max-pods":                     "3",
-		"--eviction-hard":                "4",
-		"--node-status-update-frequency": "5",
-		"--image-gc-high-threshold":      "6",
-		"--image-gc-low-threshold":       "7",
-		"--non-masquerade-cidr":          "8",
-		"--pod-max-pids":                 "10",
-		"--cloud-provider":               "",
-		"--cloud-config":                 "/etc/kubernetes/azure.json",
+		"--network-plugin":                   "a",
+		"--pod-infra-container-image":        "b",
+		"--max-pods":                         "3",
+		"--eviction-hard":                    "4",
+		"--node-status-update-frequency":     "5",
+		"--image-gc-high-threshold":          "6",
+		"--image-gc-low-threshold":           "7",
+		"--non-masquerade-cidr":              "8",
+		"--pod-max-pids":                     "10",
+		"--cloud-provider":                   "",
+		"--cloud-config":                     "/etc/kubernetes/azure.json",
+		"--image-credential-provider-config": "/var/lib/kubelet/credential-provider-config.yaml",
 	}
 	setMissingKubeletValues(config, defaultKubeletConfig)
 	for key, val := range expectedResult {
@@ -176,22 +178,24 @@ func TestSetMissingKubeletValues(t *testing.T) {
 
 	config = &KubernetesConfig{
 		KubeletConfig: map[string]string{
-			"--cloud-provider": "",
-			"--cloud-config":   "",
+			"--cloud-provider":                   "",
+			"--cloud-config":                     "",
+			"--image-credential-provider-config": "",
 		},
 	}
 	expectedResult = map[string]string{
-		"--network-plugin":               "1",
-		"--pod-infra-container-image":    "2",
-		"--max-pods":                     "3",
-		"--eviction-hard":                "4",
-		"--node-status-update-frequency": "5",
-		"--image-gc-high-threshold":      "6",
-		"--image-gc-low-threshold":       "7",
-		"--non-masquerade-cidr":          "8",
-		"--pod-max-pids":                 "10",
-		"--cloud-provider":               "",
-		"--cloud-config":                 "",
+		"--network-plugin":                   "1",
+		"--pod-infra-container-image":        "2",
+		"--max-pods":                         "3",
+		"--eviction-hard":                    "4",
+		"--node-status-update-frequency":     "5",
+		"--image-gc-high-threshold":          "6",
+		"--image-gc-low-threshold":           "7",
+		"--non-masquerade-cidr":              "8",
+		"--pod-max-pids":                     "10",
+		"--cloud-provider":                   "",
+		"--cloud-config":                     "",
+		"--image-credential-provider-config": "",
 	}
 	setMissingKubeletValues(config, defaultKubeletConfig)
 	for key, val := range expectedResult {

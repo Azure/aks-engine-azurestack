@@ -264,6 +264,11 @@
                         "destination": "/home/packer/auditd-rules"
                     },
                     {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/credential-provider-config.yaml'))]",
+                        "destination": "/home/packer/credential-provider-config.yaml"
+                    },
+                    {
                         "type": "Shell",
                         "inline": [
                             "[concat('feature_flags=', parameters('feature_flags'))]",
@@ -306,4 +311,4 @@
             }
         }
     ]
-}    
+}

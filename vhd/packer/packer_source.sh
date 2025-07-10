@@ -45,6 +45,8 @@ copyPackerFiles() {
   UBUNTU_STIG_DEST=/opt/azure/containers/provision_stig_ubuntu2204.sh
   AUDITD_RULES_SRC=/home/packer/auditd-rules
   AUDITD_RULES_DEST=/etc/audit/rules.d/aks-engine.rules
+  CREDENTIAL_PROVIDER_CONFIG_SRC=/home/packer/credential-provider-config.yaml
+  CREDENTIAL_PROVIDER_CONFIG_DEST=/var/lib/kubelet/credential-provider-config.yaml
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then
     SSHD_CONFIG_SRC=/home/packer/sshd_config_1604
   fi
@@ -70,6 +72,7 @@ copyPackerFiles() {
   cpAndMode $PROVISION_AZURESTACK_CNI_SRC $PROVISION_AZURESTACK_CNI_DEST 744
   cpAndMode $UBUNTU_STIG_SRC $UBUNTU_STIG_DEST 744
   cpAndMode $AUDITD_RULES_SRC $AUDITD_RULES_DEST 744
+  cpAndMode $CREDENTIAL_PROVIDER_CONFIG_SRC $CREDENTIAL_PROVIDER_CONFIG_DEST 644
 }
 
 cpAndMode() {

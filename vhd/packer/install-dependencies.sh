@@ -108,6 +108,16 @@ for CNI_PLUGIN_VERSION in $CNI_PLUGIN_VERSIONS; do
     echo "  - CNI plugin version ${CNI_PLUGIN_VERSION}" >> ${VHD_LOGS_FILEPATH}
 done
 
+ACR_CREDENTIAL_PROVIDER_VERSIONS="
+1.30.8
+1.29.9
+"
+for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
+    PROVIDER_ARTIFACT="https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v${ACR_CREDENTIAL_PROVIDER_VERSION}/azure-acr-credential-provider-linux-amd64"
+    downloadACR
+    echo "  - ACR credential provider ${PROVIDER_ARTIFACT}" >> ${VHD_LOGS_FILEPATH}
+done
+
 installImg
 echo "  - img" >> ${VHD_LOGS_FILEPATH}
 

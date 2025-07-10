@@ -493,8 +493,9 @@ func TestRequiresCloudproviderConfig(t *testing.T) {
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider": "azure",
-						"--cloud-config":   "",
+						"--cloud-provider":                   "azure",
+						"--cloud-config":                     "",
+						"--image-credential-provider-config": "",
 					},
 				},
 			},
@@ -505,20 +506,35 @@ func TestRequiresCloudproviderConfig(t *testing.T) {
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider": "",
-						"--cloud-config":   "/etc/kubernetes/azure.json",
+						"--cloud-provider":                   "",
+						"--cloud-config":                     "/etc/kubernetes/azure.json",
+						"--image-credential-provider-config": "",
 					},
 				},
 			},
 			expected: true,
 		},
 		{
-			name: "all flags set explicitly to empty string",
+			name: "--image-credential-provider-config provided",
 			ap: AgentPoolProfile{
 				KubernetesConfig: &KubernetesConfig{
 					KubeletConfig: map[string]string{
-						"--cloud-provider": "",
-						"--cloud-config":   "",
+						"--cloud-provider":                   "",
+						"--cloud-config":                     "",
+						"--image-credential-provider-config": "/var/lib/kubelet/credential-provider-config.yaml",
+					},
+				},
+			},
+			expected: true,
+		},
+		{
+			name: "all 3 flags set explicitly to empty string",
+			ap: AgentPoolProfile{
+				KubernetesConfig: &KubernetesConfig{
+					KubeletConfig: map[string]string{
+						"--cloud-provider":                   "",
+						"--cloud-config":                     "",
+						"--image-credential-provider-config": "",
 					},
 				},
 			},

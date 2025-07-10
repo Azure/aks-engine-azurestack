@@ -64,6 +64,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// Add Windows-specific overrides
 	// Eventually paths should not be hardcoded here. They should be relative to $global:KubeDir in the PowerShell script
+	staticWindowsKubeletConfig["--image-credential-provider-config"] = "c:\\k\\credential-provider\\credential-provider-config.yaml"
+	staticWindowsKubeletConfig["--image-credential-provider-bin-dir"] = "c:\\k\\credential-provider"
 	staticWindowsKubeletConfig["--pod-infra-container-image"] = "kubletwin/pause"
 	staticWindowsKubeletConfig["--kubeconfig"] = "c:\\k\\config"
 	staticWindowsKubeletConfig["--cloud-config"] = "c:\\k\\azure.json"
@@ -102,6 +104,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
 		"--seccomp-default":                   "true",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
 	}
 
 	// Set --non-masquerade-cidr if ip-masq-agent is disabled on AKS or

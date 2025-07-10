@@ -82,6 +82,10 @@ function Get-FilesToCacheOnVHD {
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
         )
+        "c:\k\credential-provider\" = @(
+            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.8/azure-acr-credential-provider-windows-amd64.exe",
+            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.29.9/azure-acr-credential-provider-windows-amd64.exe"
+        )
     }
 
     foreach ($dir in $map.Keys) {

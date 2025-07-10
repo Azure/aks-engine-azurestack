@@ -140,6 +140,12 @@
                     },
                     {
                         "type": "File",
+                        "name": "download acr credential provider configuration file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/credential-provider-config.yaml'))]",
+                        "destination":"c:\\k\\credential-provider\\credential-provider-config.yaml"
+                    },
+                    {
+                        "type": "File",
                         "name": "download log collection script",
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/scripts/collect-windows-logs.ps1'))]",
                         "destination":"c:\\akse-cache\\collect-windows-logs.ps1"
