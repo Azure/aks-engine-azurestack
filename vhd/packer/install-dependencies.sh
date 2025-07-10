@@ -109,8 +109,9 @@ for CNI_PLUGIN_VERSION in $CNI_PLUGIN_VERSIONS; do
 done
 
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
-1.30.8
-1.29.9
+1.32.5
+1.31.9
+1.30.10
 "
 for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
     PROVIDER_ARTIFACT="https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v${ACR_CREDENTIAL_PROVIDER_VERSION}/azure-acr-credential-provider-linux-amd64"
