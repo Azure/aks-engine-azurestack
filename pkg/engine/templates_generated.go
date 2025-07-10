@@ -16820,8 +16820,8 @@ installRunc() {
   local v
   local url
   v=$(runc --version | head -n 1 | cut -d" " -f3)
-  if [[ $v != "1.1.14" ]]; then
-    apt_get_install 20 30 120 moby-runc=1.1.14* --allow-downgrades || exit 27
+  if [[ $v != "1.2.5" ]]; then
+    apt_get_install 20 30 120 moby-runc=1.2.5* --allow-downgrades || exit 27
   fi
 }
 installMoby() {
@@ -20271,7 +20271,7 @@ func k8sKubeconfigJson() (*asset, error) {
 	return a, nil
 }
 
-var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
+var _k8sKubernetesparamsT = []byte(`"etcdServerCertificate": {
       "metadata": {
         "description": "The base 64 server certificate used on the master"
       },
@@ -20512,7 +20512,7 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
       "type": "string"
     },
     "containerdVersion": {
-      "defaultValue": "1.6.36",
+      "defaultValue": "1.7.27",
       "metadata": {
         "description": "The Azure containerd build version"
       },
@@ -20536,7 +20536,8 @@ var _k8sKubernetesparamsT = []byte(`    "etcdServerCertificate": {
          "1.5.16",
          "1.6.21",
          "1.6.28",
-         "1.6.36"
+         "1.6.36",
+         "1.7.27"
        ],
       "type": "string"
     },
