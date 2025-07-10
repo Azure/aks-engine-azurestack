@@ -15,19 +15,20 @@ import (
 func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	o := cs.Properties.OrchestratorProfile
 	staticLinuxKubeletConfig := map[string]string{
-		"--address":              "0.0.0.0",
-		"--allow-privileged":     "true",
-		"--anonymous-auth":       "false",
-		"--authorization-mode":   "Webhook",
-		"--client-ca-file":       "/etc/kubernetes/certs/ca.crt",
-		"--pod-manifest-path":    "/etc/kubernetes/manifests",
-		"--cluster-dns":          o.KubernetesConfig.DNSServiceIP,
-		"--cgroups-per-qos":      "true",
-		"--kubeconfig":           "/var/lib/kubelet/kubeconfig",
-		"--tls-cert-file":        "/etc/kubernetes/certs/kubeletserver.crt",
-		"--tls-private-key-file": "/etc/kubernetes/certs/kubeletserver.key",
-		"--v":                    "2",
-		"--volume-plugin-dir":    "/etc/kubernetes/volumeplugins",
+		"--address":                           "0.0.0.0",
+		"--allow-privileged":                  "true",
+		"--anonymous-auth":                    "false",
+		"--authorization-mode":                "Webhook",
+		"--client-ca-file":                    "/etc/kubernetes/certs/ca.crt",
+		"--pod-manifest-path":                 "/etc/kubernetes/manifests",
+		"--cluster-dns":                       o.KubernetesConfig.DNSServiceIP,
+		"--cgroups-per-qos":                   "true",
+		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
+		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
+		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
+		"--v":                                 "2",
+		"--volume-plugin-dir":                 "/etc/kubernetes/volumeplugins",
+		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 	}
 
 	for key := range staticLinuxKubeletConfig {
