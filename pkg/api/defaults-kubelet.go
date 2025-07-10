@@ -24,7 +24,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--cluster-dns":                       o.KubernetesConfig.DNSServiceIP,
 		"--cgroups-per-qos":                   "true",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
-		"--keep-terminated-pod-volumes":       "false",
 		"--tls-cert-file":                     "/etc/kubernetes/certs/kubeletserver.crt",
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
 		"--v":                                 "2",
@@ -328,6 +327,83 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122137
 		invalidFeatureGates = append(invalidFeatureGates, "IPTablesOwnershipCleanup")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.31.0") {
+		// Remove --feature-gate APIPriorityAndFairness starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "APIPriorityAndFairness")
+
+		// Remove --feature-gate ConsistentHTTPGetHandlers starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ConsistentHTTPGetHandlers")
+
+		// Remove --feature-gate CSIMigrationRBD starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CSIMigrationRBD")
+
+		// Remove --feature-gate CSINodeExpandSecret starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CSINodeExpandSecret")
+
+		// Remove --feature-gate CustomResourceValidationExpressions starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CustomResourceValidationExpressions")
+
+		// Remove --feature-gate DefaultHostNetworkHostPortsInPodTemplates starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "DefaultHostNetworkHostPortsInPodTemplates")
+
+		// Remove --feature-gate InTreePluginRBDUnregister starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "InTreePluginRBDUnregister")
+
+		// Remove --feature-gate JobReadyPods starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "JobReadyPods")
+
+		// Remove --feature-gate ReadWriteOncePod starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ReadWriteOncePod")
+
+		// Remove --feature-gate ServiceNodePortStaticSubrange starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "ServiceNodePortStaticSubrange")
+
+		// Remove --feature-gate SkipReadOnlyValidationGCE starting with 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "SkipReadOnlyValidationGCE")
+	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.32.0") {
+		// Remove --feature-gate CloudDualStackNodeIPs starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "CloudDualStackNodeIPs")
+
+		// Remove --feature-gate HPAContainerMetrics starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "HPAContainerMetrics")
+
+		// Remove --feature-gate KMSv2 starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "KMSv2")
+
+		// Remove --feature-gate KMSv2KDF starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "KMSv2KDF")
+
+		// Remove --feature-gate LegacyServiceAccountTokenCleanUp starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "LegacyServiceAccountTokenCleanUp")
+
+		// Remove --feature-gate MinDomainsInPodTopologySpread starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "MinDomainsInPodTopologySpread")
+
+		// Remove --feature-gate NewVolumeManagerReconstruction starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "NewVolumeManagerReconstruction")
+
+		// Remove --feature-gate NodeOutOfServiceVolumeDetach starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "NodeOutOfServiceVolumeDetach")
+
+		// Remove --feature-gate PodHostIPs starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "PodHostIPs")
+
+		// Remove --feature-gate ServerSideApply starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ServerSideApply")
+
+		// Remove --feature-gate ServerSideFieldValidation starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ServerSideFieldValidation")
+
+		// Remove --feature-gate StableLoadBalancerNodeSet starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "StableLoadBalancerNodeSet")
+
+		// Remove --feature-gate ValidatingAdmissionPolicy starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ValidatingAdmissionPolicy")
+
+		// Remove --feature-gate ZeroLimitedNominalConcurrencyShares starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ZeroLimitedNominalConcurrencyShares")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 
 	// Master-specific kubelet config changes go here
@@ -501,6 +577,13 @@ func removeKubeletFlags(k map[string]string, v string) {
 	// Get rid of values not supported in v1.30 and up
 	if common.IsKubernetesVersionGe(v, "1.30.0") {
 		for _, key := range []string{"--azure-container-registry-config"} {
+			delete(k, key)
+		}
+	}
+
+	// Get rid of values not supported in v1.31 and up
+	if common.IsKubernetesVersionGe(v, "1.31.0") {
+		for _, key := range []string{"--keep-terminated-pod-volumes"} {
 			delete(k, key)
 		}
 	}

@@ -478,7 +478,6 @@ Below is a list of kubelet options that are _not_ currently user-configurable, e
 | "--node-labels"                 | (based on Azure node metadata)                     |
 | "--cgroups-per-qos"             | "true"                                             |
 | "--kubeconfig"                  | "/var/lib/kubelet/kubeconfig"                      |
-| "--keep-terminated-pod-volumes" | "false"                                            |
 | "--tls-cert-file"               | "/etc/kubernetes/certs/kubeletserver.crt"          |
 | "--tls-private-key-file"        | "/etc/kubernetes/certs/kubeletserver.key"          |
 | "--v"                           | "2"                                                |
