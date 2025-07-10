@@ -28,6 +28,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
 		"--v":                                 "2",
 		"--volume-plugin-dir":                 "/etc/kubernetes/volumeplugins",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
 		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 	}
 
@@ -105,7 +106,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
 		"--seccomp-default":                   "true",
-		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
 	}
 
 	// Set --non-masquerade-cidr if ip-masq-agent is disabled on AKS or
