@@ -81,9 +81,9 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
         )
         "c:\k\credential-provider\" = @(
-            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.32.5/azure-acr-credential-provider-windows-amd64.exe",
-            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.9/azure-acr-credential-provider-windows-amd64.exe",
-            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.10/azure-acr-credential-provider-windows-amd64.exe"
+            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.32.6/azure-acr-credential-provider-windows-amd64.exe",
+            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe",
+            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.13/azure-acr-credential-provider-windows-amd64.exe"
         )
     }
 
