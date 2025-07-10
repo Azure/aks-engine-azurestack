@@ -29,6 +29,7 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-private-key-file":              "/etc/kubernetes/certs/kubeletserver.key",
 		"--v":                                 "2",
 		"--volume-plugin-dir":                 "/etc/kubernetes/volumeplugins",
+		"--image-credential-provider-config":  "/var/lib/kubelet/credential-provider-config.yaml",
 		"--image-credential-provider-bin-dir": "/var/lib/kubelet/credential-provider",
 	}
 
