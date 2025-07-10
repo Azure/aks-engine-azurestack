@@ -6,27 +6,20 @@ Starting with Kubernetes v1.29, you **must** use [Out-of-Tree Credential Provide
 
 ## What This Means for Your Cluster
 
-When you deploy an AKS Engine cluster, the migration to ACR credential providers happens automatically:
+When you deploy an AKS Engine cluster, the ACR credential provider would be installed and configuraged by default.
 
- **Automatic Migration**: AKS Engine removes the deprecated `--azure-container-registry-config` flag  
- **New Configuration**: Replaces it with modern credential provider flags:
-- `--image-credential-provider-bin-dir`
-- `--image-credential-provider-config`
-
-> **No Action Required**: This transition is transparent - your cluster will continue to authenticate with ACR without any manual intervention.
+When you update your AKS Engine cluster, deprecated kubelet `--azure-container-registry-config` flag is replaced
+with flags `--image-credential-provider-bin-dir` and `--image-credential-provider-config`.
+This transition should be transparent, the kubelet is expected to authenticate with ACR without any manual intervention.
 
 ## How It Works
 
 ### Configuration File Location
 
-The credential provider uses a configuration file automatically deployed to:
-```
-/var/lib/kubelet/credential-provider-config.yaml (on Linux nodes)
+The credential provider configuration file is provisioned to all nodes in the following locations:
 
-C:\k\credential-provider\credential-provider-config.yaml (on Windows nodes)
-```
-
-This file is **automatically provisioned** to all nodes (both master and worker) in your cluster.
+- Linux nodes: `/var/lib/kubelet/credential-provider-config.yaml`
+- Windows nodes: `C:\k\credential-provider\credential-provider-config.yaml`
 
 ### Default Configuration
 
