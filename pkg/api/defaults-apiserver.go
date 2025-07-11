@@ -357,6 +357,13 @@ func (cs *ContainerService) overrideAPIServerConfig() {
 		// Reference: https://github.com/kubernetes/kubernetes/pull/122137
 		invalidFeatureGates = append(invalidFeatureGates, "IPTablesOwnershipCleanup")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.31.0") {
+		// Remove feature gates for Kubernetes 1.31
+		invalidFeatureGates = append(invalidFeatureGates, "CloudDualStackNodeIPs", "DRAControlPlaneController", "HPAContainerMetrics",
+			"KMSv2", "KMSv2KDF", "LegacyServiceAccountTokenCleanUp", "MinDomainsInPodTopologySpread", "NewVolumeManagerReconstruction",
+			"NodeOutOfServiceVolumeDetach", "PodHostIPs", "ServerSideApply", "ServerSideFieldValidation", "StableLoadBalancerNodeSet",
+			"ValidatingAdmissionPolicy", "ZeroLimitedNominalConcurrencyShares")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.APIServerConfig, invalidFeatureGates)
 
 	if common.ShouldDisablePodSecurityPolicyAddon(o.OrchestratorVersion) {
