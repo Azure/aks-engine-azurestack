@@ -21389,6 +21389,9 @@ try
             -AgentKey $AgentKey ` + "`" + `
             -AgentCertificate $global:AgentCertificate
 
+        Write-Log "Configure ACR credential provider binary"
+        Set-ACRCredentialProvider
+
         if ($global:EnableHostsConfigAgent) {
              Write-Log "Starting hosts config agent"
              New-HostsConfigService
@@ -23486,6 +23489,20 @@ New-NSSMService {
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateOnline 1 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateSeconds 86400 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateBytes 10485760 | RemoveNulls
+}
+
+function
+Set-ACRCredentialProvider {
+    $credentialProviderDir = "c:\k\credential-provider"
+    $expectedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider.exe")
+    
+    if ($global:KubeBinariesVersion -match "^(\d+)\.(\d+)") {
+        $majorMinorVersion = "v$($matches[1]).$($matches[2])"
+    }
+    
+    $versionedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider-windows-amd64-$majorMinorVersion.exe")
+    
+    Copy-Item $versionedBinaryPath $expectedBinaryPath -Force
 }
 
 # Renamed from Write-KubernetesStartFiles
