@@ -278,6 +278,9 @@ try
             -AgentKey $AgentKey `
             -AgentCertificate $global:AgentCertificate
 
+        Write-Log "Configure ACR credential provider binary"
+        Set-ACRCredentialProvider
+
         if ($global:EnableHostsConfigAgent) {
              Write-Log "Starting hosts config agent"
              New-HostsConfigService
