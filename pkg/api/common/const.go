@@ -57,13 +57,13 @@ const (
 
 const (
 	// KubernetesDefaultRelease is the default Kubernetes release
-	KubernetesDefaultRelease string = "1.31"
+	KubernetesDefaultRelease string = "1.30"
 	// KubernetesDefaultReleaseWindows is the default Kubernetes release for Windows
-	KubernetesDefaultReleaseWindows string = "1.31"
+	KubernetesDefaultReleaseWindows string = "1.30"
 	// KubernetesDefaultReleaseAzureStack is the default Kubernetes release on Azure Stack
-	KubernetesDefaultReleaseAzureStack string = "1.31"
+	KubernetesDefaultReleaseAzureStack string = "1.30"
 	// KubernetesDefaultReleaseWindowsAzureStack is the default Kubernetes release for Windows on Azure Stack
-	KubernetesDefaultReleaseWindowsAzureStack string = "1.31"
+	KubernetesDefaultReleaseWindowsAzureStack string = "1.30"
 	// PodSecurityPolicyRemovedVersion is the first Kubernetes version that does not includes the PSP admission plugin
 	PodSecurityPolicyRemovedVersion = "1.25.0"
 )

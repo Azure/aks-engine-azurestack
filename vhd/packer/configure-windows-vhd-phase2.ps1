@@ -77,7 +77,7 @@ function Get-FilesToCacheOnVHD {
         "c:\akse-cache\win-k8s\"      = @(
             "https://packages.aks.azure.com/kubernetes/v1.32.5/windowszip/v1.32.5-1int.zip",
             "https://packages.aks.azure.com/kubernetes/v1.31.9/windowszip/v1.31.9-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.30.14/windowszip/v1.30.14-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
@@ -107,7 +107,7 @@ function Get-FilesToCacheOnVHD {
 
     $credentialProviderDir = "c:\k\credential-provider\"
     New-Item -ItemType Directory $credentialProviderDir -Force | Out-Null
-    
+
     foreach ($providerInfo in $acrCredentialProviderUrls) {
         $versionedFileName = "azure-acr-credential-provider-windows-amd64-$($providerInfo.K8sVersion).exe"
         $dest = [IO.Path]::Combine($credentialProviderDir, $versionedFileName)

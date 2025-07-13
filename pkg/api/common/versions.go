@@ -367,7 +367,8 @@ var AllKubernetesSupportedVersions = map[string]bool{
 	"1.28.15":        false,
 	"1.29.10":        false,
 	"1.29.15":        false,
-	"1.30.10":        true,
+	"1.30.10":        false,
+	"1.30.14":        true,
 	"1.31.9":         true,
 	"1.32.5":         true,
 }
@@ -427,7 +428,8 @@ var AllKubernetesSupportedVersionsAzureStack = map[string]bool{
 	"1.28.15": false,
 	"1.29.10": false,
 	"1.29.15": false,
-	"1.30.10": true,
+	"1.30.10": false,
+	"1.30.14": true,
 	"1.31.9":  true,
 	"1.32.5":  true,
 }
@@ -482,7 +484,8 @@ var AllKubernetesWindowsSupportedVersionsAzureStack = map[string]bool{
 	"1.28.15": false,
 	"1.29.10": false,
 	"1.29.15": false,
-	"1.30.10": true,
+	"1.30.10": false,
+	"1.30.14": true,
 	"1.31.9":  true,
 	"1.32.5":  true,
 }

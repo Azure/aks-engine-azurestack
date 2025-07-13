@@ -215,7 +215,7 @@ installKubeBinaries() {
 K8S_VERSIONS="
 1.32.5
 1.31.9
-1.30.10
+1.30.14
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do

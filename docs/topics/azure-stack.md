@@ -198,7 +198,7 @@ The following table shows the supported Azure Disk CSI Driver version for each K
 | <= 1.25            | 1.10.0                        |
 | 1.26               | 1.26.5                        |
 | 1.27               | 1.28.3                        |
-| >= 1.28            | 1.29.1                        |
+| >= 1.28            | 1.29.12                       |
 
 * Exception: For AKS Engine v0.77.0, kubernetes version 1.25 uses Azure Disk CSI Driver version v1.26.5
 * Note: Only the versions in the mapping have been tested. While other version combinations may work, they are not officially supported.
