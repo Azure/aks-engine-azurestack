@@ -26,7 +26,6 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.12",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.6",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.32.0",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
@@ -75,7 +74,6 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.32.5/windowszip/v1.32.5-1int.zip",
             "https://packages.aks.azure.com/kubernetes/v1.31.9/windowszip/v1.31.9-1int.zip",
             "https://packages.aks.azure.com/kubernetes/v1.30.14/windowszip/v1.30.14-1int.zip"
         );
@@ -100,7 +98,6 @@ function Get-FilesToCacheOnVHD {
     }
 
     $acrCredentialProviderUrls = @(
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.32.6/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.32" },
         @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.31" },
         @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.13/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.30" }
     )

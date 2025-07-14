@@ -164,7 +164,7 @@ var (
 		ImageOffer:     "aks",
 		ImageSku:       "aks-engine-azurestack-ubuntu-2204",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "2025.191.5",
+		ImageVersion:   "2025.194.4",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
@@ -172,7 +172,7 @@ var (
 		ImageOffer:     "aks-windows",
 		ImageSku:       "2019-datacenter-core-azurestack-smalldisk",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.7434.20251915",
+		ImageVersion:   "17763.3887.20230332",
 	}
 
 	// AKSWindowsServer2019ContainerDOSImageConfig is the aks-engine image based on Windows Server 2019
@@ -181,7 +181,7 @@ var (
 		ImageOffer:     "aks-windows",
 		ImageSku:       "2019-datacenter-core-azurestack-ctrd",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.7009.20250792",
+		ImageVersion:   "17763.7434.20251944",
 	}
 
 	// WindowsServer2019OSImageConfig is the 'vanilla' Windows Server 2019 image

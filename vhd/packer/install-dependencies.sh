@@ -109,7 +109,6 @@ for CNI_PLUGIN_VERSION in $CNI_PLUGIN_VERSIONS; do
 done
 
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
-1.32.6
 1.31.7
 1.30.13
 "
@@ -213,7 +212,6 @@ echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 installKubeBinaries() {
 K8S_VERSIONS="
-1.32.5
 1.31.9
 1.30.14
 "
@@ -232,7 +230,6 @@ installKubeBinaries
 installCloudControllerManager() {
   # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
-1.32.0
 1.31.7
 1.30.13
 "
@@ -247,7 +244,6 @@ installCloudControllerManager
 installCloudNodeManager() {
   # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
-1.32.0
 1.31.6
 1.30.12
 "
