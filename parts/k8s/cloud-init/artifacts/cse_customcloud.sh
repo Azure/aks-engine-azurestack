@@ -81,6 +81,7 @@ configureK8sCustomCloud() {
   timeout 10 nc -vz ${LOGIN_EP} 443 \
   && echo "login endpoint reachable: ${LOGIN_EP}" \
   || echo "error: login endpoint not reachable: ${LOGIN_EP}"
+  configureACRCredentialProvider
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
@@ -111,6 +112,13 @@ ensureAzureStackCertificates() {
   fi
   curl $META_EP
   exit $?
+}
+configureACRCredentialProvider() {
+  local azure_stack_config_file="/etc/kubernetes/azurestackcloud.json"
+  local credential_provider_config_path="/var/lib/kubelet/credential-provider-config.yaml"
+  
+  local storage_endpoint_suffix=$(jq -r '.storageEndpointSuffix' "$azure_stack_config_file")
+  sed -i "s|<storageEndpointSuffix>|${storage_endpoint_suffix}|g" "$credential_provider_config_path"
 }
 {{end}}
 #EOF

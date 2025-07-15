@@ -278,7 +278,7 @@ try
             -AgentKey $AgentKey `
             -AgentCertificate $global:AgentCertificate
 
-        Write-Log "Configure ACR credential provider binary"
+        Write-Log "Configure ACR credential provider"
         Set-ACRCredentialProvider
 
         if ($global:EnableHostsConfigAgent) {
