@@ -60,7 +60,6 @@ function Adjust-DynamicPortRange()
     Invoke-Executable -Executable "netsh.exe" -ArgList @("int", "ipv4", "set", "dynamicportrange", "tcp", "33000", "32536")
 }
 
-# TODO: should this be in this PR?
 # Service start actions. These should be split up later and included in each install step
 function Update-ServiceFailureActions
 {

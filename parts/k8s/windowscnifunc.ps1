@@ -23,5 +23,3 @@ function Install-SdnBridge
     Expand-Archive -path $cnizip -DestinationPath $CNIPath
     del $cnizip
 }
-
-# TODO: Move the code that creates the wincni configuration file out of windowskubeletfunc.ps1 and put it here

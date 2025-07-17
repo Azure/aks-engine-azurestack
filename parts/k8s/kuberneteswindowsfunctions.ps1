@@ -213,7 +213,6 @@ function Register-NodeResetScriptTask {
     Register-ScheduledTask -TaskName "k8s-restart-job" -InputObject $definition
 }
 
-# TODO ksubrmnn parameterize this fully
 function Write-KubeClusterConfig {
     param(
         [Parameter(Mandatory = $true)][string]

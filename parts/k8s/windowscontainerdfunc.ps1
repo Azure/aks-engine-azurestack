@@ -157,8 +157,6 @@ function Install-Containerd {
     Write-Log "Stoping containerd service"
     $svc | Stop-Service
   }
-
-  # TODO: check if containerd is already installed and is the same version before this.
   
   # Extract the package
   if ($ContainerdUrl.endswith(".zip")) {

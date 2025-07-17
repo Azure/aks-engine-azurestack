@@ -21023,7 +21023,6 @@ function Register-NodeResetScriptTask {
     Register-ScheduledTask -TaskName "k8s-restart-job" -InputObject $definition
 }
 
-# TODO ksubrmnn parameterize this fully
 function Write-KubeClusterConfig {
     param(
         [Parameter(Mandatory = $true)][string]
@@ -21193,9 +21192,6 @@ $global:KubeBinariesVersion = "{{WrapAsParameter "kubeBinariesVersion"}}"
 $global:ContainerdUrl = "{{WrapAsParameter "windowsContainerdURL"}}"
 $global:ContainerdSdnPluginUrl = "{{WrapAsParameter "windowsSdnPluginURL"}}"
 
-## Docker Version
-$global:DockerVersion = "{{WrapAsParameter "windowsDockerVersion"}}"
-
 ## ContainerD Usage
 $global:ContainerRuntime = "{{WrapAsParameter "containerRuntime"}}"
 $global:DefaultContainerdRuntimeHandler = "{{WrapAsParameter "defaultContainerdRuntimeHandler"}}"
@@ -21252,7 +21248,6 @@ $global:AzureCNIBinDir = [Io.path]::Combine("$global:AzureCNIDir", "bin")
 $global:AzureCNIConfDir = [Io.path]::Combine("$global:AzureCNIDir", "netconf")
 
 # Azure cni configuration
-# $global:NetworkPolicy = "{{WrapAsParameter "networkPolicy"}}" # BUG: unused
 $global:NetworkPlugin = "{{WrapAsParameter "networkPlugin"}}"
 $global:VNetCNIPluginsURL = "{{WrapAsParameter "vnetCniWindowsPluginsURL"}}"
 $global:IsDualStackEnabled = {{if IsIPv6DualStackFeatureEnabled}}$true{{else}}$false{{end}}
@@ -21301,7 +21296,6 @@ try
     # the output.
     if ($true) {
         Write-Log ".\CustomDataSetupScript.ps1 -MasterIP $MasterIP -KubeDnsServiceIp $KubeDnsServiceIp -MasterFQDNPrefix $MasterFQDNPrefix -Location $Location -AgentKey $AgentKey -AADClientId $AADClientId -AADClientSecret $AADClientSecret -NetworkAPIVersion $NetworkAPIVersion -TargetEnvironment $TargetEnvironment"
-        Write-Log "Provisioning $global:DockerServiceName... with IP $MasterIP"
 
         # Install OpenSSH if SSH enabled
         $sshEnabled = [System.Convert]::ToBoolean("{{ WindowsSSHEnabled }}")
@@ -22648,9 +22642,7 @@ function Install-SdnBridge
     DownloadFileOverHttp -Url $Url -DestinationPath $cnizip
     Expand-Archive -path $cnizip -DestinationPath $CNIPath
     del $cnizip
-}
-
-# TODO: Move the code that creates the wincni configuration file out of windowskubeletfunc.ps1 and put it here`)
+}`)
 
 func k8sWindowscnifuncPs1Bytes() ([]byte, error) {
 	return _k8sWindowscnifuncPs1, nil
@@ -22729,7 +22721,6 @@ function Adjust-DynamicPortRange()
     Invoke-Executable -Executable "netsh.exe" -ArgList @("int", "ipv4", "set", "dynamicportrange", "tcp", "33000", "32536")
 }
 
-# TODO: should this be in this PR?
 # Service start actions. These should be split up later and included in each install step
 function Update-ServiceFailureActions
 {
@@ -22934,8 +22925,6 @@ function Install-Containerd {
     Write-Log "Stoping containerd service"
     $svc | Stop-Service
   }
-
-  # TODO: check if containerd is already installed and is the same version before this.
   
   # Extract the package
   if ($ContainerdUrl.endswith(".zip")) {
@@ -23380,7 +23369,6 @@ New-InfraContainer {
     }
 }
 
-# TODO: Deprecate this and replace with methods that get individual components instead of zip containing everything
 # This expects the ZIP file created by Azure Pipelines.
 function
 Get-KubePackage {
@@ -23437,7 +23425,6 @@ Get-KubeBinaries {
     del $tempdir -Recurse
 }
 
-# TODO: replace KubeletStartFile with a Kubelet config, remove NSSM, and use built-in service integration
 function
 New-NSSMService {
     Param(
@@ -23530,8 +23517,6 @@ Install-KubernetesServices {
         [Parameter(Mandatory = $true)][string]
         $KubeDir
     )
-
-    # TODO ksbrmnn fix callers to this function
 
     $KubeletStartFile = [io.path]::Combine($KubeDir, "kubeletstart.ps1")
     $KubeProxyStartFile = [io.path]::Combine($KubeDir, "kubeproxystart.ps1")

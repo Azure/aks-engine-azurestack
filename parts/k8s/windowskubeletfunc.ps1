@@ -177,7 +177,6 @@ New-InfraContainer {
     }
 }
 
-# TODO: Deprecate this and replace with methods that get individual components instead of zip containing everything
 # This expects the ZIP file created by Azure Pipelines.
 function
 Get-KubePackage {
@@ -234,7 +233,6 @@ Get-KubeBinaries {
     del $tempdir -Recurse
 }
 
-# TODO: replace KubeletStartFile with a Kubelet config, remove NSSM, and use built-in service integration
 function
 New-NSSMService {
     Param(
@@ -327,8 +325,6 @@ Install-KubernetesServices {
         [Parameter(Mandatory = $true)][string]
         $KubeDir
     )
-
-    # TODO ksbrmnn fix callers to this function
 
     $KubeletStartFile = [io.path]::Combine($KubeDir, "kubeletstart.ps1")
     $KubeProxyStartFile = [io.path]::Combine($KubeDir, "kubeproxystart.ps1")
