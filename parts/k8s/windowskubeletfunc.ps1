@@ -303,14 +303,19 @@ function
 Set-ACRCredentialProvider {
     $credentialProviderDir = "c:\k\credential-provider"
     $expectedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider.exe")
-    
     if ($global:KubeBinariesVersion -match "^(\d+)\.(\d+)") {
         $majorMinorVersion = "v$($matches[1]).$($matches[2])"
     }
-    
     $versionedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider-windows-amd64-$majorMinorVersion.exe")
-    
     Copy-Item $versionedBinaryPath $expectedBinaryPath -Force
+    
+    $azureStackConfigFile = [io.path]::Combine($global:KubeDir, "azurestackcloud.json")
+    $azureConfig = Get-Content $azureStackConfigFile -Raw | ConvertFrom-Json
+    
+    $credentialProviderConfigPath = "c:\k\credential-provider\credential-provider-config.yaml"
+    $credentialProviderConfig = Get-Content $credentialProviderConfigPath -Raw
+    $credentialProviderConfig = $credentialProviderConfig -replace "<storageEndpointSuffix>", $azureConfig.storageEndpointSuffix
+    $credentialProviderConfig | Set-Content $credentialProviderConfigPath -Encoding UTF8
 }
 
 # Renamed from Write-KubernetesStartFiles

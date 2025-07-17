@@ -104,7 +104,7 @@ function Get-FilesToCacheOnVHD {
 
     $credentialProviderDir = "c:\k\credential-provider\"
     New-Item -ItemType Directory $credentialProviderDir -Force | Out-Null
-
+    
     foreach ($providerInfo in $acrCredentialProviderUrls) {
         $versionedFileName = "azure-acr-credential-provider-windows-amd64-$($providerInfo.K8sVersion).exe"
         $dest = [IO.Path]::Combine($credentialProviderDir, $versionedFileName)
