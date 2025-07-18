@@ -15510,8 +15510,9 @@ providers:
       - "*.azurecr.cn"
       - "*.azurecr.de"
       - "*.azurecr.us"
+      - "*.azsacr.<storageEndpointSuffix>"
     args:
-      - /etc/kubernetes/azure.json
+      - <azureJsonFilePath>
 `)
 
 func k8sCloudInitArtifactsCredentialProviderConfigYamlBytes() ([]byte, error) {
@@ -16365,6 +16366,7 @@ configureK8sCustomCloud() {
   timeout 10 nc -vz ${LOGIN_EP} 443 \
   && echo "login endpoint reachable: ${LOGIN_EP}" \
   || echo "error: login endpoint not reachable: ${LOGIN_EP}"
+  configureACRCredentialProvider
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
@@ -16395,6 +16397,15 @@ ensureAzureStackCertificates() {
   fi
   curl $META_EP
   exit $?
+}
+configureACRCredentialProvider() {
+  local azure_config_file="/etc/kubernetes/azure.json"
+  local azure_stack_config_file="/etc/kubernetes/azurestackcloud.json"
+  local credential_provider_config_path="/var/lib/kubelet/credential-provider-config.yaml"
+  
+  local storage_endpoint_suffix=$(jq -r '.storageEndpointSuffix' "$azure_stack_config_file")
+  sed -i "s|<storageEndpointSuffix>|${storage_endpoint_suffix}|g" "$credential_provider_config_path"
+  sed -i "s|<azureJsonFilePath>|${azure_config_file}|g" "$credential_provider_config_path"
 }
 {{end}}
 #EOF
@@ -21389,6 +21400,9 @@ try
             -AgentKey $AgentKey ` + "`" + `
             -AgentCertificate $global:AgentCertificate
 
+        Write-Log "Configure ACR credential provider"
+        Set-ACRCredentialProvider
+
         if ($global:EnableHostsConfigAgent) {
              Write-Log "Starting hosts config agent"
              New-HostsConfigService
@@ -23486,6 +23500,27 @@ New-NSSMService {
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateOnline 1 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateSeconds 86400 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateBytes 10485760 | RemoveNulls
+}
+
+function
+Set-ACRCredentialProvider {
+    $credentialProviderDir = "c:\k\credential-provider"
+    $expectedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider.exe")
+    if ($global:KubeBinariesVersion -match "^(\d+)\.(\d+)") {
+        $majorMinorVersion = "v$($matches[1]).$($matches[2])"
+    }
+    $versionedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider-windows-amd64-$majorMinorVersion.exe")
+    Copy-Item $versionedBinaryPath $expectedBinaryPath -Force
+    
+    $azureConfigFile = [io.path]::Combine($global:KubeDir, "azure.json")
+    $azureStackConfigFile = [io.path]::Combine($global:KubeDir, "azurestackcloud.json")
+    $azureConfig = Get-Content $azureStackConfigFile -Raw | ConvertFrom-Json
+    
+    $credentialProviderConfigPath = "c:\k\credential-provider\credential-provider-config.yaml"
+    $credentialProviderConfig = Get-Content $credentialProviderConfigPath -Raw
+    $credentialProviderConfig = $credentialProviderConfig -replace "<storageEndpointSuffix>", $azureConfig.storageEndpointSuffix
+    $credentialProviderConfig = $credentialProviderConfig -replace "<azureJsonFilePath>", $azureConfigFile
+    $credentialProviderConfig | Set-Content $credentialProviderConfigPath -Encoding UTF8
 }
 
 # Renamed from Write-KubernetesStartFiles
