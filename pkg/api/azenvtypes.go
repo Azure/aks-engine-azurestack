@@ -164,7 +164,7 @@ var (
 		ImageOffer:     "aks",
 		ImageSku:       "aks-engine-azurestack-ubuntu-2204",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "2025.198.5",
+		ImageVersion:   "2025.198.8",
 	}
 
 	// AKSWindowsServer2019OSImageConfig is the aks-engine image based on Windows Server 2019
@@ -181,7 +181,7 @@ var (
 		ImageOffer:     "aks-windows",
 		ImageSku:       "2019-datacenter-core-azurestack-ctrd",
 		ImagePublisher: "microsoft-aks",
-		ImageVersion:   "17763.7434.20251985",
+		ImageVersion:   "17763.7434.20251988",
 	}
 
 	// WindowsServer2019OSImageConfig is the 'vanilla' Windows Server 2019 image
