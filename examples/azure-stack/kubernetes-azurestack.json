@@ -3,8 +3,8 @@
     "location": "",
     "properties": {
         "orchestratorProfile": {
-            "orchestratorRelease": "1.29",
-            "orchestratorVersion": "1.29.15",
+            "orchestratorRelease": "1.30",
+            "orchestratorVersion": "1.30.14",
             "kubernetesConfig": {
                 "cloudProviderBackoff": true,
                 "cloudProviderBackoffRetries": 1,

@@ -15510,6 +15510,7 @@ providers:
       - "*.azurecr.cn"
       - "*.azurecr.de"
       - "*.azurecr.us"
+      - "*.azsacr.<storageEndpointSuffix>"
     args:
       - /etc/kubernetes/azure.json
 `)
@@ -16365,6 +16366,7 @@ configureK8sCustomCloud() {
   timeout 10 nc -vz ${LOGIN_EP} 443 \
   && echo "login endpoint reachable: ${LOGIN_EP}" \
   || echo "error: login endpoint not reachable: ${LOGIN_EP}"
+  configureACRCredentialProvider
   {{else}}
   ensureCustomCloudRootCertificates
   ensureCustomCloudSourcesList
@@ -16395,6 +16397,13 @@ ensureAzureStackCertificates() {
   fi
   curl $META_EP
   exit $?
+}
+configureACRCredentialProvider() {
+  local azure_stack_config_file="/etc/kubernetes/azurestackcloud.json"
+  local credential_provider_config_path="/var/lib/kubelet/credential-provider-config.yaml"
+  
+  local storage_endpoint_suffix=$(jq -r '.storageEndpointSuffix' "$azure_stack_config_file")
+  sed -i "s|<storageEndpointSuffix>|${storage_endpoint_suffix}|g" "$credential_provider_config_path"
 }
 {{end}}
 #EOF
@@ -16749,7 +16758,7 @@ installEtcd() {
   fi
 }
 installDeps() {
-  packages="apt-transport-https ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat traceroute util-linux xz-utils zip"
+  packages="apt-transport-https ca-certificates cifs-utils conntrack cracklib-runtime dbus dkms ebtables ethtool fuse gcc git htop iftop init-system-helpers iotop iproute2 ipset iptables jq libpam-pwquality libpwquality-tools linux-headers-$(uname -r) make mount net-tools nfs-common pigz socat sysstat util-linux xz-utils zip"
   if [[ ${OS} == "${UBUNTU_OS_NAME}" ]]; then
     retrycmd_no_stats 120 5 25 curl -fsSL ${MS_APT_REPO}/config/ubuntu/${UBUNTU_RELEASE}/packages-microsoft-prod.deb >/tmp/packages-microsoft-prod.deb || exit 42
     retrycmd 60 5 10 dpkg -i /tmp/packages-microsoft-prod.deb || exit 43
@@ -21389,6 +21398,9 @@ try
             -AgentKey $AgentKey ` + "`" + `
             -AgentCertificate $global:AgentCertificate
 
+        Write-Log "Configure ACR credential provider"
+        Set-ACRCredentialProvider
+
         if ($global:EnableHostsConfigAgent) {
              Write-Log "Starting hosts config agent"
              New-HostsConfigService
@@ -23486,6 +23498,25 @@ New-NSSMService {
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateOnline 1 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateSeconds 86400 | RemoveNulls
     & "$KubeDir\nssm.exe" set Kubeproxy AppRotateBytes 10485760 | RemoveNulls
+}
+
+function
+Set-ACRCredentialProvider {
+    $credentialProviderDir = "c:\k\credential-provider"
+    $expectedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider.exe")
+    if ($global:KubeBinariesVersion -match "^(\d+)\.(\d+)") {
+        $majorMinorVersion = "v$($matches[1]).$($matches[2])"
+    }
+    $versionedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider-windows-amd64-$majorMinorVersion.exe")
+    Copy-Item $versionedBinaryPath $expectedBinaryPath -Force
+    
+    $azureStackConfigFile = [io.path]::Combine($global:KubeDir, "azurestackcloud.json")
+    $azureConfig = Get-Content $azureStackConfigFile -Raw | ConvertFrom-Json
+    
+    $credentialProviderConfigPath = "c:\k\credential-provider\credential-provider-config.yaml"
+    $credentialProviderConfig = Get-Content $credentialProviderConfigPath -Raw
+    $credentialProviderConfig = $credentialProviderConfig -replace "<storageEndpointSuffix>", $azureConfig.storageEndpointSuffix
+    $credentialProviderConfig | Set-Content $credentialProviderConfigPath -Encoding UTF8
 }
 
 # Renamed from Write-KubernetesStartFiles
