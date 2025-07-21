@@ -172,21 +172,6 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	}
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
-	// TODO test all default overrides
-	overrideVal := "/etc/override"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
-		"--image-credential-provider-config": overrideVal,
-	}
-	cs.setKubeletConfig(false)
-	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key, val := range map[string]string{"--image-credential-provider-config": overrideVal} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
-		}
-	}
-
-	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.setKubeletConfig(false)
 	kubeletConfig = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	expectedKeys := []string{
@@ -367,21 +352,6 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		}
 	}
 
-	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
-	// TODO test all default overrides
-	overrideVal := "/etc/override"
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = map[string]string{
-		"--image-credential-provider-config": overrideVal,
-	}
-	cs.setKubeletConfig(false)
-	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	for key, val := range map[string]string{"--image-credential-provider-config": overrideVal} {
-		if k[key] != val {
-			t.Fatalf("got unexpected kubelet config value for %s: %s, expected %s",
-				key, k[key], val)
-		}
-	}
-
 	cs = CreateMockContainerService("testcluster", common.RationalizeReleaseAndVersion(Kubernetes, "", "", false, false, false), 3, 2, false)
 	cs.setKubeletConfig(false)
 	kubeletConfig = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
@@ -479,19 +449,6 @@ func TestKubeletConfigAzureContainerRegistryConfig(t *testing.T) {
 	cs.setKubeletConfig(false)
 	k := cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	if k["--image-credential-provider-config"] != "/var/lib/kubelet/credential-provider-config.yaml" {
-		t.Fatalf("got unexpected '--image-credential-provider-config' kubelet config default value: %s",
-			k["--image-credential-provider-config"])
-	}
-	if k["--image-credential-provider-bin-dir"] != "/var/lib/kubelet/credential-provider" {
-		t.Fatalf("got unexpected '--image-credential-provider-bin-dir' kubelet config default value: %s",
-			k["--image-credential-provider-bin-dir"])
-	}
-
-	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
-	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--image-credential-provider-config"] = "custom.json"
-	cs.setKubeletConfig(false)
-	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
-	if k["--image-credential-provider-config"] != "custom.json" {
 		t.Fatalf("got unexpected '--image-credential-provider-config' kubelet config default value: %s",
 			k["--image-credential-provider-config"])
 	}

@@ -82,10 +82,6 @@ function Get-FilesToCacheOnVHD {
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
         )
-        "c:\k\credential-provider\" = @(
-            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.8/azure-acr-credential-provider-windows-amd64.exe",
-            "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.29.9/azure-acr-credential-provider-windows-amd64.exe"
-        )
     }
 
     foreach ($dir in $map.Keys) {
@@ -100,6 +96,24 @@ function Get-FilesToCacheOnVHD {
             if ($LASTEXITCODE) {
                 throw "Curl exited with '$LASTEXITCODE' while attemping to downlaod '$URL'"
             }
+        }
+    }
+
+    $acrCredentialProviderUrls = @(
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.8/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.30" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.29.9/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.29" }
+    )
+
+    $credentialProviderDir = "c:\k\credential-provider\"
+    New-Item -ItemType Directory $credentialProviderDir -Force | Out-Null
+    
+    foreach ($providerInfo in $acrCredentialProviderUrls) {
+        $versionedFileName = "azure-acr-credential-provider-windows-amd64-$($providerInfo.K8sVersion).exe"
+        $dest = [IO.Path]::Combine($credentialProviderDir, $versionedFileName)
+
+        curl.exe -f --retry 5 --retry-delay 0 -L $providerInfo.Url -o $dest
+        if ($LASTEXITCODE) {
+            throw "Curl exited with '$LASTEXITCODE' while attempting to download '$($providerInfo.Url)'"
         }
     }
 }
