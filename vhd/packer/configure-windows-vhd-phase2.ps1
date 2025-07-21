@@ -24,16 +24,14 @@ function Get-ContainerImages {
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.29.9",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.8",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.1-windows-hp",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.5-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.12",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.6",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12-windows-hp",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.10.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.12.0",
         "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.14.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
     # start containerd to pre-pull the images to disk on VHD
@@ -76,8 +74,8 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.29.15/windowszip/v1.29.15-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.30.10/windowszip/v1.30.10-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.31.9/windowszip/v1.31.9-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.30.14/windowszip/v1.30.14-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
@@ -100,8 +98,8 @@ function Get-FilesToCacheOnVHD {
     }
 
     $acrCredentialProviderUrls = @(
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.8/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.30" },
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.29.9/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.29" }
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.31" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.13/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.30" }
     )
 
     $credentialProviderDir = "c:\k\credential-provider\"

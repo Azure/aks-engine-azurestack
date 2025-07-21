@@ -172,6 +172,18 @@ func TestKubeletConfigDefaults(t *testing.T) {
 	}
 
 	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	// TODO test all default overrides
+	// Removed kubelet --keep-terminated-pod-volumes deprecated CLI flag
+	overrideValue := "false"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	for key := range map[string]string{"--keep-terminated-pod-volumes": overrideValue} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--keep-terminated-pod-volumes' kubelet config value")
+		}
+	}
+
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
 	cs.setKubeletConfig(false)
 	kubeletConfig = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
 	expectedKeys := []string{
@@ -207,7 +219,6 @@ func getDefaultLinuxKubeletConfig(cs *ContainerService) map[string]string {
 		"--image-gc-high-threshold":           strconv.Itoa(DefaultKubernetesGCHighThreshold),
 		"--image-gc-low-threshold":            strconv.Itoa(DefaultKubernetesGCLowThreshold),
 		"--image-pull-progress-deadline":      "30m",
-		"--keep-terminated-pod-volumes":       "false",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
 		"--max-pods":                          strconv.Itoa(DefaultKubernetesMaxPods),
 		"--network-plugin":                    NetworkPluginKubenet,
@@ -265,7 +276,6 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 		"--image-gc-high-threshold":           strconv.Itoa(DefaultKubernetesGCHighThreshold),
 		"--image-gc-low-threshold":            strconv.Itoa(DefaultKubernetesGCLowThreshold),
 		"--image-pull-progress-deadline":      "30m",
-		"--keep-terminated-pod-volumes":       "false",
 		"--kubeconfig":                        "/var/lib/kubelet/kubeconfig",
 		"--max-pods":                          strconv.Itoa(DefaultKubernetesMaxPods),
 		"--network-plugin":                    NetworkPluginKubenet,
@@ -349,6 +359,18 @@ func TestKubeletConfigAzureStackDefaults(t *testing.T) {
 	for key := range map[string]string{"--non-masquerade-cidr": DefaultKubernetesSubnet} {
 		if _, ok := k[key]; ok {
 			t.Fatal("got unexpected (removed) '--non-masquerade-cidr' kubelet config value")
+		}
+	}
+
+	cs = CreateMockContainerService("testcluster", "", 3, 2, false)
+	// TODO test all default overrides
+	// Removed kubelet --keep-terminated-pod-volumes deprecated CLI flag
+	overrideValue := "false"
+	cs.setKubeletConfig(false)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	for key := range map[string]string{"--keep-terminated-pod-volumes": overrideValue} {
+		if _, ok := k[key]; ok {
+			t.Fatal("got unexpected (removed) '--keep-terminated-pod-volumes' kubelet config value")
 		}
 	}
 
@@ -842,16 +864,15 @@ func TestStaticWindowsConfig(t *testing.T) {
 
 	// Start with copy of Linux config
 	staticLinuxKubeletConfig := map[string]string{
-		"--address":                     "0.0.0.0",
-		"--allow-privileged":            "true",
-		"--anonymous-auth":              "false",
-		"--authorization-mode":          "Webhook",
-		"--client-ca-file":              "/etc/kubernetes/certs/ca.crt",
-		"--pod-manifest-path":           "/etc/kubernetes/manifests",
-		"--cluster-dns":                 cs.Properties.OrchestratorProfile.KubernetesConfig.DNSServiceIP,
-		"--cgroups-per-qos":             "true",
-		"--kubeconfig":                  "/var/lib/kubelet/kubeconfig",
-		"--keep-terminated-pod-volumes": "false",
+		"--address":            "0.0.0.0",
+		"--allow-privileged":   "true",
+		"--anonymous-auth":     "false",
+		"--authorization-mode": "Webhook",
+		"--client-ca-file":     "/etc/kubernetes/certs/ca.crt",
+		"--pod-manifest-path":  "/etc/kubernetes/manifests",
+		"--cluster-dns":        cs.Properties.OrchestratorProfile.KubernetesConfig.DNSServiceIP,
+		"--cgroups-per-qos":    "true",
+		"--kubeconfig":         "/var/lib/kubelet/kubeconfig",
 	}
 	expected := make(map[string]string)
 	for key, val := range staticLinuxKubeletConfig {
@@ -1034,6 +1055,33 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 	if k["--feature-gates"] != featuregate129Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.29.0", featuregate130, k["--feature-gates"], featuregate129Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	k["--feature-gates"] = featuregate131
+	featuregate131Sanitized := "ExecProbeTimeout=true,RotateKubeletServerCertificate=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != featuregate131Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.31", featuregate131, k["--feature-gates"], featuregate131Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	k["--feature-gates"] = featuregate131
+	featuregate130Sanitized = "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,ExecProbeTimeout=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,RotateKubeletServerCertificate=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	cs.setKubeletConfig(false)
+	if k["--feature-gates"] != featuregate130Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n kubelet config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.30.0", featuregate131, k["--feature-gates"], featuregate130Sanitized)
 	}
 }
 

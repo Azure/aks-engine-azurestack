@@ -308,7 +308,6 @@ Set-ACRCredentialProvider {
     }
     $versionedBinaryPath = [IO.Path]::Combine($credentialProviderDir, "azure-acr-credential-provider-windows-amd64-$majorMinorVersion.exe")
     Copy-Item $versionedBinaryPath $expectedBinaryPath -Force
-    
     $azureConfigFile = [io.path]::Combine($global:KubeDir, "azure.json")
     $azureStackConfigFile = [io.path]::Combine($global:KubeDir, "azurestackcloud.json")
     $azureConfig = Get-Content $azureStackConfigFile -Raw | ConvertFrom-Json
