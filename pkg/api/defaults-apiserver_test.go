@@ -129,7 +129,8 @@ func TestAPIServerConfigUseCloudControllerManager(t *testing.T) {
 	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(false)
 	cs.setAPIServerConfig()
 	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
-	if a["--cloud-provider"] != "azure" {
+	// The --cloud-provider flag should always be set to "external" regardless of UseCloudControllerManager setting
+	if a["--cloud-provider"] != "external" {
 		t.Fatalf("got unexpected '--cloud-provider' API server config value for UseCloudControllerManager=true: %s",
 			a["--cloud-provider"])
 	}
@@ -986,5 +987,47 @@ func TestAPIServerConfigChangeVerbosity(t *testing.T) {
 	if a["--v"] != DefaultKubernetesAPIServerVerbosity {
 		t.Fatalf("got unexpected default value for '--v' API server config: %s",
 			a["--v"])
+	}
+}
+
+func TestAPIServerConfigCloudProviderAlwaysExternal(t *testing.T) {
+	// Test that --cloud-provider is always set to "external" when it exists
+
+	// Test case 1: UseCloudControllerManager = false (cloud-provider gets set to "azure" initially)
+	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(false)
+	cs.setAPIServerConfig()
+	a := cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--cloud-provider"] != "external" {
+		t.Fatalf("got unexpected '--cloud-provider' API server config value, expected 'external', got: %s",
+			a["--cloud-provider"])
+	}
+
+	// Test case 2: Manually set cloud-provider to something else, should be overridden to "external"
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(false)
+	// Pre-populate with a different value
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+		"--cloud-provider": "azure",
+	}
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--cloud-provider"] != "external" {
+		t.Fatalf("got unexpected '--cloud-provider' API server config value, expected 'external', got: %s",
+			a["--cloud-provider"])
+	}
+
+	// Test case 3: UseCloudControllerManager = true (cloud-provider should not be set initially, but if manually added, should be overridden)
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.KubernetesConfig.UseCloudControllerManager = to.BoolPtr(true)
+	// Manually add cloud-provider to test it gets overridden
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = map[string]string{
+		"--cloud-provider": "azure",
+	}
+	cs.setAPIServerConfig()
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	if a["--cloud-provider"] != "external" {
+		t.Fatalf("got unexpected '--cloud-provider' API server config value, expected 'external', got: %s",
+			a["--cloud-provider"])
 	}
 }
