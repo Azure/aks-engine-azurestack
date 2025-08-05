@@ -146,6 +146,66 @@
                     },
                     {
                         "type": "File",
+                        "name": "download kuberneteswindowsfunctions file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/kuberneteswindowsfunctions.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\kuberneteswindowsfunctions.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download rotate-certs file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/rotate-certs.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\rotate-certs.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowsazurecnifunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowsazurecnifunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowsazurecnifunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowsazurecnifunc.tests file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowsazurecnifunc.tests.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowsazurecnifunc.tests.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowscnifunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowscnifunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowscnifunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowsconfigfunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowsconfigfunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowsconfigfunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowscsiproxyfunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowscsiproxyfunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowscsiproxyfunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowshostsconfigagentfunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowshostsconfigagentfunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowshostsconfigagentfunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowsinstallopensshfunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowsinstallopensshfunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowsinstallopensshfunc.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download windowskubeletfunc file",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/windowskubeletfunc.ps1'))]",
+                        "destination":"c:\\AzureData\\k8s\\windowskubeletfunc.ps1"
+                    },
+                    {
+                        "type": "File",
                         "name": "download log collection script",
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/scripts/collect-windows-logs.ps1'))]",
                         "destination":"c:\\akse-cache\\collect-windows-logs.ps1"
