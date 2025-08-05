@@ -114,11 +114,13 @@ ensureAzureStackCertificates() {
   exit $?
 }
 configureACRCredentialProvider() {
+  local azure_config_file="/etc/kubernetes/azure.json"
   local azure_stack_config_file="/etc/kubernetes/azurestackcloud.json"
   local credential_provider_config_path="/var/lib/kubelet/credential-provider-config.yaml"
   
   local storage_endpoint_suffix=$(jq -r '.storageEndpointSuffix' "$azure_stack_config_file")
   sed -i "s|<storageEndpointSuffix>|${storage_endpoint_suffix}|g" "$credential_provider_config_path"
+  sed -i "s|<azureJsonFilePath>|${azure_config_file}|g" "$credential_provider_config_path"
 }
 {{end}}
 #EOF

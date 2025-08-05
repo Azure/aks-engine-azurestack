@@ -143,6 +143,11 @@ func (cs *ContainerService) setAPIServerConfig() {
 		o.KubernetesConfig.APIServerConfig[key] = val
 	}
 
+	// Always set --cloud-provider to external if it exists
+	if _, exists := o.KubernetesConfig.APIServerConfig["--cloud-provider"]; exists {
+		o.KubernetesConfig.APIServerConfig["--cloud-provider"] = "external"
+	}
+
 	// Remove flags for secure communication to kubelet, if configured
 	if !to.Bool(o.KubernetesConfig.EnableSecureKubelet) {
 		for _, key := range []string{"--kubelet-client-certificate", "--kubelet-client-key"} {
