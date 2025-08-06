@@ -269,6 +269,16 @@
                         "destination": "/home/packer/credential-provider-config.yaml"
                     },
                     {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/apiserver-monitor.service'))]",
+                        "destination": "/home/packer/apiserver-monitor.service"
+                    },
+                    {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_helpers.sh'))]",
+                        "destination": "/home/packer/cse_helpers.sh"
+                    },
+                    {
                         "type": "Shell",
                         "inline": [
                             "[concat('feature_flags=', parameters('feature_flags'))]",

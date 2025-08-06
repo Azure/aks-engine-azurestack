@@ -9,13 +9,6 @@ write_files:
     #EOF
 {{end}}
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: /opt/azure/containers/provision.sh
   permissions: "0744"
   encoding: gzip
@@ -36,15 +29,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "provisionConfigs"}}
-
-{{- if not .IsVHDDistro}}
-- path: /opt/azure/containers/provision_cis.sh
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionCIS"}}
-{{end}}
 
 {{- if not .IsUbuntu1604}}
   {{- if not .IsVHDDistro}}
@@ -131,15 +115,6 @@ write_files:
   content: !!binary |
     {{CloudInitData "dockerMonitorSystemdService"}}
 
-{{- if not .IsVHDDistro}}
-- path: /etc/apt/preferences
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "aptPreferences"}}
-{{end}}
-
 - path: /etc/apt/apt.conf.d/99periodic
   permissions: "0644"
   owner: root
@@ -166,17 +141,6 @@ write_files:
 {{end}}
 
 {{- if .KubernetesConfig.RequiresDocker}}
-    {{- if not .IsFlatcar}}
-        {{- if not .IsVHDDistro}}
-- path: /etc/systemd/system/docker.service.d/clear_mount_propagation_flags.conf
-  permissions: "0644"
-  encoding: gzip
-  owner: "root"
-  content: !!binary |
-    {{CloudInitData "dockerClearMountPropagationFlags"}}
-        {{- end}}
-    {{- end}}
-
 - path: /etc/systemd/system/docker.service.d/exec_start.conf
   permissions: "0644"
   owner: root

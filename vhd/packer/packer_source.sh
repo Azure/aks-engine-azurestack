@@ -47,6 +47,10 @@ copyPackerFiles() {
   AUDITD_RULES_DEST=/etc/audit/rules.d/aks-engine.rules
   CREDENTIAL_PROVIDER_CONFIG_SRC=/home/packer/credential-provider-config.yaml
   CREDENTIAL_PROVIDER_CONFIG_DEST=/var/lib/kubelet/credential-provider-config.yaml
+  APISERVER_MONITOR_SERVICE_SRC=/home/packer/apiserver-monitor.service
+  APISERVER_MONITOR_SERVICE_DEST=/etc/systemd/system/apiserver-monitor.service
+  CSE_HELPERS_SRC=/home/packer/cse_helpers.sh
+  CSE_HELPERS_DEST=/opt/azure/containers/provision_source.sh
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then
     SSHD_CONFIG_SRC=/home/packer/sshd_config_1604
   fi
@@ -73,6 +77,8 @@ copyPackerFiles() {
   cpAndMode $UBUNTU_STIG_SRC $UBUNTU_STIG_DEST 744
   cpAndMode $AUDITD_RULES_SRC $AUDITD_RULES_DEST 744
   cpAndMode $CREDENTIAL_PROVIDER_CONFIG_SRC $CREDENTIAL_PROVIDER_CONFIG_DEST 644
+  cpAndMode $APISERVER_MONITOR_SERVICE_SRC $APISERVER_MONITOR_SERVICE_DEST 644
+  cpAndMode $CSE_HELPERS_SRC $CSE_HELPERS_DEST 744
 }
 
 cpAndMode() {
