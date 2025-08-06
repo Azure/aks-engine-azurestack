@@ -16,13 +16,6 @@ write_files:
   content: !!binary |
     {{CloudInitData "provisionScript"}}
 
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
-
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
   encoding: gzip
@@ -131,13 +124,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "dhcpv6SystemdService"}}
-
-- path: {{GetDHCPv6ConfigCSEScriptFilepath}}
-  permissions: "0544"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "dhcpv6ConfigurationScript"}}
 {{end}}
 
 {{- if .KubernetesConfig.RequiresDocker}}

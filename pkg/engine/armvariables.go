@@ -143,14 +143,10 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 	cloudInitFiles := map[string]interface{}{
 		"apiServerAdmissionConfiguration": getBase64EncodedGzippedCustomScript(apiServerAdmissionConfiguration, cs),
 		"provisionScript":                 getBase64EncodedGzippedCustomScript(kubernetesCSEMainScript, cs),
-		"provisionInstalls":               getBase64EncodedGzippedCustomScript(kubernetesCSEInstall, cs),
 		"provisionConfigs":                getBase64EncodedGzippedCustomScript(kubernetesCSEConfig, cs),
 		"customSearchDomainsScript":       getBase64EncodedGzippedCustomScript(kubernetesCustomSearchDomainsScript, cs),
-		"etcdSystemdService":              getBase64EncodedGzippedCustomScript(etcdSystemdService, cs),
 		"dhcpv6SystemdService":            getBase64EncodedGzippedCustomScript(dhcpv6SystemdService, cs),
-		"dhcpv6ConfigurationScript":       getBase64EncodedGzippedCustomScript(dhcpv6ConfigurationScript, cs),
 		"kubeletSystemdService":           getBase64EncodedGzippedCustomScript(kubeletSystemdService, cs),
-		"etcdMonitorSystemdService":       getBase64EncodedGzippedCustomScript(etcdMonitorSystemdService, cs),
 		"healthMonitorScript":             getBase64EncodedGzippedCustomScript(kubernetesHealthMonitorScript, cs),
 		"kubeletMonitorSystemdService":    getBase64EncodedGzippedCustomScript(kubernetesKubeletMonitorSystemdService, cs),
 		"dockerMonitorSystemdService":     getBase64EncodedGzippedCustomScript(kubernetesDockerMonitorSystemdService, cs),
@@ -158,7 +154,6 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 
 	if enableEncryptionWithExternalKms {
 		cloudInitFiles["kmsKeyvaultKeySystemdService"] = getBase64EncodedGzippedCustomScript(kmsKeyvaultKeySystemdService, cs)
-		cloudInitFiles["kmsKeyvaultKeyScript"] = getBase64EncodedGzippedCustomScript(kmsKeyvaultKeyScript, cs)
 		masterVars["clusterKeyVaultName"] = "[take(concat('kv', tolower(uniqueString(concat(variables('masterFqdnPrefix'),variables('location'),parameters('nameSuffix'))))), 22)]"
 	} else {
 		masterVars["clusterKeyVaultName"] = ""

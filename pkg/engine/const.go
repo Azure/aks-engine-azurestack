@@ -71,32 +71,26 @@ const (
 
 // cloud-init (i.e. ARM customData) source file references
 const (
-	kubernetesMasterNodeCustomDataYaml = "k8s/cloud-init/masternodecustomdata.yml"
-	kubernetesNodeCustomDataYaml       = "k8s/cloud-init/nodecustomdata.yml"
-	kubernetesJumpboxCustomDataYaml    = "k8s/cloud-init/jumpboxcustomdata.yml"
-	kubernetesCSEMainScript            = "k8s/cloud-init/artifacts/cse_main.sh"
-	kubernetesCSEInstall               = "k8s/cloud-init/artifacts/cse_install.sh"
-	kubernetesCSEConfig                = "k8s/cloud-init/artifacts/cse_config.sh"
-	kubernetesCSECustomCloud           = "k8s/cloud-init/artifacts/cse_customcloud.sh"
-	kubernetesHealthMonitorScript      = "k8s/cloud-init/artifacts/health-monitor.sh"
-	// kubernetesKubeletMonitorSystemdTimer     = "k8s/cloud-init/artifacts/kubelet-monitor.timer" // TODO enable
+	kubernetesMasterNodeCustomDataYaml     = "k8s/cloud-init/masternodecustomdata.yml"
+	kubernetesNodeCustomDataYaml           = "k8s/cloud-init/nodecustomdata.yml"
+	kubernetesJumpboxCustomDataYaml        = "k8s/cloud-init/jumpboxcustomdata.yml"
+	kubernetesCSEMainScript                = "k8s/cloud-init/artifacts/cse_main.sh"
+	kubernetesCSEConfig                    = "k8s/cloud-init/artifacts/cse_config.sh"
+	kubernetesCSECustomCloud               = "k8s/cloud-init/artifacts/cse_customcloud.sh"
+	kubernetesHealthMonitorScript          = "k8s/cloud-init/artifacts/health-monitor.sh"
 	kubernetesKubeletMonitorSystemdService = "k8s/cloud-init/artifacts/kubelet-monitor.service"
 	apiServerAdmissionConfiguration        = "k8s/cloud-init/artifacts/apiserver-admission-control.yaml"
 	kubernetesDockerMonitorSystemdService  = "k8s/cloud-init/artifacts/docker-monitor.service"
-	etcdMonitorSystemdService              = "k8s/cloud-init/artifacts/etcd-monitor.service"
 	untaintNodesScript                     = "k8s/cloud-init/artifacts/untaint-nodes.sh"
 	untaintNodesSystemdService             = "k8s/cloud-init/artifacts/untaint-nodes.service"
 	kubernetesCustomSearchDomainsScript    = "k8s/cloud-init/artifacts/setup-custom-search-domains.sh"
 	kubeletSystemdService                  = "k8s/cloud-init/artifacts/kubelet.service"
 	systemdBPFMount                        = "k8s/cloud-init/artifacts/sys-fs-bpf.mount"
-	etcdSystemdService                     = "k8s/cloud-init/artifacts/etcd.service"
 	auditdRules                            = "k8s/cloud-init/artifacts/auditd-rules"
 	// scripts and service for enabling ipv6 dual stack
-	dhcpv6SystemdService      = "k8s/cloud-init/artifacts/dhcpv6.service"
-	dhcpv6ConfigurationScript = "k8s/cloud-init/artifacts/enable-dhcpv6.sh"
+	dhcpv6SystemdService = "k8s/cloud-init/artifacts/dhcpv6.service"
 	// script for getting key version from keyvault for kms
 	kmsKeyvaultKeySystemdService = "k8s/cloud-init/artifacts/kms-keyvault-key.service"
-	kmsKeyvaultKeyScript         = "k8s/cloud-init/artifacts/kms-keyvault-key.sh"
 )
 
 // cloud-init destination file references

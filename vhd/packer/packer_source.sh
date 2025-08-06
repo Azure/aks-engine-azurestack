@@ -49,8 +49,18 @@ copyPackerFiles() {
   CREDENTIAL_PROVIDER_CONFIG_DEST=/var/lib/kubelet/credential-provider-config.yaml
   APISERVER_MONITOR_SERVICE_SRC=/home/packer/apiserver-monitor.service
   APISERVER_MONITOR_SERVICE_DEST=/etc/systemd/system/apiserver-monitor.service
-  CSE_HELPERS_SRC=/home/packer/cse_helpers.sh
-  CSE_HELPERS_DEST=/opt/azure/containers/provision_source.sh
+  PROVISION_SOURCE_SRC=/home/packer/provision_source.sh
+  PROVISION_SOURCE_DEST=/opt/azure/containers/provision_source.sh
+  PROVISION_INSTALLS_SRC=/home/packer/provision_installs.sh
+  PROVISION_INSTALLS_DEST=/opt/azure/containers/provision_installs.sh
+  ENABLE_DHCPV6_SRC=/home/packer/enable-dhcpv6.sh
+  ENABLE_DHCPV6_DEST=/opt/azure/containers/enable-dhcpv6.sh
+  ETCD_MONITOR_SERVICE_SRC=/home/packer/etcd-monitor.service
+  ETCD_MONITOR_SERVICE_DEST=/etc/systemd/system/etcd-monitor.service
+  ETCD_SERVICE_SRC=/home/packer/etcd.service
+  ETCD_SERVICE_DEST=/etc/systemd/system/etcd.service
+  KMS_KEYVAULT_KEY_SRC=/home/packer/kms-keyvault-key.sh
+  KMS_KEYVAULT_KEY_DEST=/opt/azure/containers/kms-keyvault-key.sh
   if [[ ${UBUNTU_RELEASE} == "16.04" ]]; then
     SSHD_CONFIG_SRC=/home/packer/sshd_config_1604
   fi
@@ -78,7 +88,11 @@ copyPackerFiles() {
   cpAndMode $AUDITD_RULES_SRC $AUDITD_RULES_DEST 744
   cpAndMode $CREDENTIAL_PROVIDER_CONFIG_SRC $CREDENTIAL_PROVIDER_CONFIG_DEST 644
   cpAndMode $APISERVER_MONITOR_SERVICE_SRC $APISERVER_MONITOR_SERVICE_DEST 644
-  cpAndMode $CSE_HELPERS_SRC $CSE_HELPERS_DEST 744
+  cpAndMode $PROVISION_SOURCE_SRC $PROVISION_SOURCE_DEST 744
+  cpAndMode $PROVISION_INSTALLS_SRC $PROVISION_INSTALLS_DEST 744
+  cpAndMode $ENABLE_DHCPV6_SRC $ENABLE_DHCPV6_DEST 544
+  cpAndMode $ETCD_MONITOR_SERVICE_SRC $ETCD_MONITOR_SERVICE_DEST 644
+  cpAndMode $ETCD_SERVICE_SRC $ETCD_SERVICE_DEST 544
 }
 
 cpAndMode() {

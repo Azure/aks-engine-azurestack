@@ -8,13 +8,6 @@ write_files:
   content: !!binary |
     {{CloudInitData "provisionScript"}}
 
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
-
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
   encoding: gzip
@@ -88,13 +81,6 @@ write_files:
     {{CloudInitData "kubeletMonitorSystemdService"}}
 {{- end}}
 
-- path: /etc/systemd/system/etcd-monitor.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdMonitorSystemdService"}}
-
 - path: /etc/systemd/system/kubelet.service
   permissions: "0644"
   encoding: gzip
@@ -142,13 +128,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "dhcpv6SystemdService"}}
-
-- path: {{GetDHCPv6ConfigCSEScriptFilepath}}
-  permissions: "0544"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "dhcpv6ConfigurationScript"}}
 {{end}}
 
 {{- if .OrchestratorProfile.KubernetesConfig.RequiresDocker}}
@@ -325,13 +304,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "kmsKeyvaultKeySystemdService"}}
-
-- path: {{GetKMSKeyvaultKeyCSEScriptFilepath}}
-  permissions: "0544"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "kmsKeyvaultKeyScript"}}
 {{end}}
 
 {{- if NeedsDefaultAPIServerAdmissionConfiguration}}
@@ -432,13 +404,6 @@ MASTER_CONTAINER_ADDONS_PLACEHOLDER
     #EOF
 
 {{- if not HasCosmosEtcd  }}
-- path: /etc/systemd/system/etcd.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdSystemdService"}}
-
 - path: /opt/azure/containers/setup-etcd.sh
   permissions: "0744"
   owner: root

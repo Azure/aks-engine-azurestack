@@ -275,8 +275,23 @@
                     },
                     {
                         "type": "File",
-                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/cse_helpers.sh'))]",
-                        "destination": "/home/packer/cse_helpers.sh"
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/enable-dhcpv6.sh'))]",
+                        "destination": "/home/packer/enable-dhcpv6.sh"
+                    },
+                    {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/etcd-monitor.service'))]",
+                        "destination": "/home/packer/etcd-monitor.service"
+                    },
+                    {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/etcd.service'))]",
+                        "destination": "/home/packer/etcd.service"
+                    },
+                    {
+                        "type": "File",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/parts/k8s/cloud-init/artifacts/kms-keyvault-key.sh'))]",
+                        "destination": "/home/packer/kms-keyvault-key.sh"
                     },
                     {
                         "type": "Shell",
