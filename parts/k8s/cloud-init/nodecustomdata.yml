@@ -124,6 +124,13 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "dhcpv6SystemdService"}}
+
+- path: {{GetDHCPv6ConfigCSEScriptFilepath}}
+  permissions: "0544"
+  encoding: gzip
+  owner: root
+  content: !!binary |
+    {{CloudInitData "dhcpv6ConfigurationScript"}}
 {{end}}
 
 {{- if .KubernetesConfig.RequiresDocker}}

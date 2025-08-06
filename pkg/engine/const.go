@@ -88,9 +88,11 @@ const (
 	systemdBPFMount                        = "k8s/cloud-init/artifacts/sys-fs-bpf.mount"
 	auditdRules                            = "k8s/cloud-init/artifacts/auditd-rules"
 	// scripts and service for enabling ipv6 dual stack
-	dhcpv6SystemdService = "k8s/cloud-init/artifacts/dhcpv6.service"
+	dhcpv6SystemdService      = "k8s/cloud-init/artifacts/dhcpv6.service"
+	dhcpv6ConfigurationScript = "k8s/cloud-init/artifacts/enable-dhcpv6.sh"
 	// script for getting key version from keyvault for kms
 	kmsKeyvaultKeySystemdService = "k8s/cloud-init/artifacts/kms-keyvault-key.service"
+	kmsKeyvaultKeyScript         = "k8s/cloud-init/artifacts/kms-keyvault-key.sh"
 )
 
 // cloud-init destination file references

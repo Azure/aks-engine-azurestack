@@ -146,6 +146,7 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 		"provisionConfigs":                getBase64EncodedGzippedCustomScript(kubernetesCSEConfig, cs),
 		"customSearchDomainsScript":       getBase64EncodedGzippedCustomScript(kubernetesCustomSearchDomainsScript, cs),
 		"dhcpv6SystemdService":            getBase64EncodedGzippedCustomScript(dhcpv6SystemdService, cs),
+		"dhcpv6ConfigurationScript":       getBase64EncodedGzippedCustomScript(dhcpv6ConfigurationScript, cs),
 		"kubeletSystemdService":           getBase64EncodedGzippedCustomScript(kubeletSystemdService, cs),
 		"healthMonitorScript":             getBase64EncodedGzippedCustomScript(kubernetesHealthMonitorScript, cs),
 		"kubeletMonitorSystemdService":    getBase64EncodedGzippedCustomScript(kubernetesKubeletMonitorSystemdService, cs),
@@ -154,6 +155,7 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 
 	if enableEncryptionWithExternalKms {
 		cloudInitFiles["kmsKeyvaultKeySystemdService"] = getBase64EncodedGzippedCustomScript(kmsKeyvaultKeySystemdService, cs)
+		cloudInitFiles["kmsKeyvaultKeyScript"] = getBase64EncodedGzippedCustomScript(kmsKeyvaultKeyScript, cs)
 		masterVars["clusterKeyVaultName"] = "[take(concat('kv', tolower(uniqueString(concat(variables('masterFqdnPrefix'),variables('location'),parameters('nameSuffix'))))), 22)]"
 	} else {
 		masterVars["clusterKeyVaultName"] = ""
