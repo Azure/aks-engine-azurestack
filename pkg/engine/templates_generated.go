@@ -19052,13 +19052,6 @@ var _k8sCloudInitJumpboxcustomdataYml = []byte(`#cloud-config
 
 write_files:
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: "root"
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: "/home/{{WrapAsParameter "jumpboxUsername"}}/.kube/config"
   permissions: "0644"
   owner: "{{WrapAsParameter "jumpboxUsername"}}"
@@ -19094,26 +19087,12 @@ func k8sCloudInitJumpboxcustomdataYml() (*asset, error) {
 var _k8sCloudInitMasternodecustomdataYml = []byte(`#cloud-config
 
 write_files:
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: /opt/azure/containers/provision.sh
   permissions: "0744"
   encoding: gzip
   owner: root
   content: !!binary |
     {{CloudInitData "provisionScript"}}
-
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
 
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
@@ -19187,20 +19166,6 @@ write_files:
   content: !!binary |
     {{CloudInitData "kubeletMonitorSystemdService"}}
 {{- end}}
-
-- path: /etc/systemd/system/apiserver-monitor.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "apiserverMonitorSystemdService"}}
-
-- path: /etc/systemd/system/etcd-monitor.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdMonitorSystemdService"}}
 
 - path: /etc/systemd/system/kubelet.service
   permissions: "0644"
@@ -19539,13 +19504,6 @@ MASTER_CONTAINER_ADDONS_PLACEHOLDER
     #EOF
 
 {{- if not HasCosmosEtcd  }}
-- path: /etc/systemd/system/etcd.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdSystemdService"}}
-
 - path: /opt/azure/containers/setup-etcd.sh
   permissions: "0744"
   owner: root
@@ -19665,26 +19623,12 @@ write_files:
     #EOF
 {{end}}
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: /opt/azure/containers/provision.sh
   permissions: "0744"
   encoding: gzip
   owner: root
   content: !!binary |
     {{CloudInitData "provisionScript"}}
-
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
 
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
