@@ -19052,13 +19052,6 @@ var _k8sCloudInitJumpboxcustomdataYml = []byte(`#cloud-config
 
 write_files:
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: "root"
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: "/home/{{WrapAsParameter "jumpboxUsername"}}/.kube/config"
   permissions: "0644"
   owner: "{{WrapAsParameter "jumpboxUsername"}}"
@@ -19094,13 +19087,6 @@ func k8sCloudInitJumpboxcustomdataYml() (*asset, error) {
 var _k8sCloudInitMasternodecustomdataYml = []byte(`#cloud-config
 
 write_files:
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: /opt/azure/containers/provision.sh
   permissions: "0744"
   encoding: gzip
@@ -19108,29 +19094,12 @@ write_files:
   content: !!binary |
     {{CloudInitData "provisionScript"}}
 
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
-
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
   encoding: gzip
   owner: root
   content: !!binary |
     {{CloudInitData "provisionConfigs"}}
-
-{{- if not .MasterProfile.IsVHDDistro}}
-- path: /opt/azure/containers/provision_cis.sh
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionCIS"}}
-{{end}}
-
 
 {{- if not .MasterProfile.IsUbuntu1604}}
   {{- if not .MasterProfile.IsVHDDistro}}
@@ -19198,20 +19167,6 @@ write_files:
     {{CloudInitData "kubeletMonitorSystemdService"}}
 {{- end}}
 
-- path: /etc/systemd/system/apiserver-monitor.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "apiserverMonitorSystemdService"}}
-
-- path: /etc/systemd/system/etcd-monitor.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdMonitorSystemdService"}}
-
 - path: /etc/systemd/system/kubelet.service
   permissions: "0644"
   encoding: gzip
@@ -19226,37 +19181,6 @@ write_files:
   owner: root
   content: !!binary |
     {{CloudInitData "dockerMonitorSystemdService"}}
-
-{{- if not .MasterProfile.IsVHDDistro}}
-- path: /opt/azure/containers/label-nodes.sh
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "labelNodesScript"}}
-
-- path: /etc/systemd/system/label-nodes.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "labelNodesSystemdService"}}
-
-- path: /etc/apt/preferences
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "aptPreferences"}}
-    {{- if EnableAggregatedAPIs}}
-- path: /etc/kubernetes/generate-proxy-certs.sh
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "generateProxyCertsScript"}}
-    {{end}}
-{{end}}
 
 {{if IsAADPodIdentityAddonEnabled}}
 - path: /opt/azure/containers/untaint-nodes.sh
@@ -19300,15 +19224,6 @@ write_files:
 {{end}}
 
 {{- if .OrchestratorProfile.KubernetesConfig.RequiresDocker}}
-    {{- if not .MasterProfile.IsVHDDistro}}
-- path: /etc/systemd/system/docker.service.d/clear_mount_propagation_flags.conf
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "dockerClearMountPropagationFlags"}}
-    {{end}}
-
 - path: /etc/systemd/system/docker.service.d/exec_start.conf
   permissions: "0644"
   owner: root
@@ -19589,13 +19504,6 @@ MASTER_CONTAINER_ADDONS_PLACEHOLDER
     #EOF
 
 {{- if not HasCosmosEtcd  }}
-- path: /etc/systemd/system/etcd.service
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "etcdSystemdService"}}
-
 - path: /opt/azure/containers/setup-etcd.sh
   permissions: "0744"
   owner: root
@@ -19715,13 +19623,6 @@ write_files:
     #EOF
 {{end}}
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: /opt/azure/containers/provision.sh
   permissions: "0744"
   encoding: gzip
@@ -19729,28 +19630,12 @@ write_files:
   content: !!binary |
     {{CloudInitData "provisionScript"}}
 
-- path: {{GetCSEInstallScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionInstalls"}}
-
 - path: {{GetCSEConfigScriptFilepath}}
   permissions: "0744"
   encoding: gzip
   owner: root
   content: !!binary |
     {{CloudInitData "provisionConfigs"}}
-
-{{- if not .IsVHDDistro}}
-- path: /opt/azure/containers/provision_cis.sh
-  permissions: "0744"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "provisionCIS"}}
-{{end}}
 
 {{- if not .IsUbuntu1604}}
   {{- if not .IsVHDDistro}}
@@ -19837,15 +19722,6 @@ write_files:
   content: !!binary |
     {{CloudInitData "dockerMonitorSystemdService"}}
 
-{{- if not .IsVHDDistro}}
-- path: /etc/apt/preferences
-  permissions: "0644"
-  encoding: gzip
-  owner: root
-  content: !!binary |
-    {{CloudInitData "aptPreferences"}}
-{{end}}
-
 - path: /etc/apt/apt.conf.d/99periodic
   permissions: "0644"
   owner: root
@@ -19872,17 +19748,6 @@ write_files:
 {{end}}
 
 {{- if .KubernetesConfig.RequiresDocker}}
-    {{- if not .IsFlatcar}}
-        {{- if not .IsVHDDistro}}
-- path: /etc/systemd/system/docker.service.d/clear_mount_propagation_flags.conf
-  permissions: "0644"
-  encoding: gzip
-  owner: "root"
-  content: !!binary |
-    {{CloudInitData "dockerClearMountPropagationFlags"}}
-        {{- end}}
-    {{- end}}
-
 - path: /etc/systemd/system/docker.service.d/exec_start.conf
   permissions: "0644"
   owner: root

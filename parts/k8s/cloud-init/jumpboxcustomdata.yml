@@ -2,13 +2,6 @@
 
 write_files:
 
-- path: {{GetCSEHelpersScriptFilepath}}
-  permissions: "0744"
-  encoding: gzip
-  owner: "root"
-  content: !!binary |
-    {{CloudInitData "provisionSource"}}
-
 - path: "/home/{{WrapAsParameter "jumpboxUsername"}}/.kube/config"
   permissions: "0644"
   owner: "{{WrapAsParameter "jumpboxUsername"}}"
