@@ -755,6 +755,33 @@ func TestAPIServerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.29.0", featuregate130, a["--feature-gates"], featuregate129Sanitized)
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	featuregate131 := "APIPriorityAndFairness=true,CSIMigrationRBD=true,CSINodeExpandSecret=true,ConsistentHTTPGetHandlers=true,CustomResourceValidationExpressions=true,DefaultHostNetworkHostPortsInPodTemplates=true,InTreePluginRBDUnregister=true,JobReadyPods=true,ReadWriteOncePod=true,ServiceNodePortStaticSubrange=true,SkipReadOnlyValidationGCE=true"
+	a["--feature-gates"] = featuregate131
+	featuregate131Sanitized := ""
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != featuregate131Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.31", featuregate131, a["--feature-gates"], featuregate131Sanitized)
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.30.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = featuregate131
+	featuregate130Sanitized = featuregate131
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != featuregate130Sanitized {
+		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
+			"1.30.0", featuregate131, a["--feature-gates"], featuregate130Sanitized)
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {
