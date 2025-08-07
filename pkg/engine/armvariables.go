@@ -143,18 +143,13 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 	cloudInitFiles := map[string]interface{}{
 		"apiServerAdmissionConfiguration": getBase64EncodedGzippedCustomScript(apiServerAdmissionConfiguration, cs),
 		"provisionScript":                 getBase64EncodedGzippedCustomScript(kubernetesCSEMainScript, cs),
-		"provisionSource":                 getBase64EncodedGzippedCustomScript(kubernetesCSEHelpersScript, cs),
-		"provisionInstalls":               getBase64EncodedGzippedCustomScript(kubernetesCSEInstall, cs),
 		"provisionConfigs":                getBase64EncodedGzippedCustomScript(kubernetesCSEConfig, cs),
 		"customSearchDomainsScript":       getBase64EncodedGzippedCustomScript(kubernetesCustomSearchDomainsScript, cs),
-		"etcdSystemdService":              getBase64EncodedGzippedCustomScript(etcdSystemdService, cs),
 		"dhcpv6SystemdService":            getBase64EncodedGzippedCustomScript(dhcpv6SystemdService, cs),
 		"dhcpv6ConfigurationScript":       getBase64EncodedGzippedCustomScript(dhcpv6ConfigurationScript, cs),
 		"kubeletSystemdService":           getBase64EncodedGzippedCustomScript(kubeletSystemdService, cs),
-		"etcdMonitorSystemdService":       getBase64EncodedGzippedCustomScript(etcdMonitorSystemdService, cs),
 		"healthMonitorScript":             getBase64EncodedGzippedCustomScript(kubernetesHealthMonitorScript, cs),
 		"kubeletMonitorSystemdService":    getBase64EncodedGzippedCustomScript(kubernetesKubeletMonitorSystemdService, cs),
-		"apiserverMonitorSystemdService":  getBase64EncodedGzippedCustomScript(apiserverMonitorSystemdService, cs),
 		"dockerMonitorSystemdService":     getBase64EncodedGzippedCustomScript(kubernetesDockerMonitorSystemdService, cs),
 	}
 
@@ -173,15 +168,6 @@ func getK8sMasterVars(cs *api.ContainerService) (map[string]interface{}, error) 
 
 	if cs.Properties.NeedsAuditdRules() {
 		cloudInitFiles["auditdRules"] = getBase64EncodedGzippedCustomScript(auditdRules, cs)
-	}
-
-	if !cs.Properties.IsVHDDistroForAllNodes() {
-		cloudInitFiles["provisionCIS"] = getBase64EncodedGzippedCustomScript(kubernetesCISScript, cs)
-		cloudInitFiles["labelNodesScript"] = getBase64EncodedGzippedCustomScript(labelNodesScript, cs)
-		cloudInitFiles["labelNodesSystemdService"] = getBase64EncodedGzippedCustomScript(labelNodesSystemdService, cs)
-		cloudInitFiles["aptPreferences"] = getBase64EncodedGzippedCustomScript(aptPreferences, cs)
-		cloudInitFiles["dockerClearMountPropagationFlags"] = getBase64EncodedGzippedCustomScript(dockerClearMountPropagationFlags, cs)
-		cloudInitFiles["generateProxyCertsScript"] = getBase64EncodedGzippedCustomScript(kubernetesMasterGenerateProxyCertsScript, cs)
 	}
 
 	if kubernetesConfig != nil {
