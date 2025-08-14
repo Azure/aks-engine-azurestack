@@ -1,58 +1,72 @@
-Build Number: 2025.220.4
-Build Id:     133225323
+Build Number: 2025.225.4
+Build Id:     133763096
 Build Repo:   https://msazure.visualstudio.com/One/_git/AzureStack-Solution-AKSEngine
 Build Branch: master
-Commit:       06ff3d743ecdd587ecdc82c900b75d6e78a242a2
-VHD ID:      eb0c8bb7-62c4-4144-a8ea-39e710eccea4
+Commit:       ee06630a4c05f224651d02d5c1ab10f33b0ce1f8
+
+VHD ID:      9b1317d9-4399-469c-87a8-593584775e7e
+
 System Info
-OS Name        : Windows Server 2019 Datacenter
-OS Version     : 17763.7434
-OS InstallType : Server Core
+	OS Name        : Windows Server 2019 Datacenter
+	OS Version     : 17763.7678
+	OS InstallType : Server Core
+
 Allowed security protocols: Tls, Tls11, Tls12
+
 Installed Features
+
 Display Name                                            Name                       Install State
 ------------                                            ----                       -------------
 [X] File and Storage Services                           FileAndStorage-Services        Installed
-[X] Storage Services                                Storage-Services               Installed
+    [X] Storage Services                                Storage-Services               Installed
 [X] Hyper-V                                             Hyper-V                        Installed
 [X] .NET Framework 4.7 Features                         NET-Framework-45-Fea...        Installed
-[X] .NET Framework 4.7                              NET-Framework-45-Core          Installed
-[X] WCF Services                                    NET-WCF-Services45             Installed
-[X] TCP Port Sharing                            NET-WCF-TCP-PortShar...        Installed
+    [X] .NET Framework 4.7                              NET-Framework-45-Core          Installed
+    [X] WCF Services                                    NET-WCF-Services45             Installed
+        [X] TCP Port Sharing                            NET-WCF-TCP-PortShar...        Installed
 [X] BitLocker Drive Encryption                          BitLocker                      Installed
 [X] Containers                                          Containers                     Installed
 [X] Enhanced Storage                                    EnhancedStorage                Installed
 [X] Remote Server Administration Tools                  RSAT                           Installed
-[X] Role Administration Tools                       RSAT-Role-Tools                Installed
-[X] Hyper-V Management Tools                    RSAT-Hyper-V-Tools             Installed
-[X] Hyper-V Module for Windows PowerShell   Hyper-V-PowerShell             Installed
+    [X] Role Administration Tools                       RSAT-Role-Tools                Installed
+        [X] Hyper-V Management Tools                    RSAT-Hyper-V-Tools             Installed
+            [X] Hyper-V Module for Windows PowerShell   Hyper-V-PowerShell             Installed
 [X] System Data Archiver                                System-DataArchiver            Installed
 [X] Windows Defender Antivirus                          Windows-Defender               Installed
 [X] Windows PowerShell                                  PowerShellRoot                 Installed
-[X] Windows PowerShell 5.1                          PowerShell                     Installed
+    [X] Windows PowerShell 5.1                          PowerShell                     Installed
 [X] WoW64 Support                                       WoW64-Support                  Installed
+
+
+
 Installed Packages
-Language.Basic~~~en-US~0.0.1.0
-Language.Handwriting~~~en-US~0.0.1.0
-Language.OCR~~~en-US~0.0.1.0
-Language.Speech~~~en-US~0.0.1.0
-Language.TextToSpeech~~~en-US~0.0.1.0
-MathRecognizer~~~~0.0.1.0
-OpenSSH.Server~~~~0.0.1.0
+	Language.Basic~~~en-US~0.0.1.0
+	Language.Handwriting~~~en-US~0.0.1.0
+	Language.OCR~~~en-US~0.0.1.0
+	Language.Speech~~~en-US~0.0.1.0
+	Language.TextToSpeech~~~en-US~0.0.1.0
+	MathRecognizer~~~~0.0.1.0
+	OpenSSH.Server~~~~0.0.1.0
+
 Installed QFEs
-KB5049608 : Update          : http://support.microsoft.com/?[REDACTED]
-KB5004424 : Update          : http://support.microsoft.com/?[REDACTED]
-KB5060531 : Security Update : http://support.microsoft.com/?[REDACTED]
-KB5058525 : Security Update : http://support.microsoft.com/?[REDACTED]
+	KB5049608 : Update          : http://support.microsoft.com/?[REDACTED]
+	KB5004424 : Update          : http://support.microsoft.com/?[REDACTED]
+	KB5063877 : Security Update : http://support.microsoft.com/?[REDACTED]
+	KB5062800 : Security Update : http://support.microsoft.com/?[REDACTED]
+
 Installed Updates
-Update for Windows Defender Antivirus antimalware platform - KB4052623 (Version 4.18.2001.10)
-2025-01 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5050182)
+	Update for Windows Defender Antivirus antimalware platform - KB4052623 (Version 4.18.2001.10)
+	2025-01 Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows Server 2019 for x64 (KB5050182)
+
 Windows Update Registry Settings
-https://docs.microsoft.com/en-us/windows/deployment/update/waas-wu-settings
-HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate
-HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
-NoAutoUpdate : 1
+	https://docs.microsoft.com/en-us/windows/deployment/update/waas-wu-settings
+	HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate
+	HKLM:SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU
+		NoAutoUpdate : 1
+
+
 Cached Files:
+
 File                                                                Sha256                                                           SizeBytes
 ----                                                                ------                                                           ---------
 c:\akse-cache\collect-windows-logs.ps1                              B09F369BEFADCA45575D008EC19977E3B3CE6D94A2240CAADC36DD0DBED13C65      5559
