@@ -63,16 +63,9 @@ apt-get-install:
 shellcheck:
 	curl -sSL https://github.com/koalaman/shellcheck/releases/download/$(SHELLCHECK_VERSION)/shellcheck-$(SHELLCHECK_VERSION).linux.x86_64.tar.xz | tar -vxJ -C $(LOCALBIN) --strip=1
 
+.PHONY: azure-cli
 azure-cli:
-	apt-get update
-	apt-get install -y --no-install-recommends apt-transport-https ca-certificates curl gnupg lsb-release
-	mkdir -p /etc/apt/keyrings
-	curl -sLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor | tee /etc/apt/keyrings/microsoft.gpg > /dev/null
-	chmod go+r /etc/apt/keyrings/microsoft.gpg
-	echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/azure-cli/ bullseye main" | tee /etc/apt/sources.list.d/azure-cli.list
-	apt-get update
-	apt-get install -y --allow-downgrades --no-install-recommends azure-cli=$(AZCLI_VERSION)-1~bullseye
-	apt-mark hold azure-cli
+	@AZCLI_VERSION=$(AZCLI_VERSION) ../../scripts/validate-azcli.sh
 
 .PHONY: kubectl
 kubectl:
