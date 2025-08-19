@@ -240,6 +240,14 @@ func (cs *ContainerService) setCloudControllerManagerConfig() {
 		invalidFeatureGates = append(invalidFeatureGates, "SkipReadOnlyValidationGCE")
 	}
 
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.32.0") {
+		// Remove --feature-gate GATE01 starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "GATE01")
+
+		// Remove --feature-gate GATE02 starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "GATE02")
+	}
+
 	removeInvalidFeatureGates(o.KubernetesConfig.CloudControllerManagerConfig, invalidFeatureGates)
 
 	// TODO add RBAC support
