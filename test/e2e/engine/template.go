@@ -291,6 +291,8 @@ func Build(cfg *config.Config, masterSubnetID string, agentSubnetIDs []string, i
 			}
 		} else {
 			prop.MasterProfile.VnetSubnetID = masterSubnetID
+			// Set FirstConsecutiveStaticIP for non-VMSS master profile
+			prop.MasterProfile.FirstConsecutiveStaticIP = "10.239.255.239"
 			for i, p := range prop.AgentPoolProfiles {
 				p.VnetSubnetID = agentSubnetIDs[i]
 			}
