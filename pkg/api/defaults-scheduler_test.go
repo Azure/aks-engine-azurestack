@@ -4,6 +4,7 @@
 package api
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -330,5 +331,49 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	if s["--feature-gates"] != featuregate130Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate131, s["--feature-gates"], featuregate130Sanitized)
+	}
+}
+
+func TestSchedulerFeatureGates132(t *testing.T) {
+	// test user-overrides, removal of feature gates for k8s versions >= 1.32
+	cs := CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s := cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate132 := "GATE01=true,GATE02=true"
+	s["--feature-gates"] = featuregate132
+	cs.setSchedulerConfig()
+	// split both strings by ", " and ensure no original item exists in the sanitized list
+	originalList := strings.Split(featuregate132, ",")
+	sanitizedList := strings.Split(s["--feature-gates"], ",")
+	for _, of := range originalList {
+		for _, sf := range sanitizedList {
+			if of == sf {
+				t.Fatalf("feature-gate %q should not exist in sanitized list for %s\nfeaturegate132 (original): %q\nfeaturegate132Sanitized (actual): %q", sf, "1.32", featuregate132, s["--feature-gates"])
+			}
+		}
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.31
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate132
+	cs.setSchedulerConfig()
+	actualList := strings.Split(s["--feature-gates"], ",")
+	expectedList := strings.Split(featuregate132, ",")
+	for _, exp := range expectedList {
+		found := false
+		for _, act := range actualList {
+			if act == exp {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("missing feature-gate %q in actual '--feature-gates' for %s\nfeaturegate131 (expected subset): %q\nactual: %q",
+				exp, "1.31.0", featuregate132, s["--feature-gates"])
+		}
 	}
 }
