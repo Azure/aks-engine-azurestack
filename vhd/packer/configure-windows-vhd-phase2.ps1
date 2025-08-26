@@ -28,9 +28,7 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.1",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12",
         "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12-windows-hp",
-        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.8.0",
         "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.12.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
         "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.14.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
