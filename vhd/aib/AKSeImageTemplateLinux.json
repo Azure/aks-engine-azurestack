@@ -17,12 +17,6 @@
         "managed_identity_name": {
             "type": "string"
         },
-        "vnet_resource_group_name": {
-          "type": "string"
-        },
-        "vnet_name": {
-            "type": "string"
-        },
         "subnet_name": {
             "type": "string"
         },
