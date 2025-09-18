@@ -17,12 +17,6 @@
         "managed_identity_name": {
             "type": "string"
         },
-        "vnet_resource_group_name": {
-          "type": "string"
-        },
-        "vnet_name": {
-            "type": "string"
-        },
         "subnet_name": {
             "type": "string"
         },
@@ -93,10 +87,7 @@
                 "vmProfile": 
                     {
                         "vmSize": "[parameters('vm_size')]",
-                        "osDiskSizeGB": 30,
-                        "vnetConfig": {
-                            "subnetId": "[concat('/subscriptions/',parameters('subscription_id'),'/resourcegroups/',parameters('vnet_resource_group_name'),'/providers/Microsoft.Network/virtualNetworks/',parameters('vnet_name'),'/subnets/',parameters('subnet_name'))]"
-                        }
+                        "osDiskSizeGB": 30
                     },
                 "source": {
                     "type": "PlatformImage",
