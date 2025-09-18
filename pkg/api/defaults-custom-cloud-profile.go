@@ -99,6 +99,7 @@ func (cs *ContainerService) SetCustomCloudProfileEnvironment() error {
 
 			env.GraphEndpoint = endpoints.GraphEndpoint
 			env.ServiceManagementEndpoint = endpoints.Authentication.Audiences[0]
+			env.TokenAudience = endpoints.Authentication.Audiences[0]
 			env.GalleryEndpoint = endpoints.GalleryEndpoint
 			env.ActiveDirectoryEndpoint = endpoints.Authentication.LoginEndpoint
 			if p.CustomCloudProfile.IdentitySystem == ADFSIdentitySystem {
