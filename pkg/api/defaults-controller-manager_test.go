@@ -4,6 +4,7 @@
 package api
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
@@ -299,6 +300,48 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	if cm["--feature-gates"] != featuregate130Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate131, cm["--feature-gates"], featuregate130Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.33.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	featuregate133 := "AdmissionWebhookMatchConditions=true,AggregatedDiscoveryEndpoint=true,APIListChunking=true,AppArmor=true,AppArmorFields=true,CPUManager=true,DisableCloudProviders=true,DisableKubeletCloudCredentialProviders=true,EfficientWatchResumption=true,JobPodFailurePolicy=true,KubeProxyDrainingTerminatingNodes=true,PDBUnhealthyPodEvictionPolicy=true,PersistentVolumeLastPhaseTransitionTime=true,RemainingItemCount=true,VolumeCapacityPriority=true,WatchBookmark=true"
+	cm["--feature-gates"] = featuregate133
+	cs.setControllerManagerConfig()
+	// split both strings by ", " and ensure no original item exists in the sanitized list
+	originalList := strings.Split(featuregate133, ",")
+	sanitizedList := strings.Split(cm["--feature-gates"], ",")
+	for _, of := range originalList {
+		for _, sf := range sanitizedList {
+			if of == sf {
+				t.Fatalf("feature-gate %q should not exist in sanitized list for %s\nfeaturegate133 (original): %q\nfeaturegate133Sanitized (actual): %q", sf, "1.33", featuregate133, cm["--feature-gates"])
+			}
+		}
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = featuregate133
+	cs.setControllerManagerConfig()
+	actualList := strings.Split(cm["--feature-gates"], ",")
+	expectedList := strings.Split(featuregate133, ",")
+	for _, exp := range expectedList {
+		found := false
+		for _, act := range actualList {
+			if act == exp {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("missing feature-gate %q in actual '--feature-gates' for %s\nfeaturegate133 (expected subset): %q\nactual: %q",
+				exp, "1.32.0", featuregate133, cm["--feature-gates"])
+		}
 	}
 }
 
