@@ -243,6 +243,54 @@ func (uc *upgradeCmd) loadCluster() error {
 		uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ContainerRuntime = "containerd"
 	}
 
+	// Force --cloud-provider to external in all Kubernetes component configs during upgrade
+	if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig != nil {
+		if cloudProvider, exists := uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig["--cloud-provider"]; exists {
+			if cloudProvider != "external" {
+				log.Infoln("Forcing '--cloud-provider' to 'external' in API server configuration during upgrade")
+				uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig["--cloud-provider"] = "external"
+			}
+		}
+	}
+	if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig != nil {
+		if cloudProvider, exists := uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig["--cloud-provider"]; exists {
+			if cloudProvider != "external" {
+				log.Infoln("Forcing '--cloud-provider' to 'external' in controller manager configuration during upgrade")
+				uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig["--cloud-provider"] = "external"
+			}
+		}
+	}
+	if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig != nil {
+		if cloudProvider, exists := uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--cloud-provider"]; exists {
+			if cloudProvider != "external" {
+				log.Infoln("Forcing '--cloud-provider' to 'external' in kubelet configuration during upgrade")
+				uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig["--cloud-provider"] = "external"
+			}
+		}
+	}
+	// Force --cloud-provider to external in master profile kubelet config
+	if uc.containerService.Properties.MasterProfile != nil &&
+		uc.containerService.Properties.MasterProfile.KubernetesConfig != nil &&
+		uc.containerService.Properties.MasterProfile.KubernetesConfig.KubeletConfig != nil {
+		if cloudProvider, exists := uc.containerService.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--cloud-provider"]; exists {
+			if cloudProvider != "external" {
+				log.Infoln("Forcing '--cloud-provider' to 'external' in master profile kubelet configuration during upgrade")
+				uc.containerService.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--cloud-provider"] = "external"
+			}
+		}
+	}
+	// Force --cloud-provider to external in agent pool profiles kubelet config
+	for _, profile := range uc.containerService.Properties.AgentPoolProfiles {
+		if profile.KubernetesConfig != nil && profile.KubernetesConfig.KubeletConfig != nil {
+			if cloudProvider, exists := profile.KubernetesConfig.KubeletConfig["--cloud-provider"]; exists {
+				if cloudProvider != "external" {
+					log.Infof("Forcing '--cloud-provider' to 'external' in agent pool '%s' kubelet configuration during upgrade\n", profile.Name)
+					profile.KubernetesConfig.KubeletConfig["--cloud-provider"] = "external"
+				}
+			}
+		}
+	}
+
 	// The cluster-init component is a cluster create-only feature, temporarily disable if enabled
 	if i := api.GetComponentsIndexByName(uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components, common.ClusterInitComponentName); i > -1 {
 		if uc.containerService.Properties.OrchestratorProfile.KubernetesConfig.Components[i].IsEnabled() {
