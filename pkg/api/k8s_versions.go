@@ -102,6 +102,22 @@ func getDefaultImage(image, kubernetesImageBaseType string) string {
 // The map supports GCR or MCR image string flavors
 var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string{
 	common.KubernetesImageBaseTypeGCR: {
+		"1.33": {
+			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v5.3.0",
+			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.9.0",
+			common.CSILivenessProbeContainerName:              "oss/kubernetes-csi/livenessprobe:v2.16.0",
+			common.CSILivenessProbeWindowsContainerName:       "oss/kubernetes-csi/livenessprobe:v2.16.0",
+			common.CSINodeDriverRegistrarContainerName:        "oss/kubernetes-csi/csi-node-driver-registrar:v2.14.0",
+			common.CSINodeDriverRegistrarWindowsContainerName: "oss/kubernetes-csi/csi-node-driver-registrar:v2.14.0",
+			common.CSISnapshotterContainerName:                "oss/kubernetes-csi/csi-snapshotter:v8.3.0",
+			common.CSISnapshotControllerContainerName:         "oss/kubernetes-csi/snapshot-controller:v8.3.0",
+			common.CSIResizerContainerName:                    "oss/kubernetes-csi/csi-resizer:v1.14.0",
+			common.CSIAzureDiskContainerName:                  "oss/kubernetes-csi/azuredisk-csi:v1.33.4",
+			common.AddonResizerComponentName:                  "addon-resizer:1.8.23",
+			common.MetricsServerAddonName:                     "metrics-server/metrics-server:v0.8.0",
+			common.AddonManagerComponentName:                  "kube-addon-manager-amd64:v9.1.8",
+			common.ClusterAutoscalerAddonName:                 "cluster-autoscaler:v1.33.1",
+		},
 		"1.31": {
 			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v5.1.0",
 			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.7.0",
@@ -449,6 +465,22 @@ var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string
 		},
 	},
 	common.KubernetesImageBaseTypeMCR: {
+		"1.33": {
+			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v5.3.0",
+			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.9.0",
+			common.CSILivenessProbeContainerName:              "oss/kubernetes-csi/livenessprobe:v2.16.0",
+			common.CSILivenessProbeWindowsContainerName:       "oss/kubernetes-csi/livenessprobe:v2.16.0",
+			common.CSINodeDriverRegistrarContainerName:        "oss/kubernetes-csi/csi-node-driver-registrar:v2.14.0",
+			common.CSINodeDriverRegistrarWindowsContainerName: "oss/kubernetes-csi/csi-node-driver-registrar:v2.14.0",
+			common.CSISnapshotterContainerName:                "oss/kubernetes-csi/csi-snapshotter:v8.3.0",
+			common.CSISnapshotControllerContainerName:         "oss/kubernetes-csi/snapshot-controller:v8.3.0",
+			common.CSIResizerContainerName:                    "oss/kubernetes-csi/csi-resizer:v1.14.0",
+			common.CSIAzureDiskContainerName:                  "oss/kubernetes-csi/azuredisk-csi:v1.33.4",
+			common.AddonResizerComponentName:                  "oss/kubernetes/autoscaler/addon-resizer:1.8.23",
+			common.MetricsServerAddonName:                     "oss/kubernetes/metrics-server:v0.8.0",
+			common.AddonManagerComponentName:                  "oss/kubernetes/kube-addon-manager:v9.1.8",
+			common.ClusterAutoscalerAddonName:                 "oss/kubernetes/autoscaler/cluster-autoscaler:v1.33.1",
+		},
 		"1.31": {
 			common.CSIProvisionerContainerName:                "oss/kubernetes-csi/csi-provisioner:v5.1.0",
 			common.CSIAttacherContainerName:                   "oss/kubernetes-csi/csi-attacher:v4.7.0",
@@ -912,14 +944,14 @@ func getK8sVersionComponents(version, kubernetesImageBaseType string, overrides 
 	var ret map[string]string
 	k8sComponent := kubernetesImageBaseVersionedImages[kubernetesImageBaseType][majorMinor]
 	switch majorMinor {
-	case "1.31":
+	case "1.33":
 		ret = map[string]string{
 			common.APIServerComponentName:                 getDefaultImage(common.APIServerComponentName, kubernetesImageBaseType) + ":v" + version,
 			common.ControllerManagerComponentName:         getDefaultImage(common.ControllerManagerComponentName, kubernetesImageBaseType) + ":v" + version,
 			common.KubeProxyAddonName:                     getDefaultImage(common.KubeProxyAddonName, kubernetesImageBaseType) + ":v" + version,
 			common.SchedulerComponentName:                 getDefaultImage(common.SchedulerComponentName, kubernetesImageBaseType) + ":v" + version,
-			common.CloudControllerManagerComponentName:    "oss/kubernetes/azure-cloud-controller-manager:v1.31.1",
-			common.CloudNodeManagerAddonName:              "oss/kubernetes/azure-cloud-node-manager:v1.31.1",
+			common.CloudControllerManagerComponentName:    "oss/kubernetes/azure-cloud-controller-manager:v1.33.1",
+			common.CloudNodeManagerAddonName:              "oss/kubernetes/azure-cloud-node-manager:v1.33.0",
 			common.WindowsArtifactComponentName:           "v" + version + "/windowszip/v" + version + "-1int.zip",
 			common.WindowsArtifactAzureStackComponentName: "v" + version + "/windowszip/v" + version + "-1int.zip",
 			common.DashboardAddonName:                     dashboardImageReference,

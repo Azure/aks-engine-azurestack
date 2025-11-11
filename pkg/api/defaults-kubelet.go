@@ -361,6 +361,55 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		// Remove --feature-gate SkipReadOnlyValidationGCE starting with 1.31
 		invalidFeatureGates = append(invalidFeatureGates, "SkipReadOnlyValidationGCE")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.33.0") {
+		// Remove --feature-gate AdmissionWebhookMatchConditions starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "AdmissionWebhookMatchConditions")
+
+		// Remove --feature-gate AggregatedDiscoveryEndpoint starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "AggregatedDiscoveryEndpoint")
+
+		// Remove --feature-gate APIListChunking starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "APIListChunking")
+
+		// Remove --feature-gate AppArmor starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "AppArmor")
+
+		// Remove --feature-gate AppArmorFields starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "AppArmorFields")
+
+		// Remove --feature-gate CPUManager starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "CPUManager")
+
+		// Remove --feature-gate DisableCloudProviders starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "DisableCloudProviders")
+
+		// Remove --feature-gate DisableKubeletCloudCredentialProviders starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "DisableKubeletCloudCredentialProviders")
+
+		// Remove --feature-gate EfficientWatchResumption starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "EfficientWatchResumption")
+
+		// Remove --feature-gate JobPodFailurePolicy starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "JobPodFailurePolicy")
+
+		// Remove --feature-gate KubeProxyDrainingTerminatingNodes starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "KubeProxyDrainingTerminatingNodes")
+
+		// Remove --feature-gate PDBUnhealthyPodEvictionPolicy starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "PDBUnhealthyPodEvictionPolicy")
+
+		// Remove --feature-gate PersistentVolumeLastPhaseTransitionTime starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "PersistentVolumeLastPhaseTransitionTime")
+
+		// Remove --feature-gate RemainingItemCount starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "RemainingItemCount")
+
+		// Remove --feature-gate VolumeCapacityPriority starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "VolumeCapacityPriority")
+
+		// Remove --feature-gate WatchBookmark starting with 1.33
+		invalidFeatureGates = append(invalidFeatureGates, "WatchBookmark")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.KubeletConfig, invalidFeatureGates)
 
 	// Master-specific kubelet config changes go here
