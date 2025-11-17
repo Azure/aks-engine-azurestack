@@ -24,12 +24,19 @@ function Get-ContainerImages {
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.30.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.1",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12",
-        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.29.12-windows-hp",
-        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.12.0",
-        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.14.0",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.6",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.32.5",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.33.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.12",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.32.11",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.33.5",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.12-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.32.11-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.33.5-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.15.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.17.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
     # start containerd to pre-pull the images to disk on VHD
@@ -72,8 +79,9 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.31.11/windowszip/v1.31.11-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.30.14/windowszip/v1.30.14-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.33.5/windowszip/v1.33.5-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.32.9/windowszip/v1.32.9-1int.zip",
+            "https://packages.aks.azure.com/kubernetes/v1.31.13/windowszip/v1.31.13-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"

@@ -4204,6 +4204,7 @@ func TestSetCustomCloudProfileEnvironmentDefaults(t *testing.T) {
 		StorageEndpointSuffix:      "testlocation.contoso.com",
 		KeyVaultDNSSuffix:          "vault.testlocation.contoso.com",
 		ResourceManagerVMDNSSuffix: "cloudapp.contoso.com",
+		TokenAudience:              "https://management.adfs.azurestack.testlocation/ce080287-be51-42e5-b99e-9de760fecae7",
 	}
 	httpmock.Activate()
 	defer httpmock.DeactivateAndReset()
