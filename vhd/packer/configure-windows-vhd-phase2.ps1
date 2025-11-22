@@ -104,8 +104,9 @@ function Get-FilesToCacheOnVHD {
     }
 
     $acrCredentialProviderUrls = @(
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.31" },
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.30.13/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.30" }
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.33.1/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.33" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.32.6/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.32" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.31" }
     )
 
     $credentialProviderDir = "c:\k\credential-provider\"
