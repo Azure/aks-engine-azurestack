@@ -251,12 +251,12 @@ for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
 done
 
 AZUREDISK_CSI_VERSIONS="
-1.33.5
-1.32.11
-1.31.12
+1.33.2
+1.32.9
+1.31.11
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
@@ -271,56 +271,51 @@ for AZUREFILE_CSI_VERSION in ${AZUREFILE_CSI_VERSIONS}; do
 done
 
 CSI_ATTACHER_VERSIONS="
-4.10.0
 4.8.1
 "
 for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
-2.15.0
 2.13.0
 "
 for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_PROVISIONER_VERSIONS="
-5.3.0
 5.2.0
 "
 for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 LIVENESSPROBE_VERSIONS="
-2.17.0
 2.15.0
 "
 for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_RESIZER_VERSIONS="
-1.14.0
 1.13.2
 "
 for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
-# For next release of k8s 1.33 and later versions, all csi images (including csi-snapshotter and snapshot-controller) can switch to v2 path
+# For next release of k8s 1.33 and later versions, all csi images (including csi-snapshotter and snapshot-controller) should be able to switch to v2 path. But using v1 path for now because windows/amd64 image is not available in v2 path yet.
 CSI_SNAPSHOTTER_VERSIONS="
 8.3.0
 8.2.1

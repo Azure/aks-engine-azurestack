@@ -20,6 +20,7 @@ function Write-Log($Message) {
 }
 function Get-ContainerImages {
     $containerdImagePullNotesFilePath = "c:\containerd-image-pull-notes.txt"
+    # For next release of k8s 1.33 and later versions, all csi images (including csi-snapshotter and snapshot-controller) should be able to switch to v2 path. But using v1 path for now because windows/amd64 image is not available in v2 path yet.
     $imagesToPull = @(
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
@@ -27,16 +28,14 @@ function Get-ContainerImages {
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.6",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.32.5",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.33.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.31.12",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.32.11",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.33.5",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.31.12-windows-hp",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.32.11-windows-hp",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.33.5-windows-hp",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.15.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.17.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.15.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.11",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.32.9",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.33.2",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.31.11-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.32.9-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v1.33.2-windows-hp",
+        "mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
+        "mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v2.15.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
     # start containerd to pre-pull the images to disk on VHD
