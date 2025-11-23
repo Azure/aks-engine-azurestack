@@ -93,7 +93,7 @@
                     "publisher": "MicrosoftWindowsServer",
                     "offer": "WindowsServer",
                     "sku": "2019-Datacenter-Core-smalldisk",
-                    "version": "17763.7678.250808"
+                    "version": "17763.7919.251009"
                 },
                 "customize": [
                     {
