@@ -169,6 +169,8 @@ const (
 	CSINodeDriverRegistrarContainerName = "csi-node-driver-registrar"
 	// CSINodeDriverRegistrarWindowsContainerName is the name of the csi-node-driver-registrar-windows container in the azuredisk-csi-driver and azurefile-csi-driver addons
 	CSINodeDriverRegistrarWindowsContainerName = "csi-node-driver-registrar-windows"
+	// CSIAzureDiskWindowsHpContainerName is the name of the azuredisk-csi-windows container in the azuredisk-csi-driver addons
+	CSIAzureDiskWindowsHpContainerName = "azuredisk-csi-windows-hp"
 	// CSIAzureDiskContainerName is the name of the azuredisk-csi container in the azuredisk-csi-driver and azurefile-csi-driver addons
 	CSIAzureDiskContainerName = "azuredisk-csi"
 	// AzureFileCSIDriverAddonName is the name of Azure File CSI Driver addon
