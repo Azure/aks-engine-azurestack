@@ -2103,6 +2103,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -2184,6 +2192,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -2291,6 +2307,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -2372,6 +2396,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.16.1"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -2529,6 +2561,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -2610,6 +2650,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.18.0"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -2721,6 +2769,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -2802,6 +2858,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.17.0"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -2927,6 +2991,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -3008,6 +3080,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.17.0"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -3138,6 +3218,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -3219,6 +3307,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.18.0"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",
@@ -3344,6 +3440,14 @@ func TestSetAddonsConfig(t *testing.T) {
 							CPULimits:      "2",
 							MemoryLimits:   "2Gi",
 						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
 					},
 				},
 				{
@@ -3425,6 +3529,14 @@ func TestSetAddonsConfig(t *testing.T) {
 						{
 							Name:           common.CSIAzureDiskContainerName,
 							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskContainerName, k8sComponentsByVersionMap["1.16.1"]),
+							CPURequests:    "10m",
+							MemoryRequests: "20Mi",
+							CPULimits:      "2",
+							MemoryLimits:   "2Gi",
+						},
+						{
+							Name:           common.CSIAzureDiskWindowsHpContainerName,
+							Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponentsByVersionMap["1.15.4"]),
 							CPURequests:    "10m",
 							MemoryRequests: "20Mi",
 							CPULimits:      "2",

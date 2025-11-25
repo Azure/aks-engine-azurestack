@@ -57,13 +57,13 @@ const (
 
 const (
 	// KubernetesDefaultRelease is the default Kubernetes release
-	KubernetesDefaultRelease string = "1.30"
+	KubernetesDefaultRelease string = "1.31"
 	// KubernetesDefaultReleaseWindows is the default Kubernetes release for Windows
-	KubernetesDefaultReleaseWindows string = "1.30"
+	KubernetesDefaultReleaseWindows string = "1.31"
 	// KubernetesDefaultReleaseAzureStack is the default Kubernetes release on Azure Stack
-	KubernetesDefaultReleaseAzureStack string = "1.30"
+	KubernetesDefaultReleaseAzureStack string = "1.31"
 	// KubernetesDefaultReleaseWindowsAzureStack is the default Kubernetes release for Windows on Azure Stack
-	KubernetesDefaultReleaseWindowsAzureStack string = "1.30"
+	KubernetesDefaultReleaseWindowsAzureStack string = "1.31"
 	// PodSecurityPolicyRemovedVersion is the first Kubernetes version that does not includes the PSP admission plugin
 	PodSecurityPolicyRemovedVersion = "1.25.0"
 )
@@ -169,6 +169,8 @@ const (
 	CSINodeDriverRegistrarContainerName = "csi-node-driver-registrar"
 	// CSINodeDriverRegistrarWindowsContainerName is the name of the csi-node-driver-registrar-windows container in the azuredisk-csi-driver and azurefile-csi-driver addons
 	CSINodeDriverRegistrarWindowsContainerName = "csi-node-driver-registrar-windows"
+	// CSIAzureDiskWindowsHpContainerName is the name of the azuredisk-csi-windows container in the azuredisk-csi-driver addons
+	CSIAzureDiskWindowsHpContainerName = "azuredisk-csi-windows-hp"
 	// CSIAzureDiskContainerName is the name of the azuredisk-csi container in the azuredisk-csi-driver and azurefile-csi-driver addons
 	CSIAzureDiskContainerName = "azuredisk-csi"
 	// AzureFileCSIDriverAddonName is the name of Azure File CSI Driver addon

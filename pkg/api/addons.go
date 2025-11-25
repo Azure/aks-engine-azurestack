@@ -482,6 +482,14 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 				CPULimits:      "2",
 				MemoryLimits:   "2Gi",
 			},
+			{
+				Name:           common.CSIAzureDiskWindowsHpContainerName,
+				Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureDiskCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponents),
+				CPURequests:    "10m",
+				MemoryRequests: "20Mi",
+				CPULimits:      "2",
+				MemoryLimits:   "2Gi",
+			},
 		},
 	}
 
@@ -556,6 +564,14 @@ func (cs *ContainerService) setAddonsConfig(isUpgrade bool) {
 			{
 				Name:           common.CSIAzureFileContainerName,
 				Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureFileContainerName, k8sComponents),
+				CPURequests:    "10m",
+				MemoryRequests: "20Mi",
+				CPULimits:      "2",
+				MemoryLimits:   "2Gi",
+			},
+			{
+				Name:           common.CSIAzureDiskWindowsHpContainerName,
+				Image:          specConfig.MCRKubernetesImageBase + getCSISidecarComponent(common.AzureFileCSIDriverAddonName, common.CSIAzureDiskWindowsHpContainerName, k8sComponents),
 				CPURequests:    "10m",
 				MemoryRequests: "20Mi",
 				CPULimits:      "2",
