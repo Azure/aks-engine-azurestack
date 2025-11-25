@@ -251,7 +251,7 @@ for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
 done
 
 AZUREDISK_CSI_VERSIONS="
-1.33.2
+1.33.0
 1.32.9
 1.31.11
 "
@@ -317,7 +317,6 @@ done
 
 # For next release of k8s 1.33 and later versions, all csi images (including csi-snapshotter and snapshot-controller) should be able to switch to v2 path. But using v1 path for now because windows/amd64 image is not available in v2 path yet.
 CSI_SNAPSHOTTER_VERSIONS="
-8.3.0
 8.2.1
 8.2.0
 "
