@@ -254,7 +254,7 @@ AZUREDISK_CSI_V1_VERSIONS="
 1.33.2
 "
 for AZUREDISK_CSI_V1_VERSION in ${AZUREDISK_CSI_V1_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_V1_VERSION}"
+  CONTAINER_IMAGE="docker.io/andyzhangx/azuredisk-csi:v1.34.0"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
