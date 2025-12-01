@@ -199,7 +199,8 @@ The following table shows the supported Azure Disk CSI Driver version for each K
 | <= 1.25            | 1.10.0                        |
 | 1.26               | 1.26.5                        |
 | 1.27               | 1.28.3                        |
-| >= 1.28            | 1.29.12                       |
+| 1.28 - 1.30        | 1.29.12                       |
+| 1.31               | 1.31.12                       |
 
 * Exception: For AKS Engine v0.77.0, kubernetes version 1.25 uses Azure Disk CSI Driver version v1.26.5
 * Note: Only the versions in the mapping have been tested. While other version combinations may work, they are not officially supported.
@@ -221,7 +222,8 @@ The following script uses `Helm` to install the Azure Disk CSI Driver:
 ```bash
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
 DRIVER_VERSION=v1.28.3 # if using k8s v1.27
-DRIVER_VERSION=v1.29.12 # if using k8s >= v1.28
+DRIVER_VERSION=v1.29.12 # if using k8s v1.28 - v1.30
+DRIVER_VERSION=v1.31.12 # if using k8s v1.31
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -297,8 +299,8 @@ In this section, please follow the example commands to deploy a StatefulSet appl
 # Install CSI Driver
 DRIVER_VERSION=v1.26.5 # if using k8s v1.26
 DRIVER_VERSION=v1.28.3 # if using k8s v1.27
-DRIVER_VERSION=v1.29.12 # if using k8s >= v1.28
-# (unsupported) DRIVER_VERSION=v1.31.5 # if using k8s >= v1.30
+DRIVER_VERSION=v1.29.12 # if using k8s v1.28 - v1.30
+DRIVER_VERSION=v1.31.12 # if using k8s v1.31
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
