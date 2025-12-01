@@ -4,6 +4,7 @@
 package api
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -330,5 +331,28 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	if s["--feature-gates"] != featuregate130Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n Scheduler config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate131, s["--feature-gates"], featuregate130Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate132 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	s["--feature-gates"] = featuregate132
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.32.0, expected empty string, got: %s", s["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate132
+	cs.setSchedulerConfig()
+	if !strings.Contains(s["--feature-gates"], "CloudDualStackNodeIPs=true") {
+		t.Fatalf("expected feature gate CloudDualStackNodeIPs to be present for k8s v1.31.0, got: %s", s["--feature-gates"])
 	}
 }

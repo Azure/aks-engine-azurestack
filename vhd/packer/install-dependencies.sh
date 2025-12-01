@@ -110,6 +110,7 @@ done
 
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
 1.31.7
+1.32.6
 "
 for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
     PROVIDER_ARTIFACT="https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v${ACR_CREDENTIAL_PROVIDER_VERSION}/azure-acr-credential-provider-linux-amd64"
@@ -211,6 +212,7 @@ echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
 1.31.13
+1.32.9
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -225,6 +227,7 @@ done
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
 1.31.7
+1.32.6
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
@@ -235,6 +238,7 @@ done
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
 1.31.6
+1.32.5
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
@@ -244,6 +248,7 @@ done
 
 AZUREDISK_CSI_VERSIONS="
 1.31.12
+1.32.11
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
@@ -307,6 +312,7 @@ done
 
 CSI_SNAPSHOTTER_VERSIONS="
 8.2.0
+8.2.1
 "
 for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-snapshotter:v${CSI_SNAPSHOTTER_VERSION}"
@@ -316,6 +322,7 @@ done
 
 SNAPSHOT_CONTROLLER_VERSIONS="
 8.2.0
+8.2.1
 "
 for SNAPSHOT_CONTROLLER_VERSION in ${SNAPSHOT_CONTROLLER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/snapshot-controller:v${SNAPSHOT_CONTROLLER_VERSION}"

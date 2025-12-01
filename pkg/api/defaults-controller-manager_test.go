@@ -4,6 +4,7 @@
 package api
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/Azure/aks-engine-azurestack/pkg/helpers/to"
@@ -299,6 +300,29 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	if cm["--feature-gates"] != featuregate130Sanitized {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n controller manager config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate131, cm["--feature-gates"], featuregate130Sanitized)
+	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	featuregate132 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	cm["--feature-gates"] = featuregate132
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.32.0, expected empty string, got: %s", cm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = featuregate132
+	cs.setControllerManagerConfig()
+	if !strings.Contains(cm["--feature-gates"], "CloudDualStackNodeIPs=true") {
+		t.Fatalf("expected feature gate CloudDualStackNodeIPs to be present for k8s v1.31.0, got: %s", cm["--feature-gates"])
 	}
 }
 

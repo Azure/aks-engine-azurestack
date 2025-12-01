@@ -219,6 +219,52 @@ func (cs *ContainerService) setSchedulerConfig() {
 		// Remove --feature-gate SkipReadOnlyValidationGCE starting with 1.31
 		invalidFeatureGates = append(invalidFeatureGates, "SkipReadOnlyValidationGCE")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.32.0") {
+		// Remove --feature-gate CloudDualStackNodeIPs starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "CloudDualStackNodeIPs")
+
+		// Remove --feature-gate DRAControlPlaneController starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "DRAControlPlaneController")
+
+		// Remove --feature-gate HPAContainerMetrics starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "HPAContainerMetrics")
+
+		// Remove --feature-gate KMSv2 starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "KMSv2")
+
+		// Remove --feature-gate KMSv2KDF starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "KMSv2KDF")
+
+		// Remove --feature-gate LegacyServiceAccountTokenCleanUp starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "LegacyServiceAccountTokenCleanUp")
+
+		// Remove --feature-gate MinDomainsInPodTopologySpread starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "MinDomainsInPodTopologySpread")
+
+		// Remove --feature-gate NewVolumeManagerReconstruction starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "NewVolumeManagerReconstruction")
+
+		// Remove --feature-gate NodeOutOfServiceVolumeDetach starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "NodeOutOfServiceVolumeDetach")
+
+		// Remove --feature-gate PodHostIPs starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "PodHostIPs")
+
+		// Remove --feature-gate ServerSideApply starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ServerSideApply")
+
+		// Remove --feature-gate ServerSideFieldValidation starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ServerSideFieldValidation")
+
+		// Remove --feature-gate StableLoadBalancerNodeSet starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "StableLoadBalancerNodeSet")
+
+		// Remove --feature-gate ValidatingAdmissionPolicy starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ValidatingAdmissionPolicy")
+
+		// Remove --feature-gate ZeroLimitedNominalConcurrencyShares starting with 1.32
+		invalidFeatureGates = append(invalidFeatureGates, "ZeroLimitedNominalConcurrencyShares")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.SchedulerConfig, invalidFeatureGates)
 
 	// Replace the flag names
