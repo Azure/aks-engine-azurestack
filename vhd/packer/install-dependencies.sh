@@ -110,7 +110,6 @@ done
 
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
 1.31.7
-1.30.13
 "
 for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
     PROVIDER_ARTIFACT="https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v${ACR_CREDENTIAL_PROVIDER_VERSION}/azure-acr-credential-provider-linux-amd64"
@@ -211,8 +210,7 @@ loadContainerImage ${BUSYBOX_IMAGE}
 echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 
 K8S_VERSIONS="
-1.31.11
-1.30.14
+1.31.13
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -226,8 +224,7 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
-1.31.1
-1.30.7
+1.31.7
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
@@ -237,8 +234,7 @@ done
 
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
-1.31.1
-1.30.8
+1.31.6
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
@@ -247,10 +243,10 @@ for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
 done
 
 AZUREDISK_CSI_VERSIONS="
-1.29.12
+1.31.12
 "
 for AZUREDISK_CSI_VERSION in ${AZUREDISK_CSI_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v${AZUREDISK_CSI_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
@@ -265,56 +261,52 @@ for AZUREFILE_CSI_VERSION in ${AZUREFILE_CSI_VERSIONS}; do
 done
 
 CSI_ATTACHER_VERSIONS="
-4.8.0
-4.7.0
+4.8.1
 "
 for CSI_ATTACHER_VERSION in ${CSI_ATTACHER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-attacher:v${CSI_ATTACHER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_NODE_DRIVER_REGISTRAR_VERSIONS="
-2.12.0
+2.13.0
 "
 for CSI_NODE_DRIVER_REGISTRAR_VERSION in ${CSI_NODE_DRIVER_REGISTRAR_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v${CSI_NODE_DRIVER_REGISTRAR_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_PROVISIONER_VERSIONS="
 5.2.0
-5.1.0
 "
 for CSI_PROVISIONER_VERSION in ${CSI_PROVISIONER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-provisioner:v${CSI_PROVISIONER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 LIVENESSPROBE_VERSIONS="
-2.14.0
+2.15.0
 "
 for LIVENESSPROBE_VERSION in ${LIVENESSPROBE_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v${LIVENESSPROBE_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_RESIZER_VERSIONS="
-1.13.1
-1.12.0
+1.13.2
 "
 for CSI_RESIZER_VERSION in ${CSI_RESIZER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-resizer:v${CSI_RESIZER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
 CSI_SNAPSHOTTER_VERSIONS="
-8.1.0
-6.2.2
+8.2.0
 "
 for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/csi-snapshotter:v${CSI_SNAPSHOTTER_VERSION}"
@@ -323,8 +315,7 @@ for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
 done
 
 SNAPSHOT_CONTROLLER_VERSIONS="
-8.1.0
-6.2.2
+8.2.0
 "
 for SNAPSHOT_CONTROLLER_VERSION in ${SNAPSHOT_CONTROLLER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes-csi/snapshot-controller:v${SNAPSHOT_CONTROLLER_VERSION}"

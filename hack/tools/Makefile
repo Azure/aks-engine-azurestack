@@ -3,8 +3,7 @@ LOCALBIN		= $(shell pwd)/bin
 SHELLCHECK_VERSION ?= v0.8.0
 AZCLI_VERSION   ?= 2.56.0
 PYWINRM_VERSION ?= 0.4.3
-KUBECTL_VERSION ?= v1.30.14
-
+KUBECTL_VERSION ?= v1.31.13
 all: install
 
 .PHONY: install
