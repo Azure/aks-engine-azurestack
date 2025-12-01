@@ -782,6 +782,29 @@ func TestAPIServerFeatureGates(t *testing.T) {
 		t.Fatalf("got unexpected '--feature-gates' for %s \n API server config original value  %s \n, actual sanitized value: %s \n, expected sanitized value: %s \n ",
 			"1.30.0", featuregate131, a["--feature-gates"], featuregate130Sanitized)
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	featuregate132 := "CloudDualStackNodeIPs=true,DRAControlPlaneController=true,HPAContainerMetrics=true,KMSv2=true,KMSv2KDF=true,LegacyServiceAccountTokenCleanUp=true,MinDomainsInPodTopologySpread=true,NewVolumeManagerReconstruction=true,NodeOutOfServiceVolumeDetach=true,PodHostIPs=true,ServerSideApply=true,ServerSideFieldValidation=true,StableLoadBalancerNodeSet=true,ValidatingAdmissionPolicy=true,ZeroLimitedNominalConcurrencyShares=true"
+	a["--feature-gates"] = featuregate132
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for v1.32.0, expected empty string, got: %s", a["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.32
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.31.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = featuregate132
+	cs.setAPIServerConfig()
+	if !strings.Contains(a["--feature-gates"], "CloudDualStackNodeIPs=true") {
+		t.Fatalf("expected CloudDualStackNodeIPs=true to be present in feature gates for v1.31.0, got: %s", a["--feature-gates"])
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {
