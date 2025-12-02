@@ -333,8 +333,8 @@ done
 CSI_SNAPSHOTTER_V2_VERSIONS="
 8.4.0
 "
-for CSI_SNAPSHOTTER_VERSION in ${CSI_SNAPSHOTTER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-snapshotter:v${CSI_SNAPSHOTTER_VERSION}"
+for CSI_SNAPSHOTTER_V2_VERSION in ${CSI_SNAPSHOTTER_V2_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/csi-snapshotter:v${CSI_SNAPSHOTTER_V2_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
@@ -352,8 +352,8 @@ done
 SNAPSHOT_CONTROLLER_V2_VERSIONS="
 8.4.0
 "
-for SNAPSHOT_CONTROLLER_VERSION in ${SNAPSHOT_CONTROLLER_V2_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/snapshot-controller:v${SNAPSHOT_CONTROLLER_VERSION}"
+for SNAPSHOT_CONTROLLER_V2_VERSION in ${SNAPSHOT_CONTROLLER_V2_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes-csi/snapshot-controller:v${SNAPSHOT_CONTROLLER_V2_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
