@@ -805,6 +805,29 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	if !strings.Contains(a["--feature-gates"], "CloudDualStackNodeIPs=true") {
 		t.Fatalf("expected CloudDualStackNodeIPs=true to be present in feature gates for v1.31.0, got: %s", a["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.33.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	featuregate133 := "AdmissionWebhookMatchConditions=true,AggregatedDiscoveryEndpoint=true,APIListChunking=true,AppArmor=true,AppArmorFields=true,CPUManager=true,DisableCloudProviders=true,DisableKubeletCloudCredentialProviders=true,EfficientWatchResumption=true,JobPodFailurePolicy=true,KubeProxyDrainingTerminatingNodes=true,PDBUnhealthyPodEvictionPolicy=true,PersistentVolumeLastPhaseTransitionTime=true,RemainingItemCount=true,VolumeCapacityPriority=true,WatchBookmark=true"
+	a["--feature-gates"] = featuregate133
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for v1.33.0, expected empty string, got: %s", a["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = featuregate133
+	cs.setAPIServerConfig()
+	if !strings.Contains(a["--feature-gates"], "APIListChunking=true") {
+		t.Fatalf("expected APIListChunking=true to be present in feature gates for v1.32.0, got: %s", a["--feature-gates"])
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {
