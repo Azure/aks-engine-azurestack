@@ -229,4 +229,27 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 	if !strings.Contains(ccm["--feature-gates"], "CloudDualStackNodeIPs=true") {
 		t.Fatalf("expected feature gate CloudDualStackNodeIPs to be present for k8s v1.31.0, got: %s", ccm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.33.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	featuregate133 := "AdmissionWebhookMatchConditions=true,AggregatedDiscoveryEndpoint=true,APIListChunking=true,AppArmor=true,AppArmorFields=true,CPUManager=true,DisableCloudProviders=true,DisableKubeletCloudCredentialProviders=true,EfficientWatchResumption=true,JobPodFailurePolicy=true,KubeProxyDrainingTerminatingNodes=true,PDBUnhealthyPodEvictionPolicy=true,PersistentVolumeLastPhaseTransitionTime=true,RemainingItemCount=true,VolumeCapacityPriority=true,WatchBookmark=true"
+	ccm["--feature-gates"] = featuregate133
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.33.0, expected empty string, got: %s", ccm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.33
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.32.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = featuregate133
+	cs.setCloudControllerManagerConfig()
+	if !strings.Contains(ccm["--feature-gates"], "APIListChunking=true") {
+		t.Fatalf("expected feature gate APIListChunking to be present for k8s v1.32.0, got: %s", ccm["--feature-gates"])
+	}
 }
