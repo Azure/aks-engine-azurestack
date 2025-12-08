@@ -1359,6 +1359,34 @@ func EnsureContainersRunningInAllPods(containers []string, podPrefix, namespace 
 	return nil
 }
 
+func EnsureContainersRunningInAllPodsExcluding(containers []string, podPrefix, excludePattern, namespace string, successesNeeded int, printLogs bool, sleep, timeout time.Duration) error {
+	running, err := WaitOnSuccesses(podPrefix, namespace, successesNeeded, printLogs, sleep, timeout)
+	if err != nil {
+		return err
+	}
+	if !running {
+		return errors.Errorf("%s is not in Running state", podPrefix)
+	}
+
+	pods, err := GetAllRunningByPrefixWithRetry(podPrefix, namespace, 3*time.Second, timeout)
+	if err != nil {
+		return err
+	}
+
+	for _, p := range pods {
+		if excludePattern != "" && strings.Contains(p.Metadata.Name, excludePattern) {
+			continue
+		}
+		for _, c := range containers {
+			if !p.HasContainer(c) {
+				return errors.Errorf("%s is not running in %s", c, p.Metadata.Name)
+			}
+		}
+	}
+
+	return nil
+}
+
 // WaitOnReady will call the static method WaitOnReady passing in p.Metadata.Name and p.Metadata.Namespace
 func (p *Pod) WaitOnReady(printLogs bool, sleep, timeout time.Duration) (bool, error) {
 	return WaitOnSuccesses(p.Metadata.Name, p.Metadata.Namespace, 6, printLogs, sleep, timeout)

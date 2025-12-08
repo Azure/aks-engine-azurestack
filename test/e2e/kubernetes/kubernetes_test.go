@@ -1562,16 +1562,16 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				By(fmt.Sprintf("Ensuring that %s are running within %s pod", containers, addonPod))
 				Expect(pod.EnsureContainersRunningInAllPods(containers, addonPod, "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)).NotTo(HaveOccurred())
 
-				// Validate CSI node pod
+				// Validate CSI node pod (Linux - exclude Windows pods that also match the prefix)
 				addonPod = fmt.Sprintf("csi-%s-node", shortenedAddonName)
 				containers = []string{"liveness-probe", "node-driver-registrar", shortenedAddonName}
 				By(fmt.Sprintf("Ensuring that %s are running within %s pod", containers, addonPod))
-				Expect(pod.EnsureContainersRunningInAllPods(containers, addonPod, "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)).NotTo(HaveOccurred())
+				Expect(pod.EnsureContainersRunningInAllPodsExcluding(containers, addonPod, "windows", "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)).NotTo(HaveOccurred())
 
 				// Validate CSI node windows pod
 				if eng.HasWindowsAgents() && common.IsKubernetesVersionGe(eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion, "1.18.0") {
 					addonPod = fmt.Sprintf("csi-%s-node-windows", shortenedAddonName)
-					containers = []string{"liveness-probe", "node-driver-registrar", shortenedAddonName}
+					containers = []string{"node-driver-registrar", shortenedAddonName}
 					By(fmt.Sprintf("Ensuring that %s are running within %s pod", containers, addonPod))
 					Expect(pod.EnsureContainersRunningInAllPods(containers, addonPod, "kube-system", kubeSystemPodsReadinessChecks, true, sleepBetweenRetriesWhenWaitingForPodReady, cfg.Timeout)).NotTo(HaveOccurred())
 				}
