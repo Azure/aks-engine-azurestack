@@ -5,7 +5,6 @@
 - no liveness probe validation needed for csi windows hp deployment ([#375](https://github.com/Azure/aks-engine-azurestack/issues/375))
 - update csi snapshot images ([#372](https://github.com/Azure/aks-engine-azurestack/issues/372))
 - force update cloud-provider flag to 'external' during upgrade ([#357](https://github.com/Azure/aks-engine-azurestack/issues/357))
-- Remove Vnet Config for Image Builder Service for S360 ([#354](https://github.com/Azure/aks-engine-azurestack/issues/354))
 - additional property update in azurestack.json ([#353](https://github.com/Azure/aks-engine-azurestack/issues/353))
 - Azure CLI installation check ([#339](https://github.com/Azure/aks-engine-azurestack/issues/339))
 - Update acr credential provider setup ([#329](https://github.com/Azure/aks-engine-azurestack/issues/329))
