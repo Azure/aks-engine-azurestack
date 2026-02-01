@@ -55,7 +55,7 @@ func (cs *ContainerService) SetCustomCloudProfileEnvironment() error {
 		}
 
 		env := p.CustomCloudProfile.Environment
-		if env.Name == "" || env.ServiceManagementEndpoint == "" || env.ActiveDirectoryEndpoint == "" || env.GraphEndpoint == "" || env.ResourceManagerVMDNSSuffix == "" {
+		if env.Name == "" || env.ServiceManagementEndpoint == "" || env.ActiveDirectoryEndpoint == "" || env.GraphEndpoint == "" || env.ResourceManagerVMDNSSuffix == "" || env.TokenAudience == "" {
 			if env.Name == "" {
 				env.Name = AzureStackCloud
 			}

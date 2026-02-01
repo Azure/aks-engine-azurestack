@@ -725,6 +725,95 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
+		It("should not have unexpected taints on any nodes", func() {
+			By("Checking that all nodes have only expected taints and NetworkUnavailable condition set to False")
+			nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
+			Expect(err).NotTo(HaveOccurred())
+			Expect(len(nodes)).To(BeNumerically(">", 0))
+
+			// Define expected taints that are allowed (only for master/control-plane nodes)
+			expectedMasterTaints := map[string]bool{
+				"node-role.kubernetes.io/control-plane": true,
+				"node-role.kubernetes.io/master":        true,
+			}
+
+			for _, n := range nodes {
+				By(fmt.Sprintf("Validating node %s for unexpected taints and network availability", n.Metadata.Name))
+				err := n.Describe()
+				Expect(err).NotTo(HaveOccurred())
+
+				isMasterNode := strings.Contains(n.Metadata.Name, common.LegacyControlPlaneVMPrefix)
+
+				// Check all taints on the node
+				for _, taint := range n.Spec.Taints {
+					log.Printf("Node %s has taint: %s=%s:%s", n.Metadata.Name, taint.Key, taint.Value, taint.Effect)
+
+					if isMasterNode {
+						// For master nodes, only allow expected control-plane taints
+						if !expectedMasterTaints[taint.Key] {
+							Fail(fmt.Sprintf("Master node %s has unexpected taint: %s=%s:%s (only control-plane taints are allowed)",
+								n.Metadata.Name, taint.Key, taint.Value, taint.Effect))
+						}
+					} else {
+						// Agent nodes should not have any taints
+						Fail(fmt.Sprintf("Agent node %s should not have any taints, but has: %s=%s:%s",
+							n.Metadata.Name, taint.Key, taint.Value, taint.Effect))
+					}
+				}
+
+				// Log taint status
+				if isMasterNode && len(n.Spec.Taints) > 0 {
+					log.Printf("Master node %s has %d expected taint(s)", n.Metadata.Name, len(n.Spec.Taints))
+				} else if !isMasterNode {
+					log.Printf("Agent node %s correctly has no taints", n.Metadata.Name)
+				}
+
+				// Check NetworkUnavailable condition is False
+				hasNetworkCondition := false
+				for _, condition := range n.Status.Conditions {
+					if condition.Type == "NetworkUnavailable" {
+						hasNetworkCondition = true
+						Expect(string(condition.Status)).To(Equal("False"),
+							fmt.Sprintf("Node %s NetworkUnavailable condition should be False, but got %s. Reason: %s, Message: %s",
+								n.Metadata.Name, condition.Status, condition.Reason, condition.Message))
+						Expect(condition.Reason).To(Equal("RouteCreated"),
+							fmt.Sprintf("Node %s should have RouteCreated reason, but got %s. Message: %s",
+								n.Metadata.Name, condition.Reason, condition.Message))
+						break
+					}
+				}
+
+				// For agent nodes, NetworkUnavailable condition should be present after route creation
+				if !isMasterNode {
+					Expect(hasNetworkCondition).To(BeTrue(),
+						fmt.Sprintf("Agent node %s should have NetworkUnavailable condition", n.Metadata.Name))
+				}
+			}
+		})
+
+		It("should have TokenAudience configured for Azure Stack custom cloud profile", func() {
+			if eng.ExpandedDefinition.Properties.IsCustomCloudProfile() && eng.ExpandedDefinition.Properties.CustomCloudProfile != nil {
+				By("Validating that CustomCloudProfile Environment has TokenAudience set")
+				env := eng.ExpandedDefinition.Properties.CustomCloudProfile.Environment
+				Expect(env).NotTo(BeNil(), "CustomCloudProfile Environment should not be nil")
+				Expect(env.TokenAudience).NotTo(BeEmpty(),
+					"CustomCloudProfile Environment TokenAudience should not be empty - this is required for route controller to work correctly")
+				Expect(env.ServiceManagementEndpoint).NotTo(BeEmpty(),
+					"CustomCloudProfile Environment ServiceManagementEndpoint should not be empty")
+
+				// TokenAudience should match ServiceManagementEndpoint for Azure Stack
+				if env.Name == "" || strings.Contains(env.Name, "AzureStack") {
+					Expect(env.TokenAudience).To(Equal(env.ServiceManagementEndpoint),
+						"For Azure Stack, TokenAudience should match ServiceManagementEndpoint")
+				}
+
+				log.Printf("CustomCloudProfile validated: Name=%s, TokenAudience=%s, ServiceManagementEndpoint=%s",
+					env.Name, env.TokenAudience, env.ServiceManagementEndpoint)
+			} else {
+				Skip("Not a custom cloud profile deployment")
+			}
+		})
+
 		It("should have core kube-system componentry running", func() {
 			coreComponents := []string{common.KubeProxyAddonName}
 			masterPrefix := eng.ExpandedDefinition.Properties.GetMasterVMPrefix()
