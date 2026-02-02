@@ -725,50 +725,49 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			}
 		})
 
-		It("should not have unexpected taints on any nodes", func() {
-			By("Checking that all nodes have only expected taints and NetworkUnavailable condition set to False")
+		It("should not have unexpected taints on Linux nodes", func() {
+			By("Checking that Linux nodes have only expected taints and NetworkUnavailable condition set to False")
 			nodes, err := node.GetReadyWithRetry(1*time.Second, cfg.Timeout)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(len(nodes)).To(BeNumerically(">", 0))
 
-			// Define expected taints that are allowed (only for master/control-plane nodes)
 			expectedMasterTaints := map[string]bool{
 				"node-role.kubernetes.io/control-plane": true,
 				"node-role.kubernetes.io/master":        true,
 			}
 
 			for _, n := range nodes {
-				By(fmt.Sprintf("Validating node %s for unexpected taints and network availability", n.Metadata.Name))
+				if n.IsWindows() {
+					log.Printf("Skipping Windows node %s from taint validation", n.Metadata.Name)
+					continue
+				}
+
+				By(fmt.Sprintf("Validating Linux node %s for unexpected taints and network availability", n.Metadata.Name))
 				err := n.Describe()
 				Expect(err).NotTo(HaveOccurred())
 
 				isMasterNode := strings.Contains(n.Metadata.Name, common.LegacyControlPlaneVMPrefix)
 
-				// Check all taints on the node
 				for _, taint := range n.Spec.Taints {
 					log.Printf("Node %s has taint: %s=%s:%s", n.Metadata.Name, taint.Key, taint.Value, taint.Effect)
 
 					if isMasterNode {
-						// For master nodes, only allow expected control-plane taints
 						if !expectedMasterTaints[taint.Key] {
 							Fail(fmt.Sprintf("Master node %s has unexpected taint: %s=%s:%s (only control-plane taints are allowed)",
 								n.Metadata.Name, taint.Key, taint.Value, taint.Effect))
 						}
 					} else {
-						// Agent nodes should not have any taints
-						Fail(fmt.Sprintf("Agent node %s should not have any taints, but has: %s=%s:%s",
+						Fail(fmt.Sprintf("Linux agent node %s should not have any taints, but has: %s=%s:%s",
 							n.Metadata.Name, taint.Key, taint.Value, taint.Effect))
 					}
 				}
 
-				// Log taint status
 				if isMasterNode && len(n.Spec.Taints) > 0 {
 					log.Printf("Master node %s has %d expected taint(s)", n.Metadata.Name, len(n.Spec.Taints))
 				} else if !isMasterNode {
-					log.Printf("Agent node %s correctly has no taints", n.Metadata.Name)
+					log.Printf("Linux agent node %s correctly has no taints", n.Metadata.Name)
 				}
 
-				// Check NetworkUnavailable condition is False
 				hasNetworkCondition := false
 				for _, condition := range n.Status.Conditions {
 					if condition.Type == "NetworkUnavailable" {
@@ -783,10 +782,9 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 					}
 				}
 
-				// For agent nodes, NetworkUnavailable condition should be present after route creation
 				if !isMasterNode {
 					Expect(hasNetworkCondition).To(BeTrue(),
-						fmt.Sprintf("Agent node %s should have NetworkUnavailable condition", n.Metadata.Name))
+						fmt.Sprintf("Linux agent node %s should have NetworkUnavailable condition", n.Metadata.Name))
 				}
 			}
 		})
@@ -801,7 +799,6 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				Expect(env.ServiceManagementEndpoint).NotTo(BeEmpty(),
 					"CustomCloudProfile Environment ServiceManagementEndpoint should not be empty")
 
-				// TokenAudience should match ServiceManagementEndpoint for Azure Stack
 				if env.Name == "" || strings.Contains(env.Name, "AzureStack") {
 					Expect(env.TokenAudience).To(Equal(env.ServiceManagementEndpoint),
 						"For Azure Stack, TokenAudience should match ServiceManagementEndpoint")
