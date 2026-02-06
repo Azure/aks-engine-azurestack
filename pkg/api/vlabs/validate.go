@@ -126,6 +126,154 @@ func init() {
 	proximityPlacementGroupIDRegex = regexp.MustCompile(`^/subscriptions/\S+/resourceGroups/\S+/providers/Microsoft.Compute/proximityPlacementGroups/[^/\s]+$`)
 }
 
+// isDangerousHostname checks if a hostname could lead to SSRF attacks
+// Validates against localhost, loopback IPs, metadata service IPs, and private IP ranges
+func isDangerousHostname(hostname string) bool {
+	dangerousPatterns := []string{
+		"localhost",
+		"127.0.0.1",
+		"127.0.1.2",
+		"0.0.0.0",
+		"169.254.169.254", // AWS/Azure metadata service
+		"[::1]",           // IPv6 loopback
+		"[0:0:0:0:0:0:0:1]",
+		"::1",
+	}
+
+	hostnameLower := strings.ToLower(hostname)
+
+	for _, pattern := range dangerousPatterns {
+		if hostnameLower == strings.ToLower(pattern) {
+			return true
+		}
+	}
+
+	if strings.Contains(hostnameLower, "localhost") {
+		return true
+	}
+
+	ip := net.ParseIP(hostname)
+	if ip != nil {
+		if ip.IsLoopback() || ip.IsLinkLocalUnicast() || ip.IsLinkLocalMulticast() || ip.IsPrivate() {
+			return true
+		}
+	}
+
+	if strings.HasPrefix(hostname, "0x") || strings.HasPrefix(hostname, "0") {
+		return true
+	}
+
+	// Check for decimal IP representation (e.g., 2130706433 = 127.0.0.1)
+	if num, err := strconv.ParseUint(hostname, 10, 32); err == nil {
+		// Convert decimal to IP and check if it's dangerous
+		ipBytes := []byte{
+			byte(num >> 24),
+			byte(num >> 16),
+			byte(num >> 8),
+			byte(num),
+		}
+		decimalIP := net.IP(ipBytes)
+		if decimalIP.IsLoopback() || decimalIP.IsLinkLocalUnicast() || decimalIP.IsLinkLocalMulticast() || decimalIP.IsPrivate() {
+			return true
+		}
+	}
+
+	return false
+}
+
+// containsPathTraversal checks for path traversal patterns
+// Validates against .., ../, and various URL-encoded variants
+func containsPathTraversal(path string) bool {
+	dangerousPatterns := []string{
+		"..",
+		"../",
+		"..[\\/]",
+		"%2e%2e",
+		"%2E%2E",
+		"%252e%252e",
+		"%252E%252E",
+		"..%2f",
+		"..%2F",
+		"..%5c",
+		"..%5C",
+	}
+
+	pathLower := strings.ToLower(path)
+
+	for _, pattern := range dangerousPatterns {
+		if strings.Contains(pathLower, strings.ToLower(pattern)) {
+			return true
+		}
+	}
+
+	return false
+}
+
+// decodeURLRecursively decodes a URL string until no further decoding is possible
+// Prevents bypass attacks using multiple layers of URL encoding
+func decodeURLRecursively(input string) (string, error) {
+	if input == "" {
+		return input, nil
+	}
+
+	previous := input
+	for i := 0; i < 10; i++ {
+		decoded, err := url.QueryUnescape(previous)
+		if err != nil {
+			return "", errors.Wrap(err, "failed to decode URL")
+		}
+
+		if decoded == previous {
+			return decoded, nil
+		}
+
+		previous = decoded
+	}
+
+	return previous, nil
+}
+
+// validateURLForSSRF validates URL to prevent SSRF attacks
+// Performs recursive URL decoding, dangerous hostname detection, and path traversal checks
+func validateURLForSSRF(urlString string) error {
+	if urlString == "" {
+		return nil
+	}
+
+	decoded, err := decodeURLRecursively(urlString)
+	if err != nil {
+		return errors.Wrap(err, "failed to decode URL for validation")
+	}
+
+	parsedURL, err := url.Parse(decoded)
+	if err != nil {
+		return errors.Wrapf(err, "invalid URL format: %s", urlString)
+	}
+
+	hostname := parsedURL.Hostname()
+	if hostname == "" && parsedURL.Host != "" {
+		hostname = parsedURL.Host
+	}
+
+	if isDangerousHostname(hostname) {
+		return errors.Errorf("URL contains dangerous hostname that could lead to SSRF: %s", hostname)
+	}
+
+	if containsPathTraversal(parsedURL.Path) {
+		return errors.Errorf("URL path contains path traversal pattern: %s", parsedURL.Path)
+	}
+
+	return nil
+}
+
+// validateStringLength validates that a string is within acceptable length bounds
+func validateStringLength(value, fieldName string, maxLength int) error {
+	if len(value) > maxLength {
+		return errors.Errorf("%s exceeds maximum length of %d characters (got %d)", fieldName, maxLength, len(value))
+	}
+	return nil
+}
+
 // Validate implements APIObject
 func (a *Properties) validate(isUpdate bool) error {
 	if e := validate.Struct(a); e != nil {
@@ -874,6 +1022,20 @@ func (a *Properties) validateExtensions() error {
 			if !keyvaultIDRegex.MatchString(extension.ExtensionParametersKeyVaultRef.VaultID) {
 				return errors.Errorf("Extension %s's keyvault secret reference is of incorrect format", extension.Name)
 			}
+			// Validate extension KeyVault URL for SSRF attacks
+			if err := validateURLForSSRF(extension.ExtensionParametersKeyVaultRef.VaultID); err != nil {
+				return errors.Wrapf(err, "Extension %s keyvault URL validation failed", extension.Name)
+			}
+			if extension.ExtensionParametersKeyVaultRef.SecretName == "" {
+				return errors.Errorf("the Keyvault Secret must be specified for Extension %s", extension.Name)
+			}
+			// Validate secret name length and check for path traversal
+			if err := validateStringLength(extension.ExtensionParametersKeyVaultRef.SecretName, "ExtensionParametersKeyVaultRef.SecretName", 127); err != nil {
+				return errors.Wrapf(err, "Extension %s", extension.Name)
+			}
+			if containsPathTraversal(extension.ExtensionParametersKeyVaultRef.SecretName) {
+				return errors.Errorf("Extension %s keyvault secret name contains path traversal pattern", extension.Name)
+			}
 		}
 	}
 	return nil
@@ -891,12 +1053,22 @@ func (a *Properties) validateVNET() error {
 			return errors.New("when master profile is using VirtualMachineScaleSets and is custom vnet, set \"vnetsubnetid\" and \"agentVnetSubnetID\" for master profile")
 		}
 
+		// Validate VnetSubnetID for path traversal patterns
+		if containsPathTraversal(a.MasterProfile.VnetSubnetID) {
+			return errors.New("VnetSubnetID contains path traversal pattern")
+		}
+
 		subscription, resourcegroup, vnetname, _, e := common.GetVNETSubnetIDComponents(a.MasterProfile.VnetSubnetID)
 		if e != nil {
 			return e
 		}
 
 		for _, agentPool := range a.AgentPoolProfiles {
+			// Validate agent pool VnetSubnetID for path traversal
+			if containsPathTraversal(agentPool.VnetSubnetID) {
+				return errors.Errorf("Agent pool %s VnetSubnetID contains path traversal pattern", agentPool.Name)
+			}
+
 			agentSubID, agentRG, agentVNET, _, err := common.GetVNETSubnetIDComponents(agentPool.VnetSubnetID)
 			if err != nil {
 				return err
@@ -952,6 +1124,17 @@ func (a *Properties) validateServicePrincipalProfile() error {
 			}
 			if !keyvaultIDRegex.MatchString(a.ServicePrincipalProfile.KeyvaultSecretRef.VaultID) {
 				return errors.Errorf("service principal client keyvault secret reference is of incorrect format")
+			}
+			// Validate KeyVault URL for SSRF attacks
+			if err := validateURLForSSRF(a.ServicePrincipalProfile.KeyvaultSecretRef.VaultID); err != nil {
+				return errors.Wrap(err, "service principal keyvault URL validation failed")
+			}
+			// Validate secret name length and check for path traversal
+			if err := validateStringLength(a.ServicePrincipalProfile.KeyvaultSecretRef.SecretName, "KeyvaultSecretRef.SecretName", 127); err != nil {
+				return err
+			}
+			if containsPathTraversal(a.ServicePrincipalProfile.KeyvaultSecretRef.SecretName) {
+				return errors.New("service principal keyvault secret name contains path traversal pattern")
 			}
 		}
 	}
@@ -1191,6 +1374,10 @@ func (a *AgentPoolProfile) validateOrchestratorSpecificProperties() error {
 		if !diskEncryptionSetIDRegex.MatchString(a.DiskEncryptionSetID) {
 			return errors.Errorf("DiskEncryptionSetID(%s) is of incorrect format, correct format: %s", a.DiskEncryptionSetID, diskEncryptionSetIDRegex.String())
 		}
+		// Validate for path traversal patterns
+		if containsPathTraversal(a.DiskEncryptionSetID) {
+			return errors.Errorf("DiskEncryptionSetID contains path traversal pattern")
+		}
 	}
 	return nil
 }
@@ -1228,9 +1415,17 @@ func validateKeyVaultSecrets(secrets []KeyVaultSecrets, requireCertificateStore 
 		if s.SourceVault.ID == "" {
 			return errors.New("KeyVaultSecrets must have a SourceVault.ID")
 		}
+		// Validate SourceVault URL for SSRF attacks
+		if err := validateURLForSSRF(s.SourceVault.ID); err != nil {
+			return errors.Wrap(err, "SourceVault.ID URL validation failed")
+		}
 		for _, c := range s.VaultCertificates {
 			if _, e := url.Parse(c.CertificateURL); e != nil {
 				return errors.Errorf("Certificate url was invalid. received error %s", e)
+			}
+			// Validate certificate URL for SSRF attacks
+			if err := validateURLForSSRF(c.CertificateURL); err != nil {
+				return errors.Wrap(err, "VaultCertificate URL validation failed")
 			}
 			if e := validateName(c.CertificateStore, "KeyVaultCertificate.CertificateStore"); requireCertificateStore && e != nil {
 				return errors.Errorf("%s for certificates in a WindowsProfile", e)
