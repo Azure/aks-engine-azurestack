@@ -109,6 +109,12 @@
                         "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/configure-windows-vhd-phase1.ps1'))]"
                     },
                     {
+                        "type": "PowerShell",
+                        "name": "create-buildartifacts-directory",
+                        "runElevated": true,
+                        "inline": ["New-Item -Path 'c:\\buildArtifacts' -ItemType Directory -Force"]
+                    },
+                    {
                         "type": "WindowsRestart",
                         "restartCheckCommand": "echo Azure-Image-Builder-Restarted-the-VM  > c:\\buildArtifacts\\azureImageBuilderRestart.txt",
                         "restartTimeout": "10m"
