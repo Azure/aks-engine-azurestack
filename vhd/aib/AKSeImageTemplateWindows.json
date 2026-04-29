@@ -93,7 +93,7 @@
                     "publisher": "MicrosoftWindowsServer",
                     "offer": "WindowsServer",
                     "sku": "2019-Datacenter-Core-smalldisk",
-                    "version": "17763.7919.251009"
+                    "version": "17763.8644.260411"
                 },
                 "customize": [
                     {
@@ -107,6 +107,12 @@
                         "name": "configure-windows-vhd-phase1",
                         "runElevated": true,
                         "scriptUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/configure-windows-vhd-phase1.ps1'))]"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "create-buildartifacts-directory",
+                        "runElevated": true,
+                        "inline": ["New-Item -Path 'c:\\buildArtifacts' -ItemType Directory -Force"]
                     },
                     {
                         "type": "WindowsRestart",
