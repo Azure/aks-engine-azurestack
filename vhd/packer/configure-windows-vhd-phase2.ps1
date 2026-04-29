@@ -24,15 +24,9 @@ function Get-ContainerImages {
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.31.6",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.32.5",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.33.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.31.12-windows-hp",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.32.11-windows-hp",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.33.7-windows-hp",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.13.0",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.15.0",
-        "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.15.0",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.17.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
@@ -76,9 +70,7 @@ function Get-FilesToCacheOnVHD {
             "https://packages.aks.azure.com/csi-proxy/v1.1.3/binaries/csi-proxy-v1.1.3.tar.gz"
         );
         "c:\akse-cache\win-k8s\"      = @(
-            "https://packages.aks.azure.com/kubernetes/v1.31.13/windowszip/v1.31.13-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.32.9/windowszip/v1.32.9-1int.zip",
-            "https://packages.aks.azure.com/kubernetes/v1.33.5/windowszip/v1.33.5-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.33.10/windowszip/v1.33.10-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
