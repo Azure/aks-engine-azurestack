@@ -370,9 +370,10 @@ var AllKubernetesSupportedVersions = map[string]bool{
 	"1.30.10":        false,
 	"1.30.14":        false,
 	"1.31.11":        false,
-	"1.31.13":        true,
-	"1.32.9":         true,
-	"1.33.5":         true,
+	"1.31.13":        false,
+	"1.32.9":         false,
+	"1.33.5":         false,
+	"1.33.10":        true,
 }
 
 // AllKubernetesSupportedVersionsAzureStack is a hash table of all supported Kubernetes version strings on Azure Stack
@@ -433,9 +434,10 @@ var AllKubernetesSupportedVersionsAzureStack = map[string]bool{
 	"1.30.10": false,
 	"1.30.14": false,
 	"1.31.11": false,
-	"1.31.13": true,
-	"1.32.9":  true,
-	"1.33.5":  true,
+	"1.31.13": false,
+	"1.32.9":  false,
+	"1.33.5":  false,
+	"1.33.10": true,
 }
 
 // AllKubernetesWindowsSupportedVersionsAzureStack maintain a set of available k8s Windows versions in aks-engine on Azure Stack
@@ -491,9 +493,10 @@ var AllKubernetesWindowsSupportedVersionsAzureStack = map[string]bool{
 	"1.30.10": false,
 	"1.30.14": false,
 	"1.31.11": false,
-	"1.31.13": true,
-	"1.32.9":  true,
-	"1.33.5":  true,
+	"1.31.13": false,
+	"1.32.9":  false,
+	"1.33.5":  false,
+	"1.33.10": true,
 }
 
 // GetDefaultKubernetesVersion returns the default Kubernetes version, that is the latest patch of the default release
