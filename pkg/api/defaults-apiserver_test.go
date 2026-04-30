@@ -828,6 +828,29 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	if !strings.Contains(a["--feature-gates"], "APIListChunking=true") {
 		t.Fatalf("expected APIListChunking=true to be present in feature gates for v1.32.0, got: %s", a["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.34
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	featuregate134 := "DevicePluginCDIDevices=true,PodDisruptionConditions=true"
+	a["--feature-gates"] = featuregate134
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for v1.34.0, expected empty string, got: %s", a["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.34
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.33.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = featuregate134
+	cs.setAPIServerConfig()
+	if !strings.Contains(a["--feature-gates"], "DevicePluginCDIDevices=true") {
+		t.Fatalf("expected DevicePluginCDIDevices=true to be present in feature gates for v1.33.0, got: %s", a["--feature-gates"])
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {

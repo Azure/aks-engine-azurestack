@@ -71,6 +71,7 @@ function Get-FilesToCacheOnVHD {
         );
         "c:\akse-cache\win-k8s\"      = @(
             "https://packages.aks.azure.com/kubernetes/v1.33.10/windowszip/v1.33.10-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.34.6/windowszip/v1.34.6-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"

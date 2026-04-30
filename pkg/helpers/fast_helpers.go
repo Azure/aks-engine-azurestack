@@ -7,8 +7,8 @@ package helpers
 
 const (
 	// SSHKeySize is the size (in bytes) of SSH key to create (only used when `-tags fast` is used)
-	SSHKeySize = 512
+	SSHKeySize = 2048
 
 	// DefaultPkiKeySize is the default size in bytes of the PKI key (only used when `-tags fast` is used)
-	DefaultPkiKeySize = 512
+	DefaultPkiKeySize = 2048
 )
