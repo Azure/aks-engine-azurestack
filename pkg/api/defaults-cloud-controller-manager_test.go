@@ -252,4 +252,27 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 	if !strings.Contains(ccm["--feature-gates"], "APIListChunking=true") {
 		t.Fatalf("expected feature gate APIListChunking to be present for k8s v1.32.0, got: %s", ccm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.34
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	featuregate134 := "DevicePluginCDIDevices=true,PodDisruptionConditions=true"
+	ccm["--feature-gates"] = featuregate134
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.34.0, expected empty string, got: %s", ccm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.34
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.33.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = featuregate134
+	cs.setCloudControllerManagerConfig()
+	if !strings.Contains(ccm["--feature-gates"], "DevicePluginCDIDevices=true") {
+		t.Fatalf("expected feature gate DevicePluginCDIDevices to be present for k8s v1.33.0, got: %s", ccm["--feature-gates"])
+	}
 }

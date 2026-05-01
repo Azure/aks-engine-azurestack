@@ -75,7 +75,8 @@ func (cs *ContainerService) SetCustomCloudProfileEnvironment() error {
 
 			// Retrieve the metadata
 			httpClient := &http.Client{
-				Timeout: 30 * time.Second,
+				Timeout:   30 * time.Second,
+				Transport: http.DefaultTransport,
 			}
 			endpointsresp, err := httpClient.Get(metadataURL)
 			if err != nil || endpointsresp.StatusCode != 200 {

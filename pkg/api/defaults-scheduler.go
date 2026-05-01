@@ -314,6 +314,13 @@ func (cs *ContainerService) setSchedulerConfig() {
 		// Remove --feature-gate WatchBookmark starting with 1.33
 		invalidFeatureGates = append(invalidFeatureGates, "WatchBookmark")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.34.0") {
+		// Remove --feature-gate DevicePluginCDIDevices starting with 1.34
+		invalidFeatureGates = append(invalidFeatureGates, "DevicePluginCDIDevices")
+
+		// Remove --feature-gate PodDisruptionConditions starting with 1.34
+		invalidFeatureGates = append(invalidFeatureGates, "PodDisruptionConditions")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.SchedulerConfig, invalidFeatureGates)
 
 	// Replace the flag names

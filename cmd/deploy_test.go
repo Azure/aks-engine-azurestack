@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"path"
 	"strconv"
@@ -13,6 +14,7 @@ import (
 	"github.com/Azure/aks-engine-azurestack/pkg/api"
 	"github.com/Azure/aks-engine-azurestack/pkg/armhelpers"
 	"github.com/google/uuid"
+	"github.com/jarcoal/httpmock"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -642,6 +644,15 @@ func TestLoadApiModelOnCustomCloud(t *testing.T) {
 func TestLoadApiModelOnAzureStack(t *testing.T) {
 	t.Parallel()
 
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://management.local.azurestack.external/metadata/endpoints?api-version=1.0",
+		func(req *http.Request) (*http.Response, error) {
+			resp := httpmock.NewStringResponse(200, `{"galleryEndpoint":"https://portal.local.azurestack.external:30015/","graphEndpoint":"https://graph.windows.net/","portalEndpoint":"https://portal.local.azurestack.external/","authentication":{"loginEndpoint":"https://login.windows.net/","audiences":["https://management.azurestackci15.onmicrosoft.com/36f71706-54df-4305-9847-5b038a4cf189"]}}`)
+			return resp, nil
+		},
+	)
+
 	outdir, del := makeTmpDir(t)
 	defer del()
 
@@ -688,6 +699,15 @@ func TestLoadApiModelOnAzureStack(t *testing.T) {
 
 func TestLoadApiModelOnAzureStackWithAKSUbuntu1804Distro(t *testing.T) {
 	t.Parallel()
+
+	httpmock.Activate()
+	defer httpmock.DeactivateAndReset()
+	httpmock.RegisterResponder("GET", "https://management.local.azurestack.external/metadata/endpoints?api-version=1.0",
+		func(req *http.Request) (*http.Response, error) {
+			resp := httpmock.NewStringResponse(200, `{"galleryEndpoint":"https://portal.local.azurestack.external:30015/","graphEndpoint":"https://graph.windows.net/","portalEndpoint":"https://portal.local.azurestack.external/","authentication":{"loginEndpoint":"https://login.windows.net/","audiences":["https://management.azurestackci15.onmicrosoft.com/36f71706-54df-4305-9847-5b038a4cf189"]}}`)
+			return resp, nil
+		},
+	)
 
 	outdir, del := makeTmpDir(t)
 	defer del()

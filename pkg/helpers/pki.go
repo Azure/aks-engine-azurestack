@@ -291,7 +291,10 @@ func createCertificate(options certParams) (*x509.Certificate, *rsa.PrivateKey, 
 		return nil, nil, err
 	}
 
-	privateKey, _ := rsa.GenerateKey(rand.Reader, options.keySize)
+	privateKey, err := rsa.GenerateKey(rand.Reader, options.keySize)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	var privateKeyToUse *rsa.PrivateKey
 	var certificateToUse *x509.Certificate
