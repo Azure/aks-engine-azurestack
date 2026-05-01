@@ -415,5 +415,21 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		// Remove --feature-gate PodDisruptionConditions starting with 1.34
 		invalidFeatureGates = append(invalidFeatureGates, "PodDisruptionConditions")
 	}
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.35.0") {
+		// Remove --feature-gate AllowServiceLBStatusOnNonLB starting with 1.35
+		invalidFeatureGates = append(invalidFeatureGates, "AllowServiceLBStatusOnNonLB")
+
+		// Remove --feature-gate ComponentSLIs starting with 1.35
+		invalidFeatureGates = append(invalidFeatureGates, "ComponentSLIs")
+
+		// Remove --feature-gate LoadBalancerIPMode starting with 1.35
+		invalidFeatureGates = append(invalidFeatureGates, "LoadBalancerIPMode")
+
+		// Remove --feature-gate SizeMemoryBackedVolumes starting with 1.35
+		invalidFeatureGates = append(invalidFeatureGates, "SizeMemoryBackedVolumes")
+
+		// Remove --feature-gate UserNamespacesPodSecurityStandards starting with 1.35
+		invalidFeatureGates = append(invalidFeatureGates, "UserNamespacesPodSecurityStandards")
+	}
 	removeInvalidFeatureGates(o.KubernetesConfig.ControllerManagerConfig, invalidFeatureGates)
 }

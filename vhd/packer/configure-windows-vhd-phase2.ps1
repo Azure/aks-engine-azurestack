@@ -25,9 +25,14 @@ function Get-ContainerImages {
         "mcr.microsoft.com/windows/nanoserver:1809",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
         "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.33.0",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.34.8",
+        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.35.3",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.33.7-windows-hp",
+        "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3-windows-hp",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.15.0",
+        "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.16.0",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.17.0",
+        "mcr.microsoft.com/oss/v2/kubernetes-csi/livenessprobe:v2.18.0",
         "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0")
 
     # start containerd to pre-pull the images to disk on VHD
@@ -72,6 +77,7 @@ function Get-FilesToCacheOnVHD {
         "c:\akse-cache\win-k8s\"      = @(
             "https://packages.aks.azure.com/kubernetes/v1.33.10/windowszip/v1.33.10-1int.zip"
             "https://packages.aks.azure.com/kubernetes/v1.34.6/windowszip/v1.34.6-1int.zip"
+            "https://packages.aks.azure.com/kubernetes/v1.35.3/windowszip/v1.35.3-1int.zip"
         );
         "c:\akse-cache\win-vnet-cni\" = @(
             "https://packages.aks.azure.com/azure-cni/v1.4.59/binaries/azure-vnet-cni-windows-amd64-v1.4.59.zip"
@@ -94,8 +100,6 @@ function Get-FilesToCacheOnVHD {
     }
 
     $acrCredentialProviderUrls = @(
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.31.7/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.31" },
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.32.6/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.32" },
         @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.33.1/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.33" }
     )
 

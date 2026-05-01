@@ -851,6 +851,32 @@ func TestAPIServerFeatureGates(t *testing.T) {
 	if !strings.Contains(a["--feature-gates"], "DevicePluginCDIDevices=true") {
 		t.Fatalf("expected DevicePluginCDIDevices=true to be present in feature gates for v1.33.0, got: %s", a["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.35.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	featuregate135 := "AllowServiceLBStatusOnNonLB=true,ComponentSLIs=true,LoadBalancerIPMode=true,SizeMemoryBackedVolumes=true,UserNamespacesPodSecurityStandards=true"
+	a["--feature-gates"] = featuregate135
+	cs.setAPIServerConfig()
+	if a["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for v1.35.0, expected empty string, got: %s", a["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig = make(map[string]string)
+	a = cs.Properties.OrchestratorProfile.KubernetesConfig.APIServerConfig
+	a["--feature-gates"] = featuregate135
+	cs.setAPIServerConfig()
+	if !strings.Contains(a["--feature-gates"], "AllowServiceLBStatusOnNonLB=true") {
+		t.Fatalf("expected AllowServiceLBStatusOnNonLB=true to be present in feature gates for v1.34.0, got: %s", a["--feature-gates"])
+	}
+	if !strings.Contains(a["--feature-gates"], "ComponentSLIs=true") {
+		t.Fatalf("expected ComponentSLIs=true to be present in feature gates for v1.34.0, got: %s", a["--feature-gates"])
+	}
 }
 
 func TestAPIServerInsecureFlag(t *testing.T) {

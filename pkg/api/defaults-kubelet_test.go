@@ -1209,6 +1209,43 @@ func TestKubeletConfigFeatureGates(t *testing.T) {
 				exp, "1.33.0", featuregate134, k["--feature-gates"])
 		}
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.35.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	featuregate135 := "AllowServiceLBStatusOnNonLB=true,ComponentSLIs=true,LoadBalancerIPMode=true,SizeMemoryBackedVolumes=true,UserNamespacesPodSecurityStandards=true"
+	k["--feature-gates"] = featuregate135
+	cs.setKubeletConfig(false)
+	// After removal of 1.35-specific gates, only the default gates should remain
+	expectedDefaults := "ExecProbeTimeout=true,RotateKubeletServerCertificate=true"
+	if k["--feature-gates"] != expectedDefaults {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.35.0, expected %s, got: %s", expectedDefaults, k["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
+	k = cs.Properties.OrchestratorProfile.KubernetesConfig.KubeletConfig
+	k["--feature-gates"] = featuregate135
+	cs.setKubeletConfig(false)
+	actualList = strings.Split(k["--feature-gates"], ",")
+	expectedList = strings.Split(featuregate135, ",")
+	for _, exp := range expectedList {
+		found := false
+		for _, act := range actualList {
+			if act == exp {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("missing feature-gate %q in actual '--feature-gates' for %s\nfeaturegate135 (expected subset): %q\nactual: %q",
+				exp, "1.34.0", featuregate135, k["--feature-gates"])
+		}
+	}
 }
 
 func TestKubeletStrongCipherSuites(t *testing.T) {

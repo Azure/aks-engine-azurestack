@@ -275,4 +275,30 @@ func TestCloudControllerManagerFeatureGates(t *testing.T) {
 	if !strings.Contains(ccm["--feature-gates"], "DevicePluginCDIDevices=true") {
 		t.Fatalf("expected feature gate DevicePluginCDIDevices to be present for k8s v1.33.0, got: %s", ccm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.35.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	featuregate135 := "AllowServiceLBStatusOnNonLB=true,ComponentSLIs=true,LoadBalancerIPMode=true,SizeMemoryBackedVolumes=true,UserNamespacesPodSecurityStandards=true"
+	ccm["--feature-gates"] = featuregate135
+	cs.setCloudControllerManagerConfig()
+	if ccm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.35.0, expected empty string, got: %s", ccm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig = make(map[string]string)
+	ccm = cs.Properties.OrchestratorProfile.KubernetesConfig.CloudControllerManagerConfig
+	ccm["--feature-gates"] = featuregate135
+	cs.setCloudControllerManagerConfig()
+	if !strings.Contains(ccm["--feature-gates"], "AllowServiceLBStatusOnNonLB=true") {
+		t.Fatalf("expected feature gate AllowServiceLBStatusOnNonLB to be present for k8s v1.34.0, got: %s", ccm["--feature-gates"])
+	}
+	if !strings.Contains(ccm["--feature-gates"], "ComponentSLIs=true") {
+		t.Fatalf("expected feature gate ComponentSLIs to be present for k8s v1.34.0, got: %s", ccm["--feature-gates"])
+	}
 }
