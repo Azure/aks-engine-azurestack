@@ -237,11 +237,20 @@ done
 # Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
 1.33.0
-1.34.8
-1.35.3
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
+  loadContainerImage ${CONTAINER_IMAGE}
+  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
+done
+
+# Starting with 1.34 cloud-node-manager uses v2 path
+CLOUD_NODE_MANAGER_V2_VERSIONS="
+1.34.8
+1.35.3
+"
+for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_V2_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
