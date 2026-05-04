@@ -216,7 +216,7 @@ K8S_VERSIONS="
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
-    CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/${component}:v${KUBERNETES_VERSION}"
+    CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/${component}:v${KUBERNETES_VERSION}"
     loadContainerImage ${CONTAINER_IMAGE}
     echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
   done
@@ -230,6 +230,17 @@ CLOUD_CONTROLLER_MANAGER_VERSIONS="
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
+  loadContainerImage ${CONTAINER_IMAGE}
+  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
+done
+
+# Starting with 1.34 cloud-controller-manager uses v2 path
+CLOUD_CONTROLLER_MANAGER_V2_VERSIONS="
+1.34.8
+1.35.3
+"
+for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_V2_VERSIONS}; do
+  CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
