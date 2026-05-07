@@ -212,7 +212,7 @@ echo "  - ${BUSYBOX_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 K8S_VERSIONS="
 1.33.10
 1.34.6
-1.35.3
+1.35.0
 "
 for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   for component in kube-apiserver kube-controller-manager kube-proxy kube-scheduler; do
@@ -237,7 +237,7 @@ done
 # Starting with 1.34 cloud-controller-manager uses v2 path
 CLOUD_CONTROLLER_MANAGER_V2_VERSIONS="
 1.34.8
-1.35.3
+1.35.0
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_V2_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
@@ -258,7 +258,7 @@ done
 # Starting with 1.34 cloud-node-manager uses v2 path
 CLOUD_NODE_MANAGER_V2_VERSIONS="
 1.34.8
-1.35.3
+1.35.0
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_V2_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
