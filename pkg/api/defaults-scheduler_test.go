@@ -401,4 +401,30 @@ func TestSchedulerFeatureGates(t *testing.T) {
 	if !strings.Contains(s["--feature-gates"], "DevicePluginCDIDevices=true") {
 		t.Fatalf("expected feature gate DevicePluginCDIDevices to be present for k8s v1.33.0, got: %s", s["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.35.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	featuregate135 := "AllowServiceLBStatusOnNonLB=true,ComponentSLIs=true,LoadBalancerIPMode=true,SizeMemoryBackedVolumes=true,UserNamespacesPodSecurityStandards=true"
+	s["--feature-gates"] = featuregate135
+	cs.setSchedulerConfig()
+	if s["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.35.0, expected empty string, got: %s", s["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig = make(map[string]string)
+	s = cs.Properties.OrchestratorProfile.KubernetesConfig.SchedulerConfig
+	s["--feature-gates"] = featuregate135
+	cs.setSchedulerConfig()
+	if !strings.Contains(s["--feature-gates"], "AllowServiceLBStatusOnNonLB=true") {
+		t.Fatalf("expected feature gate AllowServiceLBStatusOnNonLB to be present for k8s v1.34.0, got: %s", s["--feature-gates"])
+	}
+	if !strings.Contains(s["--feature-gates"], "ComponentSLIs=true") {
+		t.Fatalf("expected feature gate ComponentSLIs to be present for k8s v1.34.0, got: %s", s["--feature-gates"])
+	}
 }

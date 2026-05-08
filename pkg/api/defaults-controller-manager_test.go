@@ -370,6 +370,32 @@ func TestControllerManagerConfigFeatureGates(t *testing.T) {
 	if !strings.Contains(cm["--feature-gates"], "DevicePluginCDIDevices=true") {
 		t.Fatalf("expected feature gate DevicePluginCDIDevices to be present for k8s v1.33.0, got: %s", cm["--feature-gates"])
 	}
+
+	// test user-overrides, removal of feature gates for k8s versions >= 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.35.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	featuregate135 := "AllowServiceLBStatusOnNonLB=true,ComponentSLIs=true,LoadBalancerIPMode=true,SizeMemoryBackedVolumes=true,UserNamespacesPodSecurityStandards=true"
+	cm["--feature-gates"] = featuregate135
+	cs.setControllerManagerConfig()
+	if cm["--feature-gates"] != "" {
+		t.Fatalf("got unexpected '--feature-gates' for k8s v1.35.0, expected empty string, got: %s", cm["--feature-gates"])
+	}
+
+	// test user-overrides, no removal of feature gates for k8s versions < 1.35
+	cs = CreateMockContainerService("testcluster", defaultTestClusterVer, 3, 2, false)
+	cs.Properties.OrchestratorProfile.OrchestratorVersion = "1.34.0"
+	cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig = make(map[string]string)
+	cm = cs.Properties.OrchestratorProfile.KubernetesConfig.ControllerManagerConfig
+	cm["--feature-gates"] = featuregate135
+	cs.setControllerManagerConfig()
+	if !strings.Contains(cm["--feature-gates"], "AllowServiceLBStatusOnNonLB=true") {
+		t.Fatalf("expected feature gate AllowServiceLBStatusOnNonLB to be present for k8s v1.34.0, got: %s", cm["--feature-gates"])
+	}
+	if !strings.Contains(cm["--feature-gates"], "ComponentSLIs=true") {
+		t.Fatalf("expected feature gate ComponentSLIs to be present for k8s v1.34.0, got: %s", cm["--feature-gates"])
+	}
 }
 
 func TestControllerManagerDefaultConfig(t *testing.T) {
