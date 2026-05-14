@@ -109,8 +109,8 @@ var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string
 			common.CSILivenessProbeWindowsContainerName:       "oss/v2/kubernetes-csi/livenessprobe:v2.18.0",
 			common.CSINodeDriverRegistrarContainerName:        "oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.16.0",
 			common.CSINodeDriverRegistrarWindowsContainerName: "oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.16.0",
-			common.CSISnapshotterContainerName:                "oss/kubernetes-csi/csi-snapshotter:v8.5.0",
-			common.CSISnapshotControllerContainerName:         "oss/kubernetes-csi/snapshot-controller:v8.5.0",
+			common.CSISnapshotterContainerName:                "oss/v2/kubernetes-csi/csi-snapshotter:v8.5.0",
+			common.CSISnapshotControllerContainerName:         "oss/v2/kubernetes-csi/snapshot-controller:v8.5.0",
 			common.CSIResizerContainerName:                    "oss/v2/kubernetes-csi/csi-resizer:v2.1.0",
 			common.CSIAzureDiskContainerName:                  "oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3",
 			common.CSIAzureDiskWindowsHpContainerName:         "oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3-windows-hp",
@@ -126,8 +126,8 @@ var kubernetesImageBaseVersionedImages = map[string]map[string]map[string]string
 			common.CSILivenessProbeWindowsContainerName:       "oss/v2/kubernetes-csi/livenessprobe:v2.18.0",
 			common.CSINodeDriverRegistrarContainerName:        "oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.16.0",
 			common.CSINodeDriverRegistrarWindowsContainerName: "oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.16.0",
-			common.CSISnapshotterContainerName:                "oss/kubernetes-csi/csi-snapshotter:v8.5.0",
-			common.CSISnapshotControllerContainerName:         "oss/kubernetes-csi/snapshot-controller:v8.5.0",
+			common.CSISnapshotterContainerName:                "oss/v2/kubernetes-csi/csi-snapshotter:v8.5.0",
+			common.CSISnapshotControllerContainerName:         "oss/v2/kubernetes-csi/snapshot-controller:v8.5.0",
 			common.CSIResizerContainerName:                    "oss/v2/kubernetes-csi/csi-resizer:v2.1.0",
 			common.CSIAzureDiskContainerName:                  "oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3",
 			common.CSIAzureDiskWindowsHpContainerName:         "oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3-windows-hp",
@@ -1055,10 +1055,10 @@ func getK8sVersionComponents(version, kubernetesImageBaseType string, overrides 
 	switch majorMinor {
 	case "1.35":
 		ret = map[string]string{
-			common.APIServerComponentName:                 getDefaultImage(common.APIServerComponentName, kubernetesImageBaseType) + ":v" + version,
-			common.ControllerManagerComponentName:         getDefaultImage(common.ControllerManagerComponentName, kubernetesImageBaseType) + ":v" + version,
-			common.KubeProxyAddonName:                     getDefaultImage(common.KubeProxyAddonName, kubernetesImageBaseType) + ":v" + version,
-			common.SchedulerComponentName:                 getDefaultImage(common.SchedulerComponentName, kubernetesImageBaseType) + ":v" + version,
+			common.APIServerComponentName:                 "oss/v2/kubernetes/kube-apiserver:v" + version,
+			common.ControllerManagerComponentName:         "oss/v2/kubernetes/kube-controller-manager:v" + version,
+			common.KubeProxyAddonName:                     "oss/v2/kubernetes/kube-proxy:v" + version,
+			common.SchedulerComponentName:                 "oss/v2/kubernetes/kube-scheduler:v" + version,
 			common.CloudControllerManagerComponentName:    "oss/v2/kubernetes/azure-cloud-controller-manager:v1.35.0",
 			common.CloudNodeManagerAddonName:              "oss/v2/kubernetes/azure-cloud-node-manager:v1.35.0",
 			common.WindowsArtifactComponentName:           "v" + version + "/windowszip/v" + version + "-1int.zip",
@@ -1139,10 +1139,10 @@ func getK8sVersionComponents(version, kubernetesImageBaseType string, overrides 
 		}
 	case "1.34":
 		ret = map[string]string{
-			common.APIServerComponentName:                 getDefaultImage(common.APIServerComponentName, kubernetesImageBaseType) + ":v" + version,
-			common.ControllerManagerComponentName:         getDefaultImage(common.ControllerManagerComponentName, kubernetesImageBaseType) + ":v" + version,
-			common.KubeProxyAddonName:                     getDefaultImage(common.KubeProxyAddonName, kubernetesImageBaseType) + ":v" + version,
-			common.SchedulerComponentName:                 getDefaultImage(common.SchedulerComponentName, kubernetesImageBaseType) + ":v" + version,
+			common.APIServerComponentName:                 "oss/v2/kubernetes/kube-apiserver:v" + version,
+			common.ControllerManagerComponentName:         "oss/v2/kubernetes/kube-controller-manager:v" + version,
+			common.KubeProxyAddonName:                     "oss/v2/kubernetes/kube-proxy:v" + version,
+			common.SchedulerComponentName:                 "oss/v2/kubernetes/kube-scheduler:v" + version,
 			common.CloudControllerManagerComponentName:    "oss/v2/kubernetes/azure-cloud-controller-manager:v1.34.8",
 			common.CloudNodeManagerAddonName:              "oss/v2/kubernetes/azure-cloud-node-manager:v1.34.8",
 			common.WindowsArtifactComponentName:           "v" + version + "/windowszip/v" + version + "-1int.zip",
