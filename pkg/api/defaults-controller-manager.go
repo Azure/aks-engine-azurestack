@@ -432,4 +432,10 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		invalidFeatureGates = append(invalidFeatureGates, "UserNamespacesPodSecurityStandards")
 	}
 	removeInvalidFeatureGates(o.KubernetesConfig.ControllerManagerConfig, invalidFeatureGates)
+
+	// Remove cloud provider flags for K8s 1.34+ (in-tree cloud providers fully removed)
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.34.0") {
+		delete(o.KubernetesConfig.ControllerManagerConfig, "--cloud-provider")
+		delete(o.KubernetesConfig.ControllerManagerConfig, "--cloud-config")
+	}
 }
