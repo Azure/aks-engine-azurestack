@@ -110,6 +110,8 @@ done
 
 ACR_CREDENTIAL_PROVIDER_VERSIONS="
 1.33.1
+1.34.8
+1.35.4
 "
 for ACR_CREDENTIAL_PROVIDER_VERSION in $ACR_CREDENTIAL_PROVIDER_VERSIONS; do
     PROVIDER_ARTIFACT="https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v${ACR_CREDENTIAL_PROVIDER_VERSION}/azure-acr-credential-provider-linux-amd64"
@@ -224,43 +226,24 @@ for KUBERNETES_VERSION in ${K8S_VERSIONS}; do
   extractKubeBinaries
 done
 
-# Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
+# Cloud controller manager and node manager - all use v2 path
 CLOUD_CONTROLLER_MANAGER_VERSIONS="
 1.33.1
+1.34.8
+1.35.4
 "
 for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
-  loadContainerImage ${CONTAINER_IMAGE}
-  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-done
-
-# Starting with 1.34 cloud-controller-manager uses v2 path
-CLOUD_CONTROLLER_MANAGER_V2_VERSIONS="
-1.34.8
-1.35.0
-"
-for CLOUD_CONTROLLER_MANAGER_VERSION in ${CLOUD_CONTROLLER_MANAGER_V2_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-controller-manager:v${CLOUD_CONTROLLER_MANAGER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
 done
 
-# Starting with 1.16 we pull cloud-controller-manager and cloud-node-manager
 CLOUD_NODE_MANAGER_VERSIONS="
-1.33.0
+1.33.1
+1.34.8
+1.35.4
 "
 for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_VERSIONS}; do
-  CONTAINER_IMAGE="mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
-  loadContainerImage ${CONTAINER_IMAGE}
-  echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}
-done
-
-# Starting with 1.34 cloud-node-manager uses v2 path
-CLOUD_NODE_MANAGER_V2_VERSIONS="
-1.34.8
-1.35.0
-"
-for CLOUD_NODE_MANAGER_VERSION in ${CLOUD_NODE_MANAGER_V2_VERSIONS}; do
   CONTAINER_IMAGE="mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v${CLOUD_NODE_MANAGER_VERSION}"
   loadContainerImage ${CONTAINER_IMAGE}
   echo "  - ${CONTAINER_IMAGE}" >> ${VHD_LOGS_FILEPATH}

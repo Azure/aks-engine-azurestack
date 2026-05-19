@@ -24,9 +24,9 @@ function Get-ContainerImages {
         "mcr.microsoft.com/windows/servercore:ltsc2019",
         "mcr.microsoft.com/windows/nanoserver:1809",
         "mcr.microsoft.com/oss/kubernetes/pause:3.8",
-        "mcr.microsoft.com/oss/kubernetes/azure-cloud-node-manager:v1.33.0",
+        "mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v1.33.1",
         "mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v1.34.8",
-        "mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v1.35.0",
+        "mcr.microsoft.com/oss/v2/kubernetes/azure-cloud-node-manager:v1.35.4",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.33.7-windows-hp",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/azuredisk-csi:v1.34.3-windows-hp",
         "mcr.microsoft.com/oss/v2/kubernetes-csi/csi-node-driver-registrar:v2.15.0",
@@ -100,7 +100,9 @@ function Get-FilesToCacheOnVHD {
     }
 
     $acrCredentialProviderUrls = @(
-        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.33.1/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.33" }
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.33.1/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.33" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.34.8/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.34" },
+        @{ Url = "https://github.com/kubernetes-sigs/cloud-provider-azure/releases/download/v1.35.4/azure-acr-credential-provider-windows-amd64.exe"; K8sVersion = "v1.35" }
     )
 
     $credentialProviderDir = "c:\k\credential-provider\"
