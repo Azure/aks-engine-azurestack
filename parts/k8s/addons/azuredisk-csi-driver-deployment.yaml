@@ -613,7 +613,7 @@ spec:
         - name: csi-provisioner
           image: {{ContainerImage "csi-provisioner"}}
           args:
-{{- if IsKubernetesVersionGe "1.28.0"}}
+{{- if and (IsKubernetesVersionGe "1.28.0") (not (IsKubernetesVersionGe "1.34.0"))}}
             - "--feature-gates=Topology=true,HonorPVReclaimPolicy=true"
 {{- else }}
             - "--feature-gates=Topology=true"

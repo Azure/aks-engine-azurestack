@@ -437,11 +437,11 @@ Below is a list of kubelet options that AKS Engine will configure by default:
 | kubelet option                        | default value                                                                                                                                                                                                                                                                                             |
 | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | "--cadvisor-port"                     | "0"                                                                                                                                                                                                                                                                                                       |
-| "--cloud-config"                      | "/etc/kubernetes/azure.json"                                                                                                                                                                                                                                                                              |
-| "--cloud-provider"                    | "azure"                                                                                                                                                                                                                                                                                                   |
+| "--cloud-config"                      | "/etc/kubernetes/azure.json" **Removed in Kubernetes 1.34+** (use external cloud controllers)                                                                                                                                                                                                         |
+| "--cloud-provider"                    | "azure" for K8s < 1.34, "external" for K8s >= 1.34 **In-tree `azure` provider removed in Kubernetes 1.34+** (must use external cloud controllers)                                                                                                                                                    |
 | "--cluster-domain"                    | "cluster.local"                                                                                                                                                                                                                                                                                           |
 | "--event-qps"                         | "0"                                                                                                                                                                                                                                                                                                       |
-| "--pod-infra-container-image"         | "pause-amd64:_version_"                                                                                                                                                                                                                                                                                   |
+| "--pod-infra-container-image"         | "pause-amd64:_version_" **Removed in Kubernetes 1.35+** (pause container configured via runtime/config file)                                                                                                                                                                                                                                                                                   |
 | "--network-plugin"                    | "cni"                                                                                                                                                                                                                                                                                                     |
 | "--max-pods"                          | "30", or "110" if using kubenet --network-plugin (i.e., `"networkPlugin": "kubenet"`)                                                                                                                                                                                                                     |
 | "--eviction-hard"                     | "memory.available<750Mi,nodefs.available<10%,nodefs.inodesFree<5%"                                                                                                                                                                                                                                        |
@@ -561,8 +561,8 @@ Below is a list of cloud-controller-manager options that are _not_ currently use
 | "--allocate-node-cidrs"   | "false"                                     |
 | "--cluster-cidr"          | _uses clusterSubnet value_                  |
 | "--cluster-name"          | _auto-generated using API model properties_ |
-| "--cloud-provider"        | "azure"                                     |
-| "--cloud-config"          | "/etc/kubernetes/azure.json"                |
+| "--cloud-provider"        | "azure" for K8s < 1.34, "external" for K8s >= 1.34 **Removed in Kubernetes 1.34+** |
+| "--cloud-config"          | "/etc/kubernetes/azure.json" **Removed in Kubernetes 1.34+**                |
 | "--leader-elect"          | "true"                                      |
 | "--v"                     | "2"                                         |
 
@@ -649,8 +649,8 @@ Below is a list of apiserver options that are _not_ currently user-configurable,
 | "--requestheader-extra-headers-prefix" | "X-Remote-Extra-" (_if enableAggregatedAPIs is true_)                                   |
 | "--requestheader-group-headers"        | "X-Remote-Group" (_if enableAggregatedAPIs is true_)                                    |
 | "--requestheader-username-headers"     | "X-Remote-User" (_if enableAggregatedAPIs is true_)                                     |
-| "--cloud-provider"                     | "azure" (_unless useCloudControllerManager is true_)                                    |
-| "--cloud-config"                       | "/etc/kubernetes/azure.json" (_unless useCloudControllerManager is true_)               |
+| "--cloud-provider"                     | "azure" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.34+** |
+| "--cloud-config"                       | "/etc/kubernetes/azure.json" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.34+** |
 
 <a name="feat-scheduler-config"></a>
 

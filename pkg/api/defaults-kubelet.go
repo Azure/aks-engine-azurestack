@@ -88,7 +88,6 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 	defaultKubeletConfig := map[string]string{
 		"--cluster-domain":                    "cluster.local",
 		"--network-plugin":                    "cni",
-		"--pod-infra-container-image":         o.KubernetesConfig.MCRKubernetesImageBase + GetK8sComponentsByVersionMap(o.KubernetesConfig)[o.OrchestratorVersion][common.PauseComponentName],
 		"--max-pods":                          strconv.Itoa(DefaultKubernetesMaxPods),
 		"--eviction-hard":                     DefaultKubernetesHardEvictionThreshold,
 		"--node-status-update-frequency":      nodeStatusUpdateFrequency,
@@ -106,6 +105,11 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		"--tls-cipher-suites":                 TLSStrongCipherSuitesKubelet,
 		"--healthz-port":                      DefaultKubeletHealthzPort,
 		"--seccomp-default":                   "true",
+	}
+
+	// --pod-infra-container-image flag removed in K8s 1.35+
+	if !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.35.0") {
+		defaultKubeletConfig["--pod-infra-container-image"] = o.KubernetesConfig.MCRKubernetesImageBase + GetK8sComponentsByVersionMap(o.KubernetesConfig)[o.OrchestratorVersion][common.PauseComponentName]
 	}
 
 	// Set --non-masquerade-cidr if ip-masq-agent is disabled on AKS or
@@ -142,8 +146,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 
 	// If no user-configurable kubelet config values exists, use the defaults
 	setMissingKubeletValues(o.KubernetesConfig, defaultKubeletConfig)
-	if isUpgrade {
-		// if upgrade, force default "--pod-infra-container-image" value
+	if isUpgrade && !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.35.0") {
+		// if upgrade, force default "--pod-infra-container-image" value (flag removed in K8s 1.35+)
 		o.KubernetesConfig.KubeletConfig["--pod-infra-container-image"] = defaultKubeletConfig["--pod-infra-container-image"]
 	}
 
@@ -489,8 +493,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 		if cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig == nil {
 			cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig = make(map[string]string)
 		}
-		if isUpgrade {
-			// if upgrade, force default "--pod-infra-container-image" value
+		if isUpgrade && !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.35.0") {
+			// if upgrade, force default "--pod-infra-container-image" value (flag removed in K8s 1.35+)
 			cs.Properties.MasterProfile.KubernetesConfig.KubeletConfig["--pod-infra-container-image"] = o.KubernetesConfig.KubeletConfig["--pod-infra-container-image"]
 		}
 		//Ensure cloud-provider setting
@@ -547,8 +551,8 @@ func (cs *ContainerService) setKubeletConfig(isUpgrade bool) {
 			profile.KubernetesConfig.KubeletConfig = make(map[string]string)
 		}
 
-		if isUpgrade {
-			// if upgrade, force default "--pod-infra-container-image" value
+		if isUpgrade && !common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.35.0") {
+			// if upgrade, force default "--pod-infra-container-image" value (flag removed in K8s 1.35+)
 			profile.KubernetesConfig.KubeletConfig["--pod-infra-container-image"] = o.KubernetesConfig.KubeletConfig["--pod-infra-container-image"]
 		}
 
@@ -652,6 +656,24 @@ func removeKubeletFlags(k map[string]string, v string) {
 	// Get rid of values not supported in v1.30 and up
 	if common.IsKubernetesVersionGe(v, "1.30.0") {
 		for _, key := range []string{"--azure-container-registry-config"} {
+			delete(k, key)
+		}
+	}
+
+	// Get rid of values not supported in v1.34 and up
+	// Note: --cloud-provider=external is still valid, only --cloud-config is removed
+	if common.IsKubernetesVersionGe(v, "1.34.0") {
+		// Only remove --cloud-config, but check if --cloud-provider is set to non-external value
+		delete(k, "--cloud-config")
+		// Remove --cloud-provider only if it's not "external"
+		if cloudProvider, exists := k["--cloud-provider"]; exists && cloudProvider != "external" {
+			delete(k, "--cloud-provider")
+		}
+	}
+
+	// Get rid of values not supported in v1.35 and up
+	if common.IsKubernetesVersionGe(v, "1.35.0") {
+		for _, key := range []string{"--pod-infra-container-image"} {
 			delete(k, key)
 		}
 	}
