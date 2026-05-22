@@ -783,8 +783,18 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 				}
 
 				if !isMasterNode {
-					Expect(hasNetworkCondition).To(BeTrue(),
-						fmt.Sprintf("Linux agent node %s should have NetworkUnavailable condition", n.Metadata.Name))
+					// NetworkUnavailable condition is not consistently set by external cloud providers in K8s 1.34+
+					// so we only check for it in older versions
+					if common.IsKubernetesVersionGe(eng.ExpandedDefinition.Properties.OrchestratorProfile.OrchestratorVersion, "1.34.0") {
+						if hasNetworkCondition {
+							log.Printf("Linux agent node %s has NetworkUnavailable condition (optional in K8s 1.34+)", n.Metadata.Name)
+						} else {
+							log.Printf("Linux agent node %s has no NetworkUnavailable condition (expected in K8s 1.34+ with external cloud provider)", n.Metadata.Name)
+						}
+					} else {
+						Expect(hasNetworkCondition).To(BeTrue(),
+							fmt.Sprintf("Linux agent node %s should have NetworkUnavailable condition", n.Metadata.Name))
+					}
 				}
 			}
 		})
