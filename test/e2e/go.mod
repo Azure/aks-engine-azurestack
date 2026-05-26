@@ -1,6 +1,6 @@
 module github.com/Azure/aks-engine-azurestack/test/e2e
 
-go 1.24.0
+go 1.26.0
 
 require (
 	github.com/Azure/aks-engine-azurestack v0.43.0
