@@ -165,7 +165,8 @@ Make sure `linuxProfile.runUnattendedUpgradesOnBootstrap` is set to `"false"` wh
 | [v0.81.2](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.81.2)   | [AKS Base Ubuntu 20.04-LTS Image Distro (2024.311.1)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2004/aks-engine-azurestack-ubuntu-2004_2024.311.1.txt), [AKS Base Windows Server 2019 Image Containerd (17763.6414.20243111)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.6414.20243111.txt) | 1.28.15**, 1.29.10** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/0ea7973bb1826b7607086d4741b73313d72ce256/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/0ea7973bb1826b7607086d4741b73313d72ce256/examples/azure-stack/kubernetes-windows.json)) |
 | [v0.82.2](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.82.2)   | [AKS Base Ubuntu 22.04-LTS Image Distro (2025.079.2)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2204/aks-engine-azurestack-ubuntu-2204_2025.079.2.txt), [AKS Base Windows Server 2019 Image Containerd (17763.7009.20250792)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.7009.20250792.txt) | 1.29.15**, 1.30.10** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/7c8a47548867992ebe606b879e13c0472164dba0/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/7c8a47548867992ebe606b879e13c0472164dba0/examples/azure-stack/kubernetes-windows.json)) |
 | [v0.83.1](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.83.1)   | [AKS Base Ubuntu 22.04-LTS Image Distro (2025.227.1)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2204/aks-engine-azurestack-ubuntu-2204_2025.227.1.txt), [AKS Base Windows Server 2019 Image Containerd (17763.7678.20252271)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.7678.20252271.txt) | 1.30.14**, 1.31.11** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/release-v0.83.1/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/release-v0.83.1/examples/azure-stack/kubernetes-windows.json)) |
-| [v0.84.1](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.84.1)   | [AKS Base Ubuntu 22.04-LTS Image Distro (2025.337.1)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2204/aks-engine-azurestack-ubuntu-2204_2025.337.1.txt), [AKS Base Windows Server 2019 Image Containerd (17763.7919.20253371)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.7919.20253371.txt) | 1.31.13**, 1.32.9**, 1.33.5** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/azure-stack/kubernetes-windows.json)) |
+| [v0.84.1](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.84.1)   | [AKS Base Ubuntu 22.04-LTS Image Distro (2025.337.1)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2204/aks-engine-azurestack-ubuntu-2204_2025.337.1.txt), [AKS Base Windows Server 2019 Image Containerd (17763.7919.20253371)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.7919.20253371.txt) | 1.31.13**, 1.32.9**, 1.33.5** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/release-v0.84.1/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/release-v0.84.1/examples/azure-stack/kubernetes-windows.json)) |
+| [v0.85.0](https://github.com/Azure/aks-engine-azurestack/releases/tag/release-v0.85.0)   | [AKS Base Ubuntu 22.04-LTS Image Distro (2026.139.1)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-engine-ubuntu-2204/aks-engine-azurestack-ubuntu-2204_2026.139.1.txt), [AKS Base Windows Server 2019 Image Containerd (17763.8644.20261391)](https://github.com/Azure/aks-engine-azurestack/blob/master/vhd/release-notes/aks-windows-2019-containerd/2019-datacenter-core-azurestack-ctrd-17763.8644.20261391.txt) | 1.33.10**, 1.34.4**, 1.35.0** | API Model Samples ([Linux](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/azure-stack/kubernetes-azurestack.json), [Windows](https://github.com/Azure/aks-engine-azurestack/blob/master/examples/azure-stack/kubernetes-windows.json)) |
 
 >\* Starting from Kubernetes v1.21, **only** [Cloud Provider for Azure](#cloud-provider-for-azure) is supported on Azure Stack Hub.
 
@@ -204,7 +205,10 @@ The following table shows the supported Azure Disk CSI Driver version for each K
 | 1.31               | 1.31.12                       |
 | 1.32               | 1.32.11                       |
 | 1.33               | 1.33.7                        |
-
+| 1.34               | 1.34.3                        |
+| 1.35               | 1.34.3                        |
+| 1.34               | 1.34.3                        |
+| 1.35               | 1.34.3                        |
 * Exception: For AKS Engine v0.77.0, kubernetes version 1.25 uses Azure Disk CSI Driver version v1.26.5
 * Note: Only the versions in the mapping have been tested. While other version combinations may work, they are not officially supported.
 
@@ -229,6 +233,7 @@ DRIVER_VERSION=v1.29.12 # if using k8s v1.28 - v1.30
 DRIVER_VERSION=v1.31.12 # if using k8s v1.31
 DRIVER_VERSION=v1.32.11 # if using k8s v1.32
 DRIVER_VERSION=v1.33.7 # if using k8s v1.33
+DRIVER_VERSION=v1.34.3 # if using k8s v1.34 - v1.35
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
@@ -308,6 +313,7 @@ DRIVER_VERSION=v1.29.12 # if using k8s v1.28 - v1.30
 DRIVER_VERSION=v1.31.12 # if using k8s v1.31
 DRIVER_VERSION=v1.32.11 # if using k8s v1.32
 DRIVER_VERSION=v1.33.7 # if using k8s v1.33
+DRIVER_VERSION=v1.34.3 # if using k8s v1.34 - v1.35
 helm repo add azuredisk-csi-driver https://raw.githubusercontent.com/kubernetes-sigs/azuredisk-csi-driver/master/charts
 helm install azuredisk-csi-driver azuredisk-csi-driver/azuredisk-csi-driver \
   --namespace kube-system \
