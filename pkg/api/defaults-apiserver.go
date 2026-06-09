@@ -522,8 +522,8 @@ func (cs *ContainerService) overrideAPIServerConfig() {
 		o.KubernetesConfig.APIServerConfig["--enable-admission-plugins"] = newPlugins
 	}
 
-	// Remove cloud provider flags for K8s 1.34+ (in-tree cloud providers fully removed)
-	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.34.0") {
+	// Remove cloud provider flags for K8s 1.33+ (in-tree cloud providers fully removed)
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.33.0") {
 		delete(o.KubernetesConfig.APIServerConfig, "--cloud-provider")
 		delete(o.KubernetesConfig.APIServerConfig, "--cloud-config")
 	}

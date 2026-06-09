@@ -1,7 +1,8 @@
 
 <a name="v0.85.0"></a>
-# [v0.85.0] - 2026-05-26
+# [v0.85.0] - 2026-06-09
 ### Bug Fixes 🐞
+- kube-apiserver cloud provider flags removal for k8s 1.33+ ([#396](https://github.com/Azure/aks-engine-azurestack/issues/396))
 - update golang and image versions ([#391](https://github.com/Azure/aks-engine-azurestack/issues/391))
 - additional unsupported flags to remove ([#389](https://github.com/Azure/aks-engine-azurestack/issues/389))
 - update k8s components image reference paths to v2 ([#388](https://github.com/Azure/aks-engine-azurestack/issues/388))
