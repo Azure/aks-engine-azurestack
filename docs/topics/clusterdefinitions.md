@@ -649,8 +649,8 @@ Below is a list of apiserver options that are _not_ currently user-configurable,
 | "--requestheader-extra-headers-prefix" | "X-Remote-Extra-" (_if enableAggregatedAPIs is true_)                                   |
 | "--requestheader-group-headers"        | "X-Remote-Group" (_if enableAggregatedAPIs is true_)                                    |
 | "--requestheader-username-headers"     | "X-Remote-User" (_if enableAggregatedAPIs is true_)                                     |
-| "--cloud-provider"                     | "azure" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.34+** |
-| "--cloud-config"                       | "/etc/kubernetes/azure.json" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.34+** |
+| "--cloud-provider"                     | "azure" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.33+** |
+| "--cloud-config"                       | "/etc/kubernetes/azure.json" (_unless useCloudControllerManager is true_) **Removed in Kubernetes 1.33+** |
 
 <a name="feat-scheduler-config"></a>
 
