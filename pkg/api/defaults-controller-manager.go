@@ -409,4 +409,10 @@ func (cs *ContainerService) setControllerManagerConfig() {
 		invalidFeatureGates = append(invalidFeatureGates, "WatchBookmark")
 	}
 	removeInvalidFeatureGates(o.KubernetesConfig.ControllerManagerConfig, invalidFeatureGates)
+
+	// Remove cloud provider flags for K8s 1.33+ (in-tree cloud providers fully removed)
+	if common.IsKubernetesVersionGe(o.OrchestratorVersion, "1.33.0") {
+		delete(o.KubernetesConfig.ControllerManagerConfig, "--cloud-provider")
+		delete(o.KubernetesConfig.ControllerManagerConfig, "--cloud-config")
+	}
 }
