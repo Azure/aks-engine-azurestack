@@ -4,78 +4,134 @@
 #  1 - install failure
 #  2 - download failure
 #  3 - unrecognized patch extension
+#  4 - patch validation failure
 
 param(
-    [string[]] $URIs
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [string[]] $URIs,
+
+    [Parameter(Mandatory = $true)]
+    [ValidateNotNullOrEmpty()]
+    [ValidatePattern('^[A-Fa-f0-9]{64}$')]
+    [string[]] $SHA256Hashes,
+
+    [switch] $EnableTestSigning
 )
 
-function DownloadFile([string] $URI, [string] $fullName)
+function DownloadAndVerifyFile([Uri] $URI, [string] $FullName, [string] $ExpectedSHA256)
 {
     try {
-        Write-Host "Downloading $URI"
+        Write-Host "Downloading $($URI.GetLeftPart([UriPartial]::Path))"
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -UseBasicParsing $URI -OutFile $fullName
+        Invoke-WebRequest -UseBasicParsing -Uri $URI.AbsoluteUri -OutFile $FullName
     } catch {
+        Remove-Item -LiteralPath $FullName -Force -ErrorAction SilentlyContinue
         Write-Error $_
         exit 2
     }
+
+    $actualSHA256 = (Get-FileHash -LiteralPath $FullName -Algorithm SHA256).Hash
+    if (-not [string]::Equals($actualSHA256, $ExpectedSHA256, [StringComparison]::OrdinalIgnoreCase)) {
+        Remove-Item -LiteralPath $FullName -Force -ErrorAction SilentlyContinue
+        Write-Error "SHA-256 verification failed for $($URI.GetLeftPart([UriPartial]::Path))"
+        exit 4
+    }
+
+    Write-Host "Verified SHA-256 for $([IO.Path]::GetFileName($FullName))"
 }
 
+if ($URIs.Count -ne $SHA256Hashes.Count) {
+    Write-Error "Each patch URI must have a corresponding SHA-256 hash"
+    exit 4
+}
 
-$URIs | ForEach-Object {
-    Write-Host "Processing $_"
-    $uri = $_
-    $pathOnly = $uri
-    if ($pathOnly.Contains("?"))
-    {
-        $pathOnly = $pathOnly.Split("?")[0]
+$patches = @()
+for ($index = 0; $index -lt $URIs.Count; $index++) {
+    $parsedURI = $null
+    if (-not [Uri]::TryCreate($URIs[$index], [UriKind]::Absolute, [ref] $parsedURI)) {
+        Write-Error "Patch URI must be an absolute URI"
+        exit 4
     }
-    $fileName = Split-Path $pathOnly -Leaf
-    $ext = [io.path]::GetExtension($fileName)
-    $fullName = [io.path]::Combine($env:TEMP, $fileName)
-    switch ($ext) {
+
+    if ($parsedURI.Scheme -ine [Uri]::UriSchemeHttps) {
+        Write-Error "Patch URI must use HTTPS: $($parsedURI.GetLeftPart([UriPartial]::Path))"
+        exit 4
+    }
+
+    $fileName = [IO.Path]::GetFileName($parsedURI.LocalPath)
+    if ([string]::IsNullOrWhiteSpace($fileName)) {
+        Write-Error "Patch URI must identify a file"
+        exit 4
+    }
+
+    $extension = [IO.Path]::GetExtension($fileName).ToLowerInvariant()
+    if ($extension -ne ".exe" -and $extension -ne ".msu") {
+        Write-Error "This script extension doesn't know how to install $extension files"
+        exit 3
+    }
+
+    $patches += [PSCustomObject]@{
+        URI = $parsedURI
+        ExpectedSHA256 = $SHA256Hashes[$index]
+        FileName = $fileName
+        Extension = $extension
+        FullName = [IO.Path]::Combine($env:TEMP, $fileName)
+    }
+}
+
+$testSigningEnabled = $false
+$patches | ForEach-Object {
+    $patch = $_
+    Write-Host "Processing $($patch.URI.GetLeftPart([UriPartial]::Path))"
+    DownloadAndVerifyFile -URI $patch.URI -FullName $patch.FullName -ExpectedSHA256 $patch.ExpectedSHA256
+
+    switch ($patch.Extension) {
         ".exe" {
-            Start-Process -FilePath bcdedit.exe -ArgumentList "/set {current} testsigning on" -Wait
-            DownloadFile -URI $uri -fullName $fullName
-            Write-Host "Starting $fullName"
-            $proc = Start-Process -Passthru -FilePath "$fullName" -ArgumentList "/q /norestart"
+            if ($EnableTestSigning -and -not $testSigningEnabled) {
+                Write-Warning "Enabling Windows test-signing mode for executable patches"
+                $bcdedit = Start-Process -Passthru -Wait -FilePath bcdedit.exe -ArgumentList "/set {current} testsigning on"
+                if ($bcdedit.ExitCode -ne 0) {
+                    Write-Error "Failed to enable Windows test-signing mode, exitcode $($bcdedit.ExitCode)"
+                    exit 1
+                }
+                $testSigningEnabled = $true
+            }
+
+            Write-Host "Starting $($patch.FullName)"
+            $proc = Start-Process -Passthru -FilePath $patch.FullName -ArgumentList "/q /norestart"
             Wait-Process -InputObject $proc
             switch ($proc.ExitCode)
             {
                 0 {
-                    Write-Host "Finished running $fullName"
+                    Write-Host "Finished running $($patch.FullName)"
                 }
                 3010 {
-                    Write-Host "Finished running $fullName. Reboot required to finish patching."
+                    Write-Host "Finished running $($patch.FullName). Reboot required to finish patching."
                 }
                 Default {
-                    Write-Error "Error running $fullName, exitcode $($proc.ExitCode)"
+                    Write-Error "Error running $($patch.FullName), exitcode $($proc.ExitCode)"
                     exit 1
                 }
             }
         }
         ".msu" {
-            DownloadFile -URI $uri -fullName $fullName
-            Write-Host "Installing $localPath"
-            $proc = Start-Process -Passthru -FilePath wusa.exe -ArgumentList "$fullName /quiet /norestart"
+            Write-Host "Installing $($patch.FullName)"
+            $proc = Start-Process -Passthru -FilePath wusa.exe -ArgumentList "`"$($patch.FullName)`" /quiet /norestart"
             Wait-Process -InputObject $proc
             switch ($proc.ExitCode)
             {
                 0 {
-                    Write-Host "Finished running $fullName"
+                    Write-Host "Finished running $($patch.FullName)"
                 }
                 3010 {
-                    Write-Host "Finished running $fullName. Reboot required to finish patching."
+                    Write-Host "Finished running $($patch.FullName). Reboot required to finish patching."
                 }
                 Default {
-                    Write-Error "Error running $fullName, exitcode $($proc.ExitCode)"
+                    Write-Error "Error running $($patch.FullName), exitcode $($proc.ExitCode)"
                     exit 1
                 }
             }
-        }
-        Default {
-            Write-Error "This script extension doesn't know how to install $ext files"
-            exit 3
         }
     }
 }
