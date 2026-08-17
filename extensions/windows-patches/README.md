@@ -154,6 +154,16 @@ $full_url | Set-Clipboard
 
 The scripts output both the URL and SHA-256 hash. Add them to `extensionParameters` as shown above, keeping URI and hash order aligned. The PowerShell script also puts the URL on the Windows clipboard. Do not share a URL containing a SAS token; keep it private.
 
+## Local Tests
+
+Run the extension's unit tests from the repository root:
+
+```powershell
+.\extensions\windows-patches\v1\run-tests.ps1
+```
+
+The runner requires PowerShell 7 and installs Pester 5.7.1 for the current user when necessary, then runs `installPatches.tests.ps1`. When launched from Windows PowerShell 5.1, it automatically relaunches itself with `pwsh` if available. The tests mock downloads, process execution, test-signing changes, and reboot scheduling; they do not modify the local system.
+
 ## Troubleshooting
 
 Extension execution output is logged to files found under the following directory on the target virtual machine.
