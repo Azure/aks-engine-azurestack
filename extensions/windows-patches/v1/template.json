@@ -34,7 +34,7 @@
 			"type": "securestring",
 			"minLength": 0,
 			"metadata": {
-				"description": "Custom Parameter for Extension - comma delimited list of URIs"
+				"description": "HTTPS patch URIs followed by -SHA256Hashes and a corresponding comma-delimited list of SHA-256 hashes"
 			}
 		},
 		 "vmIndex": {

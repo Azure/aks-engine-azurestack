@@ -7,12 +7,16 @@ This extension will install Windows Security and Preview updates. It's useful fo
 
 ## Configuration
 
-|Name               |Required| Acceptable Value     |
-|-------------------|--------|----------------------|
-|name               |yes     | windows-patches      |
-|version            |yes     | v1                   |
-|rootURL            |optional| `https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/` or any repo with the same extensions/... directory structure |
-|extensionParameters|yes     | comma-delimited list of URIs enclosed with ' such as `'https://privateupdates.domain.ext/Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe', 'https://privateupdates.domain.ext/Windows10.0-KB123456-x64-InstallForTestingPurposesOnly.exe'` |
+| Name                  | Required | Acceptable value                               |
+| --------------------- | -------- | ---------------------------------------------- |
+| `name`                | yes      | `windows-patches`                              |
+| `version`             | yes      | `v1`                                           |
+| `rootURL`             | no       | HTTPS URL containing the extension directory   |
+| `extensionParameters` | yes      | HTTPS URI and SHA-256 pairs                    |
+
+`rootURL` defaults to `https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/`. A custom repository must use the same `extensions/...` directory structure.
+
+For `extensionParameters`, provide comma-delimited HTTPS URIs followed by `-SHA256Hashes` and a corresponding comma-delimited list of hashes. Each hash must contain 64 hexadecimal characters and correspond to the URI at the same position. Obtain hashes from a trusted source independently of the patch download location. Append `-EnableTestSigning` only when a private test-signed executable requires it.
 
 ## Example
 
@@ -34,11 +38,13 @@ This extension will install Windows Security and Preview updates. It's useful fo
         "name": "windows-patches",
         "version": "v1",
         "rootURL": "https://raw.githubusercontent.com/Azure/aks-engine-azurestack/master/",
-        "extensionParameters": "'https://mypatches.blob.core.windows.net/hotfix3692/Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe?sp=r&st=2018-08-17T00:25:01Z&se=2018-09-17T08:25:01Z&spr=https&sv=2017-11-09&sig=0000000000%3D&sr=b', 'http://download.windowsupdate.com/c/msdownload/update/software/secu/2018/08/windows10.0-kb4343909-x64_f931af6d56797388715fe3b0d97569af7aebdae6.msu'"
+        "extensionParameters": "'https://mypatches.blob.core.windows.net/hotfix3692/Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe?sp=r&st=2018-08-17T00:25:01Z&se=2018-09-17T08:25:01Z&spr=https&sv=2017-11-09&sig=0000000000%3D&sr=b', 'https://download.windowsupdate.com/c/msdownload/update/software/secu/2018/08/windows10.0-kb4343909-x64_f931af6d56797388715fe3b0d97569af7aebdae6.msu' -SHA256Hashes '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef', 'abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789' -EnableTestSigning"
       }
     ]
     ...
 ```
+
+The hashes in this example are placeholders. Replace them with the hashes published by the patch provider or calculated from files obtained through a trusted channel. Omit `-EnableTestSigning` unless Microsoft Support explicitly requires test-signing mode for a private patch.
 
 ## Supported Orchestrators
 
@@ -55,17 +61,17 @@ If you would like to include a cumulative update as part of your deployment that
 3. Scroll down to "How to get this update", and click on the ["Microsoft Update Catalog"](http://catalog.update.microsoft.com/v7/site/Search.aspx?q=KB4343909) link.
 4. Find the row for `(year)-(month) Cumulative Update for Windows Server 2016 ((1709 or 1803)) for x64-based Systems (KB######)`, and click the "Download" button.
 5. This will pop up a new window with a hyperlink such as `windows10.0-kb4343909-x64_f931af6d56797388715fe3b0d97569af7aebdae6.msu`. Copy that link.
-6. Include that link in the `extensionParameters` as shown in the [Example](#Example)
+6. Obtain the update's published SHA-256 hash through a trusted channel.
+7. Include the link and hash in `extensionParameters` as shown in the [Example](#example).
 
 ### Supplied by Microsoft support
 
 Once you have downloaded a private patch from Microsoft support, it needs to be put in an Azure-accessible location. The easiest way to do this is to create an [Azure Blob Storage](https://docs.microsoft.com/en-us/azure/storage/common/storage-create-storage-account#blob-storage-accounts) account. Once uploaded, you can create a private link with a key to access it that will work with this extension.
 
-> This requires [Enabling Loading of Test Signed Drivers](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/the-testsigning-boot-configuration-option), and is not for use on production systems. If you provide a private patch as an `.exe` file, then test signing will be enabled automatically by this extension.
+> Some private patches require [Enabling Loading of Test Signed Drivers](https://docs.microsoft.com/en-us/windows-hardware/drivers/install/the-testsigning-boot-configuration-option), which weakens code-integrity enforcement and is not for use on production systems. Test signing is disabled by default. Add `-EnableTestSigning` to `extensionParameters` only when Microsoft Support explicitly requires it.
 
 1. If you haven't already, install the [Azure CLI](https://docs.microsoft.com/cli/azure/get-started-with-az-cli2), and run `az login` to log in to Azure
 2. Copy the sample below for either bash (Linux, Mac, or WSL), or PowerShell (Windows), and modify the variables at the top.
-
 
 #### Using az cli and bash to upload the patch
 
@@ -77,6 +83,7 @@ export storage_account_name=privatepatches
 export container_name=hotfix
 export blob_name=Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe
 export file_to_upload=Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe
+export patch_sha256=$(sha256sum "$file_to_upload" | cut -d ' ' -f 1)
 
 echo "Creating the group..."
 az group create --location $storage_location --resource-group $resource_group
@@ -102,6 +109,7 @@ export ABSURL=`az storage blob url --container-name $container_name --name $blob
 
 echo "Full URL including access token:"
 echo "$ABSURL?$TEMPORARY_SAS" | sed "s/\"//g"
+echo "SHA-256: $patch_sha256"
 ```
 
 #### Using az cli and PowerShell to upload the patch
@@ -113,6 +121,7 @@ $storage_account_name="privatepatches"
 $container_name="hotfix"
 $blob_name="Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe"
 $file_to_upload="Windows10.0-KB999999-x64-InstallForTestingPurposesOnly.exe"
+$PATCH_SHA256 = (Get-FileHash -LiteralPath $file_to_upload -Algorithm SHA256).Hash
 
 Write-Host "Creating the group..."
 az group create --location $storage_location --resource-group $resource_group
@@ -140,9 +149,20 @@ Write-Host "Full URL including access token:"
 $full_url = "$($ABSURL)?$($TEMPORARY_SAS)".Replace("""","")
 $full_url | Write-Host
 $full_url | Set-Clipboard
+"SHA-256: $PATCH_SHA256" | Write-Host
 ```
 
-The last line of the script will output a URL, and also put it on the Windows clipboard. Copy it into `extensionParameters` as shown in the sample above. Do not share this URL, keep it private.
+The scripts output both the URL and SHA-256 hash. Add them to `extensionParameters` as shown above, keeping URI and hash order aligned. The PowerShell script also puts the URL on the Windows clipboard. Do not share a URL containing a SAS token; keep it private.
+
+## Local Tests
+
+Run the extension's unit tests from the repository root:
+
+```powershell
+.\extensions\windows-patches\v1\run-tests.ps1
+```
+
+The runner requires PowerShell 7 and installs Pester 5.7.1 for the current user when necessary, then runs `installPatches.tests.ps1`. When launched from Windows PowerShell 5.1, it automatically relaunches itself with `pwsh` if available. The tests mock downloads, process execution, test-signing changes, and reboot scheduling; they do not modify the local system.
 
 ## Troubleshooting
 
