@@ -101,7 +101,14 @@ ensureAzureStackCertificates() {
       sed -i "s|<volumessl>|- name: ssl\n      hostPath:\n        path: \\/etc\\/ssl\\/certs|g" $KCM_FILE
       sed -i "s|<volumeMountssl>|- name: ssl\n          mountPath: \\/etc\\/ssl\\/certs\n          readOnly: true|g" $KCM_FILE
     fi
-    cp /var/lib/waagent/Certificates.pem /usr/local/share/ca-certificates/azsCertificate.crt
+    # update-ca-certificates skips a source file entirely if it holds more than one cert, so split the bundle first
+    mkdir -p /usr/local/share/ca-certificates/azurestack
+    awk '
+      BEGIN { n = 0 }
+      /-----BEGIN CERTIFICATE-----/ { n++; f = sprintf("/usr/local/share/ca-certificates/azurestack/azs-%02d.crt", n) }
+      { if (f != "") print > f }
+      /-----END CERTIFICATE-----/ { close(f); f = "" }
+    ' /var/lib/waagent/Certificates.pem
     update-ca-certificates
   else
     if [ -f $KCM_FILE ]; then

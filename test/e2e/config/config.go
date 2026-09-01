@@ -210,6 +210,14 @@ func (ccc *CustomCloudConfig) SetEnvironment() error {
 			if [ -f ${CA} ]; then cat %s >> ${CA}; fi;`, azsSelfSignedCaPath)
 		}
 
+		// REQUESTS_CA_BUNDLE (set by cluster.sh) points az-cli at the system trust store instead of
+		// certifi, so the bundle must also be installed there. update-ca-certificates skips a source
+		// file entirely if it holds more than one cert, so split the bundle first.
+		cert_command += fmt.Sprintf(`
+		mkdir -p /usr/local/share/ca-certificates/azurestack-e2e;
+		awk 'BEGIN{n=0} /-----BEGIN CERTIFICATE-----/{n++; f=sprintf("/usr/local/share/ca-certificates/azurestack-e2e/azs-%%02d.crt", n)} {if (f != "") print > f} /-----END CERTIFICATE-----/{close(f); f=""}' %s;
+		update-ca-certificates;`, azsSelfSignedCaPath)
+
 		cmd := exec.Command("/bin/bash", "-c", cert_command)
 
 		if out, err := cmd.CombinedOutput(); err != nil {
