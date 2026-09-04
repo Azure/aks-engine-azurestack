@@ -16,6 +16,11 @@ TEST_PVC="${TEST_PVC:-false}"
 CLEAN_PVC="${CLEAN_PVC:-true}"
 ROTATE_CERTS="${ROTATE_CERTS:-false}"
 VALIDATE_CPU_LOAD="${VALIDATE_CPU_LOAD:-false}"
+AZURE_STACK_CA_SOURCE="${AZURE_STACK_CA_SOURCE:-/usr/local/share/ca-certificates/azurestack}"
+AZURE_STACK_CA_MOUNT=()
+if [ "${AZURE_ENV}" = "AzureStackCloud" ] && [ -d "${AZURE_STACK_CA_SOURCE}" ]; then
+  AZURE_STACK_CA_MOUNT=(-v "${AZURE_STACK_CA_SOURCE}:/usr/local/share/ca-certificates/azurestack-host:ro")
+fi
 mkdir -p _output || exit 1
 
 # Assumes we're running from the git root of aks-engine
@@ -74,6 +79,7 @@ function rotateCertificates {
   docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e REGION=${REGION} \
@@ -105,6 +111,7 @@ function rotateCertificates {
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
       -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e REGION=${REGION} \
@@ -175,6 +182,7 @@ fi
 docker run --rm \
 -v $(pwd):${WORK_DIR} \
 -v /etc/ssl/certs:/etc/ssl/certs \
+"${AZURE_STACK_CA_MOUNT[@]}" \
 -w ${WORK_DIR} \
 -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
 -e CLUSTER_DEFINITION=${TMP_BASENAME}/apimodel-input.json \
@@ -342,6 +350,7 @@ if [ "${ROTATE_CERTS}" = "true" ]; then
   docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
@@ -404,6 +413,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
       -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
@@ -429,6 +439,7 @@ if [ -n "$ADD_NODE_POOL_INPUT" ]; then
   docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
@@ -492,6 +503,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
       -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
@@ -515,6 +527,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
   docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \
@@ -590,6 +603,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
       -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
@@ -611,6 +625,7 @@ if [ "${UPGRADE_CLUSTER}" = "true" ]; then
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
       -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e CLIENT_ID=${AZURE_CLIENT_ID} \
@@ -673,6 +688,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
     docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e RESOURCE_GROUP=$RESOURCE_GROUP \
@@ -696,6 +712,7 @@ if [ "${SCALE_CLUSTER}" = "true" ]; then
   docker run --rm \
     -v $(pwd):${WORK_DIR} \
     -v /etc/ssl/certs:/etc/ssl/certs \
+    "${AZURE_STACK_CA_MOUNT[@]}" \
     -w ${WORK_DIR} \
     -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
     -e CLIENT_ID=${AZURE_CLIENT_ID} \

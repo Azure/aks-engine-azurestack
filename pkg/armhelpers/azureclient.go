@@ -115,7 +115,7 @@ func (az *AzureClient) EnsureProvidersRegistered(subscriptionID string) error {
 	for pager.More() {
 		page, err := pager.NextPage(ctx)
 		if err != nil {
-			return errors.Errorf("Error listing registered providers for subscription %s", subscriptionID)
+			return errors.Wrapf(err, "Error listing registered providers for subscription %s", subscriptionID)
 		}
 		providers = append(providers, page.Value...)
 	}
