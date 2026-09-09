@@ -289,7 +289,10 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
   if [ "${GET_CLUSTER_LOGS}" = "true" ]; then
       docker run --rm \
       -v $(pwd):${WORK_DIR} \
+      -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
