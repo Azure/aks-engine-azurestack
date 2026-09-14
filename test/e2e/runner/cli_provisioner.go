@@ -387,7 +387,11 @@ func (cli *CLIProvisioner) FetchProvisioningMetrics(path string, cfg *config.Con
 		"/var/log/azure/kubelet-status.log", "/var/log/azure/docker-status.log", "/var/log/azure/systemd-journald-status.log"}
 	masterFiles := agentFiles
 	masterFiles = append(masterFiles, "/opt/azure/containers/setup-etcd.sh", "/opt/azure/containers/setup-etcd.log")
-	hostname := fmt.Sprintf("%s.%s.cloudapp.azure.com", cli.Config.Name, cli.Config.Location)
+	vmDNSSuffix := os.Getenv("RESOURCE_MANAGER_VM_DNS_SUFFIX")
+	if vmDNSSuffix == "" {
+		vmDNSSuffix = "cloudapp.azure.com"
+	}
+	hostname := fmt.Sprintf("%s.%s.%s", cli.Config.Name, cli.Config.Location, vmDNSSuffix)
 	cmd := exec.Command("ssh-agent", "-s")
 	out, err := cmd.CombinedOutput()
 	if err != nil {
