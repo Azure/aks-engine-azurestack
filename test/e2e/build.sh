@@ -9,4 +9,6 @@ WORK_DIR="/aks-engine"
 docker run --rm \
 -v $(pwd):${WORK_DIR} \
 -w ${WORK_DIR} \
+-e CGO_ENABLED=0 \
+-e GOEXPERIMENT=ms_nocgo_opensslcrypto \
 "${DEV_IMAGE}" make build-binary || exit 1

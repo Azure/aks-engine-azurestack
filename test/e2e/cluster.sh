@@ -28,6 +28,8 @@ if [ "${BUILD_AKS_ENGINE}" = "true" ]; then
   docker run --rm \
   -v $(pwd):${WORK_DIR} \
   -w ${WORK_DIR} \
+  -e CGO_ENABLED=0 \
+  -e GOEXPERIMENT=ms_nocgo_opensslcrypto \
   "${DEV_IMAGE}" make build-binary || exit 1
 fi
 
@@ -289,7 +291,10 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
   if [ "${GET_CLUSTER_LOGS}" = "true" ]; then
       docker run --rm \
       -v $(pwd):${WORK_DIR} \
+      -v /etc/ssl/certs:/etc/ssl/certs \
+      "${AZURE_STACK_CA_MOUNT[@]}" \
       -w ${WORK_DIR} \
+      -e REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-certificates.crt \
       -e RESOURCE_GROUP=$RESOURCE_GROUP \
       -e REGION=$REGION \
       ${DEV_IMAGE} \
@@ -330,7 +335,9 @@ if [ "${UPGRADE_CLUSTER}" = "true" ] || [ "${SCALE_CLUSTER}" = "true" ] || [ -n 
     docker run --rm \
       -v $(pwd):${WORK_DIR} \
       -w ${WORK_DIR} \
-      "${DEV_IMAGE}" make build-binary > /dev/null 2>&1 || exit 1
+      -e CGO_ENABLED=0 \
+      -e GOEXPERIMENT=ms_nocgo_opensslcrypto \
+      "${DEV_IMAGE}" make build-binary || exit 1
   fi
 else
   exit 0
