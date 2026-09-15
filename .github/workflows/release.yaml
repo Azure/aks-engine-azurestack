@@ -14,7 +14,7 @@ jobs:
       contents: write 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
       - name: set env
         run: |
           export CURRENT_BRANCH=$(git branch --show-current)
@@ -33,7 +33,7 @@ jobs:
         run: |
           [ -s releases/CHANGELOG-${{ env.RELEASE_VERSION }}.md ]
       - name: Install go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@be3c94b385c4f180051c996d336f57a34c397495 # v3.6.1
         with:
           go-version-file: 'go.mod'
       - name: Install helm
@@ -69,7 +69,7 @@ jobs:
       - name: Remove local tag
         run: git tag -d ${{ env.RELEASE_VERSION }}
       - name: Publish Release
-        uses: ncipollo/release-action@v1
+        uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1.21.0
         with:
           artifacts: _dist/aks-engine-azurestack*-*-*.*
           bodyFile: releases/CHANGELOG-${{ env.RELEASE_VERSION }}.md
