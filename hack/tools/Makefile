@@ -44,7 +44,7 @@ apt-get-install:
 		man \
 		mercurial \
 		net-tools \
-		netcat \
+		netcat-openbsd \
 		openssh-client \
 		procps \
 		python3 \

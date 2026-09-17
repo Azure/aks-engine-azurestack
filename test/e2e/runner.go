@@ -255,7 +255,11 @@ func trap() {
 func teardown() {
 	pt.RecordTotalTime()
 	pt.Write()
-	hostname := fmt.Sprintf("%s.%s.cloudapp.azure.com", cfg.Name, cfg.Location)
+	vmDNSSuffix := os.Getenv("RESOURCE_MANAGER_VM_DNS_SUFFIX")
+	if vmDNSSuffix == "" {
+		vmDNSSuffix = "cloudapp.azure.com"
+	}
+	hostname := fmt.Sprintf("%s.%s.%s", cfg.Name, cfg.Location, vmDNSSuffix)
 	logsPath := filepath.Join(cfg.CurrentWorkingDir, "_logs", hostname)
 	err := os.MkdirAll(logsPath, 0755)
 	if err != nil {
