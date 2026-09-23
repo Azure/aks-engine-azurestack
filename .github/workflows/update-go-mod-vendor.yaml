@@ -10,9 +10,9 @@ jobs:
     permissions:
       pull-requests: write 
     steps:
-      - uses: actions/checkout@a37ce9120846195fa4ece8f58b268e6043cb2f26 # v3.7.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: install go
-        uses: actions/setup-go@be3c94b385c4f180051c996d336f57a34c397495 # v3.6.1
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: 'go.mod'
       - name: run go mod vendor
@@ -21,7 +21,7 @@ jobs:
         run: git diff-index --quiet HEAD -- || echo "MAKE_PR=true" >> $GITHUB_ENV
       - name: create pull request
         if: ${{ env.MAKE_PR == 'true' }}
-        uses: peter-evans/create-pull-request@18f7dc018cc2cd597073088f7c7591b9d1c02672 # v3.14.0
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         with:
           commit-message: 'chore: Update go mod vendor directories'
           title: 'chore: Update go mod vendor directories'
