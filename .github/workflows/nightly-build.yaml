@@ -24,7 +24,7 @@ jobs:
           mkdir ./outputs
           cp _dist/aks-engine-azurestack-*-linux-amd64.tar.gz outputs/aks-engine-azurestack-nightly-linux-amd64.tar.gz
       - name: Update nightly release
-        uses: eine/tip@master
+        uses: eine/tip@f3409b1d9535db66602c684fbc4ac0481740d008 # tip
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: nightly
