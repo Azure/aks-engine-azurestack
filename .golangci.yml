@@ -1,25 +1,51 @@
+version: "2"
 run:
-  deadline: 5m
-
-issues:
-  exclude-dirs:
-    - test/i18n
-    - pkg/test
-  exclude-files:
-    - pkg/i18n/i18n.go
-    - pkg/i18n/translations.go
-
+  timeout: 5m
 linters:
-  disable-all: true
+  default: none
   enable:
     - errcheck
-    - goimports
-    - gosimple
     - govet
     - ineffassign
     - misspell
-    # - revive
     - staticcheck
     - unconvert
     - unparam
     - unused
+  settings:
+    govet:
+      disable:
+        - inline
+    staticcheck:
+      checks:
+        - "SA*"
+        - "S*"
+        - "-ST*"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - pkg/i18n/i18n.go
+      - pkg/i18n/translations.go
+      - test/i18n
+      - pkg/test
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - pkg/i18n/i18n.go
+      - pkg/i18n/translations.go
+      - test/i18n
+      - pkg/test
+      - third_party$
+      - builtin$
+      - examples$

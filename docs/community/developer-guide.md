@@ -5,7 +5,7 @@ This guide explains how to set up your environment for development on AKS Engine
 ## Prerequisites
 
 - [`git`](https://git-scm.com/)
-- [`go`](https://golang.org/dl) 1.14.4 or later
+- [`go`](https://go.dev/dl/) 1.27.3 or later
 - [`dep`](https://github.com/golang/dep) 0.5.1 or later
 - An [Azure](https://azure.microsoft.com/en-us/) subscription
 - [`kubectl`](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
@@ -23,6 +23,18 @@ Make sure you have read and understood the main CONTRIBUTING guide:
 https://github.com/Azure/aks-engine-azurestack/blob/master/CONTRIBUTING.md
 
 ## Build AKS Engine from Source
+
+Go 1.27.3 includes the `crypto/x509` fix for CVE-2026-111943, which
+distrusts the compromised eMudhra intermediate certificates. Rebuild and
+redistribute the AKS Engine binaries with this toolchain or a later patched
+version; updating the node OS trust store does not rebuild existing binaries.
+Node images and application-specific trust stores must also be serviced
+separately.
+
+The Docker development and nightly build environments use Microsoft's Go
+1.27.3 Bookworm image. GitHub Actions reads the Go version from `go.mod`;
+Azure DevOps installs Go 1.27.3 explicitly. Verify a built binary's compiler
+version with `go version -m <path-to-binary>`.
 
 ### Docker Development Environment
 

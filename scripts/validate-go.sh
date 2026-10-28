@@ -23,3 +23,4 @@ if [ -f /.dockerenv ]; then
 fi
 
 golangci-lint run --modules-download-mode=vendor
+golangci-lint fmt --diff

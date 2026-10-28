@@ -19,7 +19,7 @@ $(LOCALBIN)/ginkgo:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/onsi/ginkgo/v2/ginkgo@v2.17.1
 
 $(LOCALBIN)/golangci-lint:
-	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) v1.61.0
+	curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(LOCALBIN) v2.15.0
 
 $(LOCALBIN)/pub:
 	GOBIN=$(LOCALBIN) $(GO) install github.com/devigned/pub@v0.2.6
