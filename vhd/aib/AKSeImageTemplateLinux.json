@@ -106,6 +106,19 @@
                     },
                     {
                         "type": "File",
+                        "name": "download eMudhra remediation",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/remediate-emudhra.sh'))]",
+                        "destination": "/home/packer/remediate-emudhra.sh"
+                    },
+                    {
+                        "type": "Shell",
+                        "name": "remediate eMudhra trust",
+                        "inline": [
+                            "sudo /bin/bash -e /home/packer/remediate-emudhra.sh"
+                        ]
+                    },
+                    {
+                        "type": "File",
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/cleanup-vhd.sh'))]",
                         "destination": "/home/packer/cleanup-vhd.sh"
                     },
@@ -288,7 +301,8 @@
                         "type": "Shell",
                         "inline": [
                             "sudo /bin/bash -eux /home/packer/cis.sh",
-                            "sudo /bin/bash -eux /home/packer/cleanup-vhd.sh"
+                            "sudo /bin/bash -eux /home/packer/cleanup-vhd.sh",
+                            "sudo /bin/bash -e /home/packer/remediate-emudhra.sh --verify-only"
                         ]
                     }
                 ],

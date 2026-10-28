@@ -98,6 +98,21 @@
                 "customize": [
                     {
                         "type": "File",
+                        "name": "download eMudhra remediation",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/remediate-emudhra.ps1'))]",
+                        "destination": "c:\\akse-cache\\remediate-emudhra.ps1"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "refresh CTLs for eMudhra",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "inline": [
+                            "& c:\\akse-cache\\remediate-emudhra.ps1"
+                        ]
+                    },
+                    {
+                        "type": "File",
                         "name": "download signedscripts",
                         "sourceUri": "https://akseartifacts.blob.core.windows.net/windows/provisioning/signedscripts-v0.0.18.zip",
                         "destination":"c:\\akse-cache\\signedscripts-v0.0.18.zip"
@@ -239,6 +254,15 @@
                         "runElevated": true,
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase2.ps1'))]",
                         "destination":"c:\\DeprovisioningScript.ps1"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "verify persisted eMudhra distrust",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "inline": [
+                            "& c:\\akse-cache\\remediate-emudhra.ps1 -VerifyOnly -VerificationLogPath c:\\buildArtifacts\\emudhra-remediation.txt"
+                        ]
                     }
                 ],
                 "distribute": 
