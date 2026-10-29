@@ -68,6 +68,9 @@ The remediation runs before dependency installation. Verification runs again
 after hardening and cleanup. An APT failure, missing or old package, incomplete
 package configuration, unreadable bundle, or remaining withdrawn root fails the
 build. Internet access to the configured Ubuntu package repositories is required.
+The remediation shell script is stored and checked out with LF line endings,
+enforced by `.gitattributes`, so Windows-authored changes remain executable on
+the Linux builder.
 
 Sources: [Canonical's advisory](https://ubuntu.com/blog/emudhra-ca-compromise-fixes-available),
 [CA update](https://ubuntu.com/security/notices/USN-8944-1),
@@ -79,8 +82,15 @@ The [Windows script](../../vhd/packer/remediate-emudhra.ps1) uses Microsoft's
 documented forced CTL refresh:
 
 ```text
-certutil -f -verifyCTL Disallowed <temporary-directory> <untrusted-probe.cer>
+certutil -f -syncWithWU <ctl-data-directory>
+certutil -f -verifyCTL Disallowed <ctl-data-directory> <untrusted-probe.cer>
 ```
+
+Synchronization supplies `disallowedcert.sst`, which `verifyCTL` uses to locate
+certificates matching CTL entries. The metadata is retained under
+`C:\akse-cache\emudhra-ctl` for the final and offline verification steps;
+`-CtlDirectory` can override this location. Synchronization alone is not proof
+that Windows installed the CTL.
 
 The self-signed probe is generated in memory, exported without its private key,
 and never installed into a certificate store. This supported operation refreshes
@@ -89,7 +99,14 @@ but normal Microsoft trust-program changes can affect certificate compatibility.
 Windows Update CTL endpoints must be reachable and CTL updates must not be
 blocked by policy.
 
-The build then requires successful `certutil -verifyCTL Disallowed` verification
+The synthetic probe deliberately does not belong to the Disallowed CTL, so the
+forced-refresh command can return
+`0x80094005` (`CERTSRV_E_INVALID_CA_CERTIFICATE`) for that unmatched probe.
+Only that specific status is accepted for the probe command. It is logged as
+an expected non-match, not treated as proof that the refresh succeeded.
+
+The build then requires successful
+`certutil -verifyCTL Disallowed <ctl-data-directory>` verification, without the probe,
 of the local registry-cached CTL. The sequence number is decoded from the
 persisted `DisallowedCertEncodedCtl` using Windows CryptoAPI, not by parsing
 localized command output. It must equal:
@@ -108,7 +125,8 @@ The final customizer repeats local verification after the restarts and explicit
 sysprep preparation steps, writing
 `C:\buildArtifacts\emudhra-remediation.txt`. It does not treat a downloaded CTL,
 an SST import, or an empty intermediate certificate cache as proof of
-remediation. Native command failures are fatal.
+remediation. Synchronization errors, other probe errors, and all final
+verification errors are fatal.
 
 See Microsoft's [certutil reference](https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/certutil#-verifyctl)
 and [CTL servicing guidance](https://learn.microsoft.com/en-us/windows-server/identity/ad-cs/configure-trusted-roots-disallowed-certificates).

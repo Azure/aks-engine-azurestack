@@ -6,18 +6,26 @@ param(
     [switch]$VerifyOnly,
     [ValidatePattern('^[0-9a-fA-F]{16}$')]
     [string]$ExpectedSequenceNumber = '01dd5f6ca45c9d86',
+    [string]$CtlDirectory = (Join-Path $PSScriptRoot 'emudhra-ctl'),
     [string]$VerificationLogPath
 )
 
 $ErrorActionPreference = 'Stop'
 
 function Invoke-EmudhraCertutil {
-    param([string[]]$ArgumentList)
+    param(
+        [string[]]$ArgumentList,
+        [switch]$ExpectUnlistedProbe
+    )
 
     Write-Host "certutil.exe $($ArgumentList -join ' ')"
     $output = & certutil.exe @ArgumentList
     $exitCode = $LASTEXITCODE
     $output | ForEach-Object { Write-Host $_ }
+    if ($ExpectUnlistedProbe -and $exitCode -eq -2146877435) {
+        Write-Host 'The generated probe is not in the Disallowed CTL (0x80094005 CERTSRV_E_INVALID_CA_CERTIFICATE), as expected. Persisted CTL verification is still required.'
+        return
+    }
     if ($exitCode -ne 0) {
         throw "eMudhra CTL operation failed: certutil.exe exited with $exitCode."
     }
@@ -106,6 +114,14 @@ namespace AKSe {
 }
 
 function Update-EmudhraCtl {
+    param([string]$CtlDirectory)
+
+    New-Item -ItemType Directory -Path $CtlDirectory -Force -ErrorAction Stop | Out-Null
+    Invoke-EmudhraCertutil -ArgumentList @('-f', '-syncWithWU', $CtlDirectory)
+    if (-not (Test-Path -LiteralPath (Join-Path $CtlDirectory 'disallowedcert.sst') -PathType Leaf)) {
+        throw 'Windows Update synchronization did not produce disallowedcert.sst for CTL certificate matching.'
+    }
+
     $directory = Join-Path $env:TEMP ('akse-emudhra-' + [guid]::NewGuid().ToString('N'))
     $probePath = Join-Path $directory 'untrusted-probe.cer'
     $rsa = $null
@@ -128,7 +144,7 @@ function Update-EmudhraCtl {
         [IO.File]::WriteAllBytes($probePath, $certificate.Export(
             [System.Security.Cryptography.X509Certificates.X509ContentType]::Cert
         ))
-        Invoke-EmudhraCertutil -ArgumentList @('-f', '-verifyCTL', 'Disallowed', $directory, $probePath)
+        Invoke-EmudhraCertutil -ArgumentList @('-f', '-verifyCTL', 'Disallowed', $CtlDirectory, $probePath) -ExpectUnlistedProbe
     }
     finally {
         if ($certificate) { $certificate.Dispose() }
@@ -138,9 +154,15 @@ function Update-EmudhraCtl {
 }
 
 function Assert-EmudhraCtl {
-    param([string]$ExpectedSequence)
+    param(
+        [string]$ExpectedSequence,
+        [string]$CtlDirectory
+    )
 
-    Invoke-EmudhraCertutil -ArgumentList @('-verifyCTL', 'Disallowed')
+    if (-not (Test-Path -LiteralPath (Join-Path $CtlDirectory 'disallowedcert.sst') -PathType Leaf)) {
+        throw 'The synchronized disallowedcert.sst is missing. Run image remediation before verification-only mode.'
+    }
+    Invoke-EmudhraCertutil -ArgumentList @('-verifyCTL', 'Disallowed', $CtlDirectory)
     $encoded = Get-EmudhraEncodedCtl
     $sequence = Get-EmudhraCtlSequence -EncodedCtl $encoded
     if ($sequence -ne $ExpectedSequence) {
@@ -152,17 +174,18 @@ function Assert-EmudhraCtl {
 function Invoke-EmudhraRemediation {
     param(
         [switch]$VerifyOnly,
-        [string]$ExpectedSequence
+        [string]$ExpectedSequence,
+        [string]$CtlDirectory
     )
 
     if (-not $VerifyOnly) {
-        Update-EmudhraCtl
+        Update-EmudhraCtl -CtlDirectory $CtlDirectory
     }
-    return Assert-EmudhraCtl -ExpectedSequence $ExpectedSequence
+    return Assert-EmudhraCtl -ExpectedSequence $ExpectedSequence -CtlDirectory $CtlDirectory
 }
 
 if ($MyInvocation.InvocationName -ne '.') {
-    $result = Invoke-EmudhraRemediation -VerifyOnly:$VerifyOnly -ExpectedSequence $ExpectedSequenceNumber
+    $result = Invoke-EmudhraRemediation -VerifyOnly:$VerifyOnly -ExpectedSequence $ExpectedSequenceNumber -CtlDirectory $CtlDirectory
     if ($VerificationLogPath) {
         $result | Set-Content -LiteralPath $VerificationLogPath -Encoding UTF8 -ErrorAction Stop
     }
