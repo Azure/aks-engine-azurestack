@@ -1,6 +1,6 @@
 * -crlf
 
-/vhd/packer/remediate-emudhra.sh text eol=lf
+/vhd/packer/remediate-ca-trust.sh text eol=lf
 
 # Fix misidentification of Go templates as Raku or Perl
 *.t linguist-language=Go

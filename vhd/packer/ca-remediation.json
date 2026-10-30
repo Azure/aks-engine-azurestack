@@ -1,0 +1,17 @@
+{
+    "schemaVersion": 1,
+    "incident": "eMudhra October 2026",
+    "linux": {
+        "ubuntuVersion": "22.04",
+        "minimumCaCertificatesVersion": "20260816ubuntu0.22.04.1",
+        "minimumLibnss3Version": "2:3.98-0ubuntu0.22.04.5",
+        "withdrawnRootNames": [
+            "emSign ECC Root CA - G3",
+            "emSign Root TLS CA - G3",
+            "AAA Certificate Services"
+        ]
+    },
+    "windows": {
+        "expectedDisallowedCtlSequence": "01dd5f6ca45c9d86"
+    }
+}

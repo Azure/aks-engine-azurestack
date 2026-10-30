@@ -4,15 +4,31 @@
 [CmdletBinding()]
 param(
     [switch]$VerifyOnly,
-    [ValidatePattern('^[0-9a-fA-F]{16}$')]
-    [string]$ExpectedSequenceNumber = '01dd5f6ca45c9d86',
-    [string]$CtlDirectory = (Join-Path $PSScriptRoot 'emudhra-ctl'),
+    [string]$ProfilePath = (Join-Path $PSScriptRoot 'ca-remediation.json'),
+    [string]$CtlDirectory = (Join-Path $PSScriptRoot 'ca-trust-ctl'),
     [string]$VerificationLogPath
 )
 
 $ErrorActionPreference = 'Stop'
 
-function Invoke-EmudhraCertutil {
+function Read-CaRemediationProfile {
+    param([string]$Path)
+
+    $profile = Get-Content -LiteralPath $Path -Raw -ErrorAction Stop | ConvertFrom-Json -ErrorAction Stop
+    if (($profile.schemaVersion -isnot [int] -and $profile.schemaVersion -isnot [long]) -or $profile.schemaVersion -ne 1) {
+        throw 'Unsupported CA remediation profile schemaVersion.'
+    }
+    if ($profile.incident -isnot [string] -or $profile.incident -cnotmatch '\A[A-Za-z0-9][A-Za-z0-9 ._-]{0,99}\z') {
+        throw 'Invalid CA remediation incident label.'
+    }
+    if ($profile.windows.expectedDisallowedCtlSequence -isnot [string] -or
+        $profile.windows.expectedDisallowedCtlSequence -cnotmatch '\A[0-9a-fA-F]{16}\z') {
+        throw 'The CA remediation profile requires a reviewed 16-digit Windows Disallowed CTL sequence.'
+    }
+    return $profile
+}
+
+function Invoke-CaCertutil {
     param(
         [string[]]$ArgumentList,
         [switch]$ExpectUnlistedProbe
@@ -27,11 +43,11 @@ function Invoke-EmudhraCertutil {
         return
     }
     if ($exitCode -ne 0) {
-        throw "eMudhra CTL operation failed: certutil.exe exited with $exitCode."
+        throw "CA CTL operation failed: certutil.exe exited with $exitCode."
     }
 }
 
-function Get-EmudhraEncodedCtl {
+function Get-CaEncodedCtl {
     $path = 'HKLM:\SOFTWARE\Microsoft\SystemCertificates\AuthRoot\AutoUpdate'
     $encoded = Get-ItemPropertyValue -LiteralPath $path -Name DisallowedCertEncodedCtl -ErrorAction Stop
     if ($encoded -isnot [byte[]] -or $encoded.Length -eq 0) {
@@ -40,17 +56,17 @@ function Get-EmudhraEncodedCtl {
     return ,$encoded
 }
 
-function Get-EmudhraCtlSequence {
+function Get-CaCtlSequence {
     param([byte[]]$EncodedCtl)
 
-    if (-not ('AKSe.EmudhraCtl' -as [type])) {
+    if (-not ('AKSe.CaTrustCtl' -as [type])) {
         Add-Type -TypeDefinition @'
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace AKSe {
-    public static class EmudhraCtl {
+    public static class CaTrustCtl {
         [StructLayout(LayoutKind.Sequential)]
         private struct Blob {
             public uint Length;
@@ -110,19 +126,19 @@ namespace AKSe {
 }
 '@
     }
-    return [AKSe.EmudhraCtl]::GetSequence($EncodedCtl)
+    return [AKSe.CaTrustCtl]::GetSequence($EncodedCtl)
 }
 
-function Update-EmudhraCtl {
+function Update-CaCtl {
     param([string]$CtlDirectory)
 
     New-Item -ItemType Directory -Path $CtlDirectory -Force -ErrorAction Stop | Out-Null
-    Invoke-EmudhraCertutil -ArgumentList @('-f', '-syncWithWU', $CtlDirectory)
+    Invoke-CaCertutil -ArgumentList @('-f', '-syncWithWU', $CtlDirectory)
     if (-not (Test-Path -LiteralPath (Join-Path $CtlDirectory 'disallowedcert.sst') -PathType Leaf)) {
         throw 'Windows Update synchronization did not produce disallowedcert.sst for CTL certificate matching.'
     }
 
-    $directory = Join-Path $env:TEMP ('akse-emudhra-' + [guid]::NewGuid().ToString('N'))
+    $directory = Join-Path $env:TEMP ('akse-ca-trust-' + [guid]::NewGuid().ToString('N'))
     $probePath = Join-Path $directory 'untrusted-probe.cer'
     $rsa = $null
     $certificate = $null
@@ -144,7 +160,7 @@ function Update-EmudhraCtl {
         [IO.File]::WriteAllBytes($probePath, $certificate.Export(
             [System.Security.Cryptography.X509Certificates.X509ContentType]::Cert
         ))
-        Invoke-EmudhraCertutil -ArgumentList @('-f', '-verifyCTL', 'Disallowed', $CtlDirectory, $probePath) -ExpectUnlistedProbe
+        Invoke-CaCertutil -ArgumentList @('-f', '-verifyCTL', 'Disallowed', $CtlDirectory, $probePath) -ExpectUnlistedProbe
     }
     finally {
         if ($certificate) { $certificate.Dispose() }
@@ -153,39 +169,41 @@ function Update-EmudhraCtl {
     }
 }
 
-function Assert-EmudhraCtl {
+function Assert-CaCtl {
     param(
         [string]$ExpectedSequence,
+        [string]$Incident,
         [string]$CtlDirectory
     )
 
     if (-not (Test-Path -LiteralPath (Join-Path $CtlDirectory 'disallowedcert.sst') -PathType Leaf)) {
         throw 'The synchronized disallowedcert.sst is missing. Run image remediation before verification-only mode.'
     }
-    Invoke-EmudhraCertutil -ArgumentList @('-verifyCTL', 'Disallowed', $CtlDirectory)
-    $encoded = Get-EmudhraEncodedCtl
-    $sequence = Get-EmudhraCtlSequence -EncodedCtl $encoded
+    Invoke-CaCertutil -ArgumentList @('-verifyCTL', 'Disallowed', $CtlDirectory)
+    $encoded = Get-CaEncodedCtl
+    $sequence = Get-CaCtlSequence -EncodedCtl $encoded
     if ($sequence -ne $ExpectedSequence) {
-        throw "Disallowed CTL sequence '$sequence' does not match the reviewed eMudhra CTL '$ExpectedSequence'. Review Microsoft's mitigation coverage before accepting another sequence."
+        throw "Disallowed CTL sequence '$sequence' does not match the reviewed CTL '$ExpectedSequence' for '$Incident'. Review Microsoft's mitigation coverage before accepting another sequence."
     }
-    return "Verified persisted Windows Disallowed CTL: SequenceNumber=$sequence; Microsoft eMudhra eight-key mitigation."
+    return "Verified persisted Windows Disallowed CTL: SequenceNumber=$sequence; reviewed incident=$Incident."
 }
 
-function Invoke-EmudhraRemediation {
+function Invoke-CaRemediation {
     param(
         [switch]$VerifyOnly,
-        [string]$ExpectedSequence,
+        [string]$ProfilePath,
         [string]$CtlDirectory
     )
 
+    $profile = Read-CaRemediationProfile -Path $ProfilePath
     if (-not $VerifyOnly) {
-        Update-EmudhraCtl -CtlDirectory $CtlDirectory
+        Update-CaCtl -CtlDirectory $CtlDirectory
     }
-    return Assert-EmudhraCtl -ExpectedSequence $ExpectedSequence -CtlDirectory $CtlDirectory
+    return Assert-CaCtl -ExpectedSequence $profile.windows.expectedDisallowedCtlSequence -Incident $profile.incident -CtlDirectory $CtlDirectory
 }
 
 if ($MyInvocation.InvocationName -ne '.') {
-    $result = Invoke-EmudhraRemediation -VerifyOnly:$VerifyOnly -ExpectedSequence $ExpectedSequenceNumber -CtlDirectory $CtlDirectory
+    $result = Invoke-CaRemediation -VerifyOnly:$VerifyOnly -ProfilePath $ProfilePath -CtlDirectory $CtlDirectory
     if ($VerificationLogPath) {
         $result | Set-Content -LiteralPath $VerificationLogPath -Encoding UTF8 -ErrorAction Stop
     }

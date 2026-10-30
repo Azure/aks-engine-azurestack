@@ -35,7 +35,7 @@ Once complete, packer will output a URI to the VHD it created.
 
 TODO
 
-## Temporary eMudhra remediation in Azure Image Builder
+## Profile-based CA trust remediation in Azure Image Builder
 
 The [Linux AIB template](../../vhd/aib/AKSeImageTemplateLinux.json) and
 [Windows AIB template](../../vhd/aib/AKSeImageTemplateWindows.json) include
@@ -44,15 +44,51 @@ the source image references or remediate existing deployed nodes. The legacy
 Packer templates above are not wired to these AIB steps.
 
 Set `github_branch_name` to a published branch or commit containing the updated
-templates and remediation scripts. A local change alone is not available to the
+templates, remediation scripts, and profile. A local change alone is not available to the
 image builder's `raw.githubusercontent.com` downloads.
+
+### Reviewed incident profiles
+
+The shared [default profile](../../vhd/packer/ca-remediation.json) retains the
+eMudhra October 2026 mitigation. Generic script names do not change that scope.
+To address another incident, publish a reviewed JSON profile under `vhd/packer`
+and set the AIB parameter `ca_remediation_profile` to its filename in both
+templates. Each template downloads it as `ca-remediation.json` alongside the
+script and retains it for final and offline verification.
+
+The version 1 profile contains:
+
+| Field | Purpose |
+|---|---|
+| `schemaVersion` | Integer `1`; unknown schemas are rejected. |
+| `incident` | Audit label, up to 100 ASCII letters, digits, spaces, periods, underscores or hyphens; starts with a letter or digit. |
+| `linux.ubuntuVersion` | Required Ubuntu release for the reviewed package thresholds. |
+| `linux.minimumCaCertificatesVersion` | Minimum vendor-fixed `ca-certificates` version. |
+| `linux.minimumLibnss3Version` | Minimum vendor-fixed `libnss3` version, including any epoch. |
+| `linux.withdrawnRootNames` | Nonempty list of literal withdrawn certificate common names, without commas or line breaks. |
+| `windows.expectedDisallowedCtlSequence` | Exact reviewed 16-digit hexadecimal Microsoft Disallowed CTL sequence. |
+
+Scripts reject missing or malformed settings for their platform before updating
+trust. For manual use, select a profile with Linux `--profile <JSON file>` or
+Windows `-ProfilePath <JSON file>`, using the same profile for remediation and
+verification. Linux profile parsing requires `python3`, included in the Ubuntu
+source image.
+
+This mechanism supports vendor package remediation on Ubuntu and Microsoft's
+Disallowed CTL servicing on Windows, not arbitrary certificate blocking or
+imports. Changing the incident label alone does not remediate another CA.
+Review vendor advisories for every profile, including coverage of previous
+incidents. A new Windows sequence must be confirmed to cover all required keys;
+Linux thresholds must match the selected Ubuntu release. Different package
+families, unsupported operating systems, or mitigations outside these mechanisms
+require additional implementation and qualification.
 
 ### Ubuntu 22.04
 
-The [Linux script](../../vhd/packer/remediate-emudhra.sh) updates APT metadata,
+The [Linux script](../../vhd/packer/remediate-ca-trust.sh) updates APT metadata,
 installs or upgrades `ca-certificates` and every installed architecture of
 `libnss3`, and regenerates the system CA bundle. It requires fully installed
-packages at or above these Jammy-specific versions:
+packages at or above the profile's thresholds. The default has these Jammy-specific versions:
 
 | Package | Minimum fixed version |
 |---|---|
@@ -78,7 +114,7 @@ and [NSS update](https://ubuntu.com/security/notices/USN-8947-1).
 
 ### Windows Server 2019
 
-The [Windows script](../../vhd/packer/remediate-emudhra.ps1) uses Microsoft's
+The [Windows script](../../vhd/packer/remediate-ca-trust.ps1) uses Microsoft's
 documented forced CTL refresh:
 
 ```text
@@ -88,7 +124,7 @@ certutil -f -verifyCTL Disallowed <ctl-data-directory> <untrusted-probe.cer>
 
 Synchronization supplies `disallowedcert.sst`, which `verifyCTL` uses to locate
 certificates matching CTL entries. The metadata is retained under
-`C:\akse-cache\emudhra-ctl` for the final and offline verification steps;
+`C:\akse-cache\ca-trust-ctl` for the final and offline verification steps;
 `-CtlDirectory` can override this location. Synchronization alone is not proof
 that Windows installed the CTL.
 
@@ -109,7 +145,7 @@ The build then requires successful
 `certutil -verifyCTL Disallowed <ctl-data-directory>` verification, without the probe,
 of the local registry-cached CTL. The sequence number is decoded from the
 persisted `DisallowedCertEncodedCtl` using Windows CryptoAPI, not by parsing
-localized command output. It must equal:
+localized command output. It must equal the profile's reviewed value, by default:
 
 ```text
 01dd5f6ca45c9d86
@@ -123,7 +159,7 @@ and the expected value is explicitly updated.
 
 The final customizer repeats local verification after the restarts and explicit
 sysprep preparation steps, writing
-`C:\buildArtifacts\emudhra-remediation.txt`. It does not treat a downloaded CTL,
+`C:\buildArtifacts\ca-trust-remediation.txt`. It does not treat a downloaded CTL,
 an SST import, or an empty intermediate certificate cache as proof of
 remediation. Synchronization errors, other probe errors, and all final
 verification errors are fatal.
@@ -138,11 +174,11 @@ VM from each resulting image with network access disabled and run the relevant
 script's verification-only mode on that VM:
 
 ```bash
-sudo bash /home/packer/remediate-emudhra.sh --verify-only
+sudo bash /home/packer/remediate-ca-trust.sh --verify-only
 ```
 
 ```powershell
-& C:\akse-cache\remediate-emudhra.ps1 -VerifyOnly
+& C:\akse-cache\remediate-ca-trust.ps1 -VerifyOnly
 ```
 
 Confirm that the evidence survives capture and that affected certificate paths
