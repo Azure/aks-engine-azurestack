@@ -9,8 +9,11 @@ package kubernetes
 import (
 	"bufio"
 	"context"
+	"crypto/sha1"
+	"crypto/x509"
 	"encoding/base64"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
 	"io"
 	"log"
@@ -82,6 +85,11 @@ var (
 	firstMasterRegexStr             = fmt.Sprintf("^%s-.*-0", common.LegacyControlPlaneVMPrefix)
 	vmssHealthCommand               *exec.Cmd
 	vmssHealthCommandStdOut         string
+	withdrawnRootCertificates       = []string{
+		"emSign ECC Root CA - G3",
+		"emSign Root TLS CA - G3",
+		"AAA Certificate Services",
+	}
 )
 
 var _ = BeforeSuite(func() {
@@ -567,6 +575,124 @@ var _ = Describe("Azure Container Cluster using the Kubernetes Orchestrator", fu
 			} else {
 				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
 			}
+		})
+
+		It("should not trust withdrawn root certificates on Linux nodes", func() {
+			if cfg.BlockSSHPort {
+				Skip("SSH port is blocked")
+			}
+			if eng.ExpandedDefinition.Properties.HasNonRegularPriorityScaleset() {
+				Skip("Skip per-node tests in low-priority VMSS cluster configuration scenario")
+			}
+			nodes, err := node.GetReadyWithRetry(time.Second, cfg.Timeout)
+			Expect(err).NotTo(HaveOccurred())
+			checked := 0
+			for _, n := range nodes {
+				if n.Status.NodeInfo.OperatingSystem != "linux" {
+					continue
+				}
+				By(fmt.Sprintf("Checking withdrawn root certificates on %s", n.Metadata.Name))
+				ctx, cancel := context.WithTimeout(context.Background(), singleCommandTimeout)
+				out, err := sshConn.ExecuteRemoteOutput(ctx, n.Metadata.Name, `"openssl crl2pkcs7 -nocrl -certfile /etc/ssl/certs/ca-certificates.crt | openssl pkcs7 -print_certs"`)
+				cancel()
+				Expect(err).NotTo(HaveOccurred(), "Reading CA bundle on %s: %s", n.Metadata.Name, out)
+				certificates := 0
+				for {
+					block, rest := pem.Decode(out)
+					if block == nil {
+						break
+					}
+					Expect(block.Type).To(Equal("CERTIFICATE"))
+					cert, err := x509.ParseCertificate(block.Bytes)
+					Expect(err).NotTo(HaveOccurred())
+					Expect(withdrawnRootCertificates).NotTo(ContainElement(cert.Subject.CommonName),
+						"Withdrawn root %q remains trusted on %s", cert.Subject.CommonName, n.Metadata.Name)
+					certificates++
+					out = rest
+				}
+				Expect(certificates).To(BeNumerically(">", 0), "No readable CA certificates on %s", n.Metadata.Name)
+				checked++
+			}
+			Expect(checked).To(BeNumerically(">", 0), "no ready Linux nodes were checked")
+		})
+
+		It("should not trust withdrawn root certificates on Windows nodes", func() {
+			if !eng.HasWindowsAgents() {
+				Skip("no Windows nodes")
+			}
+			nodes, err := node.GetReadyWithRetry(time.Second, cfg.Timeout)
+			Expect(err).NotTo(HaveOccurred())
+			checked := 0
+			for _, n := range nodes {
+				if !n.IsWindows() {
+					continue
+				}
+				By(fmt.Sprintf("Checking withdrawn root certificates on %s", n.Metadata.Name))
+				name := fmt.Sprintf("withdrawn-root-trust-%d-%d", GinkgoParallelProcess(), checked)
+				manifest := map[string]interface{}{
+					"apiVersion": "v1", "kind": "Pod",
+					"metadata": map[string]string{"name": name, "namespace": "default"},
+					"spec": map[string]interface{}{
+						"nodeName": n.Metadata.Name, "hostNetwork": true, "restartPolicy": "Never",
+						"activeDeadlineSeconds": 120,
+						"tolerations":           []map[string]string{{"operator": "Exists"}},
+						"securityContext": map[string]interface{}{
+							"runAsNonRoot": false,
+							"windowsOptions": map[string]interface{}{
+								"hostProcess": true, "runAsUserName": `NT AUTHORITY\SYSTEM`,
+							},
+						},
+						"containers": []map[string]interface{}{{
+							"name":    "verify-trust",
+							"image":   "mcr.microsoft.com/oss/kubernetes/windows-host-process-containers-base-image:v1.0.0",
+							"command": []string{"powershell.exe", "-NoProfile", "-NonInteractive", "-Command", "Start-Sleep -Seconds 120"},
+						}},
+					},
+				}
+				data, err := json.Marshal(manifest)
+				Expect(err).NotTo(HaveOccurred())
+				file, err := os.CreateTemp("", "withdrawn-root-trust-*.json")
+				Expect(err).NotTo(HaveOccurred())
+				DeferCleanup(func() { Expect(os.Remove(file.Name())).To(Succeed()) })
+				_, err = file.Write(data)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(file.Close()).To(Succeed())
+				DeferCleanup(func() {
+					ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+					defer cancel()
+					out, err := exec.CommandContext(ctx, "k", "delete", "pod", name, "-n", "default", "--ignore-not-found", "--wait=false").CombinedOutput()
+					Expect(err).NotTo(HaveOccurred(), "cleanup trust-check pod: %s", out)
+				})
+				p, err := pod.CreatePodFromFile(file.Name(), name, "default", time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				ready, err := p.WaitOnReady(false, time.Second, cfg.Timeout)
+				Expect(err).NotTo(HaveOccurred())
+				Expect(ready).To(BeTrue())
+				out, err := p.Exec("--", "powershell.exe", "-NoProfile", "-NonInteractive", "-Command",
+					`Get-ChildItem -LiteralPath Cert:\LocalMachine\Root -ErrorAction Stop | ForEach-Object { [Convert]::ToBase64String($_.RawData) }`)
+				Expect(err).NotTo(HaveOccurred(), "Reading machine roots on %s: %s", n.Metadata.Name, out)
+				roots := strings.Fields(string(out))
+				Expect(roots).NotTo(BeEmpty(), "Machine root store is empty on %s", n.Metadata.Name)
+				for _, root := range roots {
+					der, err := base64.StdEncoding.DecodeString(root)
+					Expect(err).NotTo(HaveOccurred())
+					cert, err := x509.ParseCertificate(der)
+					Expect(err).NotTo(HaveOccurred())
+					for _, withdrawn := range withdrawnRootCertificates {
+						if cert.Subject.CommonName != withdrawn {
+							continue
+						}
+						// SHA-1 is the Windows store identifier, not a signature check.
+						thumbprint := fmt.Sprintf("%X", sha1.Sum(cert.Raw))
+						result, verifyErr := p.Exec("--", "certutil.exe", "-verifystore", "Root", thumbprint)
+						// Only explicit distrust proves rejection; unrelated command or chain errors do not.
+						Expect(strings.ToLower(string(result))).To(ContainSubstring("0x800b0111"),
+							"Expected explicit distrust for %q on %s (command error: %v): %s", withdrawn, n.Metadata.Name, verifyErr, result)
+					}
+				}
+				checked++
+			}
+			Expect(checked).To(BeNumerically(">", 0), "no ready Windows nodes were checked")
 		})
 
 		It("should validate installed software packages", func() {
