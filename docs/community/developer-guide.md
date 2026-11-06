@@ -65,6 +65,12 @@ make bootstrap
 make build
 ```
 
+The tool bootstrap downloads the pinned golangci-lint release and verifies its
+SHA-256 using an exact archive filename match in the release checksum manifest.
+The accompanying `.sbom.json` entry is not an archive checksum. A missing,
+duplicate, malformed, or mismatching archive checksum fails installation;
+do not bypass verification to resolve a bootstrap failure.
+
 The build process leaves the compiled `aks-engine-azurestack` binary in the `bin` directory. Make sure everything completed successfully by running `bin/aks-engine-azurestack` without any arguments:
 
 ```sh
