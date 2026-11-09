@@ -32,16 +32,18 @@ jobs:
 
     variables:
       GOBIN: "$(GOPATH)/bin" # Go binaries path
-      GOROOT: "/usr/local/go" # Go installation path
       GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
 
     steps:
+      - task: GoTool@0
+        displayName: Install Go
+        inputs:
+          version: "1.27.3"
       - script: |
           mkdir -p '$(GOBIN)'
           mkdir -p '$(GOPATH)/pkg'
           shopt -s extglob
           echo '##vso[task.prependpath]$(GOBIN)'
-          echo '##vso[task.prependpath]$(GOROOT)/bin'
         displayName: "Set up the Go workspace"
       - script: make bootstrap
         displayName: Install dependencies

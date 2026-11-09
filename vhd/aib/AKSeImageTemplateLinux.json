@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "ca_remediation_profile": {
+            "type": "string",
+            "defaultValue": "ca-remediation.json",
+            "metadata": {
+                "description": "Reviewed CA remediation JSON profile under vhd/packer in github_branch_name."
+            }
+        },
         "template_name": {
             "type": "string"
         },
@@ -102,6 +109,25 @@
                         "inline": [
                             "sudo mkdir -p /opt/azure/containers",
                             "sudo chown -R $USER /opt/azure/containers"
+                        ]
+                    },
+                    {
+                        "type": "File",
+                        "name": "download CA trust remediation",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/remediate-ca-trust.sh'))]",
+                        "destination": "/home/packer/remediate-ca-trust.sh"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download reviewed CA remediation profile",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/',parameters('ca_remediation_profile')))]",
+                        "destination": "/home/packer/ca-remediation.json"
+                    },
+                    {
+                        "type": "Shell",
+                        "name": "remediate CA trust",
+                        "inline": [
+                            "sudo /bin/bash -e /home/packer/remediate-ca-trust.sh"
                         ]
                     },
                     {
@@ -288,7 +314,8 @@
                         "type": "Shell",
                         "inline": [
                             "sudo /bin/bash -eux /home/packer/cis.sh",
-                            "sudo /bin/bash -eux /home/packer/cleanup-vhd.sh"
+                            "sudo /bin/bash -eux /home/packer/cleanup-vhd.sh",
+                            "sudo /bin/bash -e /home/packer/remediate-ca-trust.sh --verify-only"
                         ]
                     }
                 ],

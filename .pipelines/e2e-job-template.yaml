@@ -30,7 +30,6 @@ jobs:
 
     variables:
       GOBIN: "$(GOPATH)/bin" # Go binaries path
-      GOROOT: "/usr/local/go" # Go installation path
       GOPATH: "$(Agent.TempDirectory)/go" # Go workspace path
       TIMEOUT: 30m
       CLUSTER_DEFINITION: ${{ parameters.apimodel }}

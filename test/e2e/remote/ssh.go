@@ -354,9 +354,7 @@ func (c *Connection) CopyToRemoteWithRetry(hostname, path string, sleep, timeout
 
 // ExecuteRemote uses this ssh connection to run a remote command from the primary master node
 func (c *Connection) ExecuteRemote(node, command string, printStdout bool) error {
-	cmd := exec.Command("ssh", "-A", "-i", c.PrivateKeyPath, "-p", c.Port, "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR", fmt.Sprintf("%s@%s", c.User, c.Host), "ssh", "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR", node, command)
-	util.PrintCommand(cmd)
-	out, err := cmd.CombinedOutput()
+	out, err := c.ExecuteRemoteOutput(context.Background(), node, command)
 	if err != nil {
 		log.Printf("Error output:%s\n", out)
 	} else {
@@ -365,6 +363,13 @@ func (c *Connection) ExecuteRemote(node, command string, printStdout bool) error
 		}
 	}
 	return err
+}
+
+// ExecuteRemoteOutput returns command output from a node through the primary master.
+func (c *Connection) ExecuteRemoteOutput(ctx context.Context, node, command string) ([]byte, error) {
+	cmd := exec.CommandContext(ctx, "ssh", "-A", "-i", c.PrivateKeyPath, "-p", c.Port, "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR", fmt.Sprintf("%s@%s", c.User, c.Host), "ssh", "-o", "ConnectTimeout=10", "-o", "StrictHostKeyChecking=no", "-o", "UserKnownHostsFile=/dev/null", "-o", "LogLevel=ERROR", node, command)
+	util.PrintCommand(cmd)
+	return cmd.CombinedOutput()
 }
 
 // ExecuteRemoteWithRetry runs a remote command with retry tolerance

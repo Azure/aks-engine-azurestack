@@ -2,6 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "ca_remediation_profile": {
+            "type": "string",
+            "defaultValue": "ca-remediation.json",
+            "metadata": {
+                "description": "Reviewed CA remediation JSON profile under vhd/packer in github_branch_name."
+            }
+        },
         "template_name": {
             "type": "string"
         },
@@ -96,6 +103,27 @@
                     "version": "17763.8644.260411"
                 },
                 "customize": [
+                    {
+                        "type": "File",
+                        "name": "download CA trust remediation",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/remediate-ca-trust.ps1'))]",
+                        "destination": "c:\\akse-cache\\remediate-ca-trust.ps1"
+                    },
+                    {
+                        "type": "File",
+                        "name": "download reviewed CA remediation profile",
+                        "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/',parameters('ca_remediation_profile')))]",
+                        "destination": "c:\\akse-cache\\ca-remediation.json"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "refresh CA trust CTLs",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "inline": [
+                            "& c:\\akse-cache\\remediate-ca-trust.ps1"
+                        ]
+                    },
                     {
                         "type": "File",
                         "name": "download signedscripts",
@@ -239,6 +267,15 @@
                         "runElevated": true,
                         "sourceUri": "[uri('https://raw.githubusercontent.com/Azure/aks-engine-azurestack/',concat(parameters('github_branch_name'),'/vhd/packer/sysprep-phase2.ps1'))]",
                         "destination":"c:\\DeprovisioningScript.ps1"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "verify persisted CA distrust",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "inline": [
+                            "& c:\\akse-cache\\remediate-ca-trust.ps1 -VerifyOnly -VerificationLogPath c:\\buildArtifacts\\ca-trust-remediation.txt"
+                        ]
                     }
                 ],
                 "distribute": 
