@@ -110,6 +110,9 @@ Log "Cached Files:"
 $displayObjects = @()
 foreach ($file in [IO.Directory]::GetFiles('c:\akse-cache', '*', [IO.SearchOption]::AllDirectories))
 {
+    if ($file.StartsWith('c:\akse-cache\ca-trust-ctl\', [StringComparison]::OrdinalIgnoreCase)) {
+        continue
+    }
     $attributes = Get-Item $file
     $hash = Get-FileHash $file -Algorithm SHA256
     $displayObjects += New-Object psobject -property @{
