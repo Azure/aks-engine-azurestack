@@ -81,7 +81,7 @@ validate-shell:
 .PHONY: generate
 generate: bootstrap
 	@echo "$$(go-bindata --version)"
-	go generate $(GOFLAGS) -v ./... > /dev/null 2>&1
+	go generate $(GOFLAGS) -v ./...
 
 .PHONY: build
 build: generate go-build
